@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage, DeepNullable } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
@@ -32,7 +32,6 @@ import { addSelectedFieldToRows } from 'components/utils/utils';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
 import { FetchStatus } from 'services/utils.type';
-import { DeepNullable } from '../../../utils/ts-utils';
 import { GenerationDispatchModificationInfos } from '../../../../services/network-modification-types';
 
 interface GenerationDispatchProps {
@@ -91,8 +90,18 @@ const getSubstationsGeneratorsOrderingSchema = () => {
 const formSchema = yup
     .object()
     .shape({
-        [LOSS_COEFFICIENT]: yup.number().nullable().min(0).max(100).required(),
-        [DEFAULT_OUTAGE_RATE]: yup.number().nullable().min(0).max(100).required(),
+        [LOSS_COEFFICIENT]: yup
+            .number()
+            .nullable()
+            .min(0, 'NormalizedPercentage')
+            .max(100, 'NormalizedPercentage')
+            .required(),
+        [DEFAULT_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0, 'NormalizedPercentage')
+            .max(100, 'NormalizedPercentage')
+            .required(),
         [GENERATORS_WITHOUT_OUTAGE]: getGeneratorsFiltersSchema(),
         [GENERATORS_WITH_FIXED_ACTIVE_POWER]: getGeneratorsFiltersSchema(),
         [GENERATORS_FREQUENCY_RESERVES]: getGeneratorsFrequencyReserveSchema(),

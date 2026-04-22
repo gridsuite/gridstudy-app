@@ -5,20 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
-import type { UUID } from 'node:crypto';
+import { backendFetchJson } from '@gridsuite/commons-ui';
 import { LineTypeInfo } from '../components/dialogs/line-types-catalog/line-catalog.type';
 
 const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';
-
-export function fetchNetworkModification(modificationUuid: UUID) {
-    const modificationFetchUrl = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/${encodeURIComponent(
-        modificationUuid
-    )}`;
-
-    console.debug(modificationFetchUrl);
-    return backendFetch(modificationFetchUrl);
-}
 
 export function getLineTypesCatalog(): Promise<LineTypeInfo[]> {
     console.info(`get line types catalog`);
@@ -26,7 +16,34 @@ export function getLineTypesCatalog(): Promise<LineTypeInfo[]> {
     return backendFetchJson(url);
 }
 
-export function getLineTypeWithLimits(id: string): Promise<LineTypeInfo> {
+export function getLineTypeWithAreaAndTemperature(id: string): Promise<LineTypeInfo> {
     const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}`;
     return backendFetchJson(url);
+}
+
+export function getLineTypeWithLimits(
+    id: string,
+    area: string | null,
+    temperature: string | null,
+    shapeFactor: number | null
+): Promise<LineTypeInfo> {
+    let urlSearchParams = new URLSearchParams();
+    if (area != null) {
+        urlSearchParams.append('area', area);
+    }
+    if (temperature != null) {
+        urlSearchParams.append('temperature', temperature);
+    }
+    if (shapeFactor != null) {
+        urlSearchParams.append('shapeFactor', shapeFactor.toString());
+    }
+    const url =
+        `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}/with-limits?` +
+        urlSearchParams.toString();
+    return backendFetchJson(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
 }

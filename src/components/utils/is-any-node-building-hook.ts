@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 
 export const useIsAnyNodeBuilding = () => {
     const [iAnyNodeBuild, setAnyNodeBuilding] = useState(false);

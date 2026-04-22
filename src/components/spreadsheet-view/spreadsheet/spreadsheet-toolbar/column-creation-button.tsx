@@ -11,7 +11,7 @@ import AddColumnRightLight from 'images/add_column_right_light.svg?react';
 import AddColumnRightDark from 'images/add_column_right_dark.svg?react';
 import AddColumnRightDisabled from 'images/add_column_right_disabled.svg?react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import { LIGHT_THEME, useStateBoolean } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import ColumnCreationDialog from '../../columns/column-creation-dialog';

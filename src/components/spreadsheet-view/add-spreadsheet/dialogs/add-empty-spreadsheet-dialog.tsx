@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { dialogStyles } from '../styles/styles';
 import { ModificationDialog, type ModificationDialogProps } from 'components/dialogs/commons/modificationDialog';
@@ -23,10 +23,10 @@ import {
     SPREADSHEET_NAME,
 } from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { ColumnDefinitionDto, SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 import type { DialogComponentProps } from '../types';
+import { COLUMN_TYPES } from '../../../../types/custom-aggrid-types';
 
 export type AddEmptySpreadsheetDialogProps = Pick<DialogComponentProps, 'open'>;
 

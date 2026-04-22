@@ -6,8 +6,8 @@
  */
 
 import yup from '../../../../utils/yup-config';
-import { COLUMN_TYPES } from '../../../../custom-aggrid/custom-aggrid-header.type';
 import { TestContext } from 'yup';
+import { COLUMN_TYPES } from '../../../../../types/custom-aggrid-types';
 
 export const COLUMNS_MODEL = 'columnsModel';
 export const COLUMN_ID = 'columnId';

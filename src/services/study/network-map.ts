@@ -15,6 +15,7 @@ import {
     EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
+    LccDeletionDto,
     Identifiable,
     NewFilterType,
 } from '@gridsuite/commons-ui';
@@ -27,8 +28,8 @@ export function fetchHvdcLineWithShuntCompensators(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    hvdcLineId: string
-) {
+    hvdcLineId: UUID
+): Promise<LccDeletionDto> {
     console.info(
         `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
@@ -95,7 +96,7 @@ export function fetchEquipmentsIds(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[],
+    substationsIds: string[] | undefined,
     equipmentType: EquipmentType | ExtendedEquipmentType,
     inUpstreamBuiltParentNode: boolean,
     nominalVoltages?: number[]
@@ -248,13 +249,22 @@ export async function createMapContingencyList(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     selectedEquipments: EquipmentInfos[],
-    nominalVoltages: number[]
+    nominalVoltages: number[],
+    busbarIdAsContingencyName: boolean
 ) {
     let equipmentContingencyList: ContingencyList;
+    // should be in the switch, but TS and eslint do not like fallthrough
+    let equipmentIdAsContingencyName =
+        equipmentType === EquipmentType.BUSBAR_SECTION ? busbarIdAsContingencyName : false;
+
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:
         case EquipmentType.LINE:
-            equipmentContingencyList = createIdentifierContingencyList(elementName, selectedEquipments);
+            equipmentContingencyList = createIdentifierContingencyList(
+                elementName,
+                selectedEquipments,
+                equipmentIdAsContingencyName
+            );
 
             break;
 
@@ -278,7 +288,11 @@ export async function createMapContingencyList(
             if (elementsIds?.length === 0) {
                 throw new Error('EmptySelection');
             }
-            equipmentContingencyList = createIdentifierContingencyList(elementName, elementsIds);
+            equipmentContingencyList = createIdentifierContingencyList(
+                elementName,
+                elementsIds,
+                equipmentIdAsContingencyName
+            );
             break;
     }
     if (

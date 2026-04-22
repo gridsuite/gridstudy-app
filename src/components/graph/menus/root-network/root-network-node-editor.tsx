@@ -16,7 +16,7 @@ import { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { RootNetworkInfos, RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';

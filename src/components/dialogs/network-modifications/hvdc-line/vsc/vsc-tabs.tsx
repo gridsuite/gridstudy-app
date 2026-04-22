@@ -5,19 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent } from 'react';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { getTabIndicatorStyle, getTabStyle } from '../../../../utils/tab-utils';
 import { VSC_CREATION_TABS } from './vsc-utils';
+import { Dispatch, SetStateAction } from 'react';
 
 interface VscTabsProps {
     tabIndex: number;
     tabIndexesWithError: number[];
-    setTabIndex: React.Dispatch<React.SetStateAction<number>>;
+    setTabIndex: Dispatch<SetStateAction<number>>;
 }
 
-const VscTabs: FunctionComponent<VscTabsProps> = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
+export default function VscTabs({ tabIndex, tabIndexesWithError, setTabIndex }: Readonly<VscTabsProps>) {
     return (
         <>
             <Grid container>
@@ -45,6 +45,4 @@ const VscTabs: FunctionComponent<VscTabsProps> = ({ tabIndex, tabIndexesWithErro
             </Grid>
         </>
     );
-};
-
-export default VscTabs;
+}

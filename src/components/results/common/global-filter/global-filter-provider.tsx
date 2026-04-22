@@ -6,115 +6,118 @@
  */
 
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { GlobalFilter } from './global-filter-types';
-import { FilterType } from '../utils';
-import type { UUID } from 'node:crypto';
+import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
+import { FilterType, isCriteriaFilter } from '../utils';
 import {
     ElementAttributes,
+    ElementType,
     fetchDirectoryElementPath,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { addToRecentGlobalFilters, removeFromRecentGlobalFilters } from '../../../../redux/actions';
-import { useDispatch } from 'react-redux';
+import { addToGlobalFilterOptions, markNotFoundGlobalFiltersAsDeleted } from '../../../../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
 import { HttpStatusCode } from '../../../../utils/http-status-code';
+import { TableType } from '../../../../types/custom-aggrid-types';
+import { AppState } from '../../../../redux/reducer.type';
 
+const EMPTY_ARRAY: RecentGlobalFilter[] = [];
+type FilterUpdateResult = { kind: 'updated' | 'notFound'; filter: GlobalFilter } | { kind: 'unchanged' };
 export default function GlobalFilterProvider({
     children,
-    onChange: handleChange,
-    preloadedGlobalFilters,
     filterCategories,
     genericFiltersStrictMode = false,
-    equipmentTypes = undefined,
+    filterableEquipmentTypes = [],
+    tableType,
+    tableUuid,
 }: PropsWithChildren & {
-    onChange: (globalFilters: GlobalFilter[]) => void;
-    filterCategories: string[];
-    preloadedGlobalFilters?: GlobalFilter[];
+    filterCategories: FilterType[];
     genericFiltersStrictMode: boolean;
-    equipmentTypes: string[] | undefined;
+    filterableEquipmentTypes: string[];
+    tableType: TableType;
+    tableUuid: string;
 }) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
+    const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
+
+    const selectedFilterIds = useSelector((state: AppState) => state.tableFilters.globalFilters[tableUuid]?.selected);
+
+    const recentGlobalFilters = useSelector(
+        (state: AppState) => state.tableFilters.globalFilters[tableUuid]?.recents ?? EMPTY_ARRAY
+    );
+
+    const selectedGlobalFilters = useMemo(
+        () =>
+            selectedFilterIds
+                ? selectedFilterIds
+                      .map((id) => globalFilterOptions.find((opt) => opt.id === id))
+                      .filter((f) => f !== undefined)
+                : [],
+        [selectedFilterIds, globalFilterOptions]
+    );
+
     const [openedDropdown, setOpenedDropdown] = useState(false);
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
-    // may be a filter type or a recent filter or whatever category
+    // maybe a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
-    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>(preloadedGlobalFilters ?? []);
 
-    useEffect(() => {
-        //If preloadedGlobalFilters is set it keeps the global filter state in sync
-        if (preloadedGlobalFilters !== undefined) {
-            setSelectedGlobalFilters(preloadedGlobalFilters);
-        }
-    }, [preloadedGlobalFilters]);
-
-    const checkSelectedFiltersPromise = useCallback(
-        async (selectedFilters: GlobalFilter[]) => {
-            const mutableFilters: GlobalFilter[] = selectedFilters.map((filter) => ({ ...filter }));
-
-            const notFoundGenericFilterUuids: UUID[] = [];
-            const genericFiltersUuids: UUID[] = mutableFilters
-                .filter((globalFilter) => globalFilter.filterType === FilterType.GENERIC_FILTER)
-                .map((globalFilter) => globalFilter.uuid)
-                .filter((globalFilterUUID) => globalFilterUUID !== undefined);
-
-            for (const genericFilterUuid of genericFiltersUuids) {
-                try {
-                    // checks if the generic filters still exist, and update their path value
-                    const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
-                    const parentDirectoriesNames = response.map((parent) => parent.elementName);
-                    const path = computeFullPath(parentDirectoriesNames);
-                    const fetchedFilter: GlobalFilter | undefined = mutableFilters.find(
-                        (globalFilter) => globalFilter.uuid === genericFilterUuid
-                    );
-                    if (fetchedFilter && !fetchedFilter.path) {
-                        fetchedFilter.path = path;
-                    }
-                } catch (responseError) {
-                    const error = responseError as Error & { status: number };
-                    if (error.status === HttpStatusCode.NOT_FOUND) {
-                        // not found => remove those missing filters from recent global filters
-                        dispatch(removeFromRecentGlobalFilters(genericFilterUuid));
-                        notFoundGenericFilterUuids.push(genericFilterUuid);
-                        snackError({
-                            messageTxt: mutableFilters.find((filter) => filter.uuid === genericFilterUuid)?.path,
-                            headerId: 'ComputationFilterResultsError',
-                        });
-                    } else {
-                        // or whatever error => do nothing except showing error message
-                        snackWithFallback(snackError, error, {
-                            headerId: 'ComputationFilterResultsError',
-                        });
-                    }
+    const updateGenericFilter = useCallback(
+        async (genericFilter: GlobalFilter): Promise<FilterUpdateResult> => {
+            try {
+                if (!genericFilter.uuid) {
+                    return { kind: 'unchanged' };
                 }
+                const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilter.uuid);
+                const parentDirectoriesNames = response.map((parent) => parent.elementName);
+                const label =
+                    response.find((parent) => parent.type === ElementType.FILTER)?.elementName ?? genericFilter.label;
+                const path = computeFullPath(parentDirectoriesNames);
+                if (path !== genericFilter.path || label !== genericFilter.label) {
+                    return { kind: 'updated', filter: { ...genericFilter, path, label } };
+                }
+                return { kind: 'unchanged' };
+            } catch (responseError) {
+                const error = responseError as Error & { status: number };
+                if (error.status === HttpStatusCode.NOT_FOUND) {
+                    return { kind: 'notFound', filter: genericFilter };
+                }
+                snackWithFallback(snackError, error, {
+                    headerId: 'ComputationFilterResultsError',
+                });
+                return { kind: 'unchanged' };
             }
+        },
+        [snackError]
+    );
 
-            // Updates the "recent" filters unless they have not been found
-            const validSelectedFilters: GlobalFilter[] = mutableFilters.filter(
-                (filter) => !filter.uuid || !notFoundGenericFilterUuids.includes(filter.uuid)
+    // Check the selected global filters and mark them as deleted if they no longer exist.
+    useEffect(() => {
+        const checkSelectedFilters = async () => {
+            const genericFilters: GlobalFilter[] = selectedGlobalFilters.filter(
+                (globalFilter) => isCriteriaFilter(globalFilter) && !globalFilter.deleted
             );
-            dispatch(addToRecentGlobalFilters(validSelectedFilters));
+            const results = await Promise.all(genericFilters.map(updateGenericFilter));
+            const updatedFilters: GlobalFilter[] = [];
+            const notFoundFilters: GlobalFilter[] = [];
+            for (const result of results) {
+                if (result.kind === 'updated') updatedFilters.push(result.filter);
+                else if (result.kind === 'notFound') notFoundFilters.push(result.filter);
+            }
+            if (updatedFilters.length) {
+                dispatch(addToGlobalFilterOptions(updatedFilters));
+            }
+            if (notFoundFilters.length) {
+                dispatch(markNotFoundGlobalFiltersAsDeleted(notFoundFilters, tableUuid, tableType));
+            }
+        };
 
-            return validSelectedFilters;
-        },
-        [dispatch, snackError]
-    );
-
-    const onChange = useCallback(
-        (selectedFilters: GlobalFilter[]) => {
-            // call promise to check the existence of generic filters and remove missing ones from the favorite list
-            checkSelectedFiltersPromise(selectedFilters).then((validSelectedGlobalFilters) => {
-                setSelectedGlobalFilters(validSelectedGlobalFilters);
-                // propagate only valid selected filters
-                handleChange(validSelectedGlobalFilters);
-            });
-        },
-        [checkSelectedFiltersPromise, setSelectedGlobalFilters, handleChange]
-    );
+        checkSelectedFilters().catch((error) => console.error(error));
+    }, [dispatch, selectedGlobalFilters, tableType, tableUuid, updateGenericFilter]);
 
     const value = useMemo(
         () => ({
@@ -124,22 +127,27 @@ export default function GlobalFilterProvider({
             setDirectoryItemSelectorOpen,
             filterGroupSelected,
             setFilterGroupSelected,
+            globalFilterOptions,
             selectedGlobalFilters,
-            setSelectedGlobalFilters,
-            onChange,
+            recentGlobalFilters,
             filterCategories,
             genericFiltersStrictMode,
-            equipmentTypes,
+            filterableEquipmentTypes,
+            tableType,
+            tableUuid,
         }),
         [
             openedDropdown,
             directoryItemSelectorOpen,
             filterGroupSelected,
+            globalFilterOptions,
             selectedGlobalFilters,
-            onChange,
+            recentGlobalFilters,
             filterCategories,
             genericFiltersStrictMode,
-            equipmentTypes,
+            filterableEquipmentTypes,
+            tableType,
+            tableUuid,
         ]
     );
 

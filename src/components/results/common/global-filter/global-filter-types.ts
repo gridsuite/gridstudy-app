@@ -16,9 +16,10 @@ import type { UUID } from 'node:crypto';
 
 // data sent to the back
 export interface GlobalFilters {
-    nominalV?: string[];
+    voltageRanges?: number[][];
     countryCode?: string[];
-    genericFilter?: string[]; // UUIDs of the generic filters
+    genericFilter?: string[]; // UUIDs of the generic filters (excluding voltage levels and substations)
+    substationOrVoltageLevelFilter?: string[]; // UUIDs of the voltage levels and substations generic filters
     // substation property filters fetched from user configuration
     substationProperty?: Object; // Map<string, string[]>;
     limitViolationsTypes?: LimitTypes[];
@@ -26,14 +27,23 @@ export interface GlobalFilters {
 
 // complete individual global filter
 export interface GlobalFilter {
+    id: string;
     label: string;
     filterType: string;
     filterSubtype?: string; // when filterType needs more precise subcategories
     filterTypeFromMetadata?: string; // only useful for generic filters
-    recent?: boolean;
+    unselectedDate?: number;
     uuid?: UUID; // only useful for generic filters
     equipmentType?: string; // only useful for generic filters
     path?: string; // only useful for generic filters
+    minValue?: number; // only useful for voltage level filters
+    maxValue?: number; // only useful for voltage level filters
+    deleted?: boolean; // only useful for generic filters
+}
+
+export interface RecentGlobalFilter {
+    id: string;
+    unselectedDate: number;
 }
 
 export interface ResultsQueryParams {

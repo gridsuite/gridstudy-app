@@ -14,10 +14,10 @@ import {
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { EQUIPMENT_INFOS_TYPES, type EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from '../../utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 
 // TODO fetchNetworkElementInfos has no type
 type FetchResponse = Awaited<ReturnType<typeof fetchNetworkElementInfos>>;
@@ -31,7 +31,7 @@ export interface UseFormSearchCopy {
 
 export function useFormSearchCopy(
     setFormValues: (response: FetchResponse) => void,
-    elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES
+    elementType: EquipmentType | ExtendedEquipmentType
 ): UseFormSearchCopy {
     const intl = useIntl();
     const { snackInfo, snackError } = useSnackMessage();

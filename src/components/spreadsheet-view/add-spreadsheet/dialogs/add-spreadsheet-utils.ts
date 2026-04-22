@@ -17,17 +17,17 @@ import {
 import { Dispatch } from 'redux';
 import { snackWithFallback, UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import {
-    addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
-    saveSpreadsheetGlobalFilters,
+    initOrUpdateGlobalFilters,
     setAddedSpreadsheetTab,
+    updateColumnFiltersAction,
     updateTableDefinition,
 } from 'redux/actions';
-import { FilterConfig, SortConfig, SortWay } from 'types/custom-aggrid-types';
+import { FilterConfig, SortConfig, SortWay, TableType } from 'types/custom-aggrid-types';
 import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
-import { GlobalFilterSpreadsheetState, SpreadsheetFilterState, TableSortConfig } from 'redux/reducer';
+import { TableSortConfig } from '../../../../types/custom-aggrid-types';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
 import { GlobalFilter } from '../../../results/common/global-filter/global-filter-types';
 import { ResetNodeAliasCallback } from '../../hooks/use-node-aliases';
@@ -58,10 +58,12 @@ export const mapColDefToDto = (colDef: ColumnDefinition, colFilter?: FilterConfi
     precision: colDef.precision,
     formula: colDef.formula,
     dependencies: colDef.dependencies?.length ? JSON.stringify(colDef.dependencies) : undefined,
-    filterDataType: colFilter?.dataType,
-    filterType: colFilter?.type,
-    filterValue: colFilter?.value ? JSON.stringify(colFilter.value) : undefined,
-    filterTolerance: colFilter?.tolerance,
+    columnFilterInfos: {
+        filterDataType: colFilter?.dataType,
+        filterType: colFilter?.type,
+        filterValue: colFilter?.value ? JSON.stringify(colFilter.value) : undefined,
+        filterTolerance: colFilter?.tolerance,
+    },
 });
 
 export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
@@ -72,10 +74,12 @@ export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
         type: column.type,
         precision: column?.precision,
         formula: column.formula,
-        filterDataType: column.filterDataType,
-        filterTolerance: column.filterTolerance,
-        filterType: column.filterType,
-        filterValue: column.filterValue,
+        columnFilterInfos: {
+            filterDataType: column.columnFilterInfos?.filterDataType,
+            filterTolerance: column.columnFilterInfos?.filterTolerance,
+            filterType: column.columnFilterInfos?.filterType,
+            filterValue: column.columnFilterInfos?.filterValue,
+        },
         visible: column.visible,
         [COLUMN_DEPENDENCIES]: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
     }));
@@ -83,13 +87,18 @@ export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
 
 export const extractColumnsFilters = (columns: ColumnDefinitionDto[]): FilterConfig[] => {
     return columns
-        .filter((col) => col.filterDataType && col.filterType && col.filterValue)
+        .filter(
+            (col) =>
+                col.columnFilterInfos?.filterDataType &&
+                col.columnFilterInfos?.filterType &&
+                col.columnFilterInfos?.filterValue
+        )
         .map((col) => ({
             column: col.id,
-            dataType: col.filterDataType,
-            tolerance: col.filterTolerance,
-            type: col.filterType,
-            value: JSON.parse(col.filterValue ?? ''),
+            dataType: col.columnFilterInfos?.filterDataType,
+            tolerance: col.columnFilterInfos?.filterTolerance,
+            type: col.columnFilterInfos?.filterType,
+            value: JSON.parse(col.columnFilterInfos?.filterValue ?? ''),
         }));
 };
 
@@ -133,8 +142,8 @@ const handleSuccess = (
             const columnsFilters = extractColumnsFilters(model.columns);
             const formattedGlobalFilters = model.globalFilters ?? [];
             dispatch(updateTableDefinition(newTableDefinition));
-            dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
-            dispatch(saveSpreadsheetGlobalFilters(uuid, formattedGlobalFilters));
+            dispatch(updateColumnFiltersAction(TableType.Spreadsheet, uuid, columnsFilters));
+            dispatch(initOrUpdateGlobalFilters(uuid, formattedGlobalFilters));
             dispatch(
                 addSortForNewSpreadsheet(uuid, [
                     {
@@ -204,8 +213,8 @@ export const addNewSpreadsheet = ({
 
 export interface ProcessedCollectionData {
     tableDefinitions: SpreadsheetTabDefinition[];
-    tablesFilters: SpreadsheetFilterState;
-    tableGlobalFilters: GlobalFilterSpreadsheetState;
+    tablesFilters: Record<string, FilterConfig[]>;
+    tableGlobalFilters: Record<UUID, GlobalFilter[]>;
     tablesSorts: TableSortConfig;
 }
 

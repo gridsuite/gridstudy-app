@@ -11,43 +11,34 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
     getLoadFlowDefaultLimitReductions,
     getLoadFlowProviders,
     getLoadFlowSpecificParametersDescription,
 } from 'services/loadflow';
-import {
-    getDefaultLoadFlowProvider,
-    getLoadFlowParameters,
-    setLoadFlowParameters,
-    setLoadFlowProvider,
-} from 'services/study/loadflow';
-import {
-    fetchDefaultSecurityAnalysisProvider,
-    getSecurityAnalysisParameters,
-    setSecurityAnalysisParameters,
-    updateSecurityAnalysisProvider,
-} from 'services/study/security-analysis';
-import {
-    fetchDefaultSensitivityAnalysisProvider,
-    getSensitivityAnalysisParameters,
-} from 'services/study/sensitivity-analysis';
+import { getLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
+import { getSecurityAnalysisParameters, setSecurityAnalysisParameters } from 'services/study/security-analysis';
+import { getSensitivityAnalysisParameters } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
-import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
-import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
-import { closePanel } from 'redux/slices/workspace-slice';
 import type { UUID } from 'node:crypto';
 import {
+    BuildStatus,
     ComputingType,
+    DynamicMarginCalculationInline,
+    DynamicSecurityAnalysisInline,
+    DynamicSimulationInline,
+    fetchDynamicMarginCalculationProviders,
+    fetchDynamicSecurityAnalysisProviders,
+    fetchDynamicSimulationProviders,
     fetchSecurityAnalysisProviders,
     getSecurityAnalysisDefaultLimitReductions,
     LoadFlowParametersInline,
@@ -69,6 +60,23 @@ import {
     setShortCircuitParameters,
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
+import { fetchContingencyCount } from '../services/study';
+import {
+    fetchDynamicMarginCalculationParameters,
+    updateDynamicMarginCalculationParameters,
+} from '../services/study/dynamic-margin-calculation';
+import {
+    fetchDynamicSecurityAnalysisParameters,
+    updateDynamicSecurityAnalysisParameters,
+} from '../services/study/dynamic-security-analysis';
+import { NodeType } from './graph/tree-node.type';
+import {
+    fetchDynamicSimulationParameters,
+    updateDynamicSimulationParameters,
+} from '../services/study/dynamic-simulation';
+import { fetchVoltageLevelsMapInfos } from '../services/study/network';
+import { fetchAllCountries } from '../services/study/network-map';
+import { evaluateJsonFilter } from '../services/study/filter';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -77,6 +85,7 @@ enum TAB_VALUES {
     shortCircuitParamsTabValue = 'SHORT_CIRCUIT',
     dynamicSimulationParamsTabValue = 'DYNAMIC_SIMULATION',
     dynamicSecurityAnalysisParamsTabValue = 'DYNAMIC_SECURITY_ANALYSIS',
+    dynamicMarginCalculationParamsTabValue = 'DYNAMIC_MARGIN_CALCULATION',
     voltageInitParamsTabValue = 'VOLTAGE_INITIALIZATION',
     stateEstimationTabValue = 'STATE_ESTIMATION',
     pccMinTabValue = 'PCC_MIN',
@@ -88,15 +97,16 @@ const ParametersTabs: FunctionComponent = () => {
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode ?? null);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
+    const currentNodeBuildStatus = useSelector((state: AppState) => state.currentTreeNode?.data.globalBuildStatus);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-
+    const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
-    const [pendingClosePanelId, setPendingClosePanelId] = useState<UUID | null>(null);
 
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -105,6 +115,9 @@ const ParametersTabs: FunctionComponent = () => {
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
+    const dynamicMarginCalculationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.DynamicMarginCalculation
+    );
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
@@ -137,14 +150,13 @@ const ParametersTabs: FunctionComponent = () => {
         studyUuid,
         ComputingType.LOAD_FLOW,
         OptionalServicesStatus.Up,
-        getLoadFlowProviders,
-        null,
-        getDefaultLoadFlowProvider,
-        setLoadFlowProvider,
-        getLoadFlowParameters,
-        setLoadFlowParameters,
-        getLoadFlowSpecificParametersDescription,
-        getLoadFlowDefaultLimitReductions
+        {
+            backendFetchProviders: getLoadFlowProviders,
+            backendFetchParameters: getLoadFlowParameters,
+            backendUpdateParameters: setLoadFlowParameters,
+            backendFetchSpecificParametersDescription: getLoadFlowSpecificParametersDescription,
+            backendFetchDefaultLimitReductions: getLoadFlowDefaultLimitReductions,
+        }
     );
     useParametersNotification(ComputingType.LOAD_FLOW, OptionalServicesStatus.Up, loadFlowParametersBackend);
 
@@ -153,19 +165,29 @@ const ParametersTabs: FunctionComponent = () => {
         studyUuid,
         ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
-        fetchSecurityAnalysisProviders,
-        null,
-        fetchDefaultSecurityAnalysisProvider,
-        updateSecurityAnalysisProvider,
-        getSecurityAnalysisParameters,
-        setSecurityAnalysisParameters,
-        undefined,
-        getSecurityAnalysisDefaultLimitReductions
+        {
+            backendFetchProviders: fetchSecurityAnalysisProviders,
+            backendFetchParameters: getSecurityAnalysisParameters,
+            backendUpdateParameters: setSecurityAnalysisParameters,
+            backendFetchDefaultLimitReductions: getSecurityAnalysisDefaultLimitReductions,
+        }
     );
     useParametersNotification(
         ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
         securityAnalysisParametersBackend
+    );
+    const fetchContingencyCountBackend = useCallback(
+        (contingencyLists: UUID[] | null, abortSignal: AbortSignal) => {
+            return fetchContingencyCount(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                contingencyLists,
+                abortSignal
+            );
+        },
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
 
     const sensitivityAnalysisBackend = useParametersBackend(
@@ -173,11 +195,10 @@ const ParametersTabs: FunctionComponent = () => {
         studyUuid,
         ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability,
-        fetchSensitivityAnalysisProviders,
-        null,
-        fetchDefaultSensitivityAnalysisProvider,
-        null,
-        getSensitivityAnalysisParameters
+        {
+            backendFetchProviders: fetchSensitivityAnalysisProviders,
+            backendFetchParameters: getSensitivityAnalysisParameters,
+        }
     );
     useParametersNotification(
         ComputingType.SENSITIVITY_ANALYSIS,
@@ -189,32 +210,69 @@ const ParametersTabs: FunctionComponent = () => {
         user,
         studyUuid,
         ComputingType.SHORT_CIRCUIT,
-        OptionalServicesStatus.Up,
-        null,
-        null,
-        null,
-        null,
-        getShortCircuitParameters,
-        setShortCircuitParameters,
-        getShortCircuitSpecificParametersDescription
+        shortCircuitAvailability,
+        {
+            backendFetchParameters: getShortCircuitParameters,
+            backendUpdateParameters: setShortCircuitParameters,
+            backendFetchSpecificParametersDescription: getShortCircuitSpecificParametersDescription,
+        }
     );
-    useParametersNotification(ComputingType.SHORT_CIRCUIT, OptionalServicesStatus.Up, shortCircuitParametersBackend);
+    useParametersNotification(ComputingType.SHORT_CIRCUIT, shortCircuitAvailability, shortCircuitParametersBackend);
+
+    const dynamicSimulationParametersBackend = useParametersBackend(
+        user,
+        studyUuid,
+        ComputingType.DYNAMIC_SIMULATION,
+        dynamicSimulationAvailability,
+        {
+            backendFetchProviders: fetchDynamicSimulationProviders,
+            backendFetchParameters: fetchDynamicSimulationParameters,
+            backendUpdateParameters: updateDynamicSimulationParameters,
+        }
+    );
+    useParametersNotification(
+        ComputingType.DYNAMIC_SIMULATION,
+        dynamicSimulationAvailability,
+        dynamicSimulationParametersBackend
+    );
+
+    const dynamicSecurityAnalysisParametersBackend = useParametersBackend(
+        user,
+        studyUuid,
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        {
+            backendFetchProviders: fetchDynamicSecurityAnalysisProviders,
+            backendFetchParameters: fetchDynamicSecurityAnalysisParameters,
+            backendUpdateParameters: updateDynamicSecurityAnalysisParameters,
+        }
+    );
+    useParametersNotification(
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        dynamicSecurityAnalysisParametersBackend
+    );
+
+    const dynamicMarginCalculationParametersBackend = useParametersBackend(
+        user,
+        studyUuid,
+        ComputingType.DYNAMIC_MARGIN_CALCULATION,
+        dynamicMarginCalculationAvailability,
+        {
+            backendFetchProviders: fetchDynamicMarginCalculationProviders,
+            backendFetchParameters: fetchDynamicMarginCalculationParameters,
+            backendUpdateParameters: updateDynamicMarginCalculationParameters,
+        }
+    );
+    useParametersNotification(
+        ComputingType.DYNAMIC_MARGIN_CALCULATION,
+        dynamicMarginCalculationAvailability,
+        dynamicMarginCalculationParametersBackend
+    );
 
     const pccMinParameters = useGetPccMinParameters();
     const voltageInitParameters = useGetVoltageInitParameters();
     const useStateEstimationParameters = useGetStateEstimationParameters();
-
-    // Listen for panel close requests from panel header
-    useEffect(() => {
-        const handleCloseRequest = (event: Event) => {
-            const customEvent = event as CustomEvent<UUID>;
-            setPendingClosePanelId(customEvent.detail);
-            setIsLeavingPopupOpen(true);
-        };
-
-        globalThis.addEventListener('parametersPanel:requestClose', handleCloseRequest);
-        return () => globalThis.removeEventListener('parametersPanel:requestClose', handleCloseRequest);
-    }, []);
 
     useEffect(() => {
         if (attemptedLeaveParametersTabIndex !== null) {
@@ -234,26 +292,19 @@ const ParametersTabs: FunctionComponent = () => {
             setTabValue(newValue);
         }
     };
-
     const handlePopupChangeTab = useCallback(() => {
         if (nextTabValue) {
             setTabValue(nextTabValue);
             setNextTabValue(undefined);
         } else if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(confirmLeaveParametersTab());
-        } else if (pendingClosePanelId !== null) {
-            // User confirmed close - actually close the panel
-            dispatch(closePanel(pendingClosePanelId));
-            setPendingClosePanelId(null);
         }
         dispatch(setDirtyComputationParameters(false));
         setIsLeavingPopupOpen(false);
-    }, [nextTabValue, attemptedLeaveParametersTabIndex, pendingClosePanelId, dispatch]);
-
+    }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
     const handleLeavingPopupClose = useCallback(() => {
         setIsLeavingPopupOpen(false);
         setNextTabValue(undefined);
-        setPendingClosePanelId(null);
 
         if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(cancelLeaveParametersTab());
@@ -268,7 +319,8 @@ const ParametersTabs: FunctionComponent = () => {
                         oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
                         oldValue === TAB_VALUES.pccMinTabValue ||
                         oldValue === TAB_VALUES.dynamicSimulationParamsTabValue ||
-                        oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue)) ||
+                        oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue ||
+                        oldValue === TAB_VALUES.dynamicMarginCalculationParamsTabValue)) ||
                 oldValue === TAB_VALUES.stateEstimationTabValue
             ) {
                 return TAB_VALUES.securityAnalysisParamsTabValue;
@@ -294,6 +346,11 @@ const ParametersTabs: FunctionComponent = () => {
                     <SecurityAnalysisParametersInline
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
+                        fetchContingencyCount={fetchContingencyCountBackend}
+                        isBuiltCurrentNode={
+                            currentNodeBuildStatus !== BuildStatus.NOT_BUILT &&
+                            currentNodeBuildStatus !== BuildStatus.BUILDING
+                        }
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
                     />
@@ -306,6 +363,12 @@ const ParametersTabs: FunctionComponent = () => {
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
+                        globalBuildStatus={
+                            // to avoid bad current node globalBuildStatus at root network change
+                            // pass not built status by defaut to avoid unwanted fetch
+                            isTreeModelUpToDate ? currentNode?.data?.globalBuildStatus : BuildStatus.NOT_BUILT
+                        }
+                        isRootNode={currentNode?.type === NodeType.ROOT}
                         isDeveloperMode={isDeveloperMode}
                     />
                 );
@@ -315,7 +378,6 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
                         parametersBackend={shortCircuitParametersBackend}
-                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case TAB_VALUES.pccMinTabValue:
@@ -327,9 +389,40 @@ const ParametersTabs: FunctionComponent = () => {
                     />
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
-                return <DynamicSimulationParameters user={user} setHaveDirtyFields={setDirtyFields} />;
+                if (!studyUuid || !currentNodeUuid || !currentRootNetworkUuid) {
+                    return null;
+                }
+                return (
+                    <DynamicSimulationInline
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setDirtyFields}
+                        parametersBackend={dynamicSimulationParametersBackend}
+                        voltageLevelsFetcher={() =>
+                            fetchVoltageLevelsMapInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid)
+                        }
+                        countriesFetcher={() => fetchAllCountries(studyUuid, currentNodeUuid, currentRootNetworkUuid)}
+                        evaluateFilterFetcher={(expertFilter) =>
+                            evaluateJsonFilter(studyUuid, currentNodeUuid, currentRootNetworkUuid, expertFilter)
+                        }
+                    />
+                );
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
-                return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setDirtyFields} />;
+                return (
+                    <DynamicSecurityAnalysisInline
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setDirtyFields}
+                        parametersBackend={dynamicSecurityAnalysisParametersBackend}
+                    />
+                );
+            case TAB_VALUES.dynamicMarginCalculationParamsTabValue:
+                return (
+                    <DynamicMarginCalculationInline
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setDirtyFields}
+                        parametersBackend={dynamicMarginCalculationParametersBackend}
+                    />
+                );
+
             case TAB_VALUES.voltageInitParamsTabValue:
                 return (
                     <VoltageInitParametersInLine
@@ -363,12 +456,20 @@ const ParametersTabs: FunctionComponent = () => {
         setDirtyFields,
         isDeveloperMode,
         securityAnalysisParametersBackend,
+        fetchContingencyCountBackend,
+        currentNodeBuildStatus,
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,
+        isTreeModelUpToDate,
+        currentNode?.data?.globalBuildStatus,
+        currentNode?.type,
         shortCircuitParametersBackend,
         pccMinParameters,
         user,
+        dynamicSimulationParametersBackend,
+        dynamicSecurityAnalysisParametersBackend,
+        dynamicMarginCalculationParametersBackend,
         voltageInitParameters,
         useStateEstimationParameters,
         networkVisualizationsParameters,
@@ -432,6 +533,13 @@ const ParametersTabs: FunctionComponent = () => {
                                     disabled={dynamicSecurityAnalysisAvailability !== OptionalServicesStatus.Up}
                                     label={<FormattedMessage id="DynamicSecurityAnalysis" />}
                                     value={TAB_VALUES.dynamicSecurityAnalysisParamsTabValue}
+                                />
+                            ) : null}
+                            {isDeveloperMode ? (
+                                <Tab
+                                    disabled={dynamicMarginCalculationAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="DynamicMarginCalculation" />}
+                                    value={TAB_VALUES.dynamicMarginCalculationParamsTabValue}
                                 />
                             ) : null}
                             <Tab

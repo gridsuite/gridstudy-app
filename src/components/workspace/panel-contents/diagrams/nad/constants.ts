@@ -19,7 +19,7 @@ export const NAD_SLD_CONSTANTS = {
     // Chip bar dimensions (in pixels) for calculating visible chip limit
     CHIP_WIDTH: 90, // Approximate width of a single chip
     COUNTER_CHIP_WIDTH: 40, // Width of the "+N" overflow counter chip
-    BUTTON_WIDTH: 30, // Width of action buttons (hide/show, remove, reorganip bar dimensions (in pixels) for calculating visible chip limitze)
+    BUTTON_WIDTH: 15, // Width of action buttons (hide/show, remove, reorganip bar dimensions (in pixels) for calculating visible chip limitze)
 
     // Layout positioning (relative values)
     PANEL_DEFAULT_WIDTH: 0.35,

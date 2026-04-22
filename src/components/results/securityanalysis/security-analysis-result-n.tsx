@@ -13,7 +13,6 @@ import {
 } from './security-analysis.type';
 import { IntlShape, useIntl } from 'react-intl';
 import { SecurityAnalysisTable } from './security-analysis-table';
-import { convertSide } from '../loadflow/load-flow-result-utils';
 import { translateLimitNameBackToFront } from '../common/utils';
 import { MAX_INT32 } from 'services/utils';
 
@@ -21,19 +20,18 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
     result,
     isLoadingResult,
     columnDefs,
+    computationSubType,
 }) => {
     const intl: IntlShape = useIntl();
 
     const rows = useMemo(() => {
-        return result?.length // check if it's not Page object
-            ? (result?.map((preContingencyResult: PreContingencyResult) => {
+        return result
+            ? result.map((preContingencyResult: PreContingencyResult) => {
                   const { limitViolation, subjectId } = preContingencyResult;
                   return {
                       subjectId: subjectId,
                       locationId: limitViolation?.locationId,
-                      limitType: intl.formatMessage({
-                          id: limitViolation?.limitType,
-                      }),
+                      limitType: limitViolation?.limitType,
                       // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                       acceptableDuration:
                           limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
@@ -41,7 +39,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                       limit: limitViolation?.limit,
                       value: limitViolation?.value,
                       loading: limitViolation?.loading,
-                      side: convertSide(limitViolation?.side || '', intl),
+                      side: limitViolation?.side,
                       patlLoading: limitViolation?.patlLoading,
                       patlLimit: limitViolation?.patlLimit,
                       nextLimitName: translateLimitNameBackToFront(limitViolation?.nextLimitName, intl),
@@ -50,9 +48,16 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                               ? null
                               : limitViolation?.upcomingAcceptableDuration,
                   } as SecurityAnalysisNTableRow;
-              }) ?? [])
-            : [];
+              })
+            : undefined;
     }, [intl, result]);
 
-    return <SecurityAnalysisTable rows={rows} columnDefs={columnDefs} isLoadingResult={isLoadingResult} />;
+    return (
+        <SecurityAnalysisTable
+            rows={rows}
+            columnDefs={columnDefs}
+            isLoadingResult={isLoadingResult}
+            computationSubType={computationSubType}
+        />
+    );
 };

@@ -12,7 +12,7 @@ import { Dataset as DatasetIcon } from '@mui/icons-material';
 import { type TooltipIconButtonProps } from '../../../common/tooltip-icon-button';
 import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import type { AppState } from '../../../../redux/reducer';
+import type { AppState } from '../../../../redux/reducer.type';
 import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import PartialLoadingMenuItem from './PartialLoadingMenuItem';
 import { updateSpreadsheetParameters } from '../../../../services/study/spreadsheet';

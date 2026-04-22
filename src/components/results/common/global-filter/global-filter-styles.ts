@@ -5,31 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { cyan } from '@mui/material/colors';
+import { cyan, lime } from '@mui/material/colors';
 import { FilterType } from '../utils';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import { Theme, SxProps } from '@mui/material';
+import { GlobalFilter } from './global-filter-types';
 
-export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
-    let chipStyle;
-    switch (filterType) {
-        case FilterType.COUNTRY:
-            chipStyle = resultsGlobalFilterStyles.chipCountry;
-            break;
-        case FilterType.VOLTAGE_LEVEL:
-            chipStyle = resultsGlobalFilterStyles.chipVoltageLevel;
-            break;
-        case FilterType.GENERIC_FILTER:
-            chipStyle = resultsGlobalFilterStyles.chipGenericFilter;
-            break;
-        case FilterType.SUBSTATION_PROPERTY:
-            chipStyle = resultsGlobalFilterStyles.chipSubstationProperty;
-            break;
-    }
-    return mergeSx(resultsGlobalFilterStyles.chip, chipStyle);
+export const getResultsGlobalFiltersChipStyle = (element: GlobalFilter): SxProps<Theme> => {
+    return mergeSx(
+        resultsGlobalFilterStyles.chip,
+        element.deleted
+            ? resultsGlobalFilterStyles.chipNotFound
+            : FILTER_TYPE_STYLE_MAP[element.filterType as FilterType]
+    );
 };
 
 const AUTOCOMPLETE_WIDTH: number = 520;
-const POPPER_EXTRA_WIDTH: number = 250;
+const POPPER_EXTRA_WIDTH: number = 300;
 export const GLOBAL_FILTERS_CELL_HEIGHT: number = 400;
 export const IMPORT_FILTER_HEIGHT: number = 40;
 
@@ -68,6 +60,9 @@ export const resultsGlobalFilterStyles = {
         border: '1px solid',
         borderColor: theme.palette.divider,
     }),
+    cellTooltip: (theme) => ({
+        paddingLeft: theme.spacing(1),
+    }),
     cell: (theme) => ({
         borderLeft: '1px solid',
         borderColor: theme.palette.divider,
@@ -79,6 +74,24 @@ export const resultsGlobalFilterStyles = {
         fontSize: '1em',
         width: '100%',
         maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+    }),
+    selectedFiltersPanel: () => ({
+        overflowY: 'auto',
+        padding: 0,
+        maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+    }),
+    selectedFiltersSubGroup: (theme) => ({
+        display: 'block',
+        paddingTop: 1,
+        paddingBottom: 0,
+        color: theme.palette.text.secondary,
+    }),
+    selectedFiltersChips: (theme) => ({
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        color: theme.palette.text.secondary,
+        fontSize: '1em',
     }),
     importFilterButton: (theme) => ({
         color: theme.palette.text.secondary,
@@ -103,7 +116,7 @@ export const resultsGlobalFilterStyles = {
     chip: {
         '&.MuiChip-root': {
             borderRadius: '100px solid',
-            margin: '4px 2px 4px 2px',
+            margin: '1px 2px 1px 2px',
             padding: '0',
             color: 'white',
         },
@@ -145,6 +158,14 @@ export const resultsGlobalFilterStyles = {
             backgroundColor: `${cyan['700']}!important`,
         },
     },
+    chipSubstationOrVoltageLevel: {
+        '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
+            backgroundColor: `${lime['800']}!important`,
+        },
+        '&.MuiChip-root:hover, &.MuiChip-root:focus': {
+            backgroundColor: `${lime['900']}!important`,
+        },
+    },
     chipSubstationProperty: (theme) => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `${theme.palette.success.main}!important`,
@@ -153,4 +174,21 @@ export const resultsGlobalFilterStyles = {
             backgroundColor: `${theme.palette.success.dark}!important`,
         },
     }),
+    chipNotFound: (theme) => ({
+        '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
+            backgroundColor: `${theme.palette.error.main}!important`,
+        },
+        '&.MuiChip-root:hover, &.MuiChip-root:focus': {
+            backgroundColor: `${theme.palette.error.dark}!important`,
+        },
+        color: theme.palette.error.contrastText,
+    }),
 } as const satisfies MuiStyles;
+
+const FILTER_TYPE_STYLE_MAP: Partial<Record<FilterType, SxProps<Theme>>> = {
+    [FilterType.COUNTRY]: resultsGlobalFilterStyles.chipCountry,
+    [FilterType.VOLTAGE_LEVEL]: resultsGlobalFilterStyles.chipVoltageLevel,
+    [FilterType.GENERIC_FILTER]: resultsGlobalFilterStyles.chipGenericFilter,
+    [FilterType.SUBSTATION_OR_VL]: resultsGlobalFilterStyles.chipSubstationOrVoltageLevel,
+    [FilterType.SUBSTATION_PROPERTY]: resultsGlobalFilterStyles.chipSubstationProperty,
+};

@@ -5,30 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
-import { getRequestParamFromList } from '../utils';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import type { UUID } from 'node:crypto';
-import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-result-utils';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, GsLangUser } from '@gridsuite/commons-ui';
+import { SecurityAnalysisQueryParams } from '../../components/results/securityanalysis/security-analysis.type';
 
 export function startSecurityAnalysis(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    contingencyListUuids: UUID[]
+    currentRootNetworkUuid: UUID
 ): Promise<Response> {
     console.info(
         `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
-    // Add params to Url
-    const contingencyListsQueryParams = getRequestParamFromList(contingencyListUuids, 'contingencyListName');
-    const urlSearchParams = new URLSearchParams(contingencyListsQueryParams);
 
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/security-analysis/run?${urlSearchParams}`;
+    )}/security-analysis/run`;
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
@@ -47,7 +42,7 @@ export function fetchSecurityAnalysisResult(
     studyUuid: string,
     currentNodeUuid: string,
     currentRootNetworkUuid: string,
-    queryParams: any
+    queryParams: SecurityAnalysisQueryParams
 ) {
     console.info(`Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
@@ -55,21 +50,10 @@ export function fetchSecurityAnalysisResult(
         currentNodeUuid,
         currentRootNetworkUuid
     )}/security-analysis/result`;
+    const params = getSecurityAnalysisQueryParams(queryParams);
 
-    const { resultType, page, size, sort, filters, globalFilters } = queryParams || {};
-
-    const params = new URLSearchParams({ resultType });
-
-    sort?.map((value: any) => params.append('sort', `${value.colId},${value.sort}`));
-
-    if (filters?.length) {
-        params.append('filters', JSON.stringify(filters));
-    }
-    if (globalFilters && Object.keys(globalFilters).length > 0) {
-        params.append('globalFilters', JSON.stringify(globalFilters));
-    }
-
-    if (typeof page === 'number') {
+    const { page, size } = queryParams || {};
+    if (typeof page === 'number' && typeof size === 'number') {
         params.append('page', page.toString());
         params.append('size', size.toString());
     }
@@ -83,7 +67,7 @@ export function downloadSecurityAnalysisResultZippedCsv(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    queryParams: { resultType: RESULT_TYPE },
+    queryParams: SecurityAnalysisQueryParams,
     headers: string[] | undefined,
     enumValueTranslations: Record<string, string>,
     language: GsLangUser
@@ -96,10 +80,7 @@ export function downloadSecurityAnalysisResultZippedCsv(
         currentNodeUuid,
         currentRootNetworkUuid
     )}/security-analysis/result/csv`;
-
-    const { resultType } = queryParams || {};
-
-    const params = new URLSearchParams({ resultType });
+    const params = getSecurityAnalysisQueryParams(queryParams);
 
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
@@ -128,27 +109,6 @@ export function fetchSecurityAnalysisStatus(studyUuid: UUID, currentNodeUuid: UU
     return backendFetchText(url);
 }
 
-export function updateSecurityAnalysisProvider(studyUuid: UUID, newProvider: string) {
-    console.info('update security analysis provider');
-    const url = getStudyUrl(studyUuid) + '/security-analysis/provider';
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newProvider,
-    });
-}
-
-export function fetchDefaultSecurityAnalysisProvider() {
-    console.info('fetch default security analysis provider');
-    const url = PREFIX_STUDY_QUERIES + '/v1/security-analysis-default-provider';
-    console.debug(url);
-    return backendFetchText(url);
-}
-
 export function getSecurityAnalysisParameters(studyUuid: UUID) {
     console.info('get security analysis parameters');
     const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
@@ -168,4 +128,19 @@ export function setSecurityAnalysisParameters(studyUuid: UUID, newParams: any) {
         },
         body: newParams ? JSON.stringify(newParams) : null,
     });
+}
+
+function getSecurityAnalysisQueryParams(queryParams: SecurityAnalysisQueryParams) {
+    const { resultType, globalFilters, filters, sort } = queryParams;
+    const params = new URLSearchParams({ resultType });
+
+    sort?.forEach((value: any) => params.append('sort', `${value.colId},${value.sort}`));
+    if (filters?.length) {
+        params.append('filters', JSON.stringify(filters));
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        params.append('globalFilters', JSON.stringify(globalFilters));
+    }
+
+    return params;
 }

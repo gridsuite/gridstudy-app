@@ -11,7 +11,7 @@ import { CustomFormProvider, type MuiStyles, type UseStateBooleanReturn } from '
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import NodeConfigTable from './node-config-table';
 import type { UUID } from 'node:crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';

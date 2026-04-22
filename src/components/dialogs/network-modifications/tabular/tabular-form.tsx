@@ -15,9 +15,11 @@ import {
     DefaultCellRenderer,
     DirectoryItemSelector,
     ElementType,
+    EquipmentType,
     ErrorInput,
     fetchStudyMetadata,
     FieldErrorAlert,
+    getObjectId,
     LANG_FRENCH,
     type MuiStyles,
     type TreeViewFinderNodeProps,
@@ -31,7 +33,6 @@ import {
     TABULAR_PROPERTIES,
     TYPE,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
 import Papa from 'papaparse';
@@ -39,7 +40,7 @@ import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import DefinePropertiesDialog from './properties/define-properties-dialog';
 import { PropertiesFormType, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from './properties/property-utils';
 import {
@@ -55,7 +56,6 @@ import { ColDef } from 'ag-grid-community';
 import { BOOLEAN } from '../../../network/constants';
 import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
 import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
-import { getObjectId } from '../../../utils/utils';
 import { useFilterCsvGenerator } from './use-filter-csv-generator';
 import { usePrefilledModelGenerator } from './generation/use-prefilled-model-generator';
 import GeneratePrefilledModelDialog from './generation/generate-prefilled-model-dialog';
@@ -101,7 +101,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const csvFields = useMemo(() => {
         const fields =
             dialogMode === TabularModificationType.CREATION ? TABULAR_CREATION_FIELDS : TABULAR_MODIFICATION_FIELDS;
-        return fields[equipmentType] ?? [];
+        return fields[equipmentType as EquipmentType] ?? [];
     }, [equipmentType, dialogMode]);
 
     const handleTabularCreationParsingError = useCallback(
@@ -182,7 +182,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
 
             // For shunt compensators, display a warning message if maxSusceptance is set along with shuntCompensatorType or maxQAtNominalV
             if (
-                equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR &&
+                equipmentType === EquipmentType.SHUNT_COMPENSATOR &&
                 results.data.some(
                     (creation) =>
                         creation.maxSusceptance != null &&
@@ -229,7 +229,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
 
             // For shunt compensators, display a warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
             if (
-                equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR &&
+                equipmentType === EquipmentType.SHUNT_COMPENSATOR &&
                 results.data.some(
                     (modification) =>
                         modification.maxSusceptance != null &&
@@ -346,11 +346,20 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             Papa.parse(selectedFile as unknown as File, {
                 header: true,
                 skipEmptyLines: true,
-                dynamicTyping: true,
+                dynamicTyping: (fieldName: string) => {
+                    // "property_*" (user added property) columns should remain as strings
+                    return !fieldName.startsWith(PROPERTY_CSV_COLUMN_PREFIX);
+                },
                 comments: '#',
                 delimiter: language === LANG_FRENCH ? ';' : ',',
                 complete: handleComplete,
-                transform: (value) => transformIfFrenchNumber(value, language),
+                transform: (value: string, field: string | number) => {
+                    if (typeof field === 'string' && field.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
+                        // don't transform property_* columns (user added property), keep them string
+                        return value;
+                    }
+                    return transformIfFrenchNumber(value, language);
+                },
             });
         }
     }, [clearErrors, handleComplete, intl, selectedFile, selectedFileError, setValue, language, csvFields]);
@@ -358,7 +367,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const typesOptions = useMemo(() => {
         return Object.keys(
             dialogMode === TabularModificationType.CREATION ? TABULAR_CREATION_FIELDS : TABULAR_MODIFICATION_FIELDS
-        ).filter((type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]);
+        );
     }, [dialogMode]);
 
     const handleTypeChange = useCallback(() => {

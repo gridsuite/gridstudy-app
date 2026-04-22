@@ -7,6 +7,7 @@
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    AmpereAdornment,
     ColumnNumeric,
     ColumnText,
     DndColumn,
@@ -32,7 +33,6 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import { AmpereAdornment } from '../dialog-utils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import { isNodeBuilt } from '../../graph/util/model-functions';
@@ -64,7 +64,7 @@ export function LimitsSidePane({
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { getValues, subscribe, trigger } = useFormContext();
-    const limitsGroupFormName = useMemo((): string => `${name}.${CURRENT_LIMITS}`, [name]);
+    const limitsGroupFormName = `${name}.${CURRENT_LIMITS}`;
     const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
             {
@@ -182,20 +182,6 @@ export function LimitsSidePane({
         [currentNode, getValues]
     );
 
-    const PermanentLimitBox = useMemo(
-        () => (
-            <FloatInput
-                name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
-                label="PermanentCurrentLimitText"
-                adornment={AmpereAdornment}
-                previousValue={permanentCurrentLimitPreviousValue ?? undefined}
-                clearable={!disabled && clearableFields}
-                disabled={disabled}
-            />
-        ),
-        [clearableFields, disabled, limitsGroupFormName, permanentCurrentLimitPreviousValue]
-    );
-
     // Trigger all OLG_IS_DUPLICATE fields when change on applicability or name field
     useEffect(() => {
         const unsubscribeCallBack = subscribe({
@@ -258,7 +244,14 @@ export function LimitsSidePane({
                             />
                         </Grid>
                         <Grid item xs={4}>
-                            {PermanentLimitBox}
+                            <FloatInput
+                                name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
+                                label="PermanentCurrentLimitText"
+                                adornment={AmpereAdornment}
+                                previousValue={permanentCurrentLimitPreviousValue ?? undefined}
+                                clearable={!disabled && clearableFields}
+                                disabled={disabled}
+                            />
                         </Grid>
                     </Grid>
                     <ErrorInput InputField={FieldErrorAlert} name={`${name}.${OLG_IS_DUPLICATE}`} />

@@ -9,9 +9,9 @@ import { useCallback } from 'react';
 import { type SpreadsheetEquipmentsByNodes, type SpreadsheetEquipmentType } from '../types/spreadsheet.type';
 import type { UUID } from 'node:crypto';
 import { useDispatch, useSelector } from 'react-redux';
-import { type AppState } from '../../../redux/reducer';
+import { type AppState } from '../../../redux/reducer.type';
 import { loadEquipments, setSpreadsheetFetching } from '../../../redux/actions';
-import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from '../../../services/study/network';
 import { mapSpreadsheetEquipments } from '../../../utils/spreadsheet-equipments-mapper';
 import { EQUIPMENT_INFOS_TYPES } from '../../utils/equipment-types';
@@ -35,7 +35,7 @@ export function useFetchEquipment() {
                         nodeId,
                         currentRootNetworkUuid,
                         [],
-                        type,
+                        type as unknown as EquipmentType,
                         EQUIPMENT_INFOS_TYPES.TAB.type
                     );
                     fetcherPromises.push(promise);

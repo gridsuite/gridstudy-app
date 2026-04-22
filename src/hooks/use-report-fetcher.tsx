@@ -6,9 +6,9 @@
  */
 
 import { useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/reducer.type';
 import { useCallback, useMemo, useState } from 'react';
-import { fetchNodeReportLogs, fetchNodeSeverities, fetchParentNodesReport, fetchLogMatches } from '../services/study';
+import { fetchLogMatches, fetchNodeReportLogs, fetchNodeSeverities, fetchParentNodesReport } from '../services/study';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     MatchPosition,

@@ -17,7 +17,7 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useSnackMessage, ComputingType, useDebounce, snackWithFallback } from '@gridsuite/commons-ui';
+import { ComputingType, snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -26,19 +26,15 @@ import {
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import {
-    FilterType as AgGridFilterType,
-    PaginationType,
-    SensitivityAnalysisTab,
-    SortWay,
-} from '../../../types/custom-aggrid-types';
+import { PaginationType, SensitivityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { useSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;
@@ -48,7 +44,6 @@ export type PagedSensitivityAnalysisResultProps = {
     sensiKind: SensiKind;
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
-    globalFilters?: GlobalFilters;
 };
 
 function PagedSensitivityAnalysisResult({
@@ -59,7 +54,6 @@ function PagedSensitivityAnalysisResult({
     currentRootNetworkUuid,
     setCsvHeaders,
     setIsCsvButtonDisabled,
-    globalFilters,
 }: Readonly<PagedSensitivityAnalysisResultProps>) {
     const intl = useIntl();
 
@@ -73,7 +67,8 @@ function PagedSensitivityAnalysisResult({
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { filters } = useComputationColumnFilters(TableType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const globalFiltersFromState = useSelectedGlobalFilters(TableType.SensitivityAnalysis);
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SensitivityAnalysis,
         mappingTabs(sensiKind, nOrNkIndex) as SensitivityAnalysisTab
@@ -124,10 +119,6 @@ function PagedSensitivityAnalysisResult({
         [dispatchPagination]
     );
 
-    const onFilter = useCallback(() => {
-        dispatchPagination({ ...pagination, page: 0 });
-    }, [pagination, dispatchPagination]);
-
     const fetchFilterOptions = useCallback(() => {
         const selector = {
             tabSelection: SensitivityResultTabs[nOrNkIndex].id,
@@ -169,6 +160,7 @@ function PagedSensitivityAnalysisResult({
             return { ...elem, column: newColumn };
         });
         setIsLoading(true);
+        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
         fetchSensitivityAnalysisResult(
             studyUuid,
             nodeUuid,
@@ -196,10 +188,10 @@ function PagedSensitivityAnalysisResult({
         rowsPerPage,
         page,
         filters,
-        globalFilters,
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
+        globalFiltersFromState,
         snackError,
     ]);
 
@@ -214,19 +206,19 @@ function PagedSensitivityAnalysisResult({
             fetchFilterOptions();
             debouncedFetchResult();
         }
-    }, [sensiStatus, debouncedFetchResult, fetchFilterOptions, globalFilters]);
+    }, [sensiStatus, debouncedFetchResult, fetchFilterOptions, globalFiltersFromState]);
 
     return (
         <>
             <SensitivityAnalysisResult
-                result={result?.sensitivities || []}
+                result={result?.sensitivities ?? []}
                 nOrNkIndex={nOrNkIndex}
                 sensiKind={sensiKind}
-                onFilter={onFilter}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
                 setCsvHeaders={setCsvHeaders}
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}
+                computationSubType={mappingTabs(sensiKind, nOrNkIndex)}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

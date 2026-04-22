@@ -66,13 +66,9 @@ export type MenuBranchProps = {
     position: [number, number] | null;
     handleClose: () => void;
     handleViewInSpreadsheet: (type: EquipmentType, id: string) => void;
-    handleDeleteEquipment: (type: EquipmentType | null, id: string) => void;
-    handleOpenModificationDialog: (
-        id: string,
-        type: EquipmentType | null,
-        subtype: ExtendedEquipmentType | null
-    ) => void;
-    onOpenDynamicSimulationEventDialog?: (id: string, type: EquipmentType | null, dialogTitle: string) => void;
+    handleDeleteEquipment: (type: EquipmentType, id: string) => void;
+    handleOpenModificationDialog: (id: string, type: EquipmentType, subtype: ExtendedEquipmentType | null) => void;
+    onOpenDynamicSimulationEventDialog?: (id: string, type: EquipmentType, dialogTitle: string) => void;
     currentNode?: CurrentTreeNode;
     studyUuid?: UUID;
     currentRootNetworkUuid?: UUID | null;
@@ -362,7 +358,12 @@ const withOperatingStatusMenu =
                     )}
                     <CustomMenuItem
                         sx={styles.menuItem}
-                        onClick={() => handleDeleteEquipment(getCommonEquipmentType(equipmentType), equipment.id)}
+                        onClick={() => {
+                            const commonType = getCommonEquipmentType(equipmentType);
+                            if (commonType) {
+                                handleDeleteEquipment(commonType, equipment.id);
+                            }
+                        }}
                         disabled={!isNodeEditable}
                     >
                         <ListItemIcon>

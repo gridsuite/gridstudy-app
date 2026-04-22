@@ -9,7 +9,7 @@ import { Grid, Table, TableBody, TableContainer, TableRow } from '@mui/material'
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { LoadEquipmentInfos } from '../equipment-popover-type';
-import { getPropertyValue } from 'components/dialogs/network-modifications/common/properties/property-utils';
+import { getPropertyValue } from '@gridsuite/commons-ui';
 interface LoadPopoverContentProps {
     equipmentInfos: LoadEquipmentInfos;
 }

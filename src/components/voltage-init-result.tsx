@@ -11,7 +11,14 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { ComputingType, mergeSx, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentType,
+    mergeSx,
+    type MuiStyles,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,
@@ -34,11 +41,11 @@ import {
     VoltageInitResultProps,
     VoltageInitResultType,
 } from './voltage-init-result.type';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import RunningStatus from './utils/running-status';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { EQUIPMENT_TYPES } from './utils/equipment-types';
+import { TableType } from 'types/custom-aggrid-types';
 
 const styles = {
     container: {
@@ -84,12 +91,7 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
-    result = null,
-    status,
-    handleGlobalFilterChange,
-    globalFilterOptions,
-}) => {
+export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ result = null, status }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -279,6 +281,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         return undefined;
                     }}
                     overlayNoRowsTemplate={undefined}
+                    computationType={TableType.VoltageInit}
+                    computationSubType="Indicators"
                 />
             </>
         );
@@ -318,6 +322,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         return undefined;
                     }}
                     overlayNoRowsTemplate={undefined}
+                    computationType={TableType.VoltageInit}
+                    computationSubType="ReactiveSlacks"
                 />
             </>
         );
@@ -367,6 +373,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     return undefined;
                 }}
                 overlayNoRowsTemplate={undefined}
+                computationType={TableType.VoltageInit}
+                computationSubType="BusVoltages"
             />
         );
     }
@@ -388,18 +396,29 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                 <Box sx={styles.container}>
                     <Box sx={styles.tabs}>
                         <Tabs value={tabIndex} onChange={(_event, newTabIndex) => setTabIndex(newTabIndex)}>
-                            <Tab label={intl.formatMessage({ id: 'ReactiveSlacks' })} />
-                            <Tab label={intl.formatMessage({ id: 'Indicators' })} />
-                            <Tab label={intl.formatMessage({ id: 'BusVoltages' })} />
-                            <Tab label={intl.formatMessage({ id: 'ComputationResultsLogs' })} />
+                            <Tab
+                                label={intl.formatMessage({ id: 'ReactiveSlacks' })}
+                                data-testid="VoltageInitReactiveSlacksTab"
+                            />
+                            <Tab
+                                label={intl.formatMessage({ id: 'Indicators' })}
+                                data-testid="VoltageInitIndicatorsTab"
+                            />
+                            <Tab
+                                label={intl.formatMessage({ id: 'BusVoltages' })}
+                                data-testid="VoltageInitCalculatedVoltageProfileTab"
+                            />
+                            <Tab
+                                label={intl.formatMessage({ id: 'ComputationResultsLogs' })}
+                                data-testid="VoltageInitLogsTab"
+                            />
                         </Tabs>
                     </Box>
                     <Box sx={mergeSx(tabIndex === 0 || tabIndex === 2 ? styles.show : styles.hide)}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
-                            filters={globalFilterOptions}
-                            filterableEquipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            filterableEquipmentTypes={[EquipmentType.VOLTAGE_LEVEL]}
                             genericFiltersStrictMode={true}
+                            tableType={TableType.VoltageInit}
                         />
                     </Box>
                     <Box sx={styles.buttonApplyModifications}>
@@ -407,6 +426,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                             variant="outlined"
                             onClick={previewModifications}
                             disabled={!result?.modificationsGroupUuid || disableApplyModifications}
+                            data-testid="VoltageInitPreviewModificationsButton"
                         >
                             <FormattedMessage id="previewModifications" />
                         </Button>

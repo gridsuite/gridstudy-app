@@ -14,8 +14,7 @@ import {
     SWITCH_ID,
     TOPOLOGY_MODIFICATION_TABLE,
 } from '../../../../utils/field-constants';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
-import { filledTextField } from '../../../dialog-utils';
+import { CustomAGGrid, filledTextField } from '@gridsuite/commons-ui';
 import HeaderWithTooltip from './header-with-tooltip';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import ConnectionCellRenderer from './connection-cell-render';

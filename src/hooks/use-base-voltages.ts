@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo } from 'react';
-import { BaseVoltage, BaseVoltageConfig, fetchBaseVoltages } from '@gridsuite/commons-ui';
+import { useCallback, useEffect } from 'react';
+import { BaseVoltage, fetchBaseVoltages } from '@gridsuite/commons-ui';
 import { setBaseVoltageList } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/reducer.type';
 
 export const useBaseVoltages = () => {
     const dispatch = useDispatch();
@@ -22,23 +22,18 @@ export const useBaseVoltages = () => {
         }
     }, [dispatch, baseVoltages]);
 
-    const baseVoltagesConfig = useMemo((): BaseVoltageConfig[] => {
-        if (!baseVoltages) {
-            return [];
-        }
-        return baseVoltages.map(({ name, minValue, maxValue }) => ({ name, minValue, maxValue }));
-    }, [baseVoltages]);
-
-    const getBaseVoltage = useCallback(
+    const getBaseVoltageInterval = useCallback(
         (voltageValue: number): BaseVoltage | undefined => {
-            for (let interval of baseVoltages) {
-                if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
-                    return interval;
+            if (baseVoltages) {
+                for (let interval of baseVoltages) {
+                    if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
+                        return interval;
+                    }
                 }
             }
         },
         [baseVoltages]
     );
 
-    return { baseVoltages, getBaseVoltage, baseVoltagesConfig };
+    return { baseVoltages, getBaseVoltageInterval };
 };

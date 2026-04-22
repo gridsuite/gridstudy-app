@@ -9,15 +9,30 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     convertInputValue,
     convertOutputValue,
+    createConnectivityData,
     CustomFormProvider,
+    DeepNullable,
+    emptyProperties,
     EquipmentType,
+    FieldConstants,
     FieldType,
+    getBranchActiveReactivePowerEditData,
+    getBranchActiveReactivePowerEmptyFormData,
+    getBranchActiveReactivePowerValidationSchema,
+    getCon1andCon2WithPositionValidationSchema,
+    getConcatenatedProperties,
+    getConnectivityFormData,
+    getCont1Cont2WithPositionEmptyFormData,
+    getPropertiesFromModification,
+    modificationPropertiesSchema,
+    sanitizeString,
     snackWithFallback,
+    toModificationOperation,
+    toModificationProperties,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    ADDITIONAL_PROPERTIES,
     B1,
     B2,
     BUS_OR_BUSBAR_SECTION,
@@ -34,6 +49,7 @@ import {
     G1,
     G2,
     LIMITS,
+    LINE_SEGMENTS,
     MEASUREMENT_P1,
     MEASUREMENT_P2,
     MEASUREMENT_Q1,
@@ -47,12 +63,10 @@ import {
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
     VALIDITY,
-    VALUE,
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
 import { FieldErrors } from 'react-hook-form';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
@@ -80,35 +94,18 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
-import {
-    createConnectivityData,
-    getCon1andCon2WithPositionValidationSchema,
-    getConnectivityFormData,
-    getCont1Cont2WithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils';
-import {
-    getBranchActiveReactivePowerEditData,
-    getBranchActiveReactivePowerEmptyFormData,
-    getBranchActiveReactivePowerValidationSchema,
-} from '../../common/measurements/branch-active-reactive-power-form-utils';
 import { LineModificationDialogTab } from '../line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { LineModificationFormInfos } from './line-modification-type';
+import { LineModificationFormSchema } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
-import { toModificationOperation } from '../../../../utils/utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
+import { ComputedLineCharacteristics } from '../../../line-types-catalog/line-catalog.type';
+import { convertToLineSegmentInfos, SegmentFormData } from '../../../line-types-catalog/segment-utils';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -187,7 +184,9 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, getValues } = formMethods;
+    const { reset, setValue, getValues, watch } = formMethods;
+
+    const editSegmentsValue = watch(LINE_SEGMENTS);
 
     const fromEditDataToFormValues = useCallback(
         (lineModification: LineModificationInfos) => {
@@ -197,8 +196,14 @@ const LineModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: lineModification.equipmentName?.value ?? '',
                 [CONNECTIVITY]: {
-                    ...getConnectivityFormData(createConnectivityData(lineModification, 1), CONNECTIVITY_1),
-                    ...getConnectivityFormData(createConnectivityData(lineModification, 2), CONNECTIVITY_2),
+                    ...getConnectivityFormData(
+                        createConnectivityData(lineModification, 1),
+                        FieldConstants.CONNECTIVITY_1
+                    ),
+                    ...getConnectivityFormData(
+                        createConnectivityData(lineModification, 2),
+                        FieldConstants.CONNECTIVITY_2
+                    ),
                 },
                 ...getBranchActiveReactivePowerEditData(STATE_ESTIMATION, lineModification),
                 ...getCharacteristicsWithOutConnectivityFormData({
@@ -216,6 +221,7 @@ const LineModificationDialog = ({
                     lineModification[ENABLE_OLG_MODIFICATION]
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
+                [LINE_SEGMENTS]: lineModification.lineSegments,
             });
         },
         [reset]
@@ -228,12 +234,13 @@ const LineModificationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (line: LineModificationFormInfos) => {
+        (line: LineModificationFormSchema) => {
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
             const limits: OperationalLimitsGroupsFormSchema = line[LIMITS];
+            const segments = line[LINE_SEGMENTS];
             modifyLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -275,14 +282,15 @@ const LineModificationDialog = ({
                 connected1: connectivity1[CONNECTED],
                 connected2: connectivity2[CONNECTED],
                 properties: toModificationProperties(line),
-                p1MeasurementValue: stateEstimationData[MEASUREMENT_P1][VALUE],
+                p1MeasurementValue: stateEstimationData[MEASUREMENT_P1][FieldConstants.VALUE],
                 p1MeasurementValidity: stateEstimationData[MEASUREMENT_P1][VALIDITY],
-                q1MeasurementValue: stateEstimationData[MEASUREMENT_Q1][VALUE],
+                q1MeasurementValue: stateEstimationData[MEASUREMENT_Q1][FieldConstants.VALUE],
                 q1MeasurementValidity: stateEstimationData[MEASUREMENT_Q1][VALIDITY],
-                p2MeasurementValue: stateEstimationData[MEASUREMENT_P2][VALUE],
+                p2MeasurementValue: stateEstimationData[MEASUREMENT_P2][FieldConstants.VALUE],
                 p2MeasurementValidity: stateEstimationData[MEASUREMENT_P2][VALIDITY],
-                q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][VALUE],
+                q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][FieldConstants.VALUE],
                 q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
+                lineSegments: segments,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'LineModificationError' });
             });
@@ -311,7 +319,7 @@ const LineModificationDialog = ({
                         if (line) {
                             setLineToModify(line);
                             reset(
-                                (formValues: LineModificationFormInfos) => ({
+                                (formValues: LineModificationFormSchema) => ({
                                     ...formValues,
                                     ...{
                                         [LIMITS]: formValues?.limits[ENABLE_OLG_MODIFICATION]
@@ -328,7 +336,7 @@ const LineModificationDialog = ({
                                                       ),
                                               },
                                     },
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }),
                                 { keepDirty: true }
                             );
@@ -355,7 +363,7 @@ const LineModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const onValidationError = (errors: FieldErrors<LineModificationFormInfos>) => {
+    const onValidationError = (errors: FieldErrors<LineModificationFormSchema>) => {
         let tabsInError: number[] = [];
         if (errors?.[LIMITS] !== undefined) {
             tabsInError.push(LineModificationDialogTab.LIMITS_TAB);
@@ -392,7 +400,10 @@ const LineModificationDialog = ({
         setIsOpenLineTypesCatalogDialog(false);
     };
 
-    const handleLineSegmentsBuildSubmit = (data: any) => {
+    const handleLineSegmentsBuildSubmit = (
+        data: ComputedLineCharacteristics,
+        lineSegments: DeepNullable<SegmentFormData | null>[]
+    ) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
@@ -405,6 +416,7 @@ const LineModificationDialog = ({
         setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
+        setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
     };
 
     const headerAndTabs = (
@@ -466,6 +478,7 @@ const LineModificationDialog = ({
                             open={isOpenLineTypesCatalogDialog}
                             onClose={handleCloseLineTypesCatalogDialog}
                             onSave={handleLineSegmentsBuildSubmit}
+                            editData={editSegmentsValue}
                         />
                     </>
                 )}

@@ -17,8 +17,7 @@ import {
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
-import { CheckboxInput, FloatInput, SwitchInput } from '@gridsuite/commons-ui';
-import { VoltageAdornment } from '../../../dialog-utils';
+import { CheckboxInput, FloatInput, SwitchInput, VoltageAdornment } from '@gridsuite/commons-ui';
 import { useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';

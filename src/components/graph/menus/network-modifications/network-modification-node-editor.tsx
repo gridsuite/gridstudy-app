@@ -6,13 +6,23 @@
  */
 
 import {
+    ComposedModificationMetadata,
     ElementSaveDialog,
     ElementType,
+    EquipmentType,
+    ExcludedNetworkModifications,
+    fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
+    ModificationType,
+    NameHeaderProps,
     NetworkModificationMetadata,
+    NetworkModificationsTable,
+    NotificationsUrlKeys,
+    removeNullFields,
     snackWithFallback,
+    useNotificationsListener,
     usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -29,7 +39,9 @@ import BatteryCreationDialog from 'components/dialogs/network-modifications/batt
 import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import DeleteAttachingLineDialog from 'components/dialogs/network-modifications/delete-attaching-line/delete-attaching-line-dialog';
 import DeleteVoltageLevelOnLineDialog from 'components/dialogs/network-modifications/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
-import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import EquipmentDeletionDialog, {
+    EquipmentDeletionDtoWithId,
+} from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import GenerationDispatchDialog from 'components/dialogs/network-modifications/generation-dispatch/generation-dispatch-dialog';
 import GeneratorScalingDialog from 'components/dialogs/network-modifications/generator-scaling/generator-scaling-dialog';
 import GeneratorCreationDialog from 'components/dialogs/network-modifications/generator/creation/generator-creation-dialog';
@@ -55,7 +67,7 @@ import VoltageLevelModificationDialog from 'components/dialogs/network-modificat
 import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/creation/vsc-creation-dialog';
 import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications/network-modifications-menu';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
@@ -66,19 +78,15 @@ import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
-import { fetchNetworkModification } from '../../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
-    changeNetworkModificationOrder,
     fetchExcludedNetworkModifications,
     fetchNetworkModifications,
     stashModifications,
 } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
 import {
-    ExcludedNetworkModifications,
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
     MenuSection,
@@ -92,8 +100,6 @@ import ByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
-import NetworkModificationsTable from './network-modifications-table';
-import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
 import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
@@ -105,6 +111,8 @@ import {
     ModificationsStashingInProgressEventData,
     ModificationsUpdatingInProgressEventData,
     NotificationType,
+    parseEventData,
+    CommonStudyEventData,
 } from 'types/notification-types';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level/topology-modification/voltage-level-topology-modification-dialog';
@@ -113,15 +121,18 @@ import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications
 import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level/topology-creation/create-voltage-level-topology-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
+import { FetchStatus } from '../../../../services/utils.type';
+import { createBaseColumns, createRootNetworksColumns } from './network-modification-table/createColumns';
+import { ColumnDef } from '@tanstack/react-table';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
     'GROOVY_SCRIPT',
     'OPERATING_STATUS_MODIFICATION',
+    'COMPOSITE_MODIFICATION',
 ]);
 
 const isEditableModification = (modif: NetworkModificationMetadata) => {
@@ -148,6 +159,7 @@ const NetworkModificationNodeEditor = () => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isRootNode = currentNode?.type === NodeType.ROOT;
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
 
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -155,20 +167,19 @@ const NetworkModificationNodeEditor = () => {
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationMetadata[]>([]);
 
     const [isDragging, setIsDragging] = useState(false);
-    const [initialPosition, setInitialPosition] = useState<number | undefined>(undefined);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
-    const [editDataFetchStatus, setEditDataFetchStatus] = useState(FetchStatus.IDLE);
+    const [editDataFetchStatus, setEditDataFetchStatus] = useState<FetchStatus>(FetchStatus.IDLE);
     const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
     const [importDialogOpen, setImportDialogOpen] = useState(false);
     const [createCompositeModificationDialogOpen, setCreateCompositeModificationDialogOpen] = useState(false);
     const dispatch = useDispatch();
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [notificationMessageId, setNotificationMessageId] = useState('');
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
+    const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
     const { networkModificationsToCopy, copyInfos, copyNetworkModifications, cutNetworkModifications, cleanClipboard } =
         useCopiedNetworkModifications();
@@ -229,22 +240,35 @@ const NetworkModificationNodeEditor = () => {
         );
     }
 
-    function equipmentDeletionDialogWithDefaultParams(equipmentType: EQUIPMENT_TYPES) {
-        return (
-            <EquipmentDeletionDialog
-                onClose={handleCloseDialog}
-                onValidated={handleValidatedDialog}
-                currentNode={currentNode}
-                studyUuid={studyUuid}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                editData={editData}
-                isUpdate={isUpdate}
-                editDataFetchStatus={editDataFetchStatus}
-                equipmentType={equipmentType}
-                defaultIdValue={null}
-            />
-        );
+    function equipmentDeletionDialogWithDefaultParams(equipmentType: EquipmentType) {
+        if (currentNode && studyUuid && currentRootNetworkUuid) {
+            return (
+                <EquipmentDeletionDialog
+                    onClose={handleCloseDialog}
+                    onValidated={handleValidatedDialog}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    editData={editData as EquipmentDeletionDtoWithId}
+                    isUpdate={isUpdate}
+                    editDataFetchStatus={editDataFetchStatus}
+                    equipmentType={equipmentType}
+                />
+            );
+        } else {
+            return <></>;
+        }
     }
+
+    const equipmentDeletionSubItems = (equipmentType: EquipmentType) => {
+        return {
+            // We have a single deletion modification type, but we have a deletion menu item ID per equipment type
+            // (because we want to preset the equipment type in creation case)
+            id: equipmentType + '_DELETION_MENU_ITEM',
+            label: 'DeleteFromMenu',
+            action: () => equipmentDeletionDialogWithDefaultParams(equipmentType),
+        };
+    };
 
     const menuDefinition: MenuSection[] = [
         {
@@ -264,11 +288,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(SubstationModificationDialog),
                         },
-                        {
-                            id: 'DELETE_SUBSTATION',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.SUBSTATION),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.SUBSTATION),
                     ],
                 },
                 {
@@ -310,11 +330,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
                             action: () => withDefaultParams(MoveVoltageLevelFeederBaysDialog),
                         },
-                        {
-                            id: 'DELETE_VOLTAGE_LEVEL',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.VOLTAGE_LEVEL),
                     ],
                 },
             ],
@@ -336,11 +352,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(LineModificationDialog),
                         },
-                        {
-                            id: 'DELETE_LINE',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LINE),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.LINE),
                     ],
                 },
                 {
@@ -399,12 +411,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(TwoWindingsTransformerModificationDialog),
                         },
-                        {
-                            id: 'DELETE_TWO_WINDINGS_TRANSFORMER',
-                            label: 'DeleteContingencyList',
-                            action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.TWO_WINDINGS_TRANSFORMER),
                     ],
                 },
                 {
@@ -421,11 +428,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(VscModificationDialog),
                         },
-                        {
-                            id: 'DELETE_VSC',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.HVDC_LINE),
                     ],
                 },
                 {
@@ -442,11 +445,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(LccModificationDialog),
                         },
-                        {
-                            id: 'DELETE_LCC',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.HVDC_LINE),
                     ],
                 },
             ],
@@ -468,11 +467,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(GeneratorModificationDialog),
                         },
-                        {
-                            id: 'DELETE_GENERATOR',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.GENERATOR),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.GENERATOR),
                     ],
                 },
                 {
@@ -489,11 +484,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(BatteryModificationDialog),
                         },
-                        {
-                            id: 'DELETE_BATTERY',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.BATTERY),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.BATTERY),
                     ],
                 },
                 {
@@ -510,11 +501,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(LoadModificationDialog),
                         },
-                        {
-                            id: 'DELETE_LOAD',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LOAD),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.LOAD),
                     ],
                 },
                 {
@@ -531,11 +518,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'ModifyFromMenu',
                             action: () => withDefaultParams(ShuntCompensatorModificationDialog),
                         },
-                        {
-                            id: 'DELETE_SHUNT_COMPENSATOR',
-                            label: 'DeleteContingencyList',
-                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.SHUNT_COMPENSATOR),
                     ],
                 },
                 {
@@ -547,12 +530,7 @@ const NetworkModificationNodeEditor = () => {
                             label: 'menu.create',
                             action: () => withDefaultParams(StaticVarCompensatorCreationDialog),
                         },
-                        {
-                            id: 'DELETE_STATIC_VAR_COMPENSATOR',
-                            label: 'DeleteContingencyList',
-                            action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR),
-                        },
+                        equipmentDeletionSubItems(EquipmentType.STATIC_VAR_COMPENSATOR),
                     ],
                 },
             ],
@@ -818,68 +796,62 @@ const NetworkModificationNodeEditor = () => {
         modificationsToExclude,
     ]);
 
-    useEffect(() => {
-        if (isNodeDeletedNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce.eventData;
+    const handleEvent = useCallback(
+        (event: MessageEvent) => {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (!eventData) {
+                return;
+            }
+            if (isNodeDeletedNotification(eventData)) {
+                if (
+                    copyInfosRef.current &&
+                    eventData.headers.nodes.some((nodeId) => nodeId === copyInfosRef.current?.originNodeUuid)
+                ) {
+                    // Must clean modifications clipboard if the origin Node is removed
+                    cleanClipboard();
+                }
+            }
 
-            if (
-                copyInfosRef.current &&
-                studyUpdatedEventData.headers.nodes.some((nodeId) => nodeId === copyInfosRef.current?.originNodeUuid)
-            ) {
-                // Must clean modifications clipboard if the origin Node is removed
-                cleanClipboard();
+            if (isPendingModificationNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
+                if (eventData.headers.updateType === NotificationType.MODIFICATIONS_DELETING_IN_PROGRESS) {
+                    // deleting means removing from trashcan (stashed elements) so there is no network modification
+                    setDeleteInProgress(true);
+                } else {
+                    dispatch(setModificationsInProgress(true));
+                    setPendingState(true);
+                    manageNotification(eventData);
+                }
             }
-        }
+            // notify  finished action (success or error => we remove the loader)
+            // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
+            if (isModificationsUpdateFinishedNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
+                // fetch modifications because it must have changed
+                // Do not clear the modifications list, because currentNode is the concerned one
+                // this allows to append new modifications to the existing list.
+                dofetchNetworkModifications();
+                dofetchExcludedNetworkModifications();
+                dispatch(removeNotificationByNode([eventData.headers.parentNode, ...(eventData.headers.nodes ?? [])]));
+            }
+            if (isModificationsDeleteFinishedNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
+                setDeleteInProgress(false);
+                dofetchNetworkModifications();
+            }
+        },
+        [dispatch, dofetchNetworkModifications, manageNotification, cleanClipboard, dofetchExcludedNetworkModifications]
+    );
 
-        if (isPendingModificationNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce.eventData;
-            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
-                return;
-            }
-            if (studyUpdatedEventData.headers.updateType === NotificationType.MODIFICATIONS_DELETING_IN_PROGRESS) {
-                // deleting means removing from trashcan (stashed elements) so there is no network modification
-                setDeleteInProgress(true);
-            } else {
-                dispatch(setModificationsInProgress(true));
-                setPendingState(true);
-                manageNotification(studyUpdatedEventData);
-            }
-        }
-        // notify  finished action (success or error => we remove the loader)
-        // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-        if (isModificationsUpdateFinishedNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce.eventData;
-            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
-                return;
-            }
-            // fetch modifications because it must have changed
-            // Do not clear the modifications list, because currentNode is the concerned one
-            // this allows to append new modifications to the existing list.
-            dofetchNetworkModifications();
-            dofetchExcludedNetworkModifications();
-            dispatch(
-                removeNotificationByNode([
-                    studyUpdatedEventData.headers.parentNode,
-                    ...(studyUpdatedEventData.headers.nodes ?? []),
-                ])
-            );
-        }
-        if (isModificationsDeleteFinishedNotification(studyUpdatedForce.eventData)) {
-            const studyUpdatedEventData = studyUpdatedForce.eventData;
-            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
-                return;
-            }
-            setDeleteInProgress(false);
-            dofetchNetworkModifications();
-        }
-    }, [
-        dispatch,
-        dofetchNetworkModifications,
-        manageNotification,
-        studyUpdatedForce,
-        cleanClipboard,
-        dofetchExcludedNetworkModifications,
-    ]);
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleEvent,
+    });
 
     const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] = useState(false);
 
@@ -994,17 +966,14 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
-    const selectedModificationsIds = useCallback(() => {
-        const allModificationsIds = modifications.map((m) => m.uuid);
-        // sort the selected modifications in the same order as they appear in the whole modifications list
-        return selectedNetworkModifications
-            .sort((a, b) => allModificationsIds.indexOf(a.uuid) - allModificationsIds.indexOf(b.uuid))
-            .map((m) => m.uuid);
-    }, [modifications, selectedNetworkModifications]);
+    const selectedModificationsIds = useMemo(
+        () => selectedNetworkModifications.map((m) => m.uuid),
+        [selectedNetworkModifications]
+    );
 
     const doCutModifications = useCallback(() => {
         cutNetworkModifications({
-            networkModificationUuids: selectedModificationsIds(),
+            networkModificationUuids: selectedModificationsIds,
             copyInfos: {
                 copyType: NetworkModificationCopyType.MOVE,
                 originStudyUuid: studyUuid ?? undefined,
@@ -1015,7 +984,7 @@ const NetworkModificationNodeEditor = () => {
 
     const doCopyModifications = useCallback(() => {
         copyNetworkModifications({
-            networkModificationUuids: selectedModificationsIds(),
+            networkModificationUuids: selectedModificationsIds,
             copyInfos: {
                 copyType: NetworkModificationCopyType.COPY,
                 originStudyUuid: studyUuid ?? undefined,
@@ -1047,27 +1016,14 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanClipboard, snackError]);
 
-    const removeNullFields = useCallback((data: NetworkModificationData) => {
-        let dataTemp = data;
-        if (dataTemp) {
-            Object.keys(dataTemp).forEach((key) => {
-                if (dataTemp[key] && dataTemp[key] !== null && typeof dataTemp[key] === 'object') {
-                    dataTemp[key] = removeNullFields(dataTemp[key]);
-                }
-
-                if (dataTemp[key] === null) {
-                    delete dataTemp[key];
-                }
-            });
-        }
-        return dataTemp;
-    }, []);
-
     const doEditModification = useCallback(
-        (modificationUuid: UUID, type: string) => {
+        (modificationUuid: UUID, modificationType: ModificationType) => {
             setIsUpdate(true);
-            setEditDialogOpen(type);
+            // setting this state will trigger dialog rendering
+            setEditDialogOpen(modificationType);
+            // with fetching status, waiting for the edit data to be fetched
             setEditDataFetchStatus(FetchStatus.RUNNING);
+
             const modification = fetchNetworkModification(modificationUuid);
             modification
                 .then((res) => {
@@ -1082,7 +1038,7 @@ const NetworkModificationNodeEditor = () => {
                     setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
-        [removeNullFields, snackError]
+        [snackError]
     );
 
     const onItemClick = (id: string) => {
@@ -1090,16 +1046,22 @@ const NetworkModificationNodeEditor = () => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
-    const handleRowSelected = (event: any) => {
-        const selectedRows = event.api.getSelectedRows(); // Get selected rows
+    const handleRowSelected = useCallback((selectedRows: NetworkModificationMetadata[]) => {
         setSelectedNetworkModifications(selectedRows);
-    };
+    }, []);
 
     const renderDialog = () => {
         const menuItem = subMenuItemsList.find(
             (item: MenuDefinitionWithoutSubItem) => 'id' in item && item.id === editDialogOpen
         );
-        return menuItem && 'action' in menuItem ? menuItem.action?.() : undefined;
+        if (menuItem && 'action' in menuItem && menuItem.action) {
+            return menuItem.action();
+        } else if (editDialogOpen === ModificationType.EQUIPMENT_DELETION) {
+            // deletion modification edition is generic and is not associated to a menu item
+            return withDefaultParams(EquipmentDeletionDialog);
+        }
+        console.warn('No dialog action found in menu items for: ', editDialogOpen);
+        return undefined;
     };
 
     const isImpactedByNotification = useCallback(() => {
@@ -1110,6 +1072,27 @@ const NetworkModificationNodeEditor = () => {
         (modification: NetworkModificationMetadata) =>
             !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
         [isAnyNodeBuilding, mapDataLoading, isDragging]
+    );
+
+    const createAllColumns = useCallback(
+        (
+            isRowDragDisabled: boolean,
+            modificationsCount: number,
+            nameHeaderProps: NameHeaderProps,
+            setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
+        ): ColumnDef<ComposedModificationMetadata>[] => [
+            ...createBaseColumns(isRowDragDisabled, modificationsCount, nameHeaderProps, setModifications),
+            ...(isMonoRootStudy
+                ? []
+                : createRootNetworksColumns(
+                      rootNetworks,
+                      currentRootNetworkUuid!,
+                      modificationsCount,
+                      modificationsToExclude,
+                      setModificationsToExclude
+                  )),
+        ],
+        [isMonoRootStudy, rootNetworks, currentRootNetworkUuid, modificationsToExclude]
     );
 
     const renderNetworkModificationsTable = () => {
@@ -1127,18 +1110,18 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationsTable
                 handleCellClick={debounce(handleCellClick, 300)}
                 modifications={modifications}
-                setModifications={setModifications}
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 onRowSelected={handleRowSelected}
-                isDragging
                 isRowDragDisabled={isImpactedByNotification() || isAnyNodeBuilding || mapDataLoading}
                 isImpactedByNotification={isImpactedByNotification}
                 notificationMessageId={notificationMessageId}
                 isFetchingModifications={isFetchingModifications}
                 pendingState={pendingState}
-                modificationsToExclude={modificationsToExclude}
-                setModificationsToExclude={setModificationsToExclude}
+                createAllColumns={createAllColumns}
+                highlightedModificationUuid={highlightedModificationUuid}
+                studyUuid={studyUuid}
+                currentNodeId={currentNode?.id}
             />
         );
     };
@@ -1175,49 +1158,22 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleCellClick = useCallback(
-        (event: CellClickedEvent) => {
-            const { colDef, data } = event;
-            if (colDef.colId === 'modificationName' && isModificationClickable(data)) {
+        (modification: NetworkModificationMetadata) => {
+            if (isModificationClickable(modification)) {
                 // Check if the clicked column is the 'modificationName' column
-                doEditModification(data.uuid, data.type);
+                doEditModification(modification.uuid, modification.type);
             }
         },
         [doEditModification, isModificationClickable]
     );
 
-    const onRowDragStart = (event: RowDragEnterEvent<NetworkModificationMetadata>) => {
+    const onRowDragStart = useCallback(() => {
         setIsDragging(true);
-        setInitialPosition(event.overIndex);
-    };
-    const onRowDragEnd = (event: RowDragEndEvent<NetworkModificationMetadata>) => {
-        let newPosition = event.overIndex;
-        const oldPosition = initialPosition;
-        if (!currentNode?.id || newPosition === undefined || oldPosition === undefined || newPosition === oldPosition) {
-            setIsDragging(false);
-            return;
-        }
-        if (newPosition === -1) {
-            newPosition = modifications.length;
-        }
+    }, []);
 
-        const previousModifications = [...modifications];
-        const updatedModifications = [...modifications];
-
-        const [movedItem] = updatedModifications.splice(oldPosition, 1);
-
-        updatedModifications.splice(newPosition, 0, movedItem);
-
-        setModifications(updatedModifications);
-
-        const before = updatedModifications[newPosition + 1]?.uuid || null;
-
-        changeNetworkModificationOrder(studyUuid, currentNode?.id, movedItem.uuid, before)
-            .catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'errReorderModificationMsg' });
-                setModifications(previousModifications);
-            })
-            .finally(() => setIsDragging(false));
-    };
+    const onRowDragEnd = useCallback(() => {
+        setIsDragging(false);
+    }, []);
 
     const isPasteButtonDisabled = useMemo(() => {
         return networkModificationsToCopy.length <= 0 || isAnyNodeBuilding || mapDataLoading || !currentNode;
@@ -1321,7 +1277,7 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id={'delete'} />}>
+                <Tooltip title={<FormattedMessage id={'moveToTrash'} />}>
                     <span>
                         <IconButton
                             onClick={doStashModification}

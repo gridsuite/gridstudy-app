@@ -8,17 +8,52 @@
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
 import { fetchStudyMetadata } from '@gridsuite/commons-ui';
+import { IntlShape } from 'react-intl';
+import { UUID } from 'node:crypto';
+
+export type GlobalFilterWithoutId = Omit<GlobalFilter, 'id'>;
 
 export const RECENT_FILTER: string = 'recent';
 
-export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) => string): string => {
+// Add an ID to each filter object saved in the server so that it can be used as a key in the globalFiltersOptions object.
+export const addGlobalFilterId = (filter: GlobalFilterWithoutId): GlobalFilter => {
+    const { unselectedDate, ...rest } = filter; // we don't want unselectedDate here
+    switch (rest.filterType) {
+        case FilterType.GENERIC_FILTER:
+        case FilterType.SUBSTATION_OR_VL:
+            return { ...rest, id: rest.uuid as UUID };
+        default:
+            return { ...rest, id: rest.label };
+    }
+};
+
+// Returns an ID for a given filter without modifying it
+export const getGlobalFilterId = (filter: GlobalFilterWithoutId): string => {
+    switch (filter.filterType) {
+        case FilterType.GENERIC_FILTER:
+        case FilterType.SUBSTATION_OR_VL:
+            return filter.uuid as UUID;
+        default:
+            return filter.label;
+    }
+};
+
+export const getOptionLabel = (
+    option: GlobalFilterWithoutId,
+    translate: (arg: string) => string,
+    intl: IntlShape
+): string => {
     switch (option.filterType) {
         case FilterType.COUNTRY:
             return translate(option.label);
         case FilterType.VOLTAGE_LEVEL:
-            return option.label + ' kV';
+            return intl.formatMessage({ id: option.label });
         case FilterType.GENERIC_FILTER:
+        case FilterType.SUBSTATION_OR_VL:
         case FilterType.SUBSTATION_PROPERTY:
+            if (option.deleted) {
+                return intl.formatMessage({ id: 'elementNotFound' });
+            }
             return option.label;
     }
     return '';

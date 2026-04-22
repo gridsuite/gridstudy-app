@@ -17,7 +17,10 @@ export interface VoltageLevelPopoverContent {
 export const VoltageLevelPopoverContent = ({ equipmentInfos }: VoltageLevelPopoverContent) => {
     return (
         <Grid container direction="column" rowSpacing={2} alignItems="center">
-            <VoltageLevelPopoverBusInfos buses={equipmentInfos?.busInfos} />
+            <VoltageLevelPopoverBusInfos
+                buses={equipmentInfos?.busInfos}
+                fallbackVoltage={equipmentInfos?.umin ?? equipmentInfos?.umax}
+            />
             <VoltageLevelPopoverInfos equipmentInfos={equipmentInfos} />
         </Grid>
     );

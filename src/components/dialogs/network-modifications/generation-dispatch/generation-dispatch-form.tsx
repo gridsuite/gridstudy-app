@@ -5,15 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { DirectoryItemsInput, ElementType, EquipmentType, FieldLabel, FloatInput } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemsInput,
+    ElementType,
+    EquipmentType,
+    FieldLabel,
+    FloatInput,
+    PercentageAdornment,
+} from '@gridsuite/commons-ui';
 import {
     DEFAULT_OUTAGE_RATE,
     GENERATORS_WITH_FIXED_ACTIVE_POWER,
     GENERATORS_WITHOUT_OUTAGE,
     LOSS_COEFFICIENT,
 } from 'components/utils/field-constants';
-import { percentageTextField } from '../../dialog-utils';
 import { Box, Grid, Typography } from '@mui/material';
 import FrequencyReservePane from './frequency-reserve-pane';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
@@ -55,7 +60,7 @@ const GenerationDispatchForm = ({
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const lossCoefficientField = (
-        <FloatInput name={LOSS_COEFFICIENT} label={'LossCoefficient'} adornment={percentageTextField} />
+        <FloatInput name={LOSS_COEFFICIENT} label={'LossCoefficient'} adornment={PercentageAdornment} />
     );
 
     const generatorsWithFixedActivePowerField = (
@@ -66,10 +71,10 @@ const GenerationDispatchForm = ({
             <Grid item xs={4}>
                 <DirectoryItemsInput
                     name={GENERATORS_WITH_FIXED_ACTIVE_POWER}
-                    equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
+                    equipmentTypes={[EquipmentType.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
-                    label={'FiltersListsSelection'}
+                    label={''}
                 />
             </Grid>
         </Grid>
@@ -83,7 +88,7 @@ const GenerationDispatchForm = ({
                 </Typography>
             </Grid>
             <Grid item xs={12}>
-                <FloatInput name={DEFAULT_OUTAGE_RATE} label={'DefaultOutageRate'} adornment={percentageTextField} />
+                <FloatInput name={DEFAULT_OUTAGE_RATE} label={'DefaultOutageRate'} adornment={PercentageAdornment} />
             </Grid>
         </Grid>
     );
@@ -96,10 +101,10 @@ const GenerationDispatchForm = ({
             <Grid item xs={4}>
                 <DirectoryItemsInput
                     name={GENERATORS_WITHOUT_OUTAGE}
-                    equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
+                    equipmentTypes={[EquipmentType.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
-                    label={'FiltersListsSelection'}
+                    label={''}
                 />
             </Grid>
         </Grid>

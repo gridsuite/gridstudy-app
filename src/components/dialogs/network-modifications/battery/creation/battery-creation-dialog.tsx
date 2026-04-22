@@ -11,11 +11,24 @@ import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     EquipmentType,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionSchema,
+    getConnectivityFormData,
+    getSetPointsSchema,
+    getSetPointsEmptyFormData,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -44,13 +57,7 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
-import { sanitizeString } from '../../../dialog-utils';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
@@ -59,22 +66,14 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createBattery } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils.type';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { BatteryCreationDialogSchemaForm, BatteryFormInfos } from '../battery-dialog.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import {
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import BatteryCreationForm from './battery-creation-form';
-import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     getShortCircuitEmptyFormData,
@@ -262,7 +261,7 @@ export default function BatteryCreationDialog({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

@@ -12,7 +12,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { type AppState } from 'redux/reducer';
+import { type AppState } from 'redux/reducer.type';
 import { getUrlWithToken, getWsBase } from 'services/utils';
 import { APP_NAME } from 'utils/config-params';
 

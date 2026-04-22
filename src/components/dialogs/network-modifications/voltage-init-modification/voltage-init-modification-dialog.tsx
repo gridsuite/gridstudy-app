@@ -36,7 +36,7 @@ import type { ColDef, RowDataUpdatedEvent } from 'ag-grid-community';
 import { suppressEventsToPreventEditMode } from '../../commons/utils';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 
 const styles = {
     container: {

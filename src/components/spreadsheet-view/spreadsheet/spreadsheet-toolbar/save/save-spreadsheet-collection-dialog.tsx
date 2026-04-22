@@ -10,12 +10,12 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Checkbox,
     Divider,
+    FormLabel,
     IconButton,
     ListItem,
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    FormLabel,
 } from '@mui/material';
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -30,7 +30,7 @@ import {
     useSnackMessage,
     type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
-import { AppState } from '../../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer.type';
 import { SelectOptionsDialog } from '../../../../../utils/dialogs';
 import {
     ColumnDefinitionDto,
@@ -40,10 +40,10 @@ import {
 } from '../../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
-import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
+import { SortConfig, TableType } from '../../../../../types/custom-aggrid-types';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
-import { SortConfig } from '../../../../../types/custom-aggrid-types';
 
 interface SaveSpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
@@ -81,8 +81,11 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     const { nodeAliases } = useNodeAliases();
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
-    const tablesFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD]);
-    const tablesFiltersState = useSelector((state: AppState) => state.globalFilterSpreadsheetState);
+    const tablesFilters = useSelector(
+        (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet] ?? {}
+    );
+    const tablesGlobalFilterIds = useSelector((state: AppState) => state.tableFilters.globalFilters);
+    const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
     const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -167,14 +170,14 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                     if (!column) {
                         return null;
                     }
-                    const columnFilter: Partial<ColumnDefinitionDto> = {};
+                    const columnFilterInfos: ColumnDefinitionDto['columnFilterInfos'] = {};
                     if (includeFilters) {
                         const filter = tablesFilters[table.uuid]?.find((f) => f.column === column.id);
                         if (filter) {
-                            columnFilter.filterDataType = filter.dataType;
-                            columnFilter.filterTolerance = filter.tolerance;
-                            columnFilter.filterType = filter.type;
-                            columnFilter.filterValue = JSON.stringify(filter.value);
+                            columnFilterInfos.filterDataType = filter.dataType;
+                            columnFilterInfos.filterTolerance = filter.tolerance;
+                            columnFilterInfos.filterType = filter.type;
+                            columnFilterInfos.filterValue = JSON.stringify(filter.value);
                         }
                     }
                     const dto: ColumnDefinitionDto = {
@@ -185,7 +188,7 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                         precision: column.precision,
                         formula: column.formula || '',
                         dependencies: column.dependencies?.length ? JSON.stringify(column.dependencies) : undefined,
-                        ...columnFilter,
+                        columnFilterInfos,
                         visible: includeVisibility ? column.visible : true,
                     };
                     return dto;
@@ -198,9 +201,10 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     const getTableGlobalFilters = useCallback(
         (tableIndex: number): GlobalFilter[] => {
             const tableUuid = tables[tableIndex].uuid;
-            return tablesFiltersState[tableUuid] ?? [];
+            const ids = tablesGlobalFilterIds[tableUuid]?.selected ?? [];
+            return ids.map((id) => globalFilterOptions.find((opt) => opt.id === id)).filter((f) => f !== undefined);
         },
-        [tablesFiltersState, tables]
+        [tablesGlobalFilterIds, globalFilterOptions, tables]
     );
 
     const getTableSorting = useCallback(

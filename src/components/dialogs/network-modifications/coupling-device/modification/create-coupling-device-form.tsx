@@ -5,36 +5,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
+import { AutocompleteInput, filledTextField, getObjectId, Option } from '@gridsuite/commons-ui';
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import GridItem from '../../../commons/grid-item';
-import { getObjectId } from '../../../../utils/utils';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { filledTextField } from '../../../dialog-utils';
 import GridSection from '../../../commons/grid-section';
-import type { UUID } from 'node:crypto';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 export interface CreateCouplingDeviceFormProps {
     sectionOptions: Option[];
     voltageLevelId: string;
-    studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    currentRootNetworkUuid: UUID;
 }
 
 export default function CreateCouplingDeviceForm({
     sectionOptions,
-    studyUuid,
     voltageLevelId,
     currentNode,
-    currentRootNetworkUuid,
 }: Readonly<CreateCouplingDeviceFormProps>) {
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
@@ -117,12 +110,9 @@ export default function CreateCouplingDeviceForm({
             </Grid>
             <Box>
                 <PositionDiagramPane
-                    studyUuid={studyUuid}
                     open={isDiagramPaneOpen}
                     onClose={handleCloseDiagramPane}
                     voltageLevelId={voltageLevelId}
-                    currentNodeUuid={currentNode?.id}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Box>
         </>

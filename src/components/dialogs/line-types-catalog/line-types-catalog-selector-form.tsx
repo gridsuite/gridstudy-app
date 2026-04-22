@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
+import { areIdsEqual, AutocompleteInput, Option } from '@gridsuite/commons-ui';
 import GridItem from '../commons/grid-item';
 import GridSection from '../commons/grid-section';
 import { Grid, Tab, Tabs } from '@mui/material';
@@ -16,7 +16,6 @@ import {
     UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
 import { CATEGORIES_TABS, LineTypeInfo } from './line-catalog.type';
-import { areIdsEqual } from '../../utils/utils';
 import { useFormContext } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import LimitCustomAgGrid from './limit-custom-aggrid';
@@ -25,31 +24,41 @@ import { useColumnDefinitions } from './use-column-definitions';
 import { useRowData } from './use-row-data';
 import { AgGridReact } from 'ag-grid-react';
 
+export interface LineCatalogParams {
+    id: string;
+    area: string;
+    temperature: string;
+    shapeFactor: number;
+}
+
 interface LineTypesCatalogSelectorFormProps {
     gridRef: React.RefObject<AgGridReact | null>;
     selectedRow: LineTypeInfo | null;
-    preselectedRowId: string;
     rowData: LineTypeInfo[];
+    onRowClicked: () => void;
     onSelectionChanged: () => void;
     areasOptions: Option[];
     aerialTemperatures: Option[];
     undergroundShapeFactor: Option[];
+    getPreselectedRowData?: () => LineCatalogParams;
 }
 
 export default function LineTypesCatalogSelectorForm({
     gridRef,
     selectedRow,
-    preselectedRowId,
     rowData,
+    onRowClicked,
     onSelectionChanged,
     areasOptions,
     aerialTemperatures,
     undergroundShapeFactor,
+    getPreselectedRowData,
 }: Readonly<LineTypesCatalogSelectorFormProps>) {
     const [tabIndex, setTabIndex] = useState<number>(CATEGORIES_TABS.AERIAL.id);
     const { setValue } = useFormContext();
     const { aerialColumnDefs, undergroundColumnDefs } = useColumnDefinitions();
     const { aerialRowData, undergroundRowData } = useRowData(rowData);
+    const [rowId, setRowId] = useState<string | null>(null);
 
     const handleTabChange = useCallback(
         (newValue: number) => {
@@ -61,31 +70,47 @@ export default function LineTypesCatalogSelectorForm({
 
     // Select the correct tab when opening the dialog, if a row is preselected
     useEffect(() => {
-        if (preselectedRowId && rowData) {
-            const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowId);
+        const preselectedRowData = getPreselectedRowData ? getPreselectedRowData() : null;
+        if (preselectedRowData?.id && rowData) {
+            setRowId(preselectedRowData.id);
+            const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowData.id);
             const newTabIndex =
                 preselectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name
                     ? CATEGORIES_TABS.UNDERGROUND.id
                     : CATEGORIES_TABS.AERIAL.id;
             setValue(SELECTED_CATEGORIES_TAB, newTabIndex);
+            setTabIndex(newTabIndex);
+            if (preselectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name) {
+                setValue(UNDERGROUND_AREAS, { id: preselectedRowData.area, label: preselectedRowData.area });
+                setValue(UNDERGROUND_SHAPE_FACTORS, {
+                    id: preselectedRowData.shapeFactor,
+                    label: preselectedRowData.shapeFactor,
+                });
+            } else {
+                setValue(AERIAL_AREAS, { id: preselectedRowData.area, label: preselectedRowData.area });
+                setValue(AERIAL_TEMPERATURES, {
+                    id: preselectedRowData.temperature,
+                    label: preselectedRowData.temperature,
+                });
+            }
         }
-    }, [rowData, preselectedRowId, setValue]);
+    }, [rowData, setValue, getPreselectedRowData]);
 
     // Tries to find the selected row to highlight it
     const highlightSelectedRow = useCallback(() => {
-        const rowIdToHighlight = selectedRow?.id ?? preselectedRowId;
+        const rowIdToHighlight = selectedRow?.id ?? rowId;
         if (rowIdToHighlight && rowData) {
             gridRef.current?.api?.forEachNode(function (node: any) {
                 node.setSelected(node.data?.id === rowIdToHighlight);
             });
         }
-    }, [selectedRow?.id, preselectedRowId, rowData, gridRef]);
+    }, [selectedRow?.id, rowData, gridRef, rowId]);
 
     const scrollToPreselectedElement = useCallback(() => {
-        const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowId);
+        const preselectedRow = rowData?.find((entry) => entry.id === rowId);
         preselectedRow && gridRef.current?.api?.ensureNodeVisible(preselectedRow, 'middle');
         highlightSelectedRow();
-    }, [rowData, gridRef, highlightSelectedRow, preselectedRowId]);
+    }, [rowData, gridRef, highlightSelectedRow, rowId]);
 
     // Tries to highlight the preselected row when changing tabs
     useEffect(() => {
@@ -102,6 +127,7 @@ export default function LineTypesCatalogSelectorForm({
                     undergroundRowData={undergroundRowData}
                     aerialColumnDefs={aerialColumnDefs}
                     undergroundColumnDefs={undergroundColumnDefs}
+                    onRowClicked={onRowClicked}
                     onSelectionChanged={onSelectionChanged}
                     onGridReady={scrollToPreselectedElement}
                 />

@@ -12,6 +12,7 @@ import {
     MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
+    DeepNullable,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
@@ -41,7 +42,6 @@ import {
     MoveVoltageLevelFeederBaysInfos,
 } from '../../../../../services/network-modification-types';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import {
@@ -146,9 +146,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionSide: bay.connectionSide || null,
                     connectionName: bay.connectablePositionInfos.connectionName || null,
                     connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
-                    connectionPosition: isNumber(bay.connectablePositionInfos.connectionPosition)
-                        ? Number.parseInt(bay.connectablePositionInfos.connectionPosition)
-                        : null,
+                    connectionPosition: bay.connectablePositionInfos.connectionPosition ?? null,
                     isRemoved: false,
                     rowId: bay.rowId,
                 }));
@@ -163,9 +161,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             connectionSide: bay.connectionSide,
                             connectionName: bay.connectablePositionInfos.connectionName || null,
                             connectionDirection: bay.connectablePositionInfos.connectionDirection,
-                            connectionPosition: isNumber(bay.connectablePositionInfos.connectionPosition)
-                                ? Number.parseInt(bay.connectablePositionInfos.connectionPosition)
-                                : null,
+                            connectionPosition: bay.connectablePositionInfos.connectionPosition ?? null,
                             isRemoved: false,
                             rowId: bay.rowId,
                         });
@@ -388,8 +384,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         currentNode={currentNode}
                         selectedId={selectedId}
                         isUpdate={isUpdate}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        studyUuid={studyUuid}
                         isReady={dataFetchStatus === FetchStatus.SUCCEED}
                         feederBaysPreviousValues={feederBaysPreviousValues}
                     />

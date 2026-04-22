@@ -5,7 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    ConnectivityForm,
+    filledTextField,
+    FloatInput,
+    italicFontTextField,
+    MVAPowerAdornment,
+    PropertiesForm,
+    SelectInput,
+    SetPointsForm,
+    SwitchInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -19,13 +31,9 @@ import {
     RATED_NOMINAL_POWER,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField, italicFontTextField, MVAPowerAdornment } from '../../../dialog-utils';
 import { ENERGY_SOURCES } from 'components/network/constants';
 import { Box, Grid } from '@mui/material';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
-import { SetPointsForm } from '../../../set-points/set-points-form';
-import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
@@ -36,6 +44,9 @@ import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regul
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { useCallback } from 'react';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
 export interface GeneratorCreationFormProps {
     studyUuid: UUID;
@@ -53,6 +64,17 @@ export default function GeneratorCreationForm({
     const watchVoltageRegulation = useWatch({
         name: VOLTAGE_REGULATION,
     });
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
 
     const generatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
@@ -74,11 +96,10 @@ export default function GeneratorCreationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 

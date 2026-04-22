@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemsInput, SelectInput, FloatInput, ElementType } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemsInput,
+    SelectInput,
+    FloatInput,
+    ElementType,
+    EquipmentType,
+    ActivePowerAdornment,
+} from '@gridsuite/commons-ui';
 import {
     FILTERS,
     REACTIVE_VARIATION_MODE,
@@ -13,16 +20,14 @@ import {
     VARIATION_TYPE,
     VARIATION_VALUE,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
 import { ACTIVE_VARIATION_MODES, REACTIVE_VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
-import { ActivePowerAdornment } from '../../../dialog-utils';
 import { IDENTIFIER_LIST } from './variation-utils';
 import GridItem from '../../../commons/grid-item';
 import { ItemFilterType, VariationType } from '../../../../../services/network-modification-types';
 
-const LOADS = [EQUIPMENT_TYPES.LOAD];
+const LOADS = [EquipmentType.LOAD];
 
 interface LoadScalingVariationFormProps {
     name: string;

@@ -12,24 +12,24 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-a
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
-import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { AppState } from '../../../redux/reducer.type';
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { AgGridReact } from 'ag-grid-react';
-import { FilterType } from '../../../types/custom-aggrid-types';
-import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
-import { useNodeData } from 'components/use-node-data';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    TableType,
+} from '../../../types/custom-aggrid-types';
+import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { useNodeData } from 'components/use-node-data';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/study/dynamic-simulation';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 const styles = {
     loader: {
@@ -88,9 +88,8 @@ const DynamicSimulationResultTimeline = memo(
                         filterComponent: CustomAggridComparatorFilter,
                         filterComponentParams: {
                             filterParams: {
-                                type: FilterType.DynamicSimulation,
+                                type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateFilters,
                                 dataType: FILTER_DATA_TYPES.NUMBER,
                                 comparators: Object.values(FILTER_NUMBER_COMPARATORS),
                             },
@@ -113,9 +112,8 @@ const DynamicSimulationResultTimeline = memo(
                         filterComponent: CustomAggridComparatorFilter,
                         filterComponentParams: {
                             filterParams: {
-                                type: FilterType.DynamicSimulation,
+                                type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
                                 comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },
@@ -137,9 +135,8 @@ const DynamicSimulationResultTimeline = memo(
                         filterComponent: CustomAggridComparatorFilter,
                         filterComponentParams: {
                             filterParams: {
-                                type: FilterType.DynamicSimulation,
+                                type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
                                 comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },
@@ -165,7 +162,7 @@ const DynamicSimulationResultTimeline = memo(
         );
 
         const rowDataToShow = useMemo(() => (overlayMessage ? [] : timelines), [timelines, overlayMessage]);
-
+        const onGridReady = useAgGridInitialColumnFilters(TableType.DynamicSimulation, TIMELINE);
         return (
             <>
                 {isLoading && (
@@ -178,6 +175,7 @@ const DynamicSimulationResultTimeline = memo(
                     rowData={rowDataToShow}
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
+                    onGridReady={onGridReady}
                     overlayNoRowsTemplate={overlayMessage}
                     overrideLocales={AGGRID_LOCALES}
                 />

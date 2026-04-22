@@ -14,7 +14,7 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-a
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from '@gridsuite/commons-ui';
 import { COL_STATUS, StatusCellRender } from '../common/result-cell-renderers';
 import type { UUID } from 'node:crypto';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { fetchDynamicSecurityAnalysisStatus } from '../../../services/study/dynamic-security-analysis';
 import { MEDIUM_COLUMN_WIDTH } from '../dynamicsimulation/utils/dynamic-simulation-result-utils';
 import { dynamicSecurityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';

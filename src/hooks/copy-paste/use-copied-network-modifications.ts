@@ -7,7 +7,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, CopiedNetworkModifications } from 'redux/reducer';
+import { AppState, CopiedNetworkModifications } from 'redux/reducer.type';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setCopiedNetworkModifications } from 'redux/actions';
 

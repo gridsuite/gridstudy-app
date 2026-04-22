@@ -16,7 +16,7 @@ import TwoWindingsTransformerModificationDialog from 'components/dialogs/network
 import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { type FunctionComponent, type ReactElement, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { type AppState } from 'redux/reducer';
+import { type AppState } from 'redux/reducer.type';
 import { type EditableEquipmentType, SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 
 export type UseEquipmentModificationProps = {

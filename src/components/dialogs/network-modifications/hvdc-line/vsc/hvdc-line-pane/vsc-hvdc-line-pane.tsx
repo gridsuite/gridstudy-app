@@ -5,7 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    CheckboxNullableInput,
+    FloatInput,
+    OhmAdornment,
+    PropertiesForm,
+    SelectInput,
+    SwitchInput,
+    VoltageAdornment,
+} from '@gridsuite/commons-ui';
 import {
     ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
@@ -18,15 +27,12 @@ import {
     P0,
     R,
 } from '../../../../../utils/field-constants';
-import { ActivePowerAdornment, OhmAdornment, VoltageAdornment } from '../../../../dialog-utils';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
 import { FunctionComponent, useEffect } from 'react';
 import { Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
-import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
-import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 

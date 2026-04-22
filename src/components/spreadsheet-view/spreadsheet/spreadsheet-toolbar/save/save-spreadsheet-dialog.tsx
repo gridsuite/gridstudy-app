@@ -16,12 +16,16 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createSpreadsheetModel, updateSpreadsheetModel } from '../../../../../services/explore';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer.type';
 import { v4 as uuid4 } from 'uuid';
 import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
-import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
+import { TableType } from '../../../../../types/custom-aggrid-types';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 import { SaveSpreadsheetModelDialog } from './save-spreadsheet-model-dialog';
+
+import { getSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
+
 export type SaveSpreadsheetDialogProps = {
     tableDefinition: SpreadsheetTabDefinition;
     open: UseStateBooleanReturn;
@@ -30,11 +34,10 @@ export type SaveSpreadsheetDialogProps = {
 export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonly<SaveSpreadsheetDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const { nodeAliases } = useNodeAliases();
-    const tableFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD][tableDefinition.uuid]);
-    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition.uuid]);
-    const tableGlobalFilters = useSelector(
-        (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
+    const tableFilters = useSelector(
+        (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet]?.[tableDefinition.uuid]
     );
+    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition.uuid]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [includeFilters, setIncludeFilters] = useState(false);
@@ -60,10 +63,12 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
                     precision: item.precision,
                     formula: item.formula,
                     dependencies: item.dependencies?.length ? JSON.stringify(item.dependencies) : undefined,
-                    filterDataType: columnFilter?.dataType,
-                    filterTolerance: columnFilter?.tolerance,
-                    filterType: columnFilter?.type,
-                    filterValue: JSON.stringify(columnFilter?.value) ?? undefined,
+                    columnFilterInfos: {
+                        filterDataType: columnFilter?.dataType,
+                        filterTolerance: columnFilter?.tolerance,
+                        filterType: columnFilter?.type,
+                        filterValue: JSON.stringify(columnFilter?.value) ?? undefined,
+                    },
                     visible: includeVisibility ? item.visible : true,
                 };
                 return acc;
@@ -84,6 +89,7 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
         folderName,
         folderId,
     }: IElementCreationDialog) => {
+        const tableGlobalFilters = getSelectedGlobalFilters(tableDefinition.uuid);
         const spreadsheetConfig: SpreadsheetConfig = {
             name: tableDefinition?.name,
             sheetType: tableDefinition?.type,
@@ -113,6 +119,7 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
         description,
         elementFullPath,
     }: IElementUpdateDialog) => {
+        const tableGlobalFilters = getSelectedGlobalFilters(tableDefinition.uuid);
         const spreadsheetConfig: SpreadsheetConfig = {
             name: tableDefinition?.name,
             sheetType: tableDefinition?.type,

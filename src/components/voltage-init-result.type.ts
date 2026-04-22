@@ -7,13 +7,10 @@
 
 import RunningStatus from './utils/running-status';
 import type { UUID } from 'node:crypto';
-import { GlobalFilter } from './results/common/global-filter/global-filter-types';
 
 export interface VoltageInitResultProps {
     result: any;
     status: RunningStatus;
-    handleGlobalFilterChange: (value: GlobalFilter[]) => void;
-    globalFilterOptions: GlobalFilter[];
 }
 
 export interface ReactiveSlack {

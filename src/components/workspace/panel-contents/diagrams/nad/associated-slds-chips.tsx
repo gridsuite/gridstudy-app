@@ -5,26 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { Box, Chip, Button, ButtonGroup, IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
+import { memo, useState, useEffect, useRef, useMemo } from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
+import { Box, Chip, ButtonGroup, IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
 import {
     Close as CloseIcon,
     GridView as GridViewIcon,
     Layers as CascadeIcon,
     Add as AddIcon,
+    DeleteSweep as DeleteSweepIcon,
+    UnfoldMore as UnfoldMoreIcon,
+    UnfoldLess as UnfoldLessIcon,
 } from '@mui/icons-material';
-import { useIntl } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../redux/store';
-import {
-    selectAssociatedPanelDetails,
-    selectVisibleAssociatedSldPanels,
-} from '../../../../../redux/slices/workspace-selectors';
-import { deleteAssociatedSld, removeAllAssociatedSlds } from '../../../../../redux/slices/workspace-slice';
+import { selectAssociatedPanels } from '../../../../../redux/slices/workspace-selectors';
 import { type MuiStyles, PopupConfirmationDialog } from '@gridsuite/commons-ui';
 import { LayoutMode } from './hooks/use-sld-layout';
 import { NAD_SLD_CONSTANTS } from './constants';
+import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 
 interface AssociatedSldsChipsProps {
     readonly nadPanelId: UUID;
@@ -50,13 +50,6 @@ const styles = {
         zIndex: 1000,
         minHeight: '40px',
     }),
-    actionButton: {
-        fontSize: '0.7rem',
-        minWidth: 'auto',
-        padding: '2px 8px',
-        textTransform: 'none',
-        flexShrink: 0,
-    },
     chipsScrollContainer: {
         display: 'flex',
         alignItems: 'center',
@@ -92,13 +85,6 @@ const styles = {
         height: theme.spacing(3),
         padding: 0,
     }),
-    removeAllButton: {
-        fontSize: '0.7rem',
-        minWidth: 'auto',
-        padding: '2px 8px',
-        textTransform: 'none',
-        flexShrink: 0,
-    },
     menu: {
         '& .MuiPaper-root': {
             p: 0.5,
@@ -128,20 +114,26 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     onHideAll,
 }: AssociatedSldsChipsProps) {
     const intl = useIntl();
-    const dispatch = useDispatch();
+    const { deletePanel, deletePanels } = useWorkspacePanelActions();
     const containerRef = useRef<HTMLDivElement>(null);
     const [chipLimit, setChipLimit] = useState(5);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [showRemoveAllConfirmation, setShowRemoveAllConfirmation] = useState(false);
 
-    const panelDetails = useSelector(
-        (state: RootState) => selectAssociatedPanelDetails(state, nadPanelId),
-        shallowEqual
+    const associatedPanels = useSelector((state: RootState) => selectAssociatedPanels(state, nadPanelId), shallowEqual);
+
+    const panelDetails = useMemo(
+        () =>
+            associatedPanels.map((p) => ({
+                id: p.id,
+                title: p.title,
+                isVisible: !p.minimized,
+            })),
+        [associatedPanels]
     );
-    const visibleSldPanels = useSelector(
-        (state: RootState) => selectVisibleAssociatedSldPanels(state, nadPanelId),
-        shallowEqual
-    );
+
+    const visibleSldPanels = useMemo(() => associatedPanels.filter((p) => !p.minimized), [associatedPanels]);
+    const associatedPanelIds = useMemo(() => associatedPanels.map((p) => p.id), [associatedPanels]);
 
     const visibleCount = visibleSldPanels.length;
     const hasReorganizeButton = visibleCount > 1 && onReorganize;
@@ -184,19 +176,27 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
         setAnchorEl(null);
     };
 
-    const handleChipDelete = (sldPanelId: UUID, event: React.MouseEvent) => {
-        event.stopPropagation();
-        dispatch(deleteAssociatedSld(sldPanelId));
+    const handleChipClick = (sldPanelId: UUID) => {
+        onToggleVisibility(sldPanelId);
+        handleCloseMenu();
     };
 
-    const renderChip = ({ id, title, isVisible }: { id: UUID; title: string | undefined; isVisible: boolean }) => {
+    const handleChipDelete = (sldPanelId: UUID, event: React.MouseEvent) => {
+        event.stopPropagation();
+        deletePanel(sldPanelId);
+    };
+
+    const renderChip = (
+        { id, title, isVisible }: { id: UUID; title: string | undefined; isVisible: boolean },
+        inMenu = false
+    ) => {
         return (
             <Chip
                 key={id}
                 label={title}
                 size="small"
                 color={isVisible ? 'primary' : 'default'}
-                onClick={() => onToggleVisibility(id)}
+                onClick={inMenu ? undefined : () => onToggleVisibility(id)}
                 onDelete={(e) => handleChipDelete(id, e)}
                 deleteIcon={<CloseIcon fontSize="small" />}
                 sx={styles.chip}
@@ -209,7 +209,7 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     };
 
     const handleConfirmRemoveAll = () => {
-        dispatch(removeAllAssociatedSlds(nadPanelId));
+        deletePanels(associatedPanelIds);
         setShowRemoveAllConfirmation(false);
     };
 
@@ -220,9 +220,11 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     return (
         <Box sx={styles.container}>
             {onHideAll && (
-                <Button variant="text" size="small" onClick={onHideAll} sx={styles.actionButton}>
-                    {intl.formatMessage({ id: visibleCount > 0 ? 'hideAll' : 'showAll' })}
-                </Button>
+                <Tooltip title={<FormattedMessage id={visibleCount > 0 ? 'hideAll' : 'showAll'} />}>
+                    <IconButton size="small" onClick={onHideAll}>
+                        {visibleCount > 0 ? <UnfoldLessIcon fontSize="small" /> : <UnfoldMoreIcon fontSize="small" />}
+                    </IconButton>
+                </Tooltip>
             )}
 
             <Box sx={styles.chipsScrollContainer} ref={containerRef}>
@@ -251,12 +253,8 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
                             sx={styles.menu}
                         >
                             {hiddenPanels.map((panel) => (
-                                <MenuItem
-                                    key={panel.id}
-                                    sx={styles.menuItem}
-                                    onClick={() => onToggleVisibility(panel.id)}
-                                >
-                                    {renderChip(panel)}
+                                <MenuItem key={panel.id} sx={styles.menuItem} onClick={() => handleChipClick(panel.id)}>
+                                    {renderChip(panel, true)}
                                 </MenuItem>
                             ))}
                         </Menu>
@@ -279,10 +277,12 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
                 </ButtonGroup>
             )}
 
-            {panelDetails.length > 1 && (
-                <Button variant="text" color="error" size="small" onClick={handleRemoveAll} sx={styles.removeAllButton}>
-                    {intl.formatMessage({ id: 'removeAll' })}
-                </Button>
+            {panelDetails.length > 0 && (
+                <Tooltip title={<FormattedMessage id="removeAll" />}>
+                    <IconButton color="error" size="small" onClick={handleRemoveAll}>
+                        <DeleteSweepIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
             )}
 
             {showRemoveAllConfirmation && (

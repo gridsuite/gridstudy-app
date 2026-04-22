@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput } from '@gridsuite/commons-ui';
+import { ActivePowerAdornment, FloatInput, ReactivePowerAdornment } from '@gridsuite/commons-ui';
 import { MAX_Q, MIN_Q, P, REACTIVE_CAPABILITY_CURVE_TABLE, REACTIVE_LIMITS } from 'components/utils/field-constants';
-import { ActivePowerAdornment, ReactivePowerAdornment } from '../../dialog-utils';
 import GridItem from '../../commons/grid-item';
 import { useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';

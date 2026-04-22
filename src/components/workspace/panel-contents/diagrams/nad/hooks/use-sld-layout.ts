@@ -6,13 +6,11 @@
  */
 
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import {
-    updatePanelPositionAndSize,
-    closeAllAssociatedSlds,
-    openPanel,
-} from '../../../../../../redux/slices/workspace-slice';
+import type { RootState } from '../../../../../../redux/store';
+import { selectVisibleAssociatedSldPanelIds } from '../../../../../../redux/slices/workspace-selectors';
+import { useWorkspacePanelActions } from '../../../../../workspace/hooks/use-workspace-panel-actions';
 import { NAD_SLD_CONSTANTS } from '../constants';
 
 export enum LayoutMode {
@@ -22,8 +20,6 @@ export enum LayoutMode {
 
 export interface UseSldLayoutParams {
     readonly nadPanelId: UUID;
-    readonly visibleSldPanels: UUID[];
-    readonly associatedPanelIds: UUID[];
 }
 
 export interface UseSldLayoutReturn {
@@ -35,35 +31,30 @@ export interface UseSldLayoutReturn {
  * Hook to manage layout and visibility of SLD panels
  * Handles reorganization (grid/cascade) and show/hide all operations
  */
-export const useSldLayout = ({
-    nadPanelId,
-    visibleSldPanels,
-    associatedPanelIds,
-}: UseSldLayoutParams): UseSldLayoutReturn => {
-    const dispatch = useDispatch();
+export const useSldLayout = ({ nadPanelId }: UseSldLayoutParams): UseSldLayoutReturn => {
+    const { updatePanelGeometry, hideAssociatedSlds, showAssociatedSlds } = useWorkspacePanelActions();
+
+    const visibleSldPanelIds = useSelector((state: RootState) => selectVisibleAssociatedSldPanelIds(state, nadPanelId));
 
     // Reorganize visible SLDs in grid or cascade layout
     const handleReorganize = useCallback(
         (mode: LayoutMode) => {
-            const count = visibleSldPanels.length;
+            const count = visibleSldPanelIds.length;
 
             if (count === 0) return;
 
             if (mode === LayoutMode.CASCADE) {
-                visibleSldPanels.forEach((sldPanelId, index) => {
-                    dispatch(
-                        updatePanelPositionAndSize({
-                            panelId: sldPanelId,
-                            position: {
-                                x: NAD_SLD_CONSTANTS.CASCADE_START_X + index * NAD_SLD_CONSTANTS.CASCADE_OFFSET_X,
-                                y: NAD_SLD_CONSTANTS.CASCADE_START_Y,
-                            },
-                            size: {
-                                width: NAD_SLD_CONSTANTS.PANEL_DEFAULT_WIDTH,
-                                height: NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT,
-                            },
-                        })
-                    );
+                visibleSldPanelIds.forEach((panelId, index) => {
+                    updatePanelGeometry(panelId, {
+                        position: {
+                            x: NAD_SLD_CONSTANTS.CASCADE_START_X + index * NAD_SLD_CONSTANTS.CASCADE_OFFSET_X,
+                            y: NAD_SLD_CONSTANTS.CASCADE_START_Y,
+                        },
+                        size: {
+                            width: NAD_SLD_CONSTANTS.PANEL_DEFAULT_WIDTH,
+                            height: NAD_SLD_CONSTANTS.PANEL_DEFAULT_HEIGHT,
+                        },
+                    });
                 });
             } else {
                 // Grid layout: calculate optimal grid dimensions
@@ -79,36 +70,31 @@ export const useSldLayout = ({
                     NAD_SLD_CONSTANTS.GRID_VERTICAL_OFFSET - totalHeight
                 );
 
-                visibleSldPanels.forEach((sldPanelId, index) => {
+                visibleSldPanelIds.forEach((panelId, index) => {
                     const col = index % cols;
                     const row = Math.floor(index / cols);
 
-                    dispatch(
-                        updatePanelPositionAndSize({
-                            panelId: sldPanelId,
-                            position: {
-                                x: NAD_SLD_CONSTANTS.GRID_START_X + col * (panelWidth + NAD_SLD_CONSTANTS.GRID_GAP_X),
-                                y: startY + row * (panelHeight + NAD_SLD_CONSTANTS.GRID_GAP_Y),
-                            },
-                            size: { width: panelWidth, height: panelHeight },
-                        })
-                    );
+                    updatePanelGeometry(panelId, {
+                        position: {
+                            x: NAD_SLD_CONSTANTS.GRID_START_X + col * (panelWidth + NAD_SLD_CONSTANTS.GRID_GAP_X),
+                            y: startY + row * (panelHeight + NAD_SLD_CONSTANTS.GRID_GAP_Y),
+                        },
+                        size: { width: panelWidth, height: panelHeight },
+                    });
                 });
             }
         },
-        [dispatch, visibleSldPanels]
+        [updatePanelGeometry, visibleSldPanelIds]
     );
 
     // Toggle between hide all and show all SLDs
     const toggleHideAll = useCallback(() => {
-        if (visibleSldPanels.length > 0) {
-            dispatch(closeAllAssociatedSlds(nadPanelId));
+        if (visibleSldPanelIds.length > 0) {
+            hideAssociatedSlds(nadPanelId);
         } else {
-            associatedPanelIds.forEach((sldPanelId) => {
-                dispatch(openPanel(sldPanelId));
-            });
+            showAssociatedSlds(nadPanelId);
         }
-    }, [dispatch, visibleSldPanels.length, associatedPanelIds, nadPanelId]);
+    }, [visibleSldPanelIds.length, nadPanelId, hideAssociatedSlds, showAssociatedSlds]);
 
     return {
         handleReorganize,

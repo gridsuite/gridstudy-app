@@ -4,13 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { MAX_FORMULA_CHARACTERS } from '../../constants';
-import { type CustomAggridValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
-export interface ValidationError {
-    error: string;
-}
+import { COLUMN_TYPES, CustomAggridValue, ValidationError } from '../../../../types/custom-aggrid-types';
 
 export function isValidationError(value: unknown): value is ValidationError {
     return !!(typeof value === 'object' && value?.hasOwnProperty('error'));

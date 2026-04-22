@@ -8,12 +8,11 @@
 import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import ReportViewer from '../../report-viewer/report-viewer';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { AppState } from '../../../redux/reducer.type';
+import { ComputingType, BuildStatus } from '@gridsuite/commons-ui';
 import WaitingLoader from '../../utils/waiting-loader';
 import { useReportFetcher } from '../../../hooks/use-report-fetcher';
 import { Report, SeverityLevel } from '../../../utils/report/report.type';
-import { BUILD_STATUS } from 'components/network/constants';
 import { sortSeverityList } from 'utils/report/report-severity';
 
 interface ComputationReportViewerProps {
@@ -27,7 +26,7 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isReportLoading, fetchReport, fetchReportSeverities] = useReportFetcher(reportType);
     const shouldFetchReport = useMemo(
-        () => studyUuid && currentNode?.id && currentNode?.data?.globalBuildStatus !== BUILD_STATUS.NOT_BUILT,
+        () => studyUuid && currentNode?.id && currentNode?.data?.globalBuildStatus !== BuildStatus.NOT_BUILT,
         [studyUuid, currentNode]
     );
 

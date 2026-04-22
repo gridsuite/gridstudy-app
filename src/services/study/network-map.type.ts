@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { LimitsProperty } from '../network-modification-types';
-import { Equipment } from '../../components/dialogs/network-modifications/common/properties/property-utils';
 import { BusBarSections } from '../../components/dialogs/network-modifications/voltage-level/section/voltage-level-section.type';
-import { ConnectablePositionInfos } from '../../components/dialogs/connectivity/connectivity.type';
+import { ConnectablePositionInfos, EquipmentWithProperties } from '@gridsuite/commons-ui';
 
 export type SwitchInfos = {
     id: string;
@@ -31,7 +30,7 @@ interface FeederBay {
 
 export type FeederBaysInfos = Record<string, FeederBay[]>;
 
-export type BranchInfos = Equipment & {
+export type BranchInfos = EquipmentWithProperties & {
     name: string;
     voltageLevelId1: string;
     voltageLevelId2: string;
@@ -40,6 +39,12 @@ export type BranchInfos = Equipment & {
     currentLimits: CurrentLimitsData[];
     selectedOperationalLimitsGroupId1: string;
     selectedOperationalLimitsGroupId2: string;
+    r?: number;
+    x?: number;
+    g1?: number;
+    b1?: number;
+    g2?: number;
+    b2?: number;
 };
 
 export interface CurrentLimitsData {

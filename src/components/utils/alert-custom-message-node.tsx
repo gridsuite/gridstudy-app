@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { mergeSx, type MuiStyles, type SxStyle } from '@gridsuite/commons-ui';
+import { ErrorMessageDescriptor, mergeSx, type MuiStyles, type SxStyle } from '@gridsuite/commons-ui';
 import Alert from '@mui/material/Alert';
 import { FormattedMessage } from 'react-intl';
 
@@ -18,7 +18,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 interface AlertCustomMessageNodeProps {
-    message: string;
+    message: ErrorMessageDescriptor;
     noMargin?: boolean;
     style?: SxStyle;
 }
@@ -28,7 +28,7 @@ const AlertCustomMessageNode = (props: AlertCustomMessageNodeProps) => {
 
     return (
         <Alert sx={mergeSx(!noMargin ? styles.customMessageNode : undefined, style)} severity="warning">
-            <FormattedMessage id={message} />
+            <FormattedMessage id={message.descriptor.id} values={message.values} />
         </Alert>
     );
 };

@@ -4,56 +4,35 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import {
     BooleanCellRenderer,
     DefaultCellRenderer,
     NumericCellRenderer,
-    snackWithFallback,
     SnackInputs,
+    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
 import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { BooleanFilterValue } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import {
-    BooleanFilterValue,
-    updateFilters,
-} from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { FilterConfig, FilterType, SortConfig } from '../../../types/custom-aggrid-types';
-import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
-import {
+    COLUMN_TYPES,
     CustomColDef,
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
+    SortConfig,
     SPREADSHEET_FILTER_NUMBER_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    TableType,
+} from '../../../types/custom-aggrid-types';
+import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import type { UUID } from 'node:crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
 import { ROW_INDEX_COLUMN_ID } from '../constants';
-import { updateSpreadsheetColumn, updateSpreadsheetSort } from 'services/study/study-config';
+import { updateSpreadsheetSort } from 'services/study/study-config';
 import { ColumnDefinition } from '../types/spreadsheet.type';
-import { mapColDefToDto } from '../add-spreadsheet/dialogs/add-spreadsheet-utils';
-
-const updateAndPersistFilters = (
-    colDef: ColumnDefinition,
-    tab: string,
-    snackError: (snackInputs: SnackInputs) => void,
-    api: GridApi,
-    filters: FilterConfig[]
-) => {
-    updateFilters(api, filters);
-    const studyUuid = api.getGridOption('context')?.studyUuid;
-    if (studyUuid) {
-        const filter = filters?.find((f) => f.column === colDef.id);
-        const columnDto = mapColDefToDto(colDef, filter);
-        updateSpreadsheetColumn(studyUuid, tab as UUID, colDef.uuid, columnDto).catch((error) => {
-            snackWithFallback(snackError, error);
-        });
-    }
-};
 
 const persistSort = (
     tab: string,
@@ -87,9 +66,8 @@ export const textColumnDefinition = (
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    type: FilterType.Spreadsheet,
+                    type: TableType.Spreadsheet,
                     tab,
-                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     dataType: FILTER_DATA_TYPES.TEXT,
                     comparators: [
                         FILTER_TEXT_COMPARATORS.STARTS_WITH,
@@ -140,9 +118,8 @@ export const enumColumnDefinition = (
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
                 filterParams: {
-                    type: FilterType.Spreadsheet,
+                    type: TableType.Spreadsheet,
                     tab,
-                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     dataType: FILTER_DATA_TYPES.TEXT,
                     debounceMs: 200,
                 },
@@ -173,9 +150,8 @@ export const numberColumnDefinition = (
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    type: FilterType.Spreadsheet,
+                    type: TableType.Spreadsheet,
                     tab,
-                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     dataType: FILTER_DATA_TYPES.NUMBER,
                     comparators: Object.values(SPREADSHEET_FILTER_NUMBER_COMPARATORS),
                     debounceMs: 500,
@@ -231,10 +207,9 @@ export const booleanColumnDefinition = (
             filterComponent: CustomAggridBooleanFilter,
             filterComponentParams: {
                 filterParams: {
-                    type: FilterType.Spreadsheet,
+                    type: TableType.Spreadsheet,
                     tab,
                     dataType: FILTER_DATA_TYPES.BOOLEAN,
-                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab, snackError),
                     debounceMs: 50,
                 },
             },

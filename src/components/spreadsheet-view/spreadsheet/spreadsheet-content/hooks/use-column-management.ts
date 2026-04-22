@@ -11,7 +11,7 @@ import { ColumnMovedEvent, ColumnState } from 'ag-grid-community';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { ROW_INDEX_COLUMN_STATE } from '../../../constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { updateTableDefinition } from 'redux/actions';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';

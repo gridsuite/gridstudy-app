@@ -7,24 +7,23 @@
 
 import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
+import { RESULT_TYPE, SecurityAnalysisNmkTableRow } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button } from '@mui/material';
 import {
-    RESULT_TYPE,
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer.type';
 import { resultsStyles } from '../common/utils';
-import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { openSLD } from '../../../redux/slices/workspace-slice';
+import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from '../../workspace/types/workspace.types';
+import { FilterEnumsType } from '../../../types/custom-aggrid-types';
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -34,19 +33,17 @@ export interface SecurityAnalysisFilterEnumsType {
 type UseSecurityAnalysisColumnsDefsProps = (
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
-    tabIndex: number,
-    onFilter: () => void
+    tabIndex: number
 ) => ColDef[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
     filterEnums,
     resultType,
-    tabIndex,
-    onFilter
+    tabIndex
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-    const dispatch = useDispatch();
+    const { openSLD } = useWorkspacePanelActions();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -54,10 +51,12 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
 
     const getEnumLabel = useCallback(
         (value: string) =>
-            intl.formatMessage({
-                id: value,
-                defaultMessage: value,
-            }),
+            value
+                ? intl.formatMessage({
+                      id: value,
+                      defaultMessage: value,
+                  })
+                : '',
         [intl]
     );
 
@@ -86,16 +85,16 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                         getBranchSide(side) ?? BranchSide.ONE
                     )
                         .then((voltageLevelId) => {
-                            if (!voltageLevelId) {
+                            if (voltageLevelId) {
+                                vlId = voltageLevelId;
+                            } else {
                                 // if we didnt find a line or transformer, it's a voltage level
                                 vlId = subjectId;
-                            } else {
-                                vlId = voltageLevelId;
                             }
                         })
                         .finally(() => {
                             if (vlId) {
-                                dispatch(openSLD({ id: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL }));
+                                openSLD({ equipmentId: vlId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
                                 return;
                             }
                             console.error(`Impossible to open the SLD for equipment ID '${row.subjectId}'`);
@@ -140,8 +139,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     SubjectIdRenderer,
                     filterEnums.nmk,
                     getEnumLabel,
-                    tabIndex,
-                    onFilter
+                    tabIndex
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -149,13 +147,12 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     SubjectIdRenderer,
                     filterEnums.nmk,
                     getEnumLabel,
-                    tabIndex,
-                    onFilter
+                    tabIndex
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex, onFilter);
+                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex);
         }
-    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, onFilter]);
+    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex]);
 
     return columnDefs;
 };

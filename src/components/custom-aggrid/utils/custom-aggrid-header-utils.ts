@@ -6,7 +6,7 @@
  */
 
 import CustomHeaderComponent from '../custom-aggrid-header';
-import { CustomAggridFilterParams, CustomColDef } from '../custom-aggrid-filters/custom-aggrid-filter.type';
+import { CustomAggridFilterParams, CustomColDef } from '../../../types/custom-aggrid-types';
 
 export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
     context,

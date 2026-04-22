@@ -9,16 +9,29 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
+    emptyProperties,
     EquipmentType,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
+    modificationPropertiesSchema,
     snackWithFallback,
+    toModificationProperties,
     useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
+    toModificationOperation,
+    getConnectivityFormData,
+    getConnectivityWithPositionSchema,
+    getConnectivityWithPositionEmptyFormData,
+    getSetPointsSchema,
+    getSetPointsEmptyFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
-    ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -55,9 +68,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { sanitizeString } from '../../../dialog-utils';
 import GeneratorModificationForm from './generator-modification-form';
-import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
@@ -74,18 +85,6 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyGenerator } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils.type';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import {
     getVoltageRegulationEmptyFormData,
@@ -96,9 +95,7 @@ import {
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
-import { toModificationOperation } from '../../../../utils/utils';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import {
@@ -306,7 +303,7 @@ export default function GeneratorModificationDialog({
                                               },
                                           }
                                         : {}),
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
                                 { keepDirty: true }
                             );

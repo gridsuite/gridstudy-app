@@ -5,7 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import {
+    AttributeModification,
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
+    MODIFICATION_TYPES,
+    sanitizeString,
+    toModificationOperation,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '@gridsuite/commons-ui';
 import yup from '../../../../../utils/yup-config';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -29,21 +38,13 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
 import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
-} from '../../../../connectivity/connectivity-form-utils';
-import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
 } from '../../../../reactive-limits/reactive-limits-utils';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
-import { sanitizeString } from '../../../../dialog-utils';
-import { toModificationOperation } from '../../../../../utils/utils';
-import { ConverterStationElementInfos, ConverterStationElementModificationInfos } from './converter-station-type';
+import { VscConverterStationFormInfos, ConverterStationElementModificationInfos } from './converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
-import { AttributeModification } from '../../../../../../services/network-modification-types';
+import { ConverterStationCreationInfos } from '../../../../../../services/network-modification-types';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -52,25 +53,6 @@ export type UpdateReactiveCapabilityCurveTableConverterStation = (
     index: number,
     converterStationName: 'converterStation1' | 'converterStation2'
 ) => void;
-
-export interface ConverterStationInterfaceEditData {
-    equipmentId: string;
-    equipmentName: string | null;
-    lossFactor: number;
-    reactivePowerSetpoint?: number;
-    voltageRegulationOn: boolean;
-    voltageSetpoint?: number | null;
-    voltageLevelId: string;
-    busOrBusbarSectionId: string;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
-    reactiveCapabilityCurve: boolean;
-    minQ: number | null;
-    maxQ: number | null;
-}
 
 export interface ConverterStationModificationInterfaceEditData {
     equipmentId: string;
@@ -91,37 +73,37 @@ export interface ConverterStationModificationInterfaceEditData {
     maxQ: AttributeModification<number> | null;
 }
 
-export function getVscConverterStationSchema(id: string) {
-    return {
-        [id]: yup.object().shape({
-            [CONVERTER_STATION_ID]: yup.string().nullable().required(),
-            [CONVERTER_STATION_NAME]: yup.string().nullable(),
-            [LOSS_FACTOR]: yup
-                .number()
-                .nullable()
-                .required()
-                .min(0, 'NormalizedPercentage')
-                .max(100, 'NormalizedPercentage'),
-            [VOLTAGE_REGULATION_ON]: yup.boolean(),
-            [REACTIVE_POWER]: yup
-                .number()
-                .nullable()
-                .when([VOLTAGE_REGULATION_ON], {
-                    is: false,
-                    then: (schema) => schema.required(),
-                }),
-            [VOLTAGE]: yup
-                .number()
-                .nullable()
-                .min(0, 'mustBeGreaterOrEqualToZero')
-                .when([VOLTAGE_REGULATION_ON], {
-                    is: true,
-                    then: (schema) => schema.required(),
-                }),
-            ...getConnectivityWithPositionValidationSchema(),
-            ...getReactiveLimitsSchema(false, true),
-        }),
-    };
+export function getVscConverterStationSchema() {
+    return yup.object().shape({
+        [CONVERTER_STATION_ID]: yup.string().nullable().required(),
+        [CONVERTER_STATION_NAME]: yup.string().nullable(),
+        [LOSS_FACTOR]: yup
+            .number()
+            .nullable()
+            .required()
+            .min(0, 'NormalizedPercentage')
+            .max(100, 'NormalizedPercentage'),
+        [VOLTAGE_REGULATION_ON]: yup.boolean(),
+        [REACTIVE_POWER]: yup
+            .number()
+            .nullable()
+            .default(null)
+            .when([VOLTAGE_REGULATION_ON], {
+                is: false,
+                then: (schema) => schema.required(),
+            }),
+        [VOLTAGE]: yup
+            .number()
+            .nullable()
+            .default(null)
+            .min(0, 'mustBeGreaterOrEqualToZero')
+            .when([VOLTAGE_REGULATION_ON], {
+                is: true,
+                then: (schema) => schema.required(),
+            }),
+        ...getConnectivityWithPositionValidationSchema(),
+        ...getReactiveLimitsSchema(false, true),
+    });
 }
 
 export function getVscConverterStationModificationSchema(id: string) {
@@ -138,18 +120,16 @@ export function getVscConverterStationModificationSchema(id: string) {
     };
 }
 
-export function getVscConverterStationEmptyFormData(id: string, isModification = false) {
+export function getVscConverterStationEmptyFormData(isModification = false) {
     return {
-        [id]: {
-            [CONVERTER_STATION_ID]: isModification ? '' : null,
-            [CONVERTER_STATION_NAME]: isModification ? '' : null,
-            [LOSS_FACTOR]: null,
-            [REACTIVE_POWER]: null,
-            [VOLTAGE_REGULATION_ON]: isModification ? null : false,
-            [VOLTAGE]: null,
-            ...getConnectivityWithPositionEmptyFormData(),
-            ...getReactiveLimitsEmptyFormData(),
-        },
+        [CONVERTER_STATION_ID]: isModification ? '' : null,
+        [CONVERTER_STATION_NAME]: isModification ? '' : null,
+        [LOSS_FACTOR]: null,
+        [REACTIVE_POWER]: null,
+        [VOLTAGE_REGULATION_ON]: isModification ? null : false,
+        [VOLTAGE]: null,
+        ...getConnectivityWithPositionEmptyFormData(),
+        ...getReactiveLimitsEmptyFormData(),
     };
 }
 
@@ -205,7 +185,7 @@ export function getConverterStationModificationData(
     };
 }
 
-export function getConverterStationFormEditData(id: string, converterStation: ConverterStationInterfaceEditData) {
+export function getConverterStationFormEditData(id: string, converterStation: ConverterStationCreationInfos) {
     return {
         [id]: {
             [CONVERTER_STATION_ID]: converterStation?.equipmentId,
@@ -252,7 +232,7 @@ export function getConverterStationModificationFormEditData(
     };
 }
 
-function getConverterStationReactiveLimits(converterStation: ConverterStationInterfaceEditData) {
+function getConverterStationReactiveLimits(converterStation: ConverterStationCreationInfos) {
     return converterStation.reactiveCapabilityCurve
         ? getReactiveLimitsFormData({
               reactiveCapabilityCurveChoice: 'CURVE',
@@ -283,29 +263,27 @@ function getConverterStationModificationReactiveLimits(
     };
 }
 
-export function getConverterStationFromSearchCopy(id: string, converterStation: ConverterStationElementInfos) {
+export function getConverterStationFromSearchCopy(converterStation?: VscConverterStationFormInfos) {
     return {
-        [id]: {
-            [CONVERTER_STATION_ID]: converterStation.id + '(1)',
-            [CONVERTER_STATION_NAME]: converterStation?.name ?? '',
-            [LOSS_FACTOR]: converterStation.lossFactor,
-            [REACTIVE_POWER]: converterStation?.reactivePowerSetpoint,
-            [VOLTAGE_REGULATION_ON]: converterStation.voltageRegulatorOn,
-            [VOLTAGE]: converterStation?.voltageSetpoint,
-            ...getConnectivityFormData({
-                voltageLevelId: converterStation?.voltageLevelId,
-                busbarSectionId: converterStation?.busOrBusbarSectionId,
-                connectionDirection: converterStation?.connectablePosition?.connectionDirection,
-                connectionName: converterStation?.connectablePosition?.connectionName,
-                connectionPosition: null,
-                terminalConnected: true,
-            }),
-            ...getReactiveLimitsFormData({
-                reactiveCapabilityCurveChoice: converterStation?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
-                minimumReactivePower: converterStation?.minMaxReactiveLimits?.minQ,
-                maximumReactivePower: converterStation?.minMaxReactiveLimits?.maxQ,
-                reactiveCapabilityCurvePoints: converterStation.reactiveCapabilityCurvePoints ?? null,
-            }),
-        },
+        [CONVERTER_STATION_ID]: converterStation?.id + '(1)',
+        [CONVERTER_STATION_NAME]: converterStation?.name ?? '',
+        [LOSS_FACTOR]: converterStation?.lossFactor,
+        [REACTIVE_POWER]: converterStation?.reactivePowerSetpoint,
+        [VOLTAGE_REGULATION_ON]: converterStation?.voltageRegulatorOn,
+        [VOLTAGE]: converterStation?.voltageSetpoint,
+        ...getConnectivityFormData({
+            voltageLevelId: converterStation?.voltageLevelId,
+            busbarSectionId: converterStation?.busOrBusbarSectionId,
+            connectionDirection: converterStation?.connectablePosition?.connectionDirection,
+            connectionName: converterStation?.connectablePosition?.connectionName,
+            connectionPosition: null,
+            terminalConnected: true,
+        }),
+        ...getReactiveLimitsFormData({
+            reactiveCapabilityCurveChoice: converterStation?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
+            minimumReactivePower: converterStation?.minMaxReactiveLimits?.minQ,
+            maximumReactivePower: converterStation?.minMaxReactiveLimits?.maxQ,
+            reactiveCapabilityCurvePoints: converterStation?.reactiveCapabilityCurvePoints ?? null,
+        }),
     };
 }

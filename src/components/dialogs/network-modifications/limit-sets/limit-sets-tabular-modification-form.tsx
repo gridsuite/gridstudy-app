@@ -13,6 +13,7 @@ import {
     BooleanNullableCellRenderer,
     CustomAGGrid,
     DefaultCellRenderer,
+    EquipmentType,
     ErrorInput,
     FieldErrorAlert,
     IntegerInput,
@@ -26,7 +27,6 @@ import {
     MODIFICATIONS_TABLE,
     TYPE,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
 import Papa from 'papaparse';
@@ -35,10 +35,9 @@ import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import { isFieldTypeOk, setFieldTypeError, TabularField, transformIfFrenchNumber } from '../tabular/tabular-common';
 import {
-    LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
 } from '../tabular/tabular-modification-utils';
@@ -51,6 +50,8 @@ const styles = {
 export interface TabularModificationFormProps {
     dataFetching: boolean;
 }
+
+const equipmentTypesOptions = [EquipmentType.LINE, EquipmentType.TWO_WINDINGS_TRANSFORMER];
 
 export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<TabularModificationFormProps>) {
     const intl = useIntl();
@@ -215,12 +216,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         setIsFetching(dataFetching);
     }, [dataFetching]);
 
-    const typesOptions = useMemo(() => {
-        return Object.keys(LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS).filter(
-            (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
-        );
-    }, []);
-
     useEffect(() => {
         if (selectedFileError) {
             setValue(MODIFICATIONS_TABLE, []);
@@ -252,7 +247,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         <AutocompleteInput
             name={TYPE}
             label="Type"
-            options={typesOptions}
+            options={equipmentTypesOptions}
             onChangeCallback={handleChange}
             getOptionLabel={(option: any) => getTypeLabel(option as string)}
             size={'small'}

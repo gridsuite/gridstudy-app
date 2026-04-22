@@ -8,7 +8,6 @@
 import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { EquipmentTable } from './equipment-table';
 import { type Identifiable, type MuiStyles } from '@gridsuite/commons-ui';
-import { type CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
@@ -16,19 +15,23 @@ import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
-import { useFilterSelector } from 'hooks/use-filter-selector';
-import { FilterType } from 'types/custom-aggrid-types';
-import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { CustomColDef, FilterConfig, TableType } from 'types/custom-aggrid-types';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useNodeAliases } from '../../hooks/use-node-aliases';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer.type';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
-import { openSLD, updatePanelMetadata } from '../../../../redux/slices/workspace-slice';
+import type { RootState } from '../../../../redux/store';
+import { selectPanelTargetEquipment } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
+import { useWorkspacePanelActions } from '../../../workspace/hooks/use-workspace-panel-actions';
+import { updateAgGridFilters } from '../../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { getColumnFiltersFromState } from '../../../../redux/selectors/filter-selectors';
+
+import { SPREADSHEET_INVALID_CELL_CLASS } from '../../columns/utils/column-mapper';
 
 const styles = {
     table: (theme) => ({
@@ -38,6 +41,9 @@ const styles = {
         // Hide the vertical scrollbar for pinned bottom rows
         '.ag-floating-bottom.ag-selectable': {
             overflowY: 'hidden !important',
+        },
+        [`.ag-cell.${SPREADSHEET_INVALID_CELL_CLASS}`]: {
+            color: theme.palette.text.disabled,
         },
     }),
     invalidNode: {
@@ -54,7 +60,6 @@ interface SpreadsheetContentProps {
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
     disabled: boolean;
-    equipmentId: string | null;
     registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
     active: boolean;
 }
@@ -67,22 +72,30 @@ export const SpreadsheetContent = memo(
         tableDefinition,
         columns,
         disabled,
-        equipmentId,
         registerRowCounterEvents,
         active,
     }: SpreadsheetContentProps) => {
         const [isGridReady, setIsGridReady] = useState(false);
+        const targetEquipment = useSelector((state: RootState) => selectPanelTargetEquipment(state, panelId));
         const { nodeAliases } = useNodeAliases();
+        const { openSLD, clearTargetEquipment } = useWorkspacePanelActions();
         const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
         const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
         const { fetchNodesEquipmentData } = useFetchEquipment();
 
         // Initial data loading for this type when the tab is opened
         useEffect(() => {
-            if (active && nodesIds.length > 0 && Object.keys(equipments.equipmentsByNodeId).length === 0) {
+            if (active && nodesIds.length > 0 && !equipments.isInitialized && !equipments.isFetching) {
                 fetchNodesEquipmentData(tableDefinition?.type, new Set(nodesIds));
             }
-        }, [active, nodesIds, equipments.equipmentsByNodeId, fetchNodesEquipmentData, tableDefinition?.type]);
+        }, [
+            active,
+            nodesIds,
+            equipments.isInitialized,
+            fetchNodesEquipmentData,
+            tableDefinition?.type,
+            equipments.isFetching,
+        ]);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
@@ -102,31 +115,22 @@ export const SpreadsheetContent = memo(
                 equipmentType: tableDefinition?.type,
             });
 
-        const dispatch = useDispatch();
-
         const handleEquipmentScroll = useCallback(() => {
-            if (equipmentId && gridRef.current?.api && isGridReady) {
-                const selectedRow = gridRef.current.api.getRowNode(equipmentId);
+            const targetEquipmentId = targetEquipment?.targetEquipmentId;
+            if (targetEquipmentId && gridRef.current?.api && isGridReady) {
+                const selectedRow = gridRef.current.api.getRowNode(targetEquipmentId);
                 if (selectedRow) {
                     gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
                     selectedRow.setSelected(true, true);
-                    // Clear the metadata after successfully scrolling to equipment
-                    dispatch(
-                        updatePanelMetadata({
-                            panelId,
-                            metadata: {
-                                targetEquipmentId: undefined,
-                                targetEquipmentType: undefined,
-                            },
-                        })
-                    );
+                    // Clear the target equipment after successfully scrolling
+                    clearTargetEquipment(panelId);
                 }
             }
-        }, [equipmentId, gridRef, isGridReady, dispatch, panelId]);
+        }, [targetEquipment, gridRef, isGridReady, clearTargetEquipment, panelId]);
 
         useEffect(() => {
             handleEquipmentScroll();
-        }, [handleEquipmentScroll, equipmentId]);
+        }, [handleEquipmentScroll]);
 
         const onFirstDataRendered = useCallback(() => {
             handleEquipmentScroll();
@@ -174,7 +178,9 @@ export const SpreadsheetContent = memo(
             }
         }, [transformedRowData, gridRef, isGridReady]);
 
-        const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
+        const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
+            getColumnFiltersFromState(state, TableType.Spreadsheet, tableDefinition?.uuid)
+        );
 
         useEffect(() => {
             const api = gridRef.current?.api;
@@ -190,7 +196,7 @@ export const SpreadsheetContent = memo(
             if (!api || !isGridReady) {
                 return;
             }
-            updateFilters(api, filters);
+            updateAgGridFilters(api, filters);
         }, [filters, gridRef, isGridReady, equipments, tableDefinition?.columns]);
 
         const handleModify = useCallback(
@@ -206,9 +212,9 @@ export const SpreadsheetContent = memo(
                     tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
                         ? PanelType.SLD_SUBSTATION
                         : PanelType.SLD_VOLTAGE_LEVEL;
-                dispatch(openSLD({ id: equipmentId, panelType }));
+                openSLD({ equipmentId: equipmentId, panelType });
             },
-            [dispatch, tableDefinition?.type]
+            [openSLD, tableDefinition?.type]
         );
 
         return (

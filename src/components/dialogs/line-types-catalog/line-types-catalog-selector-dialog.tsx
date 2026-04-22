@@ -6,9 +6,9 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { CustomFormProvider, Option, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, DeepNullable, Option, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
+import { AreaTemperatureShapeFactorInfo, CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import {
     AERIAL_AREAS,
     AERIAL_TEMPERATURES,
@@ -18,12 +18,11 @@ import {
     UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
-import { getLineTypeWithLimits } from '../../../services/network-modification';
+import { getLineTypeWithAreaAndTemperature } from '../../../services/network-modification';
 import { ModificationDialog } from '../commons/modificationDialog';
 import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { DeepNullable } from 'components/utils/ts-utils';
-import LineTypesCatalogSelectorForm from './line-types-catalog-selector-form';
+import LineTypesCatalogSelectorForm, { LineCatalogParams } from './line-types-catalog-selector-form';
 
 const formSchema = yup
     .object()
@@ -83,17 +82,17 @@ const emptyFormData = {
 export type LineTypesCatalogSelectorDialogSchemaForm = yup.InferType<typeof formSchema>;
 
 export type LineTypesCatalogSelectorDialogProps = {
-    onSelectLine: (selectedLine: LineTypeInfo) => void;
-    preselectedRowId: string;
+    onSelectLine: (selectedLine: LineTypeInfo, selectedAreaAndTemperature: AreaTemperatureShapeFactorInfo) => void;
     rowData: LineTypeInfo[];
     onClose: () => void;
+    getPreselectedParams?: () => LineCatalogParams;
 };
 
 export default function LineTypesCatalogSelectorDialog({
     onSelectLine,
-    preselectedRowId,
     rowData,
     onClose,
+    getPreselectedParams,
     ...dialogProps
 }: Readonly<LineTypesCatalogSelectorDialogProps>) {
     const { snackError } = useSnackMessage();
@@ -109,59 +108,30 @@ export default function LineTypesCatalogSelectorDialog({
     });
     const { setValue, getValues } = formMethods;
 
-    const handleSelectedAerial = useCallback(
-        (selectedAerialRow: LineTypeInfo) => {
-            const selectedArea = getValues(AERIAL_AREAS);
-            const selectedTemperature = getValues(AERIAL_TEMPERATURES);
+    const handleSelectedAerial = useCallback((): AreaTemperatureShapeFactorInfo => {
+        const selectedArea = getValues(AERIAL_AREAS);
+        const selectedTemperature = getValues(AERIAL_TEMPERATURES);
+        return { area: selectedArea?.id, temperature: selectedTemperature?.id } as AreaTemperatureShapeFactorInfo;
+    }, [getValues]);
 
-            if (areasOptions?.length > 0 && aerialTemperatures?.length > 0) {
-                const filteredLimits = selectedAerialRow?.limitsForLineType?.filter(
-                    (limit) => limit?.area === selectedArea?.id && limit?.temperature === selectedTemperature?.id
-                );
-                selectedAerialRow.limitsForLineType = filteredLimits ? filteredLimits : [];
-            }
-        },
-        [getValues, areasOptions?.length, aerialTemperatures?.length]
-    );
-
-    const handleSelectedUnderground = useCallback(
-        (selectedUndergroundRow: LineTypeInfo) => {
-            const selectedArea = getValues(UNDERGROUND_AREAS);
-            const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
-
-            const areaId = selectedArea?.id;
-            const shapeFactorId = selectedShapeFactor?.id;
-
-            if (areasOptions.length > 0 && areaId && shapeFactorId) {
-                const filteredLimits = selectedUndergroundRow?.limitsForLineType?.filter(
-                    (limit) => limit?.area === areaId
-                );
-
-                if (filteredLimits) {
-                    const shapeFactorValue = parseFloat(shapeFactorId);
-                    if (!isNaN(shapeFactorValue) && shapeFactorValue !== 0) {
-                        filteredLimits.forEach((limit) => {
-                            limit.permanentLimit = Math.floor(limit.permanentLimit / shapeFactorValue);
-                        });
-                        selectedUndergroundRow.limitsForLineType = filteredLimits;
-                    }
-                } else {
-                    selectedUndergroundRow.limitsForLineType = [];
-                }
-            }
-        },
-        [getValues, areasOptions]
-    );
+    const handleSelectedUnderground = useCallback((): AreaTemperatureShapeFactorInfo => {
+        const selectedArea = getValues(UNDERGROUND_AREAS);
+        const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
+        const areaId = selectedArea?.id;
+        const shapeFactorId = selectedShapeFactor?.id;
+        const numericShapeFactor = shapeFactorId ? Number(shapeFactorId) : null;
+        return { area: areaId, shapeFactor: numericShapeFactor } as AreaTemperatureShapeFactorInfo;
+    }, [getValues]);
 
     const onSubmit = useCallback(() => {
+        let selectedAreaAndTemperature = { area: null, temperature: null } as AreaTemperatureShapeFactorInfo;
         if (selectedRow?.category === CATEGORIES_TABS.AERIAL.name) {
-            handleSelectedAerial(selectedRow);
+            selectedAreaAndTemperature = handleSelectedAerial();
         } else if (selectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name) {
-            handleSelectedUnderground(selectedRow);
+            selectedAreaAndTemperature = handleSelectedUnderground();
         }
-
-        selectedRow && onSelectLine?.(selectedRow);
-    }, [selectedRow, handleSelectedAerial, handleSelectedUnderground, onSelectLine]);
+        selectedRow && onSelectLine?.(selectedRow, selectedAreaAndTemperature);
+    }, [selectedRow, handleSelectedUnderground, handleSelectedAerial, onSelectLine]);
 
     const createOptionsFromAreas = (limitsData?: CurrentLimitsInfo[]) => {
         if (!limitsData?.length) {
@@ -192,7 +162,7 @@ export default function LineTypesCatalogSelectorDialog({
     const handleSelectedRowData = useCallback(
         async (selectedData: LineTypeInfo) => {
             try {
-                const lineTypeWithLimits = await getLineTypeWithLimits(selectedData.id);
+                const lineTypeWithLimits = await getLineTypeWithAreaAndTemperature(selectedData.id);
                 selectedData.limitsForLineType = lineTypeWithLimits.limitsForLineType;
                 selectedData.shapeFactors = lineTypeWithLimits.shapeFactors;
                 setSelectedRow(selectedData);
@@ -218,16 +188,22 @@ export default function LineTypesCatalogSelectorDialog({
         [setValue, snackError]
     );
 
-    const onSelectionChanged = useCallback(() => {
+    const onRowClicked = useCallback(() => {
         const selectedRows = gridRef.current?.api?.getSelectedRows();
         if (selectedRows?.length) {
             setValue(AERIAL_AREAS, null);
             setValue(AERIAL_TEMPERATURES, null);
             setValue(UNDERGROUND_AREAS, null);
             setValue(UNDERGROUND_SHAPE_FACTORS, null);
+        }
+    }, [setValue]);
+
+    const onSelectionChanged = useCallback(() => {
+        const selectedRows = gridRef.current?.api?.getSelectedRows();
+        if (selectedRows?.length) {
             handleSelectedRowData(selectedRows[0]).then();
         }
-    }, [handleSelectedRowData, setValue]);
+    }, [handleSelectedRowData]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -247,12 +223,13 @@ export default function LineTypesCatalogSelectorDialog({
                 <LineTypesCatalogSelectorForm
                     gridRef={gridRef}
                     selectedRow={selectedRow}
-                    preselectedRowId={preselectedRowId}
                     rowData={rowData}
+                    onRowClicked={onRowClicked}
                     onSelectionChanged={onSelectionChanged}
                     areasOptions={areasOptions}
                     aerialTemperatures={aerialTemperatures}
                     undergroundShapeFactor={undergroundShapeFactors}
+                    getPreselectedRowData={getPreselectedParams}
                 />
             </ModificationDialog>
         </CustomFormProvider>

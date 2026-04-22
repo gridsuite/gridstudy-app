@@ -25,13 +25,11 @@ import {
     TEMPORARY_LIMITS_MODIFICATION_TYPE,
     TYPE,
 } from '../../../utils/field-constants';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import yup from '../../../utils/yup-config';
 import type { UUID } from 'node:crypto';
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
-import { toModificationOperation } from '../../../utils/utils';
-import { AttributeModification } from '../../../../services/network-modification-types';
 import { APPLICABILITY } from '../../../network/constants';
+import { AttributeModification, EquipmentType, toModificationOperation } from '@gridsuite/commons-ui';
 
 type TemporaryLimit = {
     name: AttributeModification<string>;
@@ -220,7 +218,7 @@ export type SchemaType = yup.InferType<typeof formSchema>;
 export type ModificationRow = SchemaType[typeof MODIFICATIONS_TABLE][number];
 
 export const emptyFormData: SchemaType = {
-    [TYPE]: EQUIPMENT_TYPES.LINE,
+    [TYPE]: EquipmentType.LINE,
     [AMOUNT_TEMPORARY_LIMITS]: DEFAULT_TEMPORARY_LIMITS,
     [MODIFICATIONS_TABLE]: [],
     [CSV_FILENAME]: '',

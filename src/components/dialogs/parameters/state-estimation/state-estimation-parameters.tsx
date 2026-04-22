@@ -11,16 +11,16 @@ import {
     PopupConfirmationDialog,
     snackWithFallback,
     SubmitButton,
+    TabPanel,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
-import { TabPanel } from '../parameters';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import { FormattedMessage } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import {
     fromStateEstimationParametersFormToParamValues,
     fromStateEstimationParametersParamToFormValues,

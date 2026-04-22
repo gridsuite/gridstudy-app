@@ -18,9 +18,16 @@ export class MathJsValidationError extends Error {
     }
 }
 
+// Solve the problem of numeric index for Record (RatioTapChanger and PhaseTapChanger)
+function transformExpression(expr: string): string {
+    const regex = /((?:phase|ratio)TapChanger)\.steps\[([^\]]*)\]/g;
+    return expr.replaceAll(regex, `$1.steps[string($2)]`);
+}
+
 const originalEvaluate = instance.evaluate;
 export const limitedEvaluate = (expr: string | string[], scope?: object) => {
-    const result = originalEvaluate(expr, scope);
+    const transformedExpression: string | string[] = typeof expr === 'string' ? transformExpression(expr) : expr;
+    const result = originalEvaluate(transformedExpression, scope);
     if (typeof result === 'function') {
         throw new MathJsValidationError('spreadsheet/formula/function-reference/disabled');
     }

@@ -12,7 +12,7 @@ import { Box, useTheme } from '@mui/material';
 import { RowClassParams } from 'ag-grid-community';
 
 import { ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 
@@ -23,6 +23,7 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';
+import { TableType } from 'types/custom-aggrid-types';
 
 export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({
     result,
@@ -104,6 +105,8 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}
+                    computationType={TableType.StateEstimation}
+                    computationSubType={tableName}
                 />
             </>
         );

@@ -33,15 +33,14 @@ export interface CaseInfos {
     caseFormat: string | null;
 }
 
-export interface ExcludedNetworkModifications {
-    rootNetworkUuid: UUID;
-    modificationUuidsToExclude: UUID[];
-}
-
 export enum NetworkModificationCopyType {
     COPY = 'COPY',
     MOVE = 'MOVE',
-    INSERT = 'INSERT',
+}
+
+export enum CompositeModificationAction {
+    SPLIT = 'SPLIT', // the network modifications contained into the composite modifications are extracted and inserted one by one
+    INSERT = 'INSERT', // the composite modifications are fully inserted as composite modifications
 }
 
 export interface NetworkModificationCopyInfos {

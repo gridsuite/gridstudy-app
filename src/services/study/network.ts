@@ -14,15 +14,17 @@ import {
     EquipmentType,
     ExtendedEquipmentType,
     type Identifiable,
+    safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
+import { EQUIPMENT_INFOS_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { getQueryParamsList } from '../utils';
 import { BusBarSectionsInfos, FeederBaysInfos, SwitchInfos } from './network-map.type';
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';
 import { isBlankOrEmpty } from '../../components/utils/validation-functions';
+import { NetworkExportInfos } from '../study-types';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
@@ -209,7 +211,7 @@ export async function fetchNetworkElementsInfos<T extends Identifiable[] = Ident
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     substationsIds: string[] | undefined,
-    elementType: string, //TODO found which EQUIPMENT_TYPES enum to use
+    elementType: EquipmentType,
     infoType: string, // TODO migrate to EquipmentInfosTypes
     inUpstreamBuiltParentNode?: boolean,
     nominalVoltages?: number[]
@@ -251,7 +253,7 @@ export function fetchNetworkElementInfos(
     studyUuid: string | undefined | null,
     currentNodeUuid: UUID | undefined,
     currentRootNetworkUuid: string | undefined | null,
-    elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES | SpreadsheetEquipmentType,
+    elementType: EquipmentType | ExtendedEquipmentType | SpreadsheetEquipmentType,
     infoType: string,
     elementId: string,
     inUpstreamBuiltParentNode: boolean
@@ -289,7 +291,7 @@ export function fetchSubstationsMapInfos(
         currentNodeUuid,
         currentRootNetworkUuid,
         substationsIds,
-        EQUIPMENT_TYPES.SUBSTATION,
+        EquipmentType.SUBSTATION,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
@@ -307,7 +309,7 @@ export function fetchLinesMapInfos(
         currentNodeUuid,
         currentRootNetworkUuid,
         substationsIds,
-        EQUIPMENT_TYPES.LINE,
+        EquipmentType.LINE,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
@@ -325,7 +327,7 @@ export function fetchTieLinesMapInfos(
         currentNodeUuid,
         currentRootNetworkUuid,
         substationsIds,
-        EQUIPMENT_TYPES.TIE_LINE,
+        EquipmentType.TIE_LINE,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
@@ -343,7 +345,7 @@ export function fetchHvdcLinesMapInfos(
         currentNodeUuid,
         currentRootNetworkUuid,
         substationsIds,
-        EQUIPMENT_TYPES.HVDC_LINE,
+        EquipmentType.HVDC_LINE,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
@@ -360,7 +362,7 @@ export function fetchVoltageLevelsListInfos(
         currentNodeUuid,
         currentRootNetworkUuid,
         substationsIds,
-        EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+        EquipmentType.VOLTAGE_LEVEL,
         EQUIPMENT_INFOS_TYPES.LIST.type,
         true
     );
@@ -377,7 +379,7 @@ export function fetchVoltageLevelsMapInfos(
         currentNodeUuid,
         currentRootNetworkUuid,
         substationsIds,
-        EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+        EquipmentType.VOLTAGE_LEVEL,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         true
     );
@@ -405,21 +407,28 @@ export function exportNetworkFile(
     nodeUuid: UUID,
     rootNetworkUuid: UUID,
     params: Record<string, any>,
-    selectedFormat: string,
-    fileName: string
+    exportInfos: NetworkExportInfos
 ): Promise<UUID> {
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
         '/export-network/' +
-        selectedFormat;
+        exportInfos.selectedFormat;
 
     const urlSearchParams = new URLSearchParams();
     if (Object.keys(params).length > 0) {
         const paramsJson = JSON.stringify(params);
         urlSearchParams.append('formatParameters', paramsJson);
     }
-    if (!isBlankOrEmpty(fileName)) {
-        urlSearchParams.append('fileName', fileName);
+    if (!isBlankOrEmpty(exportInfos.fileName)) {
+        urlSearchParams.append('fileName', exportInfos.fileName);
+    }
+
+    urlSearchParams.append('exportToGridExplore', String(exportInfos.exportToGridExplore));
+    if (exportInfos?.parentDirectoryUuid && !isBlankOrEmpty(exportInfos.parentDirectoryUuid)) {
+        urlSearchParams.append('parentDirectoryUuid', exportInfos.parentDirectoryUuid);
+    }
+    if (exportInfos?.description && !isBlankOrEmpty(exportInfos.description)) {
+        urlSearchParams.append('description', exportInfos.description);
     }
 
     const suffix = urlSearchParams.toString() ? '?' + urlSearchParams.toString() : '';
@@ -428,6 +437,11 @@ export function exportNetworkFile(
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
     });
+}
+
+export function fetchExportNetworkFile(exportUuid: UUID) {
+    const url = PREFIX_STUDY_QUERIES + '/v1/download-file/' + exportUuid;
+    return backendFetch(url);
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {

@@ -10,7 +10,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { DisplayRounding } from '../display-rounding';
 import { useIntl } from 'react-intl';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
-import { FILTER_DATA_TYPES } from './custom-aggrid-filter.type';
+import { FILTER_DATA_TYPES } from '../../../types/custom-aggrid-types';
 
 const styles = {
     input: {

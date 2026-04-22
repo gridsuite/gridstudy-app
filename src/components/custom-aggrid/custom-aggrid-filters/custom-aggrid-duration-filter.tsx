@@ -11,8 +11,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
-import { CustomAggridFilterParams } from './custom-aggrid-filter.type';
+import { useCustomAggridColumnFilter } from './hooks/use-custom-aggrid-column-filter';
+
+import { CustomAggridFilterParams } from '../../../types/custom-aggrid-types';
 
 const styles = {
     containerStyle: {
@@ -36,11 +37,11 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({ api, colId, filterParams }) => {
+const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({ colId, filterParams }) => {
     const intl = useIntl();
 
     const { selectedFilterData, selectedFilterComparator, handleChangeFilterValue, handleChangeComparator } =
-        useCustomAggridFilter(api, colId, filterParams);
+        useCustomAggridColumnFilter(colId, filterParams);
 
     const {
         comparators = [], // used for text filter as a UI type (examples: contains, startsWith..)

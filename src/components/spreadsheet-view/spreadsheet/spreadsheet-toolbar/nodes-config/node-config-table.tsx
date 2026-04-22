@@ -8,10 +8,10 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { SELECTED } from '../../../../utils/field-constants';
-import { DndTable, DndColumn, DndColumnType } from '@gridsuite/commons-ui';
+import { DndColumn, DndColumnType, DndTable } from '@gridsuite/commons-ui';
 import { useFieldArray } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { AppState } from '../../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { NODE_ALIAS, NODE_NAME, NODES_ALIASES, NODES_ALIASES_MAX_NUMBER } from './nodes-config-dialog.utils';
 

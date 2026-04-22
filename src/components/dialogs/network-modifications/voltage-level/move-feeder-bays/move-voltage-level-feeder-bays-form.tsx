@@ -8,11 +8,10 @@ import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
-import { filledTextField } from '../../../dialog-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import HeaderWithTooltip from '../topology-modification/header-with-tooltip';
-import { AutocompleteInput, CustomAGGrid, TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomAGGrid, filledTextField, TextInput } from '@gridsuite/commons-ui';
 import {
     BUSBAR_SECTION_ID,
     BUSBAR_SECTION_IDS,
@@ -27,7 +26,6 @@ import FeederBayDirectionCellRenderer from './feeder-bay-direction-cell-render';
 import GridItem from '../../../commons/grid-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
-import type { UUID } from 'node:crypto';
 import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import SeparatorCellRenderer from '../topology-modification/separator-cell-renderer';
@@ -45,8 +43,6 @@ interface MoveVoltageLevelFeederBaysFormProps {
     currentNode: CurrentTreeNode;
     selectedId: string;
     isUpdate: boolean;
-    currentRootNetworkUuid: UUID;
-    studyUuid: UUID;
     isReady: boolean;
     feederBaysPreviousValues: FeederBays;
 }
@@ -55,8 +51,6 @@ export function MoveVoltageLevelFeederBaysForm({
     currentNode,
     selectedId,
     isUpdate,
-    currentRootNetworkUuid,
-    studyUuid,
     feederBaysPreviousValues,
     isReady = false,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
@@ -375,12 +369,9 @@ export function MoveVoltageLevelFeederBaysForm({
             </Grid>
             <Box>
                 <PositionDiagramPane
-                    studyUuid={studyUuid}
                     open={isDiagramPaneOpen}
                     onClose={handleCloseDiagramPane}
                     voltageLevelId={selectedId}
-                    currentNodeUuid={currentNode?.id}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Box>
         </Grid>

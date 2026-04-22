@@ -52,20 +52,29 @@ export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
 
     return (
         <Box
-            position={'absolute'}
-            visibility={'visible'} // react-flow sometimes hides nodes for obscure reasons
-            top={labeledGroupTopPosition}
-            left={labeledGroupLeftPosition}
-            height={labeledGroupHeight}
-            width={labeledGroupWidth}
-            sx={styles.border}
+            // react-flow needs a non-absolute, non-empty node with height and width to calculate
+            // the global size of the tree for its fitView function.
+            height="0"
+            width="0"
+            visibility="hidden"
         >
-            {zoom >= 0.5 && (
-                <Box sx={styles.label}>
-                    <SecurityIcon sx={{ fontSize: '12px' }} />
-                    <FormattedMessage id="labeledGroupSecurity" />
-                </Box>
-            )}
+            &nbsp;
+            <Box
+                position={'absolute'}
+                visibility={'visible'}
+                top={labeledGroupTopPosition}
+                left={labeledGroupLeftPosition}
+                height={labeledGroupHeight}
+                width={labeledGroupWidth}
+                sx={styles.border}
+            >
+                {zoom >= 0.5 && (
+                    <Box sx={styles.label}>
+                        <SecurityIcon sx={{ fontSize: '12px' }} />
+                        <FormattedMessage id="labeledGroupSecurity" />
+                    </Box>
+                )}
+            </Box>
         </Box>
     );
 }

@@ -7,9 +7,10 @@
 
 import { useMemo, useState, type FC } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Menu, TextField, MenuItem, ListItemText, InputAdornment, Box } from '@mui/material';
+import { Menu, TextField, MenuItem, ListItemText, InputAdornment, MenuList } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import type { MuiStyles } from '@gridsuite/commons-ui';
+import { List, type RowComponentProps } from 'react-window';
 
 const styles = {
     textField: {
@@ -18,11 +19,48 @@ const styles = {
         position: 'sticky',
         top: 0,
     },
-    menuList: {
-        maxHeight: 300,
-        overflow: 'auto',
-    },
 } as const satisfies MuiStyles;
+
+const ITEM_HEIGHT = 36;
+const MAX_VISIBLE_ITEMS = 8;
+
+const VirtualizedMenuItem = ({
+    index,
+    style,
+    data,
+    searchTerm,
+    onSelect,
+}: RowComponentProps<{
+    data: string[];
+    searchTerm: string;
+    onSelect: (id: string) => void;
+}>) => {
+    const vlId = data[index];
+
+    const highlightText = (text: string, highlight: string) => {
+        if (!highlight) {
+            return text;
+        }
+        const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+        return (
+            <span>
+                {parts.map((part, partIndex) =>
+                    part.toLowerCase() === highlight.toLowerCase() ? (
+                        <strong key={`${part}-${partIndex}`}>{part}</strong>
+                    ) : (
+                        <span key={`${part}-${partIndex}`}>{part}</span>
+                    )
+                )}
+            </span>
+        );
+    };
+
+    return (
+        <MenuItem key={vlId} onClick={() => onSelect(vlId)} style={style}>
+            <ListItemText primary={highlightText(vlId, searchTerm)} />
+        </MenuItem>
+    );
+};
 
 interface VoltageLevelSearchMenuProps {
     open: boolean;
@@ -65,27 +103,6 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
         });
     }, [searchTerm, voltageLevels]);
 
-    const highlightText = useMemo(
-        () => (text: string, highlight: string) => {
-            if (!highlight) {
-                return text;
-            }
-            const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
-            return (
-                <span>
-                    {parts.map((part, partIndex) =>
-                        part.toLowerCase() === highlight.toLowerCase() ? (
-                            <strong key={`${part}-${partIndex}`}>{part}</strong>
-                        ) : (
-                            <span key={`${part}-${partIndex}`}>{part}</span>
-                        )
-                    )}
-                </span>
-            );
-        },
-        []
-    );
-
     const handleClose = () => {
         setSearchTerm('');
         onClose();
@@ -99,6 +116,8 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     if (!open || voltageLevels.length === 0) {
         return null;
     }
+
+    const listHeight = Math.min(filteredVoltageLevels.length, MAX_VISIBLE_ITEMS) * ITEM_HEIGHT;
 
     return (
         <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
@@ -117,21 +136,23 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
                     ),
                 }}
             />
-            <Box sx={styles.menuList}>
-                {filteredVoltageLevels.length === 0 ? (
+            {filteredVoltageLevels.length === 0 ? (
+                <MenuList>
                     <MenuItem disabled>
                         <ListItemText>
                             <FormattedMessage id="noResultsFound" />
                         </ListItemText>
                     </MenuItem>
-                ) : (
-                    filteredVoltageLevels.map((vlId) => (
-                        <MenuItem key={vlId} onClick={() => handleSelect(vlId)}>
-                            <ListItemText primary={highlightText(vlId, searchTerm)} />
-                        </MenuItem>
-                    ))
-                )}
-            </Box>
+                </MenuList>
+            ) : (
+                <List
+                    style={{ height: listHeight }}
+                    rowCount={filteredVoltageLevels.length}
+                    rowHeight={ITEM_HEIGHT}
+                    rowProps={{ data: filteredVoltageLevels, searchTerm, onSelect: handleSelect }}
+                    rowComponent={VirtualizedMenuItem}
+                />
+            )}
         </Menu>
     );
 };

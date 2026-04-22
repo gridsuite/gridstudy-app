@@ -14,6 +14,12 @@ import { TablePaginationProps } from '@mui/material';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page } from '../common/utils';
 
+export enum RESULT_TYPE {
+    N = 'N',
+    NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
+    NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
+}
+
 export interface LimitViolation {
     subjectId?: string;
     acceptableDuration?: number;
@@ -36,10 +42,16 @@ interface Element {
     id?: string;
 }
 
+export interface ConnectivityResult {
+    disconnectedLoadActivePower: number;
+    disconnectedGenerationActivePower: number;
+}
+
 export interface ContingencyItem {
     status?: string;
     contingencyId?: string;
     elements?: Element[];
+    connectivityResult?: ConnectivityResult;
 }
 
 export interface Contingency {
@@ -53,6 +65,8 @@ export interface SecurityAnalysisNmkTableRow {
     acceptableDuration?: number | null;
     upcomingAcceptableDuration?: number | null;
     status?: string;
+    disconnectedLoadActivePower?: number;
+    disconnectedGenerationActivePower?: number;
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
     limit?: number;
@@ -89,7 +103,14 @@ export interface PreContingencyResult {
     limitViolation?: LimitViolation;
 }
 
-export type QueryParamsType = Record<string, string | number | SortConfig[] | FilterConfig[] | GlobalFilters>;
+export type SecurityAnalysisQueryParams = {
+    resultType: RESULT_TYPE;
+    globalFilters?: GlobalFilters;
+    filters?: FilterConfig[];
+    sort?: SortConfig[];
+    page?: number;
+    size?: number;
+};
 
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
@@ -108,6 +129,7 @@ export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult[];
     isLoadingResult: boolean;
     columnDefs: ColDef<any>[];
+    computationSubType: string;
 }
 
 export interface SecurityAnalysisResultNmkProps {
@@ -116,6 +138,7 @@ export interface SecurityAnalysisResultNmkProps {
     isLoadingResult: boolean;
     isFromContingency: boolean;
     paginationProps: TablePaginationProps;
+    computationSubType: string;
 }
 
 export interface SecurityAnalysisNTableRow {
@@ -135,8 +158,9 @@ export interface SecurityAnalysisNTableRow {
 }
 
 export interface SecurityAnalysisResultProps {
-    rows: SecurityAnalysisNTableRow[] | SecurityAnalysisNmkTableRow[];
+    rows: SecurityAnalysisNTableRow[] | SecurityAnalysisNmkTableRow[] | undefined;
     columnDefs: ColDef[];
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
+    computationSubType: string;
 }

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { sanitizeString } from '../dialog-utils';
 import {
     APPLICABILITY_FIELD,
     CURRENT_LIMITS,
@@ -25,27 +24,31 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
-    VALUE,
 } from 'components/utils/field-constants';
 import {
     areArrayElementsUnique,
     formatMapInfosToTemporaryLimitsFormSchema,
     formatTemporaryLimitsModificationToFormSchema,
-    toModificationOperation,
 } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import {
-    AttributeModification,
     CurrentLimits,
     OperationalLimitsGroup,
-    OperationType,
+    OperationalLimitsGroupModificationInfos,
     TemporaryLimit,
 } from '../../../services/network-modification-types';
 import { CurrentLimitsData } from '../../../services/study/network-map.type';
-import { LineModificationFormInfos } from '../network-modifications/line/modification/line-modification-type';
+import { LineModificationFormSchema } from '../network-modifications/line/modification/line-modification-type';
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from './operational-limits-groups-types';
 import { TestContext } from 'yup';
 import { APPLICABILITY } from 'components/network/constants';
+import {
+    AttributeModification,
+    FieldConstants,
+    OperationType,
+    sanitizeString,
+    toModificationOperation,
+} from '@gridsuite/commons-ui';
 
 const limitsGroupValidationSchema = () => ({
     [ID]: yup.string().nonNullable().required(),
@@ -72,7 +75,7 @@ const temporaryLimitsValidationSchema = () => {
 const limitsPropertyValidationSchema = () => {
     return yup.object().shape({
         [NAME]: yup.string().required(),
-        [VALUE]: yup.string().required(),
+        [FieldConstants.VALUE]: yup.string().required(),
     });
 };
 
@@ -143,6 +146,8 @@ const limitsValidationSchemaCreation = (id: string) => {
     return { [id]: yup.object().shape(completeLimitsGroupSchema) };
 };
 
+export type LimitsFormSchema = yup.InferType<ReturnType<typeof limitsValidationSchemaCreation>[typeof LIMITS]>;
+
 export const getLimitsValidationSchema = (id: string = LIMITS) => {
     return limitsValidationSchemaCreation(id);
 };
@@ -163,7 +168,7 @@ export const getLimitsEmptyFormData = (isModification = true, id = LIMITS) => {
 };
 
 export const formatOpLimitGroupsToFormInfos = (
-    limitGroups: OperationalLimitsGroup[]
+    limitGroups?: OperationalLimitsGroup[] | OperationalLimitsGroupModificationInfos[] | null
 ): OperationalLimitsGroupFormSchema[] => {
     if (!limitGroups) {
         return [];
@@ -171,23 +176,23 @@ export const formatOpLimitGroupsToFormInfos = (
 
     return limitGroups
         .filter(
-            (opLimitGroup: OperationalLimitsGroup) =>
+            (opLimitGroup: OperationalLimitsGroup | OperationalLimitsGroupModificationInfos) =>
                 opLimitGroup.modificationType !== LIMIT_SETS_MODIFICATION_TYPE.DELETE
         )
-        .map((opLimitGroup: OperationalLimitsGroup) => {
+        .map((opLimitGroup: OperationalLimitsGroup | OperationalLimitsGroupModificationInfos) => {
             return {
                 id: opLimitGroup.id + opLimitGroup.applicability,
                 name: opLimitGroup.id,
                 applicability: opLimitGroup.applicability,
                 limitsProperties: opLimitGroup.limitsProperties,
                 currentLimits: {
-                    permanentLimit: opLimitGroup.currentLimits.permanentLimit,
+                    permanentLimit: opLimitGroup?.currentLimits?.permanentLimit,
                     temporaryLimits: formatTemporaryLimitsModificationToFormSchema(
-                        opLimitGroup.currentLimits.temporaryLimits
+                        opLimitGroup?.currentLimits?.temporaryLimits as TemporaryLimit[]
                     ),
                 },
             };
-        });
+        }) as OperationalLimitsGroupFormSchema[];
 };
 
 export const getAllLimitsFormData = (
@@ -288,7 +293,7 @@ export const convertToOperationalLimitsGroupFormSchema = (
 };
 
 export const getOpLimitsGroupInfosFromBranchModification = (
-    formBranchModification: LineModificationFormInfos
+    formBranchModification: LineModificationFormSchema
 ): OperationalLimitsGroupFormSchema[] => {
     return formBranchModification?.limits?.operationalLimitsGroups ?? [];
 };

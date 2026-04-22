@@ -25,6 +25,9 @@ export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
 export const FOLDER_ID = 'folderId';
+export const DIRECTORY_ITEM = 'directoryItem';
+export const DIRECTORY_ITEM_ID = 'directoryItemId';
+export const DIRECTORY_ITEM_FULL_PATH = 'directoryItemFullPath';
 export const DESCRIPTION = 'description';
 export const CASE_NAME = 'caseName';
 export const CASE_ID = 'caseId';
@@ -51,6 +54,7 @@ export const IS_SEPARATOR = 'isSeparator';
 export const FILE_NAME = 'fileName';
 export const EXPORT_FORMAT = 'exportFormat';
 export const EXPORT_PARAMETERS = 'exportParameters';
+export const EXPORT_DESTINATION = 'exportDestination';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -90,6 +94,7 @@ export const OLGS_MODIFICATION_TYPE = 'operationalLimitsGroupsModificationType';
 export const PERMANENT_LIMIT = 'permanentLimit';
 export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
+export const LINE_SEGMENTS = 'lineSegments';
 
 export const ENERGY_SOURCE = 'energySource';
 export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
@@ -170,8 +175,11 @@ export const TARGET_V = 'targetV';
 //tab phase_tap_changer
 export const PHASE_TAP_CHANGER = 'phaseTapChanger';
 export const REGULATION_MODE = 'regulationMode';
+export const REGULATION_VALUE = 'regulationValue';
 export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
+export const REGULATING_TERMINAL_CONNECTABLE_ID = 'regulatingTerminalConnectableId';
+export const REGULATING_TERMINAL_CONNECTABLE_TYPE = 'regulatingTerminalConnectableType';
 
 //ShuntCompensator
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
@@ -205,7 +213,7 @@ export const B2 = 'b2';
 export const LIMITS = 'limits';
 export const TAB_HEADER = 'tabHeader';
 export const LIMIT_SET_NAME = 'limitSetName';
-export const TEMPORARY_LIMIT = 'temporaryLimit';
+export const LIMIT_VALUE = 'limitValue';
 export const TEMPORARY_LIMITS = 'temporaryLimits';
 export const TEMPORARY_LIMIT_NAME = 'name';
 export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
@@ -242,12 +250,16 @@ export const UNDERGROUND_SHAPE_FACTORS = 'undergroundShapeFactors';
 export const FINAL_CURRENT_LIMITS = 'finalCurrentLimits';
 export const APPLICABILITY_FIELD = 'applicability';
 export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
+export const AREA = 'area';
+export const TEMPERATURE = 'temperature';
+export const SHAPE_FACTOR = 'shapeFactor';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
 export const BUS_BAR_SECTION_ID1 = 'busbarSectionId1';
 export const BUS_BAR_SECTION_ID2 = 'busbarSectionId2';
 export const SWITCH_KIND = 'switchKind';
+export const IDENTIFIABLE_SHORT_CIRCUIT = 'identifiableShortCircuit';
 export const HIGH_VOLTAGE_LIMIT = 'highVoltageLimit';
 export const LOW_VOLTAGE_LIMIT = 'lowVoltageLimit';
 export const LOW_SHORT_CIRCUIT_CURRENT_LIMIT = 'lowShortCircuitCurrentLimit';
@@ -318,14 +330,6 @@ export const REPLACING_LINE_2_ID = 'replacingLine2Id';
 export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
 export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
 
-// substation
-export const COUNTRY = 'country';
-export const VALUE = 'value';
-export const PREVIOUS_VALUE = 'previousValue';
-export const ADDED = 'added';
-export const DELETION_MARK = 'deletionMark';
-export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
-
 // generation dispatch
 export const LOSS_COEFFICIENT = 'lossCoefficient';
 export const DEFAULT_OUTAGE_RATE = 'defaultOutageRate';
@@ -357,8 +361,6 @@ export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const SHUNT_COMPENSATOR_SELECTED = 'connectedToHvdc';
 export const PREVIOUS_SHUNT_COMPENSATOR_SELECTED = 'previousConnectedToHvdc';
 export const PROVIDER = 'provider';
-export const CONTINGENCIES = 'contingencies';
-export const MONITORED_BRANCHES = 'monitoredBranches';
 
 // VSC
 export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
@@ -384,12 +386,6 @@ export const EDITED_FIELD = 'editedField';
 export const OPERATOR = 'operator';
 export const REFERENCE_FIELD_OR_VALUE_1 = 'referenceFieldOrValue1';
 export const REFERENCE_FIELD_OR_VALUE_2 = 'referenceFieldOrValue2';
-export const EQUIPMENT_FIELD = 'equipmentField';
-
-// By filter
-export const ASSIGNMENTS = 'assignments';
-export const PROPERTY_NAME_FIELD = 'propertyName';
-export const VALUE_FIELD = 'value';
 
 export const ADD_STAND_BY_AUTOMATON = 'addStandbyAutomaton';
 export const LOW_VOLTAGE_SET_POINT = 'lowVoltageSetpoint';
@@ -492,3 +488,7 @@ export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
 export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
 export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
 export const CONNECTION_SIDE = 'connectionSide';
+
+export const ACTION = 'action';
+export const SELECTED_MODIFICATIONS = 'selectedModifications';
+export const COMPOSITE_NAMES = 'compositeNames';

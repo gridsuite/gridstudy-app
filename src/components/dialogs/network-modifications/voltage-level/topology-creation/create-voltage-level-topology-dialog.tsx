@@ -15,13 +15,13 @@ import {
     MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
+    DeepNullable,
 } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateVoltageLevelTopologyDialogSchemaForm } from './create-voltage-level-topology-dialog.type';
 import CreateVoltageLevelTopologyForm from './create-voltage-level-topology-form';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
@@ -142,6 +142,7 @@ export default function CreateVoltageLevelTopologyDialog({
                 titleId={'CreateVoltageLevelTopology'}
                 keepMounted={true}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                PaperProps={{ sx: { height: '75vh' } }}
                 {...dialogProps}
             >
                 {selectedId == null && (
@@ -153,12 +154,7 @@ export default function CreateVoltageLevelTopologyDialog({
                     />
                 )}
                 {selectedId != null && (
-                    <CreateVoltageLevelTopologyForm
-                        studyUuid={studyUuid}
-                        voltageLevelId={selectedId}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                    />
+                    <CreateVoltageLevelTopologyForm voltageLevelId={selectedId} currentNode={currentNode} />
                 )}
             </ModificationDialog>
         </CustomFormProvider>

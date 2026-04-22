@@ -7,9 +7,9 @@
 import React, { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
+import { useCustomAggridColumnFilter } from './hooks/use-custom-aggrid-column-filter';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
-import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
+import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../../../types/custom-aggrid-types';
 
 export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilterParams {
     getOptionLabel?: (value: string) => string; // Used for translation of enum values in the filter
@@ -24,7 +24,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
     options,
 }) => {
     const intl = useIntl();
-    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, colId, filterParams);
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridColumnFilter(colId, filterParams);
     const [computedFilterOptions, setComputedFilterOptions] = useState<string[]>(options ?? []);
 
     const getUniqueValues = useCallback(() => {

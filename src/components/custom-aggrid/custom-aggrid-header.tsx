@@ -6,19 +6,26 @@
  */
 
 import React, { ComponentType, useCallback, useState } from 'react';
-import { Grid } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
+import { Grid, Tooltip } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort';
-import { SortParams, useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
+import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
+import { CustomAggridFilterParams, SortParams } from '../../types/custom-aggrid-types';
 import { CustomMenu, CustomMenuProps } from './custom-aggrid-menu';
 import { CustomHeaderProps } from 'ag-grid-react';
-import { CustomAggridFilterParams } from './custom-aggrid-filters/custom-aggrid-filter.type';
+import { WarningAmber } from '@mui/icons-material';
 
 const styles = {
     displayName: {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+    },
+    invalidIcon: {
+        display: 'flex',
+        alignItems: 'center',
+        ml: 0.5,
     },
 } as const satisfies MuiStyles;
 
@@ -29,6 +36,7 @@ interface CustomHeaderComponentProps<F extends CustomAggridFilterParams, T> exte
     forceDisplayFilterIcon: boolean;
     filterComponent: ComponentType<F>;
     filterComponentParams: F;
+    isInvalid?: boolean;
 }
 
 const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
@@ -40,6 +48,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
     filterComponent,
     filterComponentParams,
     api,
+    isInvalid,
 }: CustomHeaderComponentProps<F, T>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
@@ -81,6 +90,15 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
                     >
                         <Grid container sx={styles.displayName} alignItems={'center'} wrap="nowrap">
                             <Grid item>{displayName}</Grid>
+                            {isInvalid && (
+                                <Grid item sx={styles.invalidIcon}>
+                                    <Tooltip
+                                        title={<FormattedMessage id="spreadsheet/column/invalid-without-loadflow" />}
+                                    >
+                                        <WarningAmber fontSize="small" color="warning" />
+                                    </Tooltip>
+                                </Grid>
+                            )}
                             {sortParams && (
                                 <Grid item>
                                     <CustomAggridSort colId={column.getId()} sortParams={sortParams} />

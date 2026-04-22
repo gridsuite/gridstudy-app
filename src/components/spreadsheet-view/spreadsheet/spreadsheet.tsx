@@ -5,82 +5,87 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useMemo, useRef } from 'react';
-import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import { rowIndexColumnDefinition } from '../columns/common-column-definitions';
 import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
-import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { isSecurityModificationNode, CurrentTreeNode } from 'components/graph/tree-node.type';
 import { AgGridReact } from 'ag-grid-react';
 import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { mapColumns } from '../columns/utils/column-mapper';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
 import type { UUID } from 'node:crypto';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { CustomColDef } from '../../../types/custom-aggrid-types';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer.type';
 
 interface SpreadsheetProps {
     panelId: UUID;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
-    equipmentId: string | null;
     active: boolean;
 }
 
-export const Spreadsheet = memo(
-    ({ panelId, currentNode, tableDefinition, disabled, equipmentId, active }: SpreadsheetProps) => {
-        const gridRef = useRef<AgGridReact>(null);
-        const { snackError } = useSnackMessage();
+export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabled, active }: SpreadsheetProps) => {
+    const gridRef = useRef<AgGridReact>(null);
+    const { snackError } = useSnackMessage();
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-        const columnsDefinitions = useMemo(
-            () => mapColumns(tableDefinition, snackError),
-            [tableDefinition, snackError]
-        );
-        const rowCounterInfos = useFilteredRowCounterInfo({
-            gridRef,
-            tableDefinition,
-            disabled,
-        });
+    const columnsDefinitions = useMemo(
+        () => mapColumns(tableDefinition, snackError, loadFlowStatus, isSecurityModificationNode(currentNode)),
+        [tableDefinition, snackError, loadFlowStatus, currentNode]
+    );
 
-        const displayedColsDefs = useMemo(() => {
-            const columns = tableDefinition?.columns;
-            const visibleColDefs =
-                columns?.map((column) => {
-                    return columnsDefinitions.reduce((acc, curr) => {
-                        if (curr.colId === column.id) {
-                            return curr;
-                        }
-                        return acc;
-                    }, {} as CustomColDef);
-                }) || [];
+    // Refresh cells to apply styles when column definitions change (e.g. formula edit, load flow status)
+    useEffect(() => {
+        gridRef.current?.api?.refreshCells({ force: true, suppressFlash: true });
+    }, [columnsDefinitions]);
 
-            // Return row index column first, followed by visible columns
-            // Pass the table UUID to the rowIndexColumnDefinition
-            return [rowIndexColumnDefinition(tableDefinition?.uuid || ''), ...visibleColDefs];
-        }, [columnsDefinitions, tableDefinition?.columns, tableDefinition?.uuid]);
+    const rowCounterInfos = useFilteredRowCounterInfo({
+        gridRef,
+        tableDefinition,
+        disabled,
+    });
 
-        return (
-            <>
-                <SpreadsheetToolbar
-                    gridRef={gridRef}
-                    tableDefinition={tableDefinition}
-                    rowCounterInfos={rowCounterInfos}
-                    columns={displayedColsDefs}
-                    disabled={disabled}
-                />
+    const displayedColsDefs = useMemo(() => {
+        const columns = tableDefinition?.columns;
+        const visibleColDefs =
+            columns?.map((column) => {
+                return columnsDefinitions.reduce((acc, curr) => {
+                    if (curr.colId === column.id) {
+                        return curr;
+                    }
+                    return acc;
+                }, {} as CustomColDef);
+            }) || [];
 
-                <SpreadsheetContent
-                    panelId={panelId}
-                    gridRef={gridRef}
-                    currentNode={currentNode}
-                    tableDefinition={tableDefinition}
-                    columns={displayedColsDefs}
-                    disabled={disabled}
-                    equipmentId={equipmentId}
-                    registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
-                    active={active}
-                />
-            </>
-        );
-    }
-);
+        // Return row index column first, followed by visible columns
+        // Pass the table UUID to the rowIndexColumnDefinition
+        return [rowIndexColumnDefinition(tableDefinition?.uuid || ''), ...visibleColDefs];
+    }, [columnsDefinitions, tableDefinition?.columns, tableDefinition?.uuid]);
+
+    return (
+        <>
+            <SpreadsheetToolbar
+                gridRef={gridRef}
+                tableDefinition={tableDefinition}
+                rowCounterInfos={rowCounterInfos}
+                columns={displayedColsDefs}
+                disabled={disabled}
+            />
+
+            <SpreadsheetContent
+                panelId={panelId}
+                gridRef={gridRef}
+                currentNode={currentNode}
+                tableDefinition={tableDefinition}
+                columns={displayedColsDefs}
+                disabled={disabled}
+                registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
+                active={active}
+            />
+        </>
+    );
+});

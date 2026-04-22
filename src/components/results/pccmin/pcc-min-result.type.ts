@@ -8,13 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
-import {
-    FilterConfig,
-    numericFilterParams,
-    textFilterParams,
-    FilterType as AgGridFilterType,
-} from 'types/custom-aggrid-types';
-import { ColumnContext } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { ColumnContext, numericFilterParams, TableType, textFilterParams } from 'types/custom-aggrid-types';
 import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';
@@ -39,10 +33,8 @@ export interface PccMinResultTabProps {
 export type PagedPccMinResults = Page<SinglePccMinResultInfos>;
 
 export interface PccMinResultTableProps {
-    result: SinglePccMinResultInfos[];
+    result: SinglePccMinResultInfos[] | undefined;
     isFetching: boolean;
-    onFilter: () => void;
-    filters: FilterConfig[];
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
 }
@@ -69,7 +61,6 @@ export const FROM_COLUMN_TO_FIELD_PCC_MIN: Record<string, string> = {
 };
 export const getPccMinColumns = (
     intl: IntlShape,
-    onFilter: (filters: any) => void,
     voltageLevelIdRenderer: (cellData: ICellRendererParams) => React.JSX.Element | undefined
 ) => {
     const sortParams: ColumnContext['sortParams'] = {
@@ -78,9 +69,8 @@ export const getPccMinColumns = (
     };
 
     const pccMinFilterParams = {
-        type: AgGridFilterType.PccMin,
+        type: TableType.PccMin,
         tab: PCCMIN_RESULT,
-        updateFilterCallback: onFilter,
     };
 
     const createFilterContext = (

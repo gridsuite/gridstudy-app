@@ -66,8 +66,14 @@ export default function ReportViewer({
     }, [reportTree]);
 
     useEffect(() => {
-        setExpandedTreeReports([reportTree.id]);
-        setSelectedReport({ id: reportTree.id, type: reportTreeMap[reportTree.id]?.type });
+        const newType = reportTreeMap[reportTree.id]?.type;
+        setSelectedReport((currentSelected) => {
+            if (currentSelected.id !== reportTree.id || currentSelected.type !== newType) {
+                setExpandedTreeReports([reportTree.id]);
+                return { id: reportTree.id, type: newType };
+            }
+            return currentSelected;
+        });
     }, [reportTree, reportTreeMap]);
 
     const onLogRowClick = useCallback(

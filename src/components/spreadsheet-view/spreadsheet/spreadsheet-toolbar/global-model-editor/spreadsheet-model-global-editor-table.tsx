@@ -11,20 +11,20 @@ import { AutocompleteInput, DndColumn, DndColumnType, DndTable } from '@gridsuit
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import {
+    COLUMN_DEPENDENCIES,
+    COLUMN_FORMULA,
     COLUMN_ID,
     COLUMN_NAME,
-    COLUMNS_MODEL,
-    COLUMN_TYPE,
     COLUMN_PRECISION,
-    COLUMN_FORMULA,
-    COLUMN_DEPENDENCIES,
+    COLUMN_TYPE,
     COLUMN_VISIBLE,
+    COLUMNS_MODEL,
 } from './spreadsheet-model-global-editor.utils';
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { ColumnGlobalModel } from './spreadsheet-model-global-editor.type';
 import DependenciesEditor from './dependencies-editor';
 import FormulaEditor from './formula-editor';
 import ColumnNameEditor from './columnName-editor';
+import { COLUMN_TYPES } from '../../../../../types/custom-aggrid-types';
 
 export function SpreadsheetModelGlobalEditorTable() {
     const intl = useIntl();

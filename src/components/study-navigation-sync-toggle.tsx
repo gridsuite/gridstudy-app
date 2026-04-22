@@ -9,31 +9,31 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ToggleButton, Tooltip } from '@mui/material';
 import { Sync, SyncDisabled } from '@mui/icons-material';
 import { selectSyncEnabled } from '../redux/actions';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useIntl } from 'react-intl';
-import { useStudyScopedNavigationKeys } from 'hooks/use-study-scoped-navigation-keys';
+import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 
 const StudyNavigationSyncToggle = () => {
     const dispatch = useDispatch();
     const syncEnabled = useSelector((state: AppState) => state.syncEnabled);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
-
-    const STORAGE_KEYS = useStudyScopedNavigationKeys();
 
     const handleToggle = () => {
         const newValue = !syncEnabled;
         dispatch(selectSyncEnabled(newValue));
-        try {
-            localStorage.setItem(STORAGE_KEYS.SYNC_ENABLED, JSON.stringify(newValue));
-            if (newValue) {
-                // Save current values when enabling sync for other tabs
-                localStorage.setItem(STORAGE_KEYS.TREE_NODE_UUID, JSON.stringify(currentTreeNode?.id));
-                localStorage.setItem(STORAGE_KEYS.ROOT_NETWORK_UUID, JSON.stringify(currentRootNetworkUuid));
-            }
-        } catch (err) {
-            console.warn('Failed to toggle sync:', err);
+        if (studyUuid) {
+            const patch = newValue
+                ? // Save current navigation state when enabling sync for other tabs
+                  {
+                      syncEnabled: newValue,
+                      treeNodeUuid: currentTreeNode?.id ?? null,
+                      rootNetworkUuid: currentRootNetworkUuid,
+                  }
+                : { syncEnabled: newValue };
+            saveStudyNavigationSync(studyUuid, patch);
         }
     };
 

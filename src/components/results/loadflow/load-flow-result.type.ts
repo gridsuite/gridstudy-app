@@ -80,11 +80,13 @@ export interface LoadflowResultProps extends LoadflowResultTap {
     componentColumnDefs: ColDef<any>[];
     countryAdequaciesColumnDefs: ColDef<any>[];
     exchangesColumnDefs: ColDef<any>[];
+    computationSubType: string;
 }
 
 export interface LimitViolationResultProps extends LoadflowResultTap {
     result: OverloadedEquipment[];
     columnDefs: ColDef<any>[];
+    computationSubType: string;
 }
 
 export interface OverloadedEquipment {

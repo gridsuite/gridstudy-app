@@ -21,8 +21,8 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
-    VALUE,
 } from '../../utils/field-constants';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 export interface LimitsFormSchema {
     [LIMITS]: OperationalLimitsGroupsFormSchema;
@@ -45,13 +45,14 @@ export interface OperationalLimitsGroupFormSchema {
 }
 
 export interface CurrentLimitsFormSchema {
+    [ID]?: string;
     [PERMANENT_LIMIT]: number | null;
     [TEMPORARY_LIMITS]: TemporaryLimitFormSchema[];
 }
 
 interface LimitsPropertyFormSchema {
     [NAME]: string;
-    [VALUE]: string;
+    [FieldConstants.VALUE]: string;
 }
 
 export interface TemporaryLimitFormSchema {

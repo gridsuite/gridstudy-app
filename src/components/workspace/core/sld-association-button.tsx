@@ -8,12 +8,11 @@
 import { useState } from 'react';
 import { IconButton, type SxProps, type Theme } from '@mui/material';
 import { Link as LinkIcon } from '@mui/icons-material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { associateSldToNad, createNadAndAssociateSld } from '../../../redux/slices/workspace-slice';
-import { selectPanelMetadata } from '../../../redux/slices/workspace-selectors';
+import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
+import { selectSldDiagramFields } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
-import type { SLDPanelMetadata } from '../types/workspace.types';
 import { AssociateNadMenu } from './associate-nad-menu';
 
 interface SldAssociationButtonProps {
@@ -27,11 +26,9 @@ interface SldAssociationButtonProps {
  * Renders the associate button + menu for voltage level SLD panels.
  */
 export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAssociationButtonProps) => {
-    const dispatch = useDispatch();
+    const { associateSldToNad, createNadAndAssociateSld } = useWorkspacePanelActions();
     const [associateMenuAnchor, setAssociateMenuAnchor] = useState<HTMLElement | null>(null);
-    const metadata = useSelector((state: RootState) => selectPanelMetadata(state, panelId)) as
-        | SLDPanelMetadata
-        | undefined;
+    const sldFields = useSelector((state: RootState) => selectSldDiagramFields(state, panelId));
 
     const handleAssociateClick = (event: React.MouseEvent<HTMLElement>) => {
         setAssociateMenuAnchor(event.currentTarget);
@@ -42,18 +39,16 @@ export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAs
     };
 
     const handleSelectNad = (nadPanelId: UUID) => {
-        dispatch(associateSldToNad({ sldPanelId: panelId, nadPanelId }));
+        associateSldToNad({ sldPanelId: panelId, nadPanelId });
     };
 
     const handleCreateNad = () => {
-        if (metadata?.diagramId) {
-            dispatch(
-                createNadAndAssociateSld({
-                    sldPanelId: panelId,
-                    voltageLevelId: metadata.diagramId,
-                    voltageLevelName: title,
-                })
-            );
+        if (sldFields?.equipmentId) {
+            createNadAndAssociateSld({
+                sldPanelId: panelId,
+                voltageLevelId: sldFields.equipmentId,
+                voltageLevelName: title,
+            });
         }
     };
 
@@ -74,7 +69,7 @@ export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAs
                 onClose={handleAssociateMenuClose}
                 onSelectNad={handleSelectNad}
                 onCreateNad={handleCreateNad}
-                voltageLevelId={metadata?.diagramId}
+                voltageLevelId={sldFields?.equipmentId}
             />
         </>
     );

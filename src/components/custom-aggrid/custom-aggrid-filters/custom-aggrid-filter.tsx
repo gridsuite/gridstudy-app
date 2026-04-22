@@ -8,9 +8,9 @@ import React, { ComponentType, MouseEvent, useMemo, useState } from 'react';
 import { Popover } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomFilterIcon } from './custom-filter-icon';
-import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
+import { useCustomAggridColumnFilter } from './hooks/use-custom-aggrid-column-filter';
 import { CustomAggridAutocompleteFilterParams } from './custom-aggrid-autocomplete-filter';
-import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
+import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../../../types/custom-aggrid-types';
 
 const styles = {
     input: {
@@ -39,8 +39,7 @@ export const CustomAggridFilter = <F extends CustomAggridFilterParams>({
 }: CustomAggridFilterWrapperParams<F>) => {
     const [filterAnchorElement, setFilterAnchorElement] = useState<HTMLElement | null>(null);
 
-    const { selectedFilterData, selectedFilterComparator } = useCustomAggridFilter(
-        filterComponentParams.api,
+    const { selectedFilterData, selectedFilterComparator } = useCustomAggridColumnFilter(
         filterComponentParams.colId,
         filterComponentParams.filterParams
     );

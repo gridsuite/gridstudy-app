@@ -17,32 +17,9 @@ export enum PanelType {
     SLD_SUBSTATION = 'SLD_SUBSTATION',
     NAD = 'NAD',
     MAP = 'MAP',
-    NODE_EDITOR = 'NODE_EDITOR',
+    MODIFICATIONS = 'MODIFICATIONS',
     EVENT_SCENARIO = 'EVENT_SCENARIO',
 }
-
-export interface SLDPanelMetadata {
-    diagramId: string;
-    navigationHistory?: string[];
-    parentNadPanelId?: UUID; // Reference to parent NAD panel if associated
-}
-
-export interface NADPanelMetadata {
-    nadConfigUuid?: UUID;
-    filterUuid?: UUID;
-    currentFilterUuid?: UUID;
-    voltageLevelToOmitIds?: string[];
-    savedWorkspaceConfigUuid?: UUID;
-    initialVoltageLevelIds?: string[];
-    navigationHistory?: string[]; // History of clicked voltage levels
-}
-
-export interface SpreadsheetPanelMetadata {
-    targetEquipmentId?: string;
-    targetEquipmentType?: string;
-}
-
-export type PanelMetadata = SLDPanelMetadata | NADPanelMetadata | SpreadsheetPanelMetadata | Record<string, never>;
 
 // Position and size stored as relative values (0-1) to container
 export interface PanelPosition {
@@ -58,40 +35,87 @@ export interface PanelSize {
     height: number;
 }
 
-export interface RelativeLayout {
-    x: number; // 0-1
-    y: number; // 0-1
-    width: number; // 0-1
-    height: number; // 0-1
-}
-
-export interface PanelState {
+// Base panel interface - common fields for all panel types
+interface BasePanel {
     id: UUID;
-    type: PanelType;
     title: string;
-    metadata?: PanelMetadata;
     position: PanelPosition;
     size: PanelSize;
-    zIndex: number;
-    orderIndex: number;
-    isMinimized: boolean;
-    isMaximized: boolean;
-    isPinned: boolean;
-    isClosed: boolean;
+    minimized: boolean; // For NAD/SLD: minimized to dock; For toggles: hidden
+    maximized: boolean;
+    pinned: boolean;
+    zIndex?: number; // Client-only, not persisted to backend
     restorePosition?: PanelPosition;
     restoreSize?: PanelSize;
+}
+
+export interface NADPanel extends BasePanel {
+    type: PanelType.NAD;
+    nadConfigUuid?: UUID;
+    filterUuid?: UUID;
+    currentFilterUuid?: UUID;
+    voltageLevelToOmitIds?: string[];
+    currentNadConfigUuid?: UUID;
+    navigationHistory?: string[];
+    initialVoltageLevelIds?: string[]; // For initial diagram load
+}
+
+// Persistent NAD fields that sync to Redux and backend
+export const PERSISTENT_NAD_FIELDS = [
+    'title',
+    'voltageLevelToOmitIds',
+    'currentFilterUuid',
+    'currentNadConfigUuid',
+    'nadConfigUuid',
+    'filterUuid',
+    'initialVoltageLevelIds',
+] as const satisfies readonly (keyof NADPanel)[];
+
+export type PersistentNADFields = Pick<NADPanel, (typeof PERSISTENT_NAD_FIELDS)[number]>;
+
+export interface SLDVoltageLevelPanel extends BasePanel {
+    type: PanelType.SLD_VOLTAGE_LEVEL;
+    equipmentId: string;
+    parentNadPanelId?: UUID; // Reference to parent NAD panel if associated
+    navigationHistory?: string[];
+}
+
+export interface SLDSubstationPanel extends BasePanel {
+    type: PanelType.SLD_SUBSTATION;
+    equipmentId: string;
+}
+
+export interface SpreadsheetPanel extends BasePanel {
+    type: PanelType.SPREADSHEET;
+    targetEquipmentId?: string; // For scroll-to-equipment feature
+    targetEquipmentType?: string; // For scroll-to-equipment feature
+}
+
+export interface GenericPanel extends BasePanel {
+    type:
+        | PanelType.TREE
+        | PanelType.LOGS
+        | PanelType.RESULTS
+        | PanelType.PARAMETERS
+        | PanelType.MAP
+        | PanelType.MODIFICATIONS
+        | PanelType.EVENT_SCENARIO;
+}
+
+export type PanelState = NADPanel | SLDVoltageLevelPanel | SLDSubstationPanel | SpreadsheetPanel | GenericPanel;
+
+export interface WorkspaceMetadata {
+    id: UUID;
+    name: string;
 }
 
 export interface Workspace {
     id: UUID;
     name: string;
-    panels: Record<UUID, PanelState>;
-    focusedPanelId: UUID | null;
-    nextZIndex: number;
-    nextOrderIndex: number;
+    panels: PanelState[];
 }
 
 export interface WorkspacesState {
-    workspaces: Workspace[];
-    activeWorkspaceId: UUID;
+    workspacesMetadata: WorkspaceMetadata[];
+    activeWorkspace: Workspace | null;
 }

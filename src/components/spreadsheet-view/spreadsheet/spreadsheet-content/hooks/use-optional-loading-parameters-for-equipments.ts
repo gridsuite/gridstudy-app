@@ -6,7 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import type { AppState } from '../../../../../redux/reducer';
+import type { AppState } from '../../../../../redux/reducer.type';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -84,7 +84,8 @@ export function useOptionalLoadingParametersForEquipments() {
             setCleanOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.BRANCH]: true };
             });
-        } else if (remoteLineOlg !== lineOlg && remoteLineOlg) {
+        }
+        if (remoteLineOlg !== lineOlg && remoteLineOlg) {
             setLoadOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.LINE]: true };
             });
@@ -92,7 +93,8 @@ export function useOptionalLoadingParametersForEquipments() {
             setCleanOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.LINE]: true };
             });
-        } else if (remoteTwtOlg !== twtOlg && remoteTwtOlg) {
+        }
+        if (remoteTwtOlg !== twtOlg && remoteTwtOlg) {
             setLoadOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: true };
             });
@@ -100,7 +102,8 @@ export function useOptionalLoadingParametersForEquipments() {
             setCleanOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: true };
             });
-        } else if (remoteGeneratorRegTerm !== generatorRegTerm && remoteGeneratorRegTerm) {
+        }
+        if (remoteGeneratorRegTerm !== generatorRegTerm && remoteGeneratorRegTerm) {
             setLoadOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.GENERATOR]: true };
             });
@@ -108,7 +111,8 @@ export function useOptionalLoadingParametersForEquipments() {
             setCleanOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.GENERATOR]: true };
             });
-        } else if (remoteBusNetworkComponents !== busNetworkComponents && remoteBusNetworkComponents) {
+        }
+        if (remoteBusNetworkComponents !== busNetworkComponents && remoteBusNetworkComponents) {
             setLoadOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.BUS]: true };
             });
