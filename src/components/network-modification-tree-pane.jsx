@@ -61,7 +61,7 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', () => {
-            cleanClipboard('copiedNodeInvalidationMsgFromStudyClosure');
+            cleanClipboard(true, 'copiedNodeInvalidationMsgFromStudyClosure', true);
         });
         //broadcastChannel doesn't change
     }, [cleanClipboard]);

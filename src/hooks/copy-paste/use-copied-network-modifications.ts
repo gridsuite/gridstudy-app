@@ -82,8 +82,12 @@ export const useCopiedNetworkModifications = () => {
     );
 
     const cleanClipboard = useCallback(
-        (showSnackInfo = true, snackInfoMessage?: string) => {
-            cleanCurrentTabClipboard();
+        (showSnackInfo = true, snackInfoMessage?: string, suppressCurrentTabSnack = false) => {
+            const currentTabMessage =
+                suppressCurrentTabSnack || !showSnackInfo
+                    ? undefined
+                    : (snackInfoMessage ?? 'copiedModificationsInvalidationMsg');
+            cleanCurrentTabClipboard(currentTabMessage);
             cleanOtherTabsClipboard(
                 showSnackInfo ? (snackInfoMessage ?? 'copiedModificationsInvalidationMsgFromOtherStudy') : undefined
             );
