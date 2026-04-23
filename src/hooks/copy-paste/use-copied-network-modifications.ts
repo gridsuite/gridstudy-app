@@ -82,12 +82,10 @@ export const useCopiedNetworkModifications = () => {
     );
 
     const cleanClipboard = useCallback(
-        (showSnackInfo = true, snackInfoMessage?: string, suppressCurrentTabSnack = false) => {
-            const currentTabMessage =
-                suppressCurrentTabSnack || !showSnackInfo
-                    ? undefined
-                    : (snackInfoMessage ?? 'copiedModificationsInvalidationMsg');
-            cleanCurrentTabClipboard(currentTabMessage);
+        (showSnackInfo = true, snackInfoMessage?: string) => {
+            cleanCurrentTabClipboard(
+                showSnackInfo ? (snackInfoMessage ?? 'copiedModificationsInvalidationMsg') : undefined
+            );
             cleanOtherTabsClipboard(
                 showSnackInfo ? (snackInfoMessage ?? 'copiedModificationsInvalidationMsgFromOtherStudy') : undefined
             );
@@ -116,5 +114,6 @@ export const useCopiedNetworkModifications = () => {
         copyNetworkModifications,
         cutNetworkModifications,
         cleanClipboard,
+        cleanOtherTabsClipboard,
     };
 };

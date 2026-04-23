@@ -96,12 +96,8 @@ export const useCopiedNodes = () => {
     );
 
     const cleanClipboard = useCallback(
-        (showSnackInfo = true, snackInfoMessage?: string, suppressCurrentTabSnack = false) => {
-            const currentTabMessage =
-                suppressCurrentTabSnack || !showSnackInfo
-                    ? undefined
-                    : (snackInfoMessage ?? 'copiedNodeInvalidationMsg');
-            cleanCurrentTabClipboard(currentTabMessage);
+        (showSnackInfo = true, snackInfoMessage?: string) => {
+            cleanCurrentTabClipboard(showSnackInfo ? (snackInfoMessage ?? 'copiedNodeInvalidationMsg') : undefined);
             cleanOtherTabsClipboard(
                 showSnackInfo ? (snackInfoMessage ?? 'copiedNodeInvalidationMsgFromOtherStudy') : undefined
             );
@@ -129,5 +125,6 @@ export const useCopiedNodes = () => {
         copyNode,
         cutNode,
         cleanClipboard,
+        cleanOtherTabsClipboard,
     };
 };

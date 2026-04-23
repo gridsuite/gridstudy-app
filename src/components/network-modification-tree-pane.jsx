@@ -49,7 +49,7 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
     const { snackError } = useSnackMessage();
     const [nodesToRestore, setNodesToRestore] = useState([]);
 
-    const { selectionForCopy, copyNode, cutNode, cleanClipboard } = useCopiedNodes();
+    const { selectionForCopy, copyNode, cutNode, cleanClipboard, cleanOtherTabsClipboard } = useCopiedNodes();
     const nodeSelectionForCopyRef = useRef();
     nodeSelectionForCopyRef.current = selectionForCopy;
 
@@ -61,10 +61,10 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', () => {
-            cleanClipboard(true, 'copiedNodeInvalidationMsgFromStudyClosure', true);
+            cleanOtherTabsClipboard('copiedNodeInvalidationMsgFromStudyClosure');
         });
         //broadcastChannel doesn't change
-    }, [cleanClipboard]);
+    }, [cleanOtherTabsClipboard]);
 
     const [activeNode, setActiveNode] = useState(null);
 
