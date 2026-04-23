@@ -250,10 +250,7 @@ const makeAgGridDurationColumn = (
             },
         },
         valueGetter: (param: ValueGetterParams) => {
-            if (
-                param.data.limitType !== intl.formatMessage({ id: 'CURRENT' }) ||
-                param.data[fieldId] === UNDEFINED_ACCEPTABLE_DURATION
-            ) {
+            if (param.data.limitType !== 'CURRENT' || param.data[fieldId] === UNDEFINED_ACCEPTABLE_DURATION) {
                 return ' ';
             } else if (param.data[fieldId] === null) {
                 return intl.formatMessage({ id: 'NoneUpcomingOverload' });
