@@ -8,7 +8,7 @@
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
-    "filter": "Filtre", 
+    "filter": "Filtre",
 
     "deleteStudy": "Supprimer l'étude",
     "studyNameDidNotMatchMsg": "Le nom d'étude donné ne correspond pas à ",
@@ -396,6 +396,7 @@
 
     "ConstraintsFromContingencies": "Aléas -> contraintes",
     "ContingenciesFromConstraints": "Contraintes -> aléas",
+    "PowerCutOffFromContingencies": "Puissances coupées",
 
     "Equipment": "Ouvrage",
     "selectionType": "Type de sélection",

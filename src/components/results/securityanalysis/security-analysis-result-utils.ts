@@ -11,6 +11,7 @@ import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
     LimitViolation,
+    PowerCutOffFromContingencyItem,
     RESULT_TYPE,
     SecurityAnalysisNmkTableRow,
     SubjectIdRendererType,
@@ -85,13 +86,11 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
     }
 
     result?.forEach(({ subjectLimitViolations = [], contingency }: ConstraintsFromContingencyItem) => {
-        const { contingencyId, status, elements = [], connectivityResult } = contingency || {};
+        const { contingencyId, status, elements = [] } = contingency || {};
         rows.push({
             contingencyId,
             contingencyEquipmentsIds: elements.map((element) => element.id),
             status: status,
-            disconnectedLoadActivePower: connectivityResult?.disconnectedLoadActivePower,
-            disconnectedGenerationActivePower: connectivityResult?.disconnectedGenerationActivePower,
             violationCount: subjectLimitViolations.length,
         });
         subjectLimitViolations?.forEach((constraint: Constraint) => {
@@ -140,9 +139,6 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     contingencyId: contingency.contingencyId,
                     contingencyEquipmentsIds: contingency.elements?.map((element) => element.id),
                     status: contingency.status,
-                    disconnectedLoadActivePower: contingency.connectivityResult?.disconnectedLoadActivePower,
-                    disconnectedGenerationActivePower:
-                        contingency.connectivityResult?.disconnectedGenerationActivePower,
                     limitType: limitViolation.limitType,
                     limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
                     nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
@@ -164,6 +160,23 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                 });
             });
         }
+    });
+
+    return rows;
+};
+
+export const mapNmKResultsPowerCutOff = (result: PowerCutOffFromContingencyItem[] | null) => {
+    const rows: SecurityAnalysisNmkTableRow[] = [];
+    if (!result) {
+        return undefined;
+    }
+    result?.forEach(({ contingencyId, status, connectivityResult }: PowerCutOffFromContingencyItem) => {
+        rows.push({
+            contingencyId: contingencyId,
+            status: status,
+            disconnectedLoadActivePower: connectivityResult?.disconnectedLoadActivePower,
+            disconnectedGenerationActivePower: connectivityResult?.disconnectedGenerationActivePower,
+        });
     });
 
     return rows;
@@ -437,24 +450,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             { ...sortParams, isChildren: true },
             filterParams
         ),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedLoadActivePower',
-                'disconnectedLoadActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
-        ),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedGenerationActivePower',
-                'disconnectedGenerationActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
-        ),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeAgGridCustomHeaderColumn({
@@ -571,6 +566,40 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             getEnumLabel,
             intl,
             { ...sortParams, isChildren: true },
+            filterParams
+        ),
+        //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
+        //it is used for sorting actions
+        makeAgGridCustomHeaderColumn({
+            colId: 'linkedElementId',
+            field: 'linkedElementId',
+            hide: true,
+        }),
+    ];
+};
+
+export const securityAnalysisTableNmKPowerCutOffColumnsDefinition = (
+    intl: IntlShape,
+    filterEnums: FilterEnumsType,
+    getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
+    tabIndex: number
+): ColDef[] => {
+    const { sortParams, filterParams } = createTableParams(tabIndex);
+
+    return [
+        makeAgGridCustomHeaderColumn({
+            ...makeAgGridStringColumn('Contingency', 'contingencyId', intl, filterParams, {
+                ...sortParams,
+                isChildren: false,
+            }),
+        }),
+        createEnumColumn(
+            'status',
+            'ComputationStatus',
+            filterEnums['status'] ?? [],
+            getEnumLabel,
+            intl,
+            undefined,
             filterParams
         ),
         makeAgGridCustomHeaderColumn(
@@ -761,8 +790,6 @@ export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
     value: 'contingencyLimitViolations.value',
     loading: 'contingencyLimitViolations.loading',
     patlLoading: 'contingencyLimitViolations.patlLoading',
-    disconnectedLoadActivePower: 'connectivityResult.disconnectedLoadActivePower',
-    disconnectedGenerationActivePower: 'connectivityResult.disconnectedGenerationActivePower',
 };
 
 export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> = {
@@ -781,16 +808,14 @@ export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> =
     value: 'contingencyLimitViolations.value',
     loading: 'contingencyLimitViolations.loading',
     patlLoading: 'contingencyLimitViolations.patlLoading',
-    disconnectedLoadActivePower:
-        'contingencyLimitViolations.contingency.connectivityResult.disconnectedLoadActivePower',
-    disconnectedGenerationActivePower:
-        'contingencyLimitViolations.contingency.connectivityResult.disconnectedGenerationActivePower',
 };
 
-export enum NMK_TYPE {
-    CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
-    CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
-}
+export const FROM_COLUMN_TO_FIELD_NMK_POWER_CUT_OFF: Record<string, string> = {
+    contingencyId: 'contingencyId',
+    status: 'status',
+    disconnectedLoadActivePower: 'connectivityResult.disconnectedLoadActivePower',
+    disconnectedGenerationActivePower: 'connectivityResult.disconnectedGenerationActivePower',
+};
 
 export const mappingColumnToField = (resultType: RESULT_TYPE) => {
     switch (resultType) {
@@ -800,6 +825,8 @@ export const mappingColumnToField = (resultType: RESULT_TYPE) => {
             return FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES;
         case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
             return FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS;
+        case RESULT_TYPE.NMK_POWER_CUT_OFF:
+            return FROM_COLUMN_TO_FIELD_NMK_POWER_CUT_OFF;
     }
 };
 
