@@ -14,13 +14,13 @@ export const persistSpreadsheetColumnFilter = (
     studyUuid: UUID,
     tabUuid: UUID,
     colDef: ColumnDefinition | undefined,
-    filter: FilterConfig | undefined,
+    colFilter: FilterConfig | undefined,
     onError: (error: unknown) => void
 ) => {
     if (!colDef) {
         return;
     }
-    const columnDto = mapColDefToDto(colDef, filter);
+    const columnDto = mapColDefToDto(colDef, colFilter);
     updateSpreadsheetColumn(studyUuid, tabUuid, colDef.uuid, columnDto).catch((error) => {
         onError(error);
     });

@@ -13,17 +13,17 @@ export const persistComputationColumnFilter = (
     computationType: TableType,
     computationSubType: string,
     colId: string,
-    filter: FilterConfig | undefined,
+    colFilter: FilterConfig | undefined,
     onError: (error: unknown) => void
 ) => {
     const columnFilterInfos = {
         columnId: colId,
-        columnFilterInfos: filter
+        columnFilterInfos: colFilter
             ? {
-                  filterDataType: filter?.dataType,
-                  filterType: filter?.type,
-                  filterValue: JSON.stringify(filter?.value),
-                  filterTolerance: filter?.tolerance,
+                  filterDataType: colFilter?.dataType,
+                  filterType: colFilter?.type,
+                  filterValue: JSON.stringify(colFilter?.value),
+                  filterTolerance: colFilter?.tolerance,
               }
             : null,
     };
