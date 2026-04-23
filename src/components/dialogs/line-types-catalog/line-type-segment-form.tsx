@@ -103,7 +103,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
             );
     }, [snackError]);
 
-    const watchedApplySegmentsLimits = watch(`${APPLY_SEGMENTS_LIMITS}`);
+    const watchedApplySegmentsLimits = watch(APPLY_SEGMENTS_LIMITS) ?? true;
 
     const updateSegmentValues = useCallback(
         (index: number) => {

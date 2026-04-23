@@ -233,7 +233,7 @@ const LineModificationDialog = ({
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
                 [LINE_SEGMENTS]: lineModification.lineSegments,
-                [APPLY_SEGMENTS_LIMITS]: lineModification.applySegmentsLimits,
+                [APPLY_SEGMENTS_LIMITS]: lineModification.applySegmentsLimits ?? true,
             });
         },
         [reset]

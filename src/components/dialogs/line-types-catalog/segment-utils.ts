@@ -102,7 +102,7 @@ export function convertLimitsToOperationalLimitsGroupFormSchema(limits: CurrentL
     const finalLimits: OperationalLimitsGroupFormSchema[] = [];
     limits.forEach((item: CurrentLimitsInfo) => {
         const temporaryLimitsList: TemporaryLimitFormSchema[] = [];
-        item.temporaryLimits.forEach((temporaryLimit) => {
+        item.temporaryLimits?.forEach((temporaryLimit) => {
             temporaryLimitsList.push({
                 name: temporaryLimit.name,
                 acceptableDuration: temporaryLimit.acceptableDuration,
