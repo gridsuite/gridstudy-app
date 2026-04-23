@@ -5,206 +5,52 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ACTIVE_POWER_SET_POINT,
-    EQUIPMENT_NAME,
-    MAXIMUM_ACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-    REACTIVE_POWER_SET_POINT,
-} from 'components/utils/field-constants';
-import { Grid, TextField } from '@mui/material';
-import {
-    ActivePowerAdornment,
-    ConnectivityForm,
-    filledTextField,
-    FloatInput,
-    PropertiesForm,
-    ReactivePowerAdornment,
-    TextInput,
-} from '@gridsuite/commons-ui';
-import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
-import { FormattedMessage } from 'react-intl';
-import GridItem from '../../../commons/grid-item';
-import GridSection from '../../../commons/grid-section';
-import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
-import type { UUID } from 'node:crypto';
-import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
-import { BatteryFormInfos } from '../battery-dialog.type';
-import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
-import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
-import { useCallback } from 'react';
-import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
+import { Grid } from '@mui/material';
+import { useTabsWithError } from '@gridsuite/commons-ui';
+import { BatteryDialogHeader, BatteryDialogHeaderProps } from './BatteryDialogHeader';
+import { BatteryDialogTabs } from './BatteryDialogTabs';
+import { BatteryDialogTabsContent, BatteryDialogTabsContentProps } from './BatteryDialogTabsContent';
+import { BATTERY_TAB_FIELDS, BatteryDialogTab } from './batteryTabs.utils';
 
-export interface BatteryModificationFormProps {
-    studyUuid: UUID;
-    editData?: BatteryCreationInfos;
-    currentNode: CurrentTreeNode;
-    currentRootNetworkUuid: UUID;
-    batteryToModify: BatteryFormInfos | null;
-    updatePreviousReactiveCapabilityCurveTable: (action: string, index: number) => void;
-    equipmentId: string;
-}
+interface BatteryModificationFormProps
+    extends BatteryDialogHeaderProps,
+        Omit<BatteryDialogTabsContentProps, 'tabIndex'> {}
 
 export default function BatteryModificationForm({
-    studyUuid,
-    currentNode,
-    currentRootNetworkUuid,
     batteryToModify,
     updatePreviousReactiveCapabilityCurveTable,
+    voltageLevelOptions,
+    fetchBusesOrBusbarSections,
+    PositionDiagramPane,
     equipmentId,
 }: Readonly<BatteryModificationFormProps>) {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
-
-    const fetchBusesOrBusbarSections = useCallback(
-        (voltageLevelId: string) =>
-            fetchBusesOrBusbarSectionsForVoltageLevel(
-                studyUuid,
-                currentNode.id,
-                currentRootNetworkUuid,
-                voltageLevelId
-            ),
-        [studyUuid, currentNode.id, currentRootNetworkUuid]
-    );
-
-    const batteryIdField = (
-        <TextField
-            size="small"
-            fullWidth
-            label={'ID'}
-            value={equipmentId}
-            InputProps={{
-                readOnly: true,
-            }}
-            disabled
-            {...filledTextField}
-        />
-    );
-
-    const batteryNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-            previousValue={batteryToModify?.name}
-            clearable={true}
-        />
-    );
-
-    const maximumActivePowerField = (
-        <FloatInput
-            name={MAXIMUM_ACTIVE_POWER}
-            label={'MaximumActivePowerText'}
-            adornment={ActivePowerAdornment}
-            previousValue={batteryToModify?.maxP}
-            clearable={true}
-        />
-    );
-
-    const minimumActivePowerField = (
-        <FloatInput
-            name={MINIMUM_ACTIVE_POWER}
-            label={'MinimumActivePowerText'}
-            adornment={ActivePowerAdornment}
-            previousValue={batteryToModify?.minP}
-            clearable={true}
-        />
-    );
-
-    const activePowerSetPointField = (
-        <FloatInput
-            name={ACTIVE_POWER_SET_POINT}
-            label={'ActivePowerText'}
-            adornment={ActivePowerAdornment}
-            previousValue={batteryToModify?.targetP}
-            clearable={true}
-        />
-    );
-
-    const reactivePowerSetPointField = (
-        <FloatInput
-            name={REACTIVE_POWER_SET_POINT}
-            label={'ReactivePowerText'}
-            adornment={ReactivePowerAdornment}
-            previousValue={batteryToModify?.targetQ}
-            clearable={true}
-        />
-    );
-
-    const connectivityForm = (
-        <ConnectivityForm
-            withPosition={true}
-            isEquipmentModification={true}
-            previousValues={{
-                connectablePosition: batteryToModify?.connectablePosition,
-                voltageLevelId: batteryToModify?.voltageLevelId,
-                busOrBusbarSectionId: batteryToModify?.busOrBusbarSectionId,
-                terminalConnected: batteryToModify?.terminalConnected,
-            }}
-            voltageLevelOptions={voltageLevelOptions}
-            PositionDiagramPane={PositionDiagramPane}
-            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
-        />
+    const { tabIndex, setTabIndex, tabIndexesWithError } = useTabsWithError<BatteryDialogTab>(
+        BATTERY_TAB_FIELDS,
+        BatteryDialogTab.CONNECTIVITY_TAB
     );
 
     return (
-        <>
-            <Grid container spacing={2}>
-                <GridItem size={4}>{batteryIdField}</GridItem>
-                <GridItem size={4}>{batteryNameField}</GridItem>
+        <Grid container direction="column" spacing={2}>
+            <Grid item>
+                <BatteryDialogHeader batteryToModify={batteryToModify} equipmentId={equipmentId} />
             </Grid>
-            {/* Connectivity part */}
-            <GridSection title="Connectivity" />
-            <Grid container spacing={2}>
-                <GridItem size={12}>{connectivityForm}</GridItem>
-            </Grid>
-            {/* Limits part */}
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h3>
-                        <FormattedMessage id="Limits" />
-                    </h3>
-                    <h4>
-                        <FormattedMessage id="ActiveLimits" />
-                    </h4>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                <GridItem size={4}>{minimumActivePowerField}</GridItem>
-                <GridItem size={4}>{maximumActivePowerField}</GridItem>
-            </Grid>
-
-            {/* Reactive limits part */}
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h4>
-                        <FormattedMessage id="ReactiveLimits" />
-                    </h4>
-                </Grid>
-            </Grid>
-            <ReactiveLimitsForm
-                previousReactiveCapabilityCurvePoints={batteryToModify?.reactiveCapabilityCurvePoints}
-                previousMinMaxReactiveLimits={batteryToModify?.minMaxReactiveLimits}
-                updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
-            />
-            <GridSection title="Setpoints" />
-            <Grid container spacing={2}>
-                <GridItem size={4}>{activePowerSetPointField}</GridItem>
-                <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
-            </Grid>
-            <Grid container spacing={2} paddingTop={2}>
-                <ActivePowerControlForm
-                    isEquipmentModification={true}
-                    previousValues={batteryToModify?.activePowerControl}
+            <Grid item>
+                <BatteryDialogTabs
+                    tabIndex={tabIndex}
+                    tabIndexesWithError={tabIndexesWithError}
+                    setTabIndex={setTabIndex}
                 />
             </Grid>
-
-            {/* Short Circuit part */}
-            <GridSection title="ShortCircuit" />
-            <ShortCircuitForm previousValues={batteryToModify?.batteryShortCircuit} />
-
-            <PropertiesForm networkElementType={'battery'} isModification={true} />
-        </>
+            <Grid item>
+                <BatteryDialogTabsContent
+                    tabIndex={tabIndex}
+                    batteryToModify={batteryToModify}
+                    voltageLevelOptions={voltageLevelOptions}
+                    fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
+                    PositionDiagramPane={PositionDiagramPane}
+                    updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
+                />
+            </Grid>
+        </Grid>
     );
 }
