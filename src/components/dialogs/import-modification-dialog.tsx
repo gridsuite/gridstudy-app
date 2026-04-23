@@ -10,7 +10,7 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
-    RadioInput,
+    PARAM_DEVELOPER_MODE,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -20,15 +20,17 @@ import { JSX, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { CompositeModificationAction } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { Button, Grid, TextField, Typography } from '@mui/material';
+import { Button, FormControl, Grid, Radio, RadioGroup, TextField, Typography } from '@mui/material';
 import { NoteAlt as NoteAltIcon } from '@mui/icons-material';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useController, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from './commons/modificationDialog';
 import { ACTION, COMPOSITE_NAMES, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
 import GridItem from './commons/grid-item';
 import { UUID } from 'node:crypto';
+import { useParameterState } from './parameters/use-parameters-state';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -125,11 +127,19 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
         setValue,
         formState: { isValid },
     } = formMethods;
+    const { field: actionField } = useController({ name: ACTION, control });
 
     const action = watch(ACTION);
     const selectedModifications = watch(SELECTED_MODIFICATIONS);
     const compositeNames = watch(COMPOSITE_NAMES);
     const isInsertMode = action === CompositeModificationAction.INSERT;
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
+    useEffect(() => {
+        if (!isDeveloperMode && action === CompositeModificationAction.INSERT) {
+            setValue(ACTION, CompositeModificationAction.SPLIT, { shouldValidate: true });
+        }
+    }, [isDeveloperMode, action, setValue]);
 
     const handleOpenSelector = useCallback(() => {
         setIsSelectorOpen(true);
@@ -205,19 +215,21 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
                         <FormattedMessage id="importComposites.label" />
                     </GridItem>
                     <GridItem size={8}>
-                        <RadioInput
-                            name={ACTION}
-                            options={[
-                                {
-                                    id: CompositeModificationAction.SPLIT,
-                                    label: 'importComposites.action.split',
-                                },
-                                {
-                                    id: CompositeModificationAction.INSERT,
-                                    label: 'importComposites.action.insert',
-                                },
-                            ]}
-                        />
+                        <FormControl>
+                            <RadioGroup row value={actionField.value} onChange={actionField.onChange}>
+                                <FormControlLabel
+                                    control={<Radio />}
+                                    value={CompositeModificationAction.SPLIT}
+                                    label={<FormattedMessage id="importComposites.action.split" />}
+                                />
+                                <FormControlLabel
+                                    control={<Radio />}
+                                    value={CompositeModificationAction.INSERT}
+                                    label={<FormattedMessage id="importComposites.action.insert" />}
+                                    disabled={!isDeveloperMode}
+                                />
+                            </RadioGroup>
+                        </FormControl>
                     </GridItem>
                 </Grid>
                 {selectedModifications.length > 0 && (
