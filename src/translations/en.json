@@ -1587,6 +1587,5 @@
     "activateModification" : "Activate network modification",
     "deactivateModification" : "Deactivate network modification",
     "deselectModification": "Deselect modification",
-    "selectModification": "Select modification",
-    "moveModification": "Move modification"
+    "selectModification": "Select modification"
 } 
