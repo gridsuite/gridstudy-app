@@ -85,13 +85,11 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
     }
 
     result?.forEach(({ subjectLimitViolations = [], contingency }: ConstraintsFromContingencyItem) => {
-        const { contingencyId, status, elements = [], connectivityResult } = contingency || {};
+        const { contingencyId, status, elements = [] } = contingency || {};
         rows.push({
             contingencyId,
             contingencyEquipmentsIds: elements.map((element) => element.id),
             status: status,
-            disconnectedLoadActivePower: connectivityResult?.disconnectedLoadActivePower,
-            disconnectedGenerationActivePower: connectivityResult?.disconnectedGenerationActivePower,
             violationCount: subjectLimitViolations.length,
         });
         subjectLimitViolations?.forEach((constraint: Constraint) => {
@@ -140,9 +138,6 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     contingencyId: contingency.contingencyId,
                     contingencyEquipmentsIds: contingency.elements?.map((element) => element.id),
                     status: contingency.status,
-                    disconnectedLoadActivePower: contingency.connectivityResult?.disconnectedLoadActivePower,
-                    disconnectedGenerationActivePower:
-                        contingency.connectivityResult?.disconnectedGenerationActivePower,
                     limitType: limitViolation.limitType,
                     limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
                     nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
@@ -250,10 +245,7 @@ const makeAgGridDurationColumn = (
             },
         },
         valueGetter: (param: ValueGetterParams) => {
-            if (
-                param.data.limitType !== intl.formatMessage({ id: 'CURRENT' }) ||
-                param.data[fieldId] === UNDEFINED_ACCEPTABLE_DURATION
-            ) {
+            if (param.data.limitType !== 'CURRENT' || param.data[fieldId] === UNDEFINED_ACCEPTABLE_DURATION) {
                 return ' ';
             } else if (param.data[fieldId] === null) {
                 return intl.formatMessage({ id: 'NoneUpcomingOverload' });
@@ -440,24 +432,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             { ...sortParams, isChildren: true },
             filterParams
         ),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedLoadActivePower',
-                'disconnectedLoadActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
-        ),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedGenerationActivePower',
-                'disconnectedGenerationActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
-        ),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeAgGridCustomHeaderColumn({
@@ -575,24 +549,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             intl,
             { ...sortParams, isChildren: true },
             filterParams
-        ),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedLoadActivePower',
-                'disconnectedLoadActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
-        ),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedGenerationActivePower',
-                'disconnectedGenerationActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
         ),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
@@ -764,8 +720,6 @@ export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
     value: 'contingencyLimitViolations.value',
     loading: 'contingencyLimitViolations.loading',
     patlLoading: 'contingencyLimitViolations.patlLoading',
-    disconnectedLoadActivePower: 'connectivityResult.disconnectedLoadActivePower',
-    disconnectedGenerationActivePower: 'connectivityResult.disconnectedGenerationActivePower',
 };
 
 export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> = {
@@ -784,10 +738,6 @@ export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> =
     value: 'contingencyLimitViolations.value',
     loading: 'contingencyLimitViolations.loading',
     patlLoading: 'contingencyLimitViolations.patlLoading',
-    disconnectedLoadActivePower:
-        'contingencyLimitViolations.contingency.connectivityResult.disconnectedLoadActivePower',
-    disconnectedGenerationActivePower:
-        'contingencyLimitViolations.contingency.connectivityResult.disconnectedGenerationActivePower',
 };
 
 export enum NMK_TYPE {
