@@ -47,7 +47,6 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
 
     const connectivityForm = (
         <ConnectivityForm
-            withPosition={true}
             previousValues={undefined}
             voltageLevelOptions={voltageLevelOptions}
             PositionDiagramPane={PositionDiagramPane}

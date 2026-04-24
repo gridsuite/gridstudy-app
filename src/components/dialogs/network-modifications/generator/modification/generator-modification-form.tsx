@@ -232,7 +232,6 @@ export default function GeneratorModificationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            withPosition={true}
             isEquipmentModification={true}
             previousValues={{
                 connectablePosition: generatorToModify?.connectablePosition,

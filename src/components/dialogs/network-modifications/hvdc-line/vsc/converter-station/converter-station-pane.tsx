@@ -114,7 +114,6 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     const connectivityForm = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
-            withPosition={true}
             isEquipmentModification={isModification}
             previousValues={{
                 connectablePosition: previousValues?.connectablePosition,
