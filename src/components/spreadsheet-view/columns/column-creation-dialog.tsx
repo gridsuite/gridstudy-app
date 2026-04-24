@@ -25,8 +25,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm, UseFormSetError, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from 'redux/store';
+import { useSelector } from 'react-redux';
 import { hasCyclicDependencies, Item } from './utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
@@ -102,7 +101,6 @@ export default function ColumnCreationDialog({
     );
 
     const { handleSubmit, reset } = formMethods;
-    const dispatch = useDispatch<AppDispatch>();
 
     const intl = useIntl();
 
