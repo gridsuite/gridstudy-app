@@ -196,8 +196,8 @@ const LineModificationDialog = ({
 
     const { reset, setValue, getValues, watch } = formMethods;
 
-    const editSegmentsValue = watch(LINE_SEGMENTS);
-    const applySegmentsLimits = watch(APPLY_SEGMENTS_LIMITS);
+    const editSegmentsValue = watch(LINE_SEGMENTS) ?? [];
+    const applySegmentsLimits = watch(APPLY_SEGMENTS_LIMITS) ?? true;
 
     const fromEditDataToFormValues = useCallback(
         (lineModification: LineModificationInfos) => {
@@ -506,8 +506,9 @@ const LineModificationDialog = ({
                             open={isOpenLineTypesCatalogDialog}
                             onClose={handleCloseLineTypesCatalogDialog}
                             onSave={handleLineSegmentsBuildSubmit}
-                            editData={editSegmentsValue}
-                            applySegmentsLimits={applySegmentsLimits}
+                            editData={Object.assign([...editSegmentsValue], {
+                                [APPLY_SEGMENTS_LIMITS]: applySegmentsLimits,
+                            })}
                             isModification
                         />
                     </>

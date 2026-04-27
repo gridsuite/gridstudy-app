@@ -51,7 +51,7 @@ import {
     LimitSelectedRowData,
     LineTypeInfo,
 } from './line-catalog.type';
-import { emptyLineSegment, SegmentFormData } from './segment-utils';
+import { emptyLineSegment, SegmentFormData, SegmentsFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
 import GridSection from '../commons/grid-section';
 
@@ -71,16 +71,11 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface LineTypeSegmentFormProps {
-    editData?: SegmentFormData[];
-    applySegmentsLimits?: boolean;
+    editData?: SegmentsFormData;
     isModification: boolean;
 }
 
-export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({
-    editData,
-    isModification,
-    applySegmentsLimits,
-}) => {
+export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData, isModification }) => {
     const { setValue, getValues, clearErrors, watch } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
@@ -256,17 +251,9 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         updateSegmentsLimits().then(() => {
             updateTotals();
             keepMostConstrainingLimits();
-            setValue(APPLY_SEGMENTS_LIMITS, applySegmentsLimits);
+            setValue(APPLY_SEGMENTS_LIMITS, editData?.applySegmentsLimits ?? true);
         });
-    }, [
-        editData,
-        getSegmentLimits,
-        snackError,
-        updateTotals,
-        keepMostConstrainingLimits,
-        setValue,
-        applySegmentsLimits,
-    ]);
+    }, [editData, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits, setValue]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {

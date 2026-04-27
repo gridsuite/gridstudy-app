@@ -13,7 +13,7 @@ import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider, DeepNullable } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
-import { SegmentFormData, SegmentSchema } from './segment-utils';
+import { SegmentFormData, SegmentSchema, SegmentsFormData } from './segment-utils';
 import {
     APPLY_SEGMENTS_LIMITS,
     FINAL_CURRENT_LIMITS,
@@ -53,8 +53,7 @@ export interface LineTypeSegmentDialogProps {
         lineSegments: DeepNullable<SegmentFormData | null>[],
         applyLimits?: boolean | null
     ) => void;
-    editData?: SegmentFormData[];
-    applySegmentsLimits?: boolean;
+    editData?: SegmentsFormData;
     isModification?: boolean;
 }
 
@@ -65,7 +64,6 @@ export default function LineTypeSegmentDialog({
     onSave,
     onClose,
     editData,
-    applySegmentsLimits = true,
     isModification = false,
 }: Readonly<LineTypeSegmentDialogProps>) {
     const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
@@ -97,11 +95,7 @@ export default function LineTypeSegmentDialog({
                 onClose={onClose}
                 onSave={onSubmit}
             >
-                <LineTypeSegmentForm
-                    editData={editData}
-                    isModification={isModification}
-                    applySegmentsLimits={applySegmentsLimits}
-                />
+                <LineTypeSegmentForm editData={editData} isModification={isModification} />
             </ModificationDialog>
         </CustomFormProvider>
     );
