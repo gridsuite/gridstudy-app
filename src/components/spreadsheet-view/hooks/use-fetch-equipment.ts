@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { type SpreadsheetEquipmentsByNodes, type SpreadsheetEquipmentType } from '../types/spreadsheet.type';
 import type { UUID } from 'node:crypto';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,9 +22,16 @@ export function useFetchEquipment() {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
+    // Track the latest fetch version per equipment type to ignore stale responses
+    const fetchVersionRef = useRef<Map<SpreadsheetEquipmentType, number>>(new Map());
+
     const fetchNodesEquipmentData = useCallback(
         (type: SpreadsheetEquipmentType, nodesIds: Set<UUID>) => {
             if (studyUuid && currentRootNetworkUuid) {
+                // Increment version for this type — only the latest version will dispatch results
+                const currentVersion = (fetchVersionRef.current.get(type) ?? 0) + 1;
+                fetchVersionRef.current.set(type, currentVersion);
+
                 dispatch(setSpreadsheetFetching(type, true));
                 const fetcherPromises: ReturnType<typeof fetchNetworkElementsInfos>[] = [];
                 const spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes['equipmentsByNodeId'] = {};
@@ -53,16 +60,27 @@ export function useFetchEquipment() {
 
                 Promise.all(fetcherPromises)
                     .then(() => {
-                        dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
-                        console.debug(
-                            `Equipment data fetching and dispatch done for ${fetcherPromises.length} built nodes among ${nodesIds.size}`
-                        );
+                        // Only dispatch if this is still the latest fetch for this type
+                        if (fetchVersionRef.current.get(type) === currentVersion) {
+                            dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
+                            console.debug(
+                                `Equipment data fetching and dispatch done for ${fetcherPromises.length} built nodes among ${nodesIds.size}`
+                            );
+                        } else {
+                            console.debug(
+                                `Ignoring stale fetch response for equipment type ${type} (version ${currentVersion}, current ${fetchVersionRef.current.get(type)})`
+                            );
+                        }
                     })
                     .catch((error) => {
-                        snackWithFallback(snackError, error, { headerId: 'SpreadsheetFetchError' });
+                        if (fetchVersionRef.current.get(type) === currentVersion) {
+                            snackWithFallback(snackError, error, { headerId: 'SpreadsheetFetchError' });
+                        }
                     })
                     .finally(() => {
-                        dispatch(setSpreadsheetFetching(type, false));
+                        if (fetchVersionRef.current.get(type) === currentVersion) {
+                            dispatch(setSpreadsheetFetching(type, false));
+                        }
                     });
             }
         },
