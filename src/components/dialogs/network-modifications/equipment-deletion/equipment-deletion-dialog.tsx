@@ -19,6 +19,7 @@ import {
     EquipmentDeletionForm,
     equipmentDeletionDtoToForm,
     equipmentDeletionFormToDto,
+    ExtendedEquipmentType,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -37,7 +38,7 @@ export interface EquipmentDeletionDtoWithId extends EquipmentDeletionDto, WithMo
 type EquipmentDeletionDialogProps = NetworkModificationDialogProps & {
     editData?: EquipmentDeletionDtoWithId;
     defaultIdValue?: UUID;
-    equipmentType?: EquipmentType;
+    equipmentType?: EquipmentType | ExtendedEquipmentType;
 };
 
 /**
@@ -90,7 +91,7 @@ const EquipmentDeletionDialog = ({
     );
 
     const presetTypeAndId = useCallback(
-        (equipmentType: EquipmentType, equipmentId: UUID) => {
+        (equipmentType: EquipmentType | ExtendedEquipmentType, equipmentId: UUID) => {
             reset({
                 equipmentID: equipmentId,
                 type: equipmentType,
@@ -101,7 +102,7 @@ const EquipmentDeletionDialog = ({
     );
 
     const presetType = useCallback(
-        (equipmentType: EquipmentType) => {
+        (equipmentType: EquipmentType | ExtendedEquipmentType) => {
             reset({
                 type: equipmentType,
             });
@@ -148,7 +149,7 @@ const EquipmentDeletionDialog = ({
     );
 
     const fetchEquipmentIds = useCallback(
-        (equipmentType: EquipmentType) =>
+        (equipmentType: EquipmentType | ExtendedEquipmentType) =>
             fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, equipmentType, true),
         [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
