@@ -83,7 +83,10 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyGenerator } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import {
+    fetchBusesOrBusbarSectionsForVoltageLevel,
+    fetchNetworkElementInfos,
+} from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import {
@@ -103,6 +106,8 @@ import {
     getShortCircuitFormData,
     getShortCircuitFormSchema,
 } from '../../../short-circuit/short-circuit-utils';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -172,6 +177,18 @@ export default function GeneratorModificationDialog({
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [generatorToModify, setGeneratorToModify] = useState<GeneratorFormInfos | null>();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
 
     const formMethods = useFormWithDirtyTracking<DeepNullable<GeneratorModificationDialogSchemaForm>>({
         defaultValues: emptyFormData,
@@ -419,6 +436,7 @@ export default function GeneratorModificationDialog({
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
                 maxWidth={'md'}
+                PaperProps={{ sx: { height: '75vh' } }}
                 titleId="ModifyGenerator"
                 open={open}
                 keepMounted={true}
@@ -443,6 +461,9 @@ export default function GeneratorModificationDialog({
                         equipmentId={selectedId}
                         generatorToModify={generatorToModify}
                         updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
+                        voltageLevelOptions={voltageLevelOptions}
+                        PositionDiagramPane={PositionDiagramPane}
+                        fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                     />
                 )}
             </ModificationDialog>
