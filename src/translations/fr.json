@@ -1556,7 +1556,5 @@
     "deactivateModification": "Désactiver la modification réseau",
     "deselectModification": "Désélectionner la modification",
     "selectModification": "Sélectionner la modification",
-    "moveModification": "Déplacer la modification",
-    "disconnectedLoadActivePower": "Consommation coupée (MW)",
-    "disconnectedGenerationActivePower": "Puissance coupée (MW)"
+    "moveModification": "Déplacer la modification"
 }
