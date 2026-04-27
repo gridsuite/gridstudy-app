@@ -35,6 +35,8 @@ function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<
         return {
             message: GLOBAL_REPORT_NODE_LABEL,
             id: GLOBAL_REPORT_NODE_LABEL,
+            order: -1,
+            parentOrder: null,
             severity: getHighestSeverity(report),
             subReports: report.map((r) => setNodeName(r, nodesNames)),
         } as Report;
@@ -59,13 +61,12 @@ function setNodeName(report: Report, nodesNames: Map<string, string>) {
     if (report.message !== ROOT_NODE_LABEL) {
         report.message = nodesNames?.get(report.message) ?? report.message;
     }
-    report.parentId = GLOBAL_REPORT_NODE_LABEL;
     return report;
 }
 
 function prettifyReportLogMessage(reports: ReportLog[], nodesNames: Map<string, string>) {
     reports.forEach((report) => {
-        if (report.parentId == null) {
+        if (report.parentOrder == null) {
             if (report.message !== ROOT_NODE_LABEL) {
                 report.message = nodesNames?.get(report.message) ?? report.message;
             }
@@ -200,9 +201,10 @@ export const useReportFetcher = (
                 page,
                 size
             ).then((r: PagedReportLogs) => {
+                const logReportId = reportType === ReportType.GLOBAL ? null : reportId;
                 return {
                     ...r,
-                    content: mapReportLogs(prettifyReportLogMessage(r.content, nodesNames)),
+                    content: mapReportLogs(prettifyReportLogMessage(r.content, nodesNames), logReportId),
                 };
             });
         },

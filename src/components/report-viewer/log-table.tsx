@@ -149,7 +149,7 @@ const LogTable = ({
             setRowData([]);
             return;
         }
-        fetchLogs(selectedReport.id, severityFilter, messageFilter, selectedReport.type, page, rowsPerPage)?.then(
+        fetchLogs(selectedReport.reportId, severityFilter, messageFilter, selectedReport.type, page, rowsPerPage)?.then(
             (pagedLogs) => {
                 const { content, totalElements, totalPages } = pagedLogs;
                 if (totalPages - 1 < page) {
@@ -163,7 +163,7 @@ const LogTable = ({
     }, [
         severityFilter,
         fetchLogs,
-        selectedReport.id,
+        selectedReport.reportId,
         selectedReport.type,
         messageFilter,
         page,
@@ -327,7 +327,7 @@ const LogTable = ({
             setSearchTerm(searchTerm);
 
             fetchLogMatches(
-                selectedReport.id,
+                selectedReport.reportId,
                 severityFilter,
                 messageFilter,
                 selectedReport.type,
@@ -348,7 +348,7 @@ const LogTable = ({
             messageFilter,
             resetSearch,
             rowsPerPage,
-            selectedReport.id,
+            selectedReport.reportId,
             selectedReport.type,
             setPagination,
             severityFilter,
