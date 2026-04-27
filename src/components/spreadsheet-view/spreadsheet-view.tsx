@@ -163,6 +163,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panel
                     message={intl.formatMessage({
                         id: 'spreadsheet/create_new_spreadsheet/replace_collection_confirmation',
                     })}
+                    isTranslationNeeded={false}
                     openConfirmationPopup={resetConfirmationDialogOpen}
                     setOpenConfirmationPopup={setResetConfirmationDialogOpen}
                     handlePopupConfirmation={resetSpreadsheetCollection}
