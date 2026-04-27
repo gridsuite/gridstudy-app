@@ -7,7 +7,7 @@
 
 import { RunningStatus } from 'components/utils/running-status';
 import type { UUID } from 'node:crypto';
-import { RefObject, useCallback, useEffect, useRef } from 'react';
+import { RefObject, useCallback, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ComputingType, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from '../utils/optional-services';
@@ -48,8 +48,6 @@ function isWorthUpdate(
     eventData: StudyUpdatedEventData | null,
     computingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
     lastUpdateRef: RefObject<LastUpdateProps | null>,
-    nodeUuidRef: RefObject<UUID | null>,
-    rootNetworkUuidRef: RefObject<UUID | null>,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     invalidations: string[]
@@ -69,6 +67,14 @@ function isWorthUpdate(
         return false;
     }
     if (!updateType) {
+        return false;
+    }
+    // if node is updated all status are updated in use-computating-status-at-once
+    if (
+        updateType === 'nodeBuildStatusUpdated' ||
+        updateType === 'buildCompleted' ||
+        updateType === 'all_computation_status'
+    ) {
         return false;
     }
     if (invalidations.indexOf(updateType) <= -1) {
@@ -100,8 +106,10 @@ const shouldRequestBeCanceled = (
  *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
  * @param studyUuid current study uuid
  * @param nodeUuid current node uuid
+ * @param currentRootNetworkUuid
  * @param computingStatusFetcher method fetching current <computingType> state
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
+ * @param completions
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
  * @param computingStatusParametersFetcher method fetching status infos
@@ -246,8 +254,6 @@ export const useComputingStatus: UseComputingStatusProps = (
                 eventData,
                 computingStatusFetcher,
                 lastUpdateRef,
-                nodeUuidRef,
-                rootNetworkUuidRef,
                 nodeUuid,
                 currentRootNetworkUuid,
                 invalidations
@@ -271,9 +277,4 @@ export const useComputingStatus: UseComputingStatusProps = (
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: evaluateUpdate,
     });
-
-    /* initial fetch and update */
-    useEffect(() => {
-        evaluateUpdate();
-    }, [evaluateUpdate]);
 };
