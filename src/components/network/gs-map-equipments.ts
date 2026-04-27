@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { type UseSnackMessageReturn } from '@gridsuite/commons-ui';
+import { snackWithFallback, type UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { MapEquipments } from '@powsybl/network-viewer';
 import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
 import type { AppDispatch } from '../../redux/store';
@@ -60,10 +60,7 @@ export default class GSMapEquipments extends MapEquipments {
             .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
-                    this.errHandler({
-                        messageTxt: error.message,
-                        headerId: 'MapEquipmentsLoadError',
-                    });
+                    snackWithFallback(this.errHandler, error, { headerId: 'MapEquipmentsLoadError' });
                 }
             });
 
@@ -74,10 +71,7 @@ export default class GSMapEquipments extends MapEquipments {
             .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
-                    this.errHandler({
-                        messageTxt: error.message,
-                        headerId: 'MapEquipmentsLoadError',
-                    });
+                    snackWithFallback(this.errHandler, error, { headerId: 'MapEquipmentsLoadError' });
                 }
             });
 
@@ -88,10 +82,7 @@ export default class GSMapEquipments extends MapEquipments {
             .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
-                    this.errHandler({
-                        messageTxt: error.message,
-                        headerId: 'MapEquipmentsLoadError',
-                    });
+                    snackWithFallback(this.errHandler, error, { headerId: 'MapEquipmentsLoadError' });
                 }
             });
 
@@ -102,10 +93,7 @@ export default class GSMapEquipments extends MapEquipments {
             .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
-                    this.errHandler({
-                        messageTxt: error.message,
-                        headerId: 'MapEquipmentsLoadError',
-                    });
+                    snackWithFallback(this.errHandler, error, { headerId: 'MapEquipmentsLoadError' });
                 }
             });
 
@@ -178,37 +166,25 @@ export default class GSMapEquipments extends MapEquipments {
         updatedSubstations.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
-                this.errHandler({
-                    messageTxt: error.message,
-                    headerId: 'MapEquipmentsLoadError',
-                });
+                snackWithFallback(this.errHandler, error, { headerId: 'MapEquipmentsLoadError' });
             }
         });
         updatedLines.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
-                this.errHandler({
-                    messageTxt: error.message,
-                    headerId: 'MapEquipmentsLoadError',
-                });
+                snackWithFallback(this.errHandler, error, { headerId: 'MapEquipmentsLoadError' });
             }
         });
         updatedTieLines.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
-                this.errHandler({
-                    messageTxt: error.message,
-                    headerId: 'MapEquipmentsLoadError',
-                });
+                snackWithFallback(this.errHandler, error, { headerId: 'MapEquipmentsLoadError' });
             }
         });
         updatedHvdcLines.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
-                this.errHandler({
-                    messageTxt: error.message,
-                    headerId: 'MapEquipmentsLoadError',
-                });
+                snackWithFallback(this.errHandler, error, { headerId: 'MapEquipmentsLoadError' });
             }
         });
         return { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines };

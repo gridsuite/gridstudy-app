@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ExportCsvButton, useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportCsvButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
@@ -78,10 +78,7 @@ export const PccMinExportButton: FunctionComponent<PccMinExportButtonProps> = (p
                 })
             )
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'csvExportPccMinResultError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'csvExportPccMinResultError' });
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));

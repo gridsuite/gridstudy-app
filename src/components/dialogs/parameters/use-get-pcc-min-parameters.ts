@@ -13,6 +13,7 @@ import {
     getPccMinStudyParameters,
     NotificationsUrlKeys,
     PccMinParameters,
+    snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -36,10 +37,7 @@ export const useGetPccMinParameters = (): PccMinParameters | null => {
                     setPccMinParams(params);
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' });
                 });
         },
         [snackError]
