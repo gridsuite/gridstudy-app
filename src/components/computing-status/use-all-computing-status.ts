@@ -37,6 +37,8 @@ import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic
 import { fetchDynamicMarginCalculationStatus } from '../../services/study/dynamic-margin-calculation';
 import { NotificationType } from 'types/notification-types';
 import { fetchPccMinStatus } from 'services/study/pcc-min';
+import { fetchAllComputationStatus } from '../../services/study/study';
+import { useAllComputingStatusAtOnce } from './use-computing-status-at-once';
 
 // status invalidations
 const loadFlowStatusInvalidations = [NotificationType.LOADFLOW_STATUS, NotificationType.LOADFLOW_FAILED];
@@ -76,6 +78,34 @@ const stateEstimationStatusInvalidations = [
 const pccMinStatusInvalidations = [NotificationType.PCC_MIN_STATUS, NotificationType.PCC_MIN_FAILED];
 
 // status completions
+export function getCompletions(computingType: ComputingType) {
+    switch (computingType) {
+        case ComputingType.PCC_MIN:
+            return pccMinStatusCompletions;
+        case ComputingType.LOAD_FLOW:
+            return loadFlowStatusCompletions;
+        case ComputingType.SECURITY_ANALYSIS:
+            return securityAnalysisStatusCompletions;
+        case ComputingType.SENSITIVITY_ANALYSIS:
+            return sensitivityAnalysisStatusCompletions;
+        case ComputingType.SHORT_CIRCUIT:
+            return shortCircuitAnalysisStatusCompletions;
+        case ComputingType.SHORT_CIRCUIT_ONE_BUS:
+            return oneBusShortCircuitAnalysisStatusCompletions;
+        case ComputingType.DYNAMIC_SIMULATION:
+            return dynamicSimulationStatusCompletions;
+        case ComputingType.DYNAMIC_SECURITY_ANALYSIS:
+            return dynamicSecurityAnalysisStatusCompletions;
+        case ComputingType.DYNAMIC_MARGIN_CALCULATION:
+            return dynamicMarginCalculationStatusCompletions;
+        case ComputingType.VOLTAGE_INITIALIZATION:
+            return voltageInitStatusCompletions;
+        case ComputingType.STATE_ESTIMATION:
+            return stateEstimationStatusCompletions;
+        default:
+            return [];
+    }
+}
 const loadFlowStatusCompletions = [NotificationType.LOADFLOW_RESULT, NotificationType.LOADFLOW_FAILED];
 const securityAnalysisStatusCompletions = [
     NotificationType.SECURITY_ANALYSIS_RESULT,
@@ -277,4 +307,6 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         undefined,
         pccMinAvailability
     );
+
+    useAllComputingStatusAtOnce(studyUuid, currentNodeUuid, currentRootNetworkUuid, fetchAllComputationStatus);
 };
