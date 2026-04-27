@@ -7,6 +7,7 @@
 
 import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
 import {
+    APPLY_SEGMENTS_LIMITS,
     CHARACTERISTICS,
     CONNECTIVITY,
     EQUIPMENT_ID,
@@ -36,4 +37,5 @@ export interface LineModificationFormSchema {
     [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
     [STATE_ESTIMATION]: any;
     [LINE_SEGMENTS]?: LineSegmentInfos[];
+    [APPLY_SEGMENTS_LIMITS]?: boolean;
 }

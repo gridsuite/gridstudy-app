@@ -10,6 +10,7 @@ import { useFormContext } from 'react-hook-form';
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    APPLY_SEGMENTS_LIMITS,
     AREA,
     FINAL_CURRENT_LIMITS,
     SEGMENT_CURRENT_LIMITS,
@@ -39,6 +40,7 @@ import {
     type MuiStyles,
     ReadOnlyInput,
     snackWithFallback,
+    SwitchInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
@@ -70,10 +72,16 @@ const styles = {
 
 export interface LineTypeSegmentFormProps {
     editData?: SegmentFormData[];
+    applySegmentsLimits?: boolean;
+    isModification: boolean;
 }
 
-export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData }) => {
-    const { setValue, getValues, clearErrors } = useFormContext();
+export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({
+    editData,
+    isModification,
+    applySegmentsLimits,
+}) => {
+    const { setValue, getValues, clearErrors, watch } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
     const { snackError } = useSnackMessage();
@@ -94,6 +102,8 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 })
             );
     }, [snackError]);
+
+    const watchedApplySegmentsLimits = watch(APPLY_SEGMENTS_LIMITS) ?? true;
 
     const updateSegmentValues = useCallback(
         (index: number) => {
@@ -246,8 +256,17 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         updateSegmentsLimits().then(() => {
             updateTotals();
             keepMostConstrainingLimits();
+            setValue(APPLY_SEGMENTS_LIMITS, applySegmentsLimits);
         });
-    }, [editData, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits]);
+    }, [
+        editData,
+        getSegmentLimits,
+        snackError,
+        updateTotals,
+        keepMostConstrainingLimits,
+        setValue,
+        applySegmentsLimits,
+    ]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
@@ -487,7 +506,15 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 <GridItem size={2}>{totalSusceptanceField}</GridItem>
                 <GridItem size={1}>{<div />}</GridItem>
             </Grid>
-            <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
+            <Grid container>
+                <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
+                {isModification && (
+                    <SwitchInput
+                        name={APPLY_SEGMENTS_LIMITS}
+                        label={watchedApplySegmentsLimits ? 'applied' : 'notApplied'}
+                    />
+                )}
+            </Grid>
             <Grid container sx={{ height: '100%' }} direction="column">
                 <CustomAGGrid
                     rowData={rowData}
@@ -496,7 +523,6 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                     domLayout="autoHeight"
                 />
             </Grid>
-
             {openCatalogDialogIndex !== null && (
                 <LineTypesCatalogSelectorDialog
                     onClose={onCatalogDialogClose}

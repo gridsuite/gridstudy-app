@@ -1090,6 +1090,8 @@
     "diagramConfigUpdate": "Replace an existing network area diagram",
     "EditNad": "Edit",
     "apply": "Apply",
+    "applied": "Applied",
+    "notApplied": "Not applied",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
     "errUpdateModificationsMsg": "Error while updating Composite modification {item}",
