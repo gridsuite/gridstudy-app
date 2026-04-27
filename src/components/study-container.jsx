@@ -6,7 +6,7 @@
  */
 
 import StudyPane from './study-pane';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
@@ -124,7 +124,7 @@ function useStudy(studyUuidRequest) {
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
 
-export function StudyContainer() {
+export const StudyContainer = memo(function StudyContainer() {
     const websocketExpectedCloseRef = useRef();
     const intlRef = useIntlRef();
 
@@ -544,4 +544,4 @@ export function StudyContainer() {
             <StudyPane />
         </WaitingLoader>
     );
-}
+});

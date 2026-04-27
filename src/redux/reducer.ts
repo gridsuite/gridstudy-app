@@ -477,6 +477,7 @@ const initialState: AppState = {
     isNetworkModificationTreeModelUpToDate: false,
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
+    tokenId: undefined,
     signInCallbackError: null,
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
@@ -1019,6 +1020,10 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(USER, (state, action: UserAction) => {
+        state.tokenId = action.user?.id_token ?? undefined;
+        if (state.user?.profile?.sub === action.user?.profile?.sub && state.user !== null) {
+            return;
+        }
         state.user = action.user;
     });
 

@@ -260,4 +260,5 @@ export interface AppState extends CommonStoreState, AppConfigState {
     calculationSelections: Record<UUID, CalculationType[]>;
     highlightedModificationUuid: UUID | null;
     tableFilters: TableFiltersState;
+    tokenId: string | undefined;
 }
