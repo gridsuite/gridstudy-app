@@ -15,24 +15,7 @@ import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { useEffect, useState } from 'react';
 import { useFormState } from 'react-hook-form';
-import {
-    DROOP,
-    FORCED_OUTAGE_RATE,
-    FREQUENCY_REGULATION,
-    MARGINAL_COST,
-    MAXIMUM_ACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-    PLANNED_ACTIVE_POWER_SET_POINT,
-    PLANNED_OUTAGE_RATE,
-    Q_PERCENT,
-    RATED_NOMINAL_POWER,
-    REACTIVE_LIMITS,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
-    VOLTAGE_REGULATION,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
-} from '../../../../utils/field-constants';
+import { VOLTAGE_REGULATION } from '../../../../utils/field-constants';
 
 interface GeneratorModificationFormProps
     extends GeneratorDialogHeaderProps,
@@ -69,26 +52,26 @@ export default function GeneratorModificationForm({
             errors?.[FieldConstants.ACTIVE_POWER_SET_POINT] !== undefined ||
             errors?.[FieldConstants.REACTIVE_POWER_SET_POINT] !== undefined ||
             errors?.[VOLTAGE_REGULATION] !== undefined ||
-            errors?.[VOLTAGE_SET_POINT] !== undefined ||
-            errors?.[VOLTAGE_REGULATION_TYPE] !== undefined ||
-            errors?.[Q_PERCENT] !== undefined ||
-            errors?.[FREQUENCY_REGULATION] !== undefined ||
-            errors?.[DROOP] !== undefined ||
+            errors?.[FieldConstants.VOLTAGE_SET_POINT] !== undefined ||
+            errors?.[FieldConstants.VOLTAGE_REGULATION_TYPE] !== undefined ||
+            errors?.[FieldConstants.Q_PERCENT] !== undefined ||
+            errors?.[FieldConstants.FREQUENCY_REGULATION] !== undefined ||
+            errors?.[FieldConstants.DROOP] !== undefined ||
             // limits
-            errors?.[MINIMUM_ACTIVE_POWER] !== undefined ||
-            errors?.[MAXIMUM_ACTIVE_POWER] !== undefined ||
-            errors?.[RATED_NOMINAL_POWER] !== undefined ||
-            errors?.[REACTIVE_LIMITS] !== undefined
+            errors?.[FieldConstants.MINIMUM_ACTIVE_POWER] !== undefined ||
+            errors?.[FieldConstants.MAXIMUM_ACTIVE_POWER] !== undefined ||
+            errors?.[FieldConstants.RATED_NOMINAL_POWER] !== undefined ||
+            errors?.[FieldConstants.REACTIVE_LIMITS] !== undefined
         ) {
             tabsInError.push(GeneratorDialogTab.SETPOINTS_AND_LIMITS_TAB);
         }
         if (
-            errors?.[TRANSIENT_REACTANCE] !== undefined ||
-            errors?.[TRANSFORMER_REACTANCE] !== undefined ||
-            errors?.[PLANNED_ACTIVE_POWER_SET_POINT] !== undefined ||
-            errors?.[MARGINAL_COST] !== undefined ||
-            errors?.[PLANNED_OUTAGE_RATE] !== undefined ||
-            errors?.[FORCED_OUTAGE_RATE] !== undefined
+            errors?.[FieldConstants.TRANSIENT_REACTANCE] !== undefined ||
+            errors?.[FieldConstants.TRANSFORMER_REACTANCE] !== undefined ||
+            errors?.[FieldConstants.PLANNED_ACTIVE_POWER_SET_POINT] !== undefined ||
+            errors?.[FieldConstants.MARGINAL_COST] !== undefined ||
+            errors?.[FieldConstants.PLANNED_OUTAGE_RATE] !== undefined ||
+            errors?.[FieldConstants.FORCED_OUTAGE_RATE] !== undefined
         ) {
             tabsInError.push(GeneratorDialogTab.SPECIFIC_TAB);
         }
