@@ -29,7 +29,7 @@ const initialOptionalLoadingParameters: Record<SpreadsheetEquipmentType, boolean
     [SpreadsheetEquipmentType.LCC_CONVERTER_STATION]: false,
     [SpreadsheetEquipmentType.VSC_CONVERTER_STATION]: false,
     [SpreadsheetEquipmentType.TIE_LINE]: false,
-    [SpreadsheetEquipmentType.DANGLING_LINE]: false,
+    [SpreadsheetEquipmentType.BOUNDARY_LINE]: false,
     [SpreadsheetEquipmentType.BUSBAR_SECTION]: false,
 };
 

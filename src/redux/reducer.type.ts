@@ -75,7 +75,7 @@ export enum EquipmentUpdateType {
     GENERATORS = 'generators',
     LOADS = 'loads',
     BATTERIES = 'batteries',
-    DANGLING_LINES = 'danglingLines',
+    BOUNDARY_LINES = 'boundaryLines',
     HVDC_LINES = 'hvdcLines',
     LCC_CONVERTER_STATIONS = 'lccConverterStations',
     VSC_CONVERTER_STATIONS = 'vscConverterStations',

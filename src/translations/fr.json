@@ -402,7 +402,7 @@
     "loadType": "Type",
     "ConstantP": "P constant (MW)",
     "ConstantQ": "Q constant (Mvar)",
-    "DanglingLines": "Lignes frontières",
+    "BoundaryLines": "Lignes frontières",
     "PairingKey": "Xnode UCTE",
     "HvdcLines": "Lignes HVDC",
     "ConvertersMode": "Mode du convertisseur",

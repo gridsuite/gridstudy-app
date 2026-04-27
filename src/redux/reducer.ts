@@ -322,8 +322,8 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): Spread
             return SpreadsheetEquipmentType.LOAD;
         case EquipmentUpdateType.BATTERIES:
             return SpreadsheetEquipmentType.BATTERY;
-        case EquipmentUpdateType.DANGLING_LINES:
-            return SpreadsheetEquipmentType.DANGLING_LINE;
+        case EquipmentUpdateType.BOUNDARY_LINES:
+            return SpreadsheetEquipmentType.BOUNDARY_LINE;
         case EquipmentUpdateType.HVDC_LINES:
             return SpreadsheetEquipmentType.HVDC_LINE;
         case EquipmentUpdateType.LCC_CONVERTER_STATIONS:
@@ -415,7 +415,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
         [SpreadsheetEquipmentType.BRANCH]: emptySpreadsheetEquipmentsByNodes,
         [SpreadsheetEquipmentType.BUS]: emptySpreadsheetEquipmentsByNodes,
         [SpreadsheetEquipmentType.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
-        [SpreadsheetEquipmentType.DANGLING_LINE]: emptySpreadsheetEquipmentsByNodes,
+        [SpreadsheetEquipmentType.BOUNDARY_LINE]: emptySpreadsheetEquipmentsByNodes,
         [SpreadsheetEquipmentType.GENERATOR]: emptySpreadsheetEquipmentsByNodes,
         [SpreadsheetEquipmentType.HVDC_LINE]: emptySpreadsheetEquipmentsByNodes,
         [SpreadsheetEquipmentType.LCC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,

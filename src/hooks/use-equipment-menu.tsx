@@ -67,7 +67,7 @@ export const useEquipmentMenu = ({
         MenuVoltageLevel,
         MenuLoad,
         MenuBattery,
-        MenuDanglingLine,
+        MenuBoundaryLine,
         MenuGenerator,
         MenuStaticVarCompensator,
         MenuShuntCompensator,
@@ -85,11 +85,11 @@ export const useEquipmentMenu = ({
             ),
             MenuLoad: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.LOAD, null, 'load-menus'),
             MenuBattery: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.BATTERY, null, 'battery-menus'),
-            MenuDanglingLine: withEquipmentMenu(
+            MenuBoundaryLine: withEquipmentMenu(
                 BaseEquipmentMenu,
-                EquipmentType.DANGLING_LINE,
+                EquipmentType.BOUNDARY_LINE,
                 null,
-                'dangling-line-menus'
+                'boundary-line-menus'
             ),
             MenuGenerator: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.GENERATOR, null, 'generator-menus'),
             MenuStaticVarCompensator: withEquipmentMenu(
@@ -236,7 +236,7 @@ export const useEquipmentMenu = ({
 
                 {equipmentMenu.equipmentType === EquipmentType.LOAD && withEquipment(MenuLoad, null)}
                 {equipmentMenu.equipmentType === EquipmentType.BATTERY && withEquipment(MenuBattery, null)}
-                {equipmentMenu.equipmentType === EquipmentType.DANGLING_LINE && withEquipment(MenuDanglingLine, null)}
+                {equipmentMenu.equipmentType === EquipmentType.BOUNDARY_LINE && withEquipment(MenuBoundaryLine, null)}
                 {equipmentMenu.equipmentType === EquipmentType.GENERATOR && withEquipment(MenuGenerator, null)}
                 {equipmentMenu.equipmentType === EquipmentType.STATIC_VAR_COMPENSATOR &&
                     withEquipment(MenuStaticVarCompensator, null)}
@@ -257,7 +257,7 @@ export const useEquipmentMenu = ({
         MenuVoltageLevel,
         MenuLoad,
         MenuBattery,
-        MenuDanglingLine,
+        MenuBoundaryLine,
         MenuGenerator,
         MenuStaticVarCompensator,
         MenuShuntCompensator,
