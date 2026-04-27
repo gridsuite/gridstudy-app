@@ -58,12 +58,14 @@ export const mapColDefToDto = (colDef: ColumnDefinition, colFilter?: FilterConfi
     precision: colDef.precision,
     formula: colDef.formula,
     dependencies: colDef.dependencies?.length ? JSON.stringify(colDef.dependencies) : undefined,
-    columnFilterInfos: {
-        filterDataType: colFilter?.dataType,
-        filterType: colFilter?.type,
-        filterValue: colFilter?.value ? JSON.stringify(colFilter.value) : undefined,
-        filterTolerance: colFilter?.tolerance,
-    },
+    columnFilterInfos: colFilter
+        ? {
+              filterDataType: colFilter.dataType,
+              filterType: colFilter.type,
+              filterValue: colFilter.value ? JSON.stringify(colFilter.value) : undefined,
+              filterTolerance: colFilter.tolerance,
+          }
+        : undefined,
 });
 
 export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {

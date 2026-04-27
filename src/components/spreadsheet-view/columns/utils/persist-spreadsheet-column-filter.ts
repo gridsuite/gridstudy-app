@@ -10,17 +10,16 @@ import { ColumnDefinition } from '../../types/spreadsheet.type';
 import { updateSpreadsheetColumn } from 'services/study/study-config';
 import { mapColDefToDto } from '../../add-spreadsheet/dialogs/add-spreadsheet-utils';
 
-export const persistSpreadsheetColumnFilters = (
+export const persistSpreadsheetColumnFilter = (
     studyUuid: UUID,
     tabUuid: UUID,
     colDef: ColumnDefinition | undefined,
-    filters: FilterConfig[],
+    colFilter: FilterConfig | undefined,
     onError: (error: unknown) => void
 ) => {
     if (!colDef) {
         return;
     }
-    const colFilter = filters.find((f) => f.column === colDef.id);
     const columnDto = mapColDefToDto(colDef, colFilter);
     updateSpreadsheetColumn(studyUuid, tabUuid, colDef.uuid, columnDto).catch((error) => {
         onError(error);

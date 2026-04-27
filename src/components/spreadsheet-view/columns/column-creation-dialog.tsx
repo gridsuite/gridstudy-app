@@ -25,12 +25,9 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm, UseFormSetError, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from 'redux/store';
-import { setUpdateColumnsDefinitions } from 'redux/actions';
+import { useSelector } from 'react-redux';
 import { hasCyclicDependencies, Item } from './utils/cyclic-dependencies';
-import { COLUMN_TYPES, FilterConfig, TableType } from 'types/custom-aggrid-types';
-import { getColumnFiltersFromState } from 'redux/selectors/filter-selectors';
+import { COLUMN_TYPES } from 'types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import {
@@ -50,7 +47,6 @@ import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floatin
 import { isFormulaContentSizeOk } from './utils/formula-validator';
 import { MAX_FORMULA_CHARACTERS } from '../constants';
 import InfoIcon from '@mui/icons-material/Info';
-import { persistSpreadsheetColumnFilters } from './utils/persist-spreadsheet-column-filters';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -105,7 +101,6 @@ export default function ColumnCreationDialog({
     );
 
     const { handleSubmit, reset } = formMethods;
-    const dispatch = useDispatch<AppDispatch>();
 
     const intl = useIntl();
 
@@ -226,18 +221,6 @@ export default function ColumnCreationDialog({
         />
     );
 
-    const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
-        getColumnFiltersFromState(state, TableType.Spreadsheet, spreadsheetConfigUuid)
-    );
-
-    const persistFilters = useCallback(
-        (studyUuid: UUID, newFilters: FilterConfig[]) => {
-            const onError = (error: unknown) => snackWithFallback(snackError, error);
-            persistSpreadsheetColumnFilters(studyUuid, spreadsheetConfigUuid, columnDefinition, newFilters, onError);
-        },
-        [spreadsheetConfigUuid, columnDefinition, snackError]
-    );
-
     const validateParams = (
         columnsDefinitions: ColumnDefinition[],
         newParams: ColumnCreationForm,
@@ -293,54 +276,24 @@ export default function ColumnCreationDialog({
                 return;
             }
 
-            const existingColumn = columnsDefinitions?.find((column) => column.uuid === colUuid);
-            let isUpdate = false;
-
-            // If we update the column, we remove its filters
-            if (existingColumn) {
-                isUpdate = true;
-                const updatedFilters = filters?.filter((filter) => filter.column !== existingColumn.id) ?? [];
-                persistFilters(studyUuid, updatedFilters);
-            }
-
+            // We don't include the column filter, so it will be removed when we update the column.
             const formattedParams = {
                 ...newParams,
                 dependencies: newParams.dependencies?.length ? JSON.stringify(newParams.dependencies) : undefined,
             };
 
-            const updateOrCreateColumn =
-                isUpdate && columnDefinition
-                    ? updateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
-                    : createSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, formattedParams);
-
             // we reset and close the dialog to avoid multiple submissions
             reset(initialColumnCreationForm);
             open.setFalse();
 
-            updateOrCreateColumn
-                .then((uuid) => {
-                    dispatch(
-                        setUpdateColumnsDefinitions({
-                            uuid: tableDefinition.uuid,
-                            value: {
-                                uuid: columnDefinition?.uuid ?? uuid,
-                                id: newParams.id,
-                                name: newParams.name,
-                                type: COLUMN_TYPES[newParams.type],
-                                precision: newParams.precision,
-                                formula: newParams.formula,
-                                dependencies: newParams.dependencies,
-                                visible: true,
-                                locked: existingColumn?.locked,
-                            },
-                        })
-                    );
-                })
-                .catch((error) => {
-                    snackWithFallback(snackError, error, {
-                        headerId: 'spreadsheet/custom_column/error_saving_or_updating_column',
-                    });
+            (columnDefinition
+                ? updateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
+                : createSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, formattedParams)
+            ).catch((error) => {
+                snackWithFallback(snackError, error, {
+                    headerId: 'spreadsheet/custom_column/error_saving_or_updating_column',
                 });
+            });
         },
         [
             studyUuid,
@@ -351,10 +304,6 @@ export default function ColumnCreationDialog({
             spreadsheetConfigUuid,
             reset,
             open,
-            filters,
-            persistFilters,
-            dispatch,
-            tableDefinition,
             snackError,
         ]
     );
