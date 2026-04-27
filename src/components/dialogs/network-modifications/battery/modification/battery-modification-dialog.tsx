@@ -26,6 +26,15 @@ import {
     getConnectivityWithPositionSchema,
     getSetPointsEmptyFormData,
     getSetPointsSchema,
+    getActivePowerControlSchema,
+    getActivePowerControlEmptyFormData,
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormSchema,
+    getShortCircuitFormData,
+    getReactiveLimitsEmptyFormData,
+    getReactiveLimitsValidationSchema,
+    getReactiveLimitsFormData,
+    REMOVE,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -37,31 +46,11 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    DROOP,
     EQUIPMENT_NAME,
-    FREQUENCY_REGULATION,
     ID,
-    MAX_Q,
-    MAXIMUM_ACTIVE_POWER,
-    MAXIMUM_REACTIVE_POWER,
-    MIN_Q,
-    MINIMUM_ACTIVE_POWER,
-    MINIMUM_REACTIVE_POWER,
-    P,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-    REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import {
-    getReactiveLimitsEmptyFormData,
-    getReactiveLimitsFormData,
-    getReactiveLimitsValidationSchema,
-} from '../../../reactive-limits/reactive-limits-utils';
-import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
@@ -70,25 +59,16 @@ import { fetchNetworkElementInfos } from '../../../../../services/study/network'
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
 import { FetchStatus } from '../../../../../services/utils.type';
-import {
-    getActivePowerControlEmptyFormData,
-    getActivePowerControlSchema,
-} from '../../../active-power-control/active-power-control-utils';
 import { BatteryModificationInfos } from '../../../../../services/network-modification-types';
 import BatteryModificationForm from './battery-modification-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import {
-    getShortCircuitEmptyFormData,
-    getShortCircuitFormData,
-    getShortCircuitFormSchema,
-} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
-    [MAXIMUM_ACTIVE_POWER]: null,
-    [MINIMUM_ACTIVE_POWER]: null,
+    [FieldConstants.MAXIMUM_ACTIVE_POWER]: null,
+    [FieldConstants.MINIMUM_ACTIVE_POWER]: null,
     ...getConnectivityWithPositionEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
     ...getSetPointsEmptyFormData(true),
@@ -101,17 +81,20 @@ const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_NAME]: yup.string().nullable(),
-        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
-        [MINIMUM_ACTIVE_POWER]: yup
+        [FieldConstants.MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+        [FieldConstants.MINIMUM_ACTIVE_POWER]: yup
             .number()
             .nullable()
-            .when([MAXIMUM_ACTIVE_POWER], {
+            .when([FieldConstants.MAXIMUM_ACTIVE_POWER], {
                 is: (maximumActivePower: number) => maximumActivePower != null,
                 then: (schema) =>
-                    schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
+                    schema.max(
+                        yup.ref(FieldConstants.MAXIMUM_ACTIVE_POWER),
+                        'MinActivePowerMustBeLessOrEqualToMaxActivePower'
+                    ),
             }),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
-        [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
+        [FieldConstants.REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
         ...getSetPointsSchema(true),
         ...getActivePowerControlSchema(true),
         ...getShortCircuitFormSchema(true),
@@ -152,12 +135,12 @@ export default function BatteryModificationDialog({
             }
             reset({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                [MAXIMUM_ACTIVE_POWER]: editData?.maxP?.value ?? null,
-                [MINIMUM_ACTIVE_POWER]: editData?.minP?.value ?? null,
+                [FieldConstants.MAXIMUM_ACTIVE_POWER]: editData?.maxP?.value ?? null,
+                [FieldConstants.MINIMUM_ACTIVE_POWER]: editData?.minP?.value ?? null,
                 [ACTIVE_POWER_SET_POINT]: editData?.targetP?.value ?? null,
                 [REACTIVE_POWER_SET_POINT]: editData?.targetQ?.value ?? null,
-                [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
-                [DROOP]: editData?.droop?.value ?? null,
+                [FieldConstants.FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
+                [FieldConstants.DROOP]: editData?.droop?.value ?? null,
                 ...getConnectivityFormData({
                     voltageLevelId: editData?.voltageLevelId?.value ?? null,
                     busbarSectionId: editData?.busOrBusbarSectionId?.value ?? null,
@@ -167,7 +150,7 @@ export default function BatteryModificationDialog({
                     terminalConnected: editData?.terminalConnected?.value ?? null,
                 }),
                 ...getReactiveLimitsFormData({
-                    id: REACTIVE_LIMITS,
+                    id: FieldConstants.REACTIVE_LIMITS,
                     reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve?.value ? 'CURVE' : 'MINMAX',
                     maximumReactivePower: editData?.maxQ?.value ?? null,
                     minimumReactivePower: editData?.minQ?.value ?? null,
@@ -207,9 +190,9 @@ export default function BatteryModificationDialog({
                 newRccValues.splice(index, 1);
             } else {
                 newRccValues.splice(index, 0, {
-                    [P]: null,
-                    [MIN_Q]: null,
-                    [MAX_Q]: null,
+                    [FieldConstants.P]: null,
+                    [FieldConstants.MIN_Q]: null,
+                    [FieldConstants.MAX_Q]: null,
                 });
             }
             return {
@@ -237,12 +220,12 @@ export default function BatteryModificationDialog({
                             const previousReactiveCapabilityCurveTable = value?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable) {
                                 setValue(
-                                    `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                    `${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE}` as any,
                                     previousReactiveCapabilityCurveTable
                                 );
                             }
                             setValue(
-                                `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
+                                `${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE}` as any,
                                 value?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
                             );
                             setBatteryToModify({
@@ -281,15 +264,16 @@ export default function BatteryModificationDialog({
 
     const onSubmit = useCallback(
         (battery: BatteryModificationDialogSchemaForm) => {
-            const reactiveLimits = battery[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn = reactiveLimits?.[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const reactiveLimits = battery[FieldConstants.REACTIVE_LIMITS];
+            const isReactiveCapabilityCurveOn =
+                reactiveLimits?.[FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const batteryModificationInfos = {
                 type: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
                 uuid: editData?.uuid ?? null,
                 equipmentId: selectedId,
                 equipmentName: toModificationOperation(sanitizeString(battery[EQUIPMENT_NAME])),
-                minP: toModificationOperation(battery[MINIMUM_ACTIVE_POWER]),
-                maxP: toModificationOperation(battery[MAXIMUM_ACTIVE_POWER]),
+                minP: toModificationOperation(battery[FieldConstants.MINIMUM_ACTIVE_POWER]),
+                maxP: toModificationOperation(battery[FieldConstants.MAXIMUM_ACTIVE_POWER]),
                 targetP: toModificationOperation(battery[ACTIVE_POWER_SET_POINT]),
                 targetQ: toModificationOperation(battery[REACTIVE_POWER_SET_POINT]),
                 voltageLevelId: toModificationOperation(battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
@@ -299,20 +283,20 @@ export default function BatteryModificationDialog({
                 connectionPosition: toModificationOperation(battery[CONNECTIVITY]?.[CONNECTION_POSITION]),
                 terminalConnected: toModificationOperation(battery[CONNECTIVITY]?.[CONNECTED]),
                 reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
-                participate: toModificationOperation(battery[FREQUENCY_REGULATION]),
-                droop: toModificationOperation(battery[DROOP]) ?? null,
+                participate: toModificationOperation(battery[FieldConstants.FREQUENCY_REGULATION]),
+                droop: toModificationOperation(battery[FieldConstants.DROOP]) ?? null,
                 maxQ: toModificationOperation(
-                    isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MAXIMUM_REACTIVE_POWER]
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits?.[FieldConstants.MAXIMUM_REACTIVE_POWER]
                 ),
                 minQ: toModificationOperation(
-                    isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MINIMUM_REACTIVE_POWER]
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits?.[FieldConstants.MINIMUM_REACTIVE_POWER]
                 ),
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? (reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
+                    ? (reactiveLimits[FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
                 properties: toModificationProperties(battery) ?? null,
-                directTransX: toModificationOperation(battery[TRANSIENT_REACTANCE]),
-                stepUpTransformerX: toModificationOperation(battery[TRANSFORMER_REACTANCE]),
+                directTransX: toModificationOperation(battery[FieldConstants.TRANSIENT_REACTANCE]),
+                stepUpTransformerX: toModificationOperation(battery[FieldConstants.TRANSFORMER_REACTANCE]),
             } satisfies BatteryModificationInfos;
             modifyBattery({
                 batteryModificationInfos: batteryModificationInfos,

@@ -7,7 +7,6 @@
 
 import {
     ENABLED,
-    EQUIPMENT,
     HIGH_TAP_POSITION,
     ID,
     LOAD_TAP_CHANGING_CAPABILITIES,
@@ -43,6 +42,7 @@ import {
 import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
 import { TapChangerStep, TwoWindingsTransformerMapInfos } from '../../two-windings-transformer.types';
 import { TwtEquipmentInfos } from 'components/tooltips/equipment-popover-type';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -60,7 +60,7 @@ const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
                 enabled && hasLoadTapChangingCapabilities && regulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
-    [EQUIPMENT]: yup
+    [FieldConstants.EQUIPMENT]: yup
         .object()
         .nullable()
         .shape({

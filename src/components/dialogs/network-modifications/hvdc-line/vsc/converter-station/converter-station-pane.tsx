@@ -9,8 +9,10 @@ import { FunctionComponent, useCallback, useEffect } from 'react';
 import {
     CheckboxNullableInput,
     ConnectivityForm,
+    FieldConstants,
     FloatInput,
     PercentageAdornment,
+    ReactiveLimitsForm,
     ReactivePowerAdornment,
     SwitchInput,
     TextInput,
@@ -21,14 +23,12 @@ import {
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
     LOSS_FACTOR,
-    REACTIVE_LIMITS,
     REACTIVE_POWER,
     VOLTAGE,
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
 import type { UUID } from 'node:crypto';
 import { Grid, TextField } from '@mui/material';
-import { ReactiveLimitsForm } from '../../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
 import { useIntl } from 'react-intl';
@@ -196,7 +196,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
 
             <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm
-                id={`${id}.${REACTIVE_LIMITS}`}
+                id={`${id}.${FieldConstants.REACTIVE_LIMITS}`}
                 previousReactiveCapabilityCurvePoints={previousValues?.reactiveCapabilityCurveTable}
                 previousMinMaxReactiveLimits={previousValues?.minMaxReactiveLimits}
                 updatePreviousReactiveCapabilityCurveTable={

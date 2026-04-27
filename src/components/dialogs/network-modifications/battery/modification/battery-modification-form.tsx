@@ -5,34 +5,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ACTIVE_POWER_SET_POINT,
-    EQUIPMENT_NAME,
-    MAXIMUM_ACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-    REACTIVE_POWER_SET_POINT,
-} from 'components/utils/field-constants';
+import { ACTIVE_POWER_SET_POINT, EQUIPMENT_NAME, REACTIVE_POWER_SET_POINT } from 'components/utils/field-constants';
 import { Grid, TextField } from '@mui/material';
 import {
     ActivePowerAdornment,
+    ActivePowerControlForm,
     ConnectivityForm,
+    FieldConstants,
     filledTextField,
     FloatInput,
     PropertiesForm,
+    ReactiveLimitsForm,
     ReactivePowerAdornment,
+    ShortCircuitForm,
     TextInput,
 } from '@gridsuite/commons-ui';
-import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage } from 'react-intl';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
-import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 import type { UUID } from 'node:crypto';
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import { BatteryFormInfos } from '../battery-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
@@ -94,7 +89,7 @@ export default function BatteryModificationForm({
 
     const maximumActivePowerField = (
         <FloatInput
-            name={MAXIMUM_ACTIVE_POWER}
+            name={FieldConstants.MAXIMUM_ACTIVE_POWER}
             label={'MaximumActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={batteryToModify?.maxP}
@@ -104,7 +99,7 @@ export default function BatteryModificationForm({
 
     const minimumActivePowerField = (
         <FloatInput
-            name={MINIMUM_ACTIVE_POWER}
+            name={FieldConstants.MINIMUM_ACTIVE_POWER}
             label={'MinimumActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={batteryToModify?.minP}

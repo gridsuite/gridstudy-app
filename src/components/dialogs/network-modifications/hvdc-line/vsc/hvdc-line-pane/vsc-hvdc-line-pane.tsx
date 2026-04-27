@@ -8,6 +8,7 @@
 import {
     ActivePowerAdornment,
     CheckboxNullableInput,
+    FieldConstants,
     FloatInput,
     OhmAdornment,
     PropertiesForm,
@@ -19,7 +20,6 @@ import {
     ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTERS_MODE,
-    DROOP,
     MAX_P,
     NOMINAL_V,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
@@ -57,7 +57,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
     useEffect(() => {
         if (!angleDroopWatch) {
             trigger(`${id}.${P0}`);
-            trigger(`${id}.${DROOP}`);
+            trigger(`${id}.${FieldConstants.DROOP}`);
         }
     }, [angleDroopWatch, trigger, id]);
 
@@ -178,7 +178,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
 
     const droopField = (
         <FloatInput
-            name={`${id}.${DROOP}`}
+            name={`${id}.${FieldConstants.DROOP}`}
             label={'droopLabel'}
             previousValue={previousValues?.hvdcAngleDroopActivePowerControl?.droop}
         />

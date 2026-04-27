@@ -7,28 +7,24 @@
 
 import {
     ActivePowerAdornment,
+    ActivePowerControlForm,
     ConnectivityForm,
+    FieldConstants,
     filledTextField,
     FloatInput,
     PropertiesForm,
+    ReactiveLimitsForm,
     SetPointsForm,
+    ShortCircuitForm,
     TextInput,
 } from '@gridsuite/commons-ui';
-import {
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    MAXIMUM_ACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-} from 'components/utils/field-constants';
+import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { Grid } from '@mui/material';
-import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
-import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
@@ -73,11 +69,19 @@ export default function BatteryCreationForm({
     );
 
     const maximumActivePowerField = (
-        <FloatInput name={MAXIMUM_ACTIVE_POWER} label={'MaximumActivePowerText'} adornment={ActivePowerAdornment} />
+        <FloatInput
+            name={FieldConstants.MAXIMUM_ACTIVE_POWER}
+            label={'MaximumActivePowerText'}
+            adornment={ActivePowerAdornment}
+        />
     );
 
     const minimumActivePowerField = (
-        <FloatInput name={MINIMUM_ACTIVE_POWER} label={'MinimumActivePowerText'} adornment={ActivePowerAdornment} />
+        <FloatInput
+            name={FieldConstants.MINIMUM_ACTIVE_POWER}
+            label={'MinimumActivePowerText'}
+            adornment={ActivePowerAdornment}
+        />
     );
 
     return (

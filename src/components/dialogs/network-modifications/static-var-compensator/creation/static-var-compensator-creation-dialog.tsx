@@ -38,7 +38,6 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HIGH_VOLTAGE_SET_POINT,
@@ -58,8 +57,6 @@ import {
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 
 import { FC, useCallback, useEffect, useState } from 'react';
@@ -107,13 +104,13 @@ export type StaticVarCompensatorCreationSchemaForm = {
         [MIN_Q_AT_NOMINAL_V]?: number;
         [CHARACTERISTICS_CHOICE]?: string;
         [VOLTAGE_REGULATION_MODE]?: string;
-        [VOLTAGE_REGULATION_TYPE]?: string;
-        [VOLTAGE_SET_POINT]?: number;
+        [FieldConstants.VOLTAGE_REGULATION_TYPE]?: string;
+        [FieldConstants.VOLTAGE_SET_POINT]?: number;
         [REACTIVE_POWER_SET_POINT]?: number;
         [VOLTAGE_LEVEL]?: {
             [ID]: string;
         };
-        [EQUIPMENT]?: {
+        [FieldConstants.EQUIPMENT]?: {
             [ID]: string;
             [TYPE]: string;
         };
@@ -321,11 +318,11 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 [MIN_SUSCEPTANCE]: minSusceptance,
                 [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
                 [MIN_Q_AT_NOMINAL_V]: minQAtNominalV,
-                [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
+                [FieldConstants.VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
                 [VOLTAGE_REGULATION_MODE]: voltageRegulationMode,
-                [VOLTAGE_SET_POINT]: voltageSetpoint,
+                [FieldConstants.VOLTAGE_SET_POINT]: voltageSetpoint,
                 [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
-                [EQUIPMENT]: regulationEquipment,
+                [FieldConstants.EQUIPMENT]: regulationEquipment,
                 [VOLTAGE_LEVEL]: regulationVoltageLevel,
             } = setpointsLimits;
 

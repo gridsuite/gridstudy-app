@@ -10,7 +10,6 @@ import {
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTERS_MODE,
-    DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
@@ -36,7 +35,7 @@ export type VscDialogSchemaBaseForm = {
         [ANGLE_DROOP_ACTIVE_POWER_CONTROL]?: boolean;
         [ACTIVE_POWER_SETPOINT]: number | null;
         [P0]: number | null;
-        [DROOP]: number | null;
+        [FieldConstants.DROOP]: number | null;
     };
     [CONVERTER_STATION_1]: VscConverterStation;
     [CONVERTER_STATION_2]: VscConverterStation;

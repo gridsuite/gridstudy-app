@@ -56,7 +56,6 @@ export const EXPORT_FORMAT = 'exportFormat';
 export const EXPORT_PARAMETERS = 'exportParameters';
 export const EXPORT_DESTINATION = 'exportDestination';
 
-export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
 export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
 export const MODIFICATION_TYPE = 'modificationType';
@@ -97,32 +96,15 @@ export const CONNECTIVITY_2 = 'connectivity2';
 export const LINE_SEGMENTS = 'lineSegments';
 
 export const ENERGY_SOURCE = 'energySource';
-export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
-export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
 export const MAX_P = 'maxP';
 export const MIN_P = 'minP';
-export const RATED_NOMINAL_POWER = 'ratedNominalPower';
 export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
 export const TARGET_P = 'targetP';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
 export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
 export const TARGET_Q = 'targetQ';
-export const VOLTAGE_REGULATION_TYPE = 'voltageRegulationType';
-export const VOLTAGE_SET_POINT = 'voltageSetpoint';
-export const TRANSIENT_REACTANCE = 'directTransX';
-export const Q_PERCENT = 'qPercent';
-export const FREQUENCY_REGULATION = 'frequencyRegulation';
 export const PARTICIPATE = 'participate';
-export const DROOP = 'droop';
-export const TRANSFORMER_REACTANCE = 'transformerReactance';
-export const PLANNED_ACTIVE_POWER_SET_POINT = 'plannedActivePowerSetPoint';
-export const MARGINAL_COST = 'marginalCost';
-export const PLANNED_OUTAGE_RATE = 'plannedOutageRate';
-export const FORCED_OUTAGE_RATE = 'forcedOutageRate';
-export const REACTIVE_LIMITS = 'reactiveLimits';
 export const REACTIVE_CAPABILITY_CURVE = 'reactiveCapabilityCurve';
-export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
-export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
 
 /* Tabylar creations reactive capability curve table values for csv */
 export const REACTIVE_CAPABILITY_CURVE_POINTS = 'reactiveCapabilityCurvePoints';
@@ -136,11 +118,6 @@ export const REACTIVE_CAPABILITY_CURVE_P_MAX = 'reactiveCapabilityCurvePmax';
 export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX = 'reactiveCapabilityCurveQminPmax';
 export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX = 'reactiveCapabilityCurveQmaxPmax';
 
-export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
-export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
-export const MIN_Q = 'minQ';
-export const MAX_Q = 'maxQ';
-export const P = 'p';
 export const V = 'v';
 export const ANGLE = 'angle';
 
