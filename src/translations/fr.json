@@ -8,7 +8,7 @@
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
-    "filter": "Filtre", 
+    "filter": "Filtre",
 
     "deleteStudy": "Supprimer l'étude",
     "studyNameDidNotMatchMsg": "Le nom d'étude donné ne correspond pas à ",
@@ -1371,6 +1371,9 @@
     "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds",
     "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",
     "previousConnection": "Connexion préc.",
+
+    "SetpointsAndLimitsTab": "Consignes & Limites",
+    "SpecificTab": "Spécifique",
 
     "confirmRootNetworkCreation": "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
     "RegulationSection": "Réglage",
