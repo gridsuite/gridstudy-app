@@ -20,7 +20,13 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
-import { AddButton, AddButtonMode, VoltageLevelConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
+import {
+    AddButton,
+    AddButtonMode,
+    VoltageLevelConnectivityForm,
+    TextInput,
+    VoltageLevelOption,
+} from '@gridsuite/commons-ui';
 import { Box } from '@mui/material';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';

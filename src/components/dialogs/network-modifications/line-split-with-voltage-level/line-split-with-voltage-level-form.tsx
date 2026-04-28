@@ -8,7 +8,13 @@
 import Grid from '@mui/material/Grid';
 import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/field-constants';
 import { useCallback, useState } from 'react';
-import { AddButton, AddButtonMode, VoltageLevelConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
+import {
+    AddButton,
+    AddButtonMode,
+    VoltageLevelConnectivityForm,
+    TextInput,
+    VoltageLevelOption,
+} from '@gridsuite/commons-ui';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import { CONNECTIVITY, ID, VOLTAGE_LEVEL } from '../../../utils/field-constants';
