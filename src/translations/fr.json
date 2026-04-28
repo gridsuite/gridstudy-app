@@ -1081,6 +1081,7 @@
     "importAndReplaceFromGridExplore": "Importer et remplacer à partir de GridExplore",
     "SaveToGridexplore": "Enregistrer dans GridExplore",
     "SaveToGridexploreError": "Une erreur est survenue lors de la sauvegarde dans GridExplore",
+    "CompositeNestingLimitReached": "Vous ne pouvez pas enregistrer la sélection actuelle sinon vous dépasserez la limite d'imbrication des modifications composites",
     "diagramConfigCreationMsg": "Création de l'image nodale de zone dans {directory}",
     "diagramConfigUpdateMsg": "Mise à jour de l'image nodale de zone {item}",
     "diagramConfigCreationError": "Une erreur est survenue lors de la création de l'image nodale de zone",

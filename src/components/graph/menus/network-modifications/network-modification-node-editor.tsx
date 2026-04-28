@@ -14,6 +14,7 @@ import {
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
+    MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
     ModificationType,
     NameHeaderProps,
@@ -164,7 +165,9 @@ const NetworkModificationNodeEditor = () => {
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
-    const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationMetadata[]>([]);
+    const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
+        []
+    );
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -1052,7 +1055,7 @@ const NetworkModificationNodeEditor = () => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
-    const handleRowSelected = useCallback((selectedRows: NetworkModificationMetadata[]) => {
+    const handleRowSelected = useCallback((selectedRows: ComposedModificationMetadata[]) => {
         setSelectedNetworkModifications(selectedRows);
     }, []);
 
@@ -1189,6 +1192,11 @@ const NetworkModificationNodeEditor = () => {
         return modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress;
     }, [modificationsToRestore.length, isAnyNodeBuilding, deleteInProgress]);
 
+    const isCompositeNestingLimitReached = useMemo(
+        () => !selectedNetworkModifications.every((row) => (row.maxDepth ?? 0) < 5),
+        [selectedNetworkModifications]
+    );
+
     return (
         <>
             <Toolbar sx={styles.toolbar}>
@@ -1216,13 +1224,27 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
+                <Tooltip
+                    title={
+                        <>
+                            <FormattedMessage id={'SaveToGridexplore'} />
+                            {isCompositeNestingLimitReached && (
+                                <Box component="span" sx={{ display: 'block'}}>
+                                    <FormattedMessage id={'CompositeNestingLimitReached'} />
+                                </Box>
+                            )}
+                        </>
+                    }
+                >
                     <span>
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
                             disabled={
-                                selectedNetworkModifications?.length === 0 || saveInProgress === true || isRootNode
+                                selectedNetworkModifications?.length === 0 ||
+                                saveInProgress ||
+                                isRootNode ||
+                                isCompositeNestingLimitReached
                             }
                         >
                             <SaveIcon />
