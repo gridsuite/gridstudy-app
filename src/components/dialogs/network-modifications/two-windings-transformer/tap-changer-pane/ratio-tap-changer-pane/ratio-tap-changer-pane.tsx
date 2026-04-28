@@ -8,7 +8,6 @@
 import { Grid } from '@mui/material';
 import {
     ENABLED,
-    EQUIPMENT,
     LOAD_TAP_CHANGING_CAPABILITIES,
     RATIO_TAP_CHANGER,
     REGULATION_MODE,
@@ -23,6 +22,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import {
     CheckboxNullableInput,
+    FieldConstants,
     FloatInput,
     Identifiable,
     SelectInput,
@@ -138,7 +138,7 @@ const RatioTapChangerPane = ({
                     label: prevEquipmentType,
                     type: prevEquipmentType,
                 };
-                setValue(`${id}.${EQUIPMENT}`, newEquipment);
+                setValue(`${id}.${FieldConstants.EQUIPMENT}`, newEquipment);
             }
         },
         [setValue, id]
@@ -170,7 +170,7 @@ const RatioTapChangerPane = ({
             if (curRatioTapChanger[VOLTAGE_LEVEL] === null) {
                 findAndSetVoltageLevelFromPrevious(previousValues, voltageLevelOptions);
             }
-            if (curRatioTapChanger[EQUIPMENT] === null) {
+            if (curRatioTapChanger[FieldConstants.EQUIPMENT] === null) {
                 setEquipmentFromPrevious(previousValues);
             }
         },

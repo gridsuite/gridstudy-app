@@ -5,9 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, Identifiable, PercentageAdornment, SelectInput, VoltageAdornment } from '@gridsuite/commons-ui';
+import {
+    FieldConstants,
+    FloatInput,
+    Identifiable,
+    PercentageAdornment,
+    SelectInput,
+    VoltageAdornment,
+} from '@gridsuite/commons-ui';
 import { REGULATION_TYPES } from 'components/network/constants';
-import { Q_PERCENT, VOLTAGE_REGULATION_TYPE, VOLTAGE_SET_POINT } from 'components/utils/field-constants';
 import { useMemo } from 'react';
 import { RegulatingTerminalForm } from '../regulating-terminal/regulating-terminal-form';
 import { Box, Grid } from '@mui/material';
@@ -48,7 +54,7 @@ export function VoltageRegulationForm({
     }, [previousValues]);
 
     const voltageRegulationType = useWatch({
-        name: VOLTAGE_REGULATION_TYPE,
+        name: FieldConstants.VOLTAGE_REGULATION_TYPE,
     });
 
     const translatedPreviousRegulationLabel = useMemo(() => {
@@ -70,7 +76,7 @@ export function VoltageRegulationForm({
     const voltageRegulationTypeField = (
         <SelectInput
             options={Object.values(REGULATION_TYPES)}
-            name={VOLTAGE_REGULATION_TYPE}
+            name={FieldConstants.VOLTAGE_REGULATION_TYPE}
             label={'RegulationTypeText'}
             size={'small'}
             previousValue={translatedPreviousRegulationLabel ?? undefined}
@@ -79,7 +85,7 @@ export function VoltageRegulationForm({
 
     const voltageSetPointField = (
         <FloatInput
-            name={VOLTAGE_SET_POINT}
+            name={FieldConstants.VOLTAGE_SET_POINT}
             label={'VoltageText'}
             adornment={VoltageAdornment}
             previousValue={previousValues?.voltageSetPoint ?? undefined}
@@ -108,7 +114,7 @@ export function VoltageRegulationForm({
 
     const qPercentField = (
         <FloatInput
-            name={Q_PERCENT}
+            name={FieldConstants.Q_PERCENT}
             label={'QPercentText'}
             adornment={PercentageAdornment}
             previousValue={

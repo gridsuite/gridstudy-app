@@ -25,6 +25,8 @@ import {
     EquipmentType,
     ExcludedNetworkModifications,
     ModificationByAssignmentDto,
+    GeneratorCreationDto,
+    GeneratorModificationDto,
 } from '@gridsuite/commons-ui';
 import {
     getBaseNetworkModificationUrl,
@@ -45,8 +47,6 @@ import {
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
-    GeneratorCreationInfos,
-    GeneratorModificationInfos,
     LCCCreationInfo,
     LccModificationInfos,
     LineCreationInfos,
@@ -481,13 +481,13 @@ export function modifyLoad(
 }
 
 export function modifyGenerator({
-    generatorModificationInfos,
+    dto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    generatorModificationInfos: GeneratorModificationInfos;
+    dto: GeneratorModificationDto;
     studyUuid: UUID;
     nodeUuid?: UUID;
     modificationUuid: string | null;
@@ -507,18 +507,18 @@ export function modifyGenerator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorModificationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
 export function createGenerator({
-    generatorCreationInfos,
+    dto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    generatorCreationInfos: GeneratorCreationInfos;
+    dto: GeneratorCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
@@ -537,7 +537,7 @@ export function createGenerator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorCreationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
