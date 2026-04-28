@@ -70,7 +70,6 @@ export default function LccConverterStation({
     const connectivityForm = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
-            withPosition={true}
             previousValues={undefined}
             voltageLevelOptions={voltageLevelOptions}
             PositionDiagramPane={PositionDiagramPane}

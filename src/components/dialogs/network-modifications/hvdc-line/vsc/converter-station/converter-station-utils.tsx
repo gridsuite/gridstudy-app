@@ -7,10 +7,15 @@
 
 import {
     AttributeModification,
+    FieldConstants,
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
+    getReactiveLimitsEmptyFormData,
+    getReactiveLimitsFormData,
+    getReactiveLimitsSchema,
     MODIFICATION_TYPES,
+    ReactiveCapabilityCurvePoints,
     sanitizeString,
     toModificationOperation,
     UNDEFINED_CONNECTION_DIRECTION,
@@ -27,23 +32,12 @@ import {
     CONVERTER_STATION_NAME,
     ID,
     LOSS_FACTOR,
-    MAXIMUM_REACTIVE_POWER,
-    MINIMUM_REACTIVE_POWER,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-    REACTIVE_LIMITS,
     REACTIVE_POWER,
     VOLTAGE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
-import {
-    getReactiveLimitsEmptyFormData,
-    getReactiveLimitsFormData,
-    getReactiveLimitsSchema,
-} from '../../../../reactive-limits/reactive-limits-utils';
 import { VscConverterStationFormInfos, ConverterStationElementModificationInfos } from './converter-station-type';
-import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 import { ConverterStationCreationInfos } from '../../../../../../services/network-modification-types';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
@@ -134,8 +128,8 @@ export function getVscConverterStationEmptyFormData(isModification = false) {
 }
 
 export function getConverterStationCreationData(converterStation: any) {
-    const reactiveLimits = converterStation[REACTIVE_LIMITS];
-    const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+    const reactiveLimits = converterStation[FieldConstants.REACTIVE_LIMITS];
+    const isReactiveCapabilityCurveOn = reactiveLimits[FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
     return {
         type: MODIFICATION_TYPES.CONVERTER_STATION_CREATION.type,
         equipmentId: converterStation[CONVERTER_STATION_ID],
@@ -151,10 +145,10 @@ export function getConverterStationCreationData(converterStation: any) {
         connectionPosition: converterStation[CONNECTIVITY]?.[CONNECTION_POSITION],
         terminalConnected: converterStation[CONNECTIVITY]?.[CONNECTED],
         reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-        minQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER],
-        maxQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER],
+        minQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[FieldConstants.MINIMUM_REACTIVE_POWER],
+        maxQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[FieldConstants.MAXIMUM_REACTIVE_POWER],
         reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-            ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
+            ? reactiveLimits[FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE]
             : null,
     };
 }
@@ -163,8 +157,8 @@ export function getConverterStationModificationData(
     converterStation: any,
     converterStationToModify: ConverterStationElementModificationInfos | undefined
 ) {
-    const reactiveLimits = converterStation[REACTIVE_LIMITS];
-    const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+    const reactiveLimits = converterStation[FieldConstants.REACTIVE_LIMITS];
+    const isReactiveCapabilityCurveOn = reactiveLimits[FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
     return {
         type: MODIFICATION_TYPES.CONVERTER_STATION_MODIFICATION.type,
@@ -177,10 +171,14 @@ export function getConverterStationModificationData(
         voltageLevelId: toModificationOperation(converterStation[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
         busOrBusbarSectionId: toModificationOperation(converterStation[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
         reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
-        minQ: toModificationOperation(isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER]),
-        maxQ: toModificationOperation(isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER]),
+        minQ: toModificationOperation(
+            isReactiveCapabilityCurveOn ? null : reactiveLimits[FieldConstants.MINIMUM_REACTIVE_POWER]
+        ),
+        maxQ: toModificationOperation(
+            isReactiveCapabilityCurveOn ? null : reactiveLimits[FieldConstants.MAXIMUM_REACTIVE_POWER]
+        ),
         reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-            ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
+            ? reactiveLimits[FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE]
             : null,
     };
 }
