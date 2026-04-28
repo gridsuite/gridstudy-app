@@ -175,7 +175,6 @@ export function GeneratorDialogTabsContent({
             <Box hidden={tabIndex !== GeneratorDialogTab.CONNECTIVITY_TAB}>
                 <GridSection title="ConnectivityTab" />
                 <ConnectivityForm
-                    withPosition={true}
                     isEquipmentModification={true}
                     previousValues={{
                         connectablePosition: generatorToModify?.connectablePosition,
