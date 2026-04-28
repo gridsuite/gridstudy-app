@@ -1193,7 +1193,7 @@ const NetworkModificationNodeEditor = () => {
     }, [modificationsToRestore.length, isAnyNodeBuilding, deleteInProgress]);
 
     const isCompositeNestingLimitReached = useMemo(
-        () => !selectedNetworkModifications.every((row) => (row.maxDepth ?? 0) < 5),
+        () => !selectedNetworkModifications.every((row) => (row.maxDepth ?? 0) < MAX_COMPOSITE_NESTING_DEPTH),
         [selectedNetworkModifications]
     );
 
