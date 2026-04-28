@@ -61,7 +61,6 @@ export default function BatteryCreationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            withPosition={true}
             voltageLevelOptions={voltageLevelOptions}
             PositionDiagramPane={PositionDiagramPane}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}

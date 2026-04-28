@@ -85,7 +85,6 @@ export default function GeneratorCreationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            withPosition={true}
             voltageLevelOptions={voltageLevelOptions}
             PositionDiagramPane={PositionDiagramPane}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
