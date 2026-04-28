@@ -45,7 +45,6 @@ import {
     CURRENT_LIMITER_REGULATING_VALUE,
     ENABLE_OLG_MODIFICATION,
     ENABLED,
-    EQUIPMENT,
     EQUIPMENT_NAME,
     FLOW_SET_POINT_REGULATING_VALUE,
     G,
@@ -414,10 +413,10 @@ const TwoWindingsTransformerModificationDialog = ({
                     phaseTap.regulationSide = toModificationOperation(phaseTapChangerFormValues?.[REGULATION_SIDE]);
                 } else if (regulationType === REGULATION_TYPES.DISTANT.id) {
                     phaseTap.terminalRefConnectableId = toModificationOperation(
-                        phaseTapChangerFormValues?.[EQUIPMENT]?.id
+                        phaseTapChangerFormValues?.[FieldConstants.EQUIPMENT]?.id
                     );
                     phaseTap.terminalRefConnectableType = toModificationOperation(
-                        phaseTapChangerFormValues?.[EQUIPMENT]?.type
+                        phaseTapChangerFormValues?.[FieldConstants.EQUIPMENT]?.type
                     );
                     phaseTap.terminalRefConnectableVlId = toModificationOperation(
                         phaseTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID]
@@ -458,10 +457,10 @@ const TwoWindingsTransformerModificationDialog = ({
                     ratioTap.regulationSide = toModificationOperation(ratioTapChangerFormValues?.[REGULATION_SIDE]);
                 } else if (regulationType === REGULATION_TYPES.DISTANT.id) {
                     ratioTap.terminalRefConnectableId = toModificationOperation(
-                        ratioTapChangerFormValues?.[EQUIPMENT]?.id
+                        ratioTapChangerFormValues?.[FieldConstants.EQUIPMENT]?.id
                     );
                     ratioTap.terminalRefConnectableType = toModificationOperation(
-                        ratioTapChangerFormValues?.[EQUIPMENT]?.type
+                        ratioTapChangerFormValues?.[FieldConstants.EQUIPMENT]?.type
                     );
                     ratioTap.terminalRefConnectableVlId = toModificationOperation(
                         ratioTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID]
@@ -780,8 +779,12 @@ const TwoWindingsTransformerModificationDialog = ({
                                         highTapPosition: getValues(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
                                         tapPosition: getValues(`${RATIO_TAP_CHANGER}.${TAP_POSITION}`),
                                         steps: addSelectedFieldToRows(getRatioTapChangerSteps(twt)),
-                                        equipmentId: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
-                                        equipmentType: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
+                                        equipmentId: getValues(
+                                            `${RATIO_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${ID}`
+                                        ),
+                                        equipmentType: getValues(
+                                            `${RATIO_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${TYPE}`
+                                        ),
                                         voltageLevelId: getValues(`${RATIO_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
                                     }),
                                     ...getPhaseTapChangerFormData({
@@ -800,8 +803,12 @@ const TwoWindingsTransformerModificationDialog = ({
                                         highTapPosition: getValues(`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
                                         tapPosition: getValues(`${PHASE_TAP_CHANGER}.${TAP_POSITION}`),
                                         steps: addSelectedFieldToRows(getPhaseTapChangerSteps(twt)),
-                                        equipmentId: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
-                                        equipmentType: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
+                                        equipmentId: getValues(
+                                            `${PHASE_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${ID}`
+                                        ),
+                                        equipmentType: getValues(
+                                            `${PHASE_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${TYPE}`
+                                        ),
                                         voltageLevelId: getValues(`${PHASE_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
                                     }),
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
