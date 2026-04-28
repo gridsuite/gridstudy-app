@@ -1229,7 +1229,7 @@ const NetworkModificationNodeEditor = () => {
                         <>
                             <FormattedMessage id={'SaveToGridexplore'} />
                             {isCompositeNestingLimitReached && (
-                                <Box component="span" sx={{ display: 'block'}}>
+                                <Box component="span" sx={{ display: 'block' }}>
                                     <FormattedMessage id={'CompositeNestingLimitReached'} />
                                 </Box>
                             )}
