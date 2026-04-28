@@ -20,7 +20,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
-import { ConnectivityForm, TextInput, VoltageLevelOption } from '@gridsuite/commons-ui';
+import { TextInput, VoltageLevelConnectivityForm, VoltageLevelOption } from '@gridsuite/commons-ui';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -164,10 +164,8 @@ const LineAttachToVoltageLevelForm = ({
     const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     const connectivityForm = (
-        <ConnectivityForm
+        <VoltageLevelConnectivityForm
             voltageLevelSelectLabel={'AttachedVoltageLevelId'}
-            withPosition={false}
-            withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
