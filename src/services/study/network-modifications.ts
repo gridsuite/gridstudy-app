@@ -23,6 +23,7 @@ import {
     VoltageLevelModificationDto,
     ByFilterDeletionDto,
     EquipmentType,
+    ExcludedNetworkModifications,
     ModificationByAssignmentDto,
 } from '@gridsuite/commons-ui';
 import {
@@ -65,7 +66,6 @@ import {
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
-import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import {
     ENABLE_OLG_MODIFICATION,
@@ -103,6 +103,9 @@ export function changeNetworkModificationOrder(
  *  - source only   → extract from composite to root level
  *  - target only   → embed root-level modification into a composite
  *
+ * @param studyUuid
+ * @param nodeUuid
+ * @param modificationUuid
  * @param sourceCompositeUuid  UUID of the composite that currently owns the modification; null if at root
  * @param targetCompositeUuid  UUID of the target composite; null to place at root level
  * @param beforeUuid           insert before this UUID in the target collection; null to append at end

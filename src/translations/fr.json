@@ -8,7 +8,7 @@
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
-    "filter": "Filtre", 
+    "filter": "Filtre",
 
     "deleteStudy": "Supprimer l'étude",
     "studyNameDidNotMatchMsg": "Le nom d'étude donné ne correspond pas à ",
@@ -1042,7 +1042,7 @@
     "lineTypes.voltage": "Tension de construction [kV]",
     "lineTypes.conductorType": "Type conducteur",
     "lineTypes.section": "Section [mm²]",
-    "lineTypes.conductorsNumber": "Nb conducteurs par faisceau",
+    "lineTypes.conductorsNumber": "Nb faisceaux",
     "lineTypes.circuitsNumber": "Nb ternes",
     "lineTypes.groundWiresNumber": "Nb câbles de garde",
     "lineTypes.linearResistance": "Résistance linéique directe [Ω/km]",
@@ -1372,6 +1372,9 @@
     "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",
     "previousConnection": "Connexion préc.",
 
+    "SetpointsAndLimitsTab": "Consignes & Limites",
+    "SpecificTab": "Spécifique",
+
     "confirmRootNetworkCreation": "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
     "RegulationSection": "Réglage",
     "TapsSection": "Prises",
@@ -1582,7 +1585,5 @@
     "deactivateModification": "Désactiver la modification réseau",
     "deselectModification": "Désélectionner la modification",
     "selectModification": "Sélectionner la modification",
-    "moveModification": "Déplacer la modification",
-    "disconnectedLoadActivePower": "Consommation coupée (MW)",
-    "disconnectedGenerationActivePower": "Puissance coupée (MW)"
+    "moveModification": "Déplacer la modification"
 }
