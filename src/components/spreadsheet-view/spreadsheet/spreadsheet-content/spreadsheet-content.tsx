@@ -15,7 +15,7 @@ import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
-import { CustomColDef, TableType } from 'types/custom-aggrid-types';
+import { CustomColDef, FilterConfig, TableType } from 'types/custom-aggrid-types';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
 import { PanelType } from 'components/workspace/types/workspace.types';
@@ -28,8 +28,10 @@ import type { RootState } from '../../../../redux/store';
 import { selectPanelTargetEquipment } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import { useWorkspacePanelActions } from '../../../workspace/hooks/use-workspace-panel-actions';
-import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { updateAgGridFilters } from '../../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { getColumnFiltersFromState } from '../../../../redux/selectors/filter-selectors';
+
+import { SPREADSHEET_INVALID_CELL_CLASS } from '../../columns/utils/column-mapper';
 
 const styles = {
     table: (theme) => ({
@@ -39,6 +41,9 @@ const styles = {
         // Hide the vertical scrollbar for pinned bottom rows
         '.ag-floating-bottom.ag-selectable': {
             overflowY: 'hidden !important',
+        },
+        [`.ag-cell.${SPREADSHEET_INVALID_CELL_CLASS}`]: {
+            color: theme.palette.text.disabled,
         },
     }),
     invalidNode: {
@@ -80,20 +85,13 @@ export const SpreadsheetContent = memo(
 
         // Initial data loading for this type when the tab is opened
         useEffect(() => {
-            if (
-                active &&
-                nodesIds.length > 0 &&
-                Object.keys(equipments.equipmentsByNodeId).length === 0 &&
-                // There is automatic re-fetch in several cases (tree node change, aliases modified, loading options changed) in useSpreadsheetEquipments hook
-                // then we want to make sure the active tab is not duplicating fetch during automatic operation.
-                !equipments.isFetching
-            ) {
+            if (active && nodesIds.length > 0 && !equipments.isInitialized && !equipments.isFetching) {
                 fetchNodesEquipmentData(tableDefinition?.type, new Set(nodesIds));
             }
         }, [
             active,
             nodesIds,
-            equipments.equipmentsByNodeId,
+            equipments.isInitialized,
             fetchNodesEquipmentData,
             tableDefinition?.type,
             equipments.isFetching,
@@ -180,7 +178,9 @@ export const SpreadsheetContent = memo(
             }
         }, [transformedRowData, gridRef, isGridReady]);
 
-        const { filters } = useFilterSelector(TableType.Spreadsheet, tableDefinition?.uuid);
+        const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
+            getColumnFiltersFromState(state, TableType.Spreadsheet, tableDefinition?.uuid)
+        );
 
         useEffect(() => {
             const api = gridRef.current?.api;

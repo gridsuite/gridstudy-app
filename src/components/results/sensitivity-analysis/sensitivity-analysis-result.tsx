@@ -21,19 +21,16 @@ import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    FilterConfig,
     TableType,
 } from '../../../types/custom-aggrid-types';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer.type';
-import { GridApi, GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
-import type { UUID } from 'node:crypto';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 function makeRows(resultRecord: Sensitivity[]) {
@@ -51,7 +48,6 @@ type SensitivityAnalysisResultProps = CustomAGGridProps & {
     sensiKind: SensiKind;
     filtersDef: { field: string; options: string[] }[];
     isLoading: boolean;
-    goToFirstPage: () => void;
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
     computationSubType: string;
@@ -62,7 +58,6 @@ function SensitivityAnalysisResult({
     nOrNkIndex = 0,
     sensiKind = SENSITIVITY_IN_DELTA_MW,
     filtersDef,
-    goToFirstPage,
     isLoading,
     setCsvHeaders,
     setIsCsvButtonDisabled,
@@ -110,23 +105,6 @@ function SensitivityAnalysisResult({
                                 : [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             type: TableType.SensitivityAnalysis,
                             tab: mappingTabs(sensiKind, nOrNkIndex),
-                            updateFilterCallback: (
-                                agGridApi?: GridApi,
-                                filters?: FilterConfig[],
-                                colId?: string,
-                                studyUuid?: UUID,
-                                filterType?: TableType,
-                                filterSubType?: string
-                            ) =>
-                                updateComputationColumnsFilters(
-                                    agGridApi,
-                                    filters,
-                                    colId,
-                                    studyUuid,
-                                    filterType,
-                                    filterSubType,
-                                    goToFirstPage
-                                ),
                         },
                     },
                 },
@@ -136,7 +114,7 @@ function SensitivityAnalysisResult({
                 pinned: pinned,
             });
         },
-        [intl, nOrNkIndex, sensiKind, goToFirstPage]
+        [intl, nOrNkIndex, sensiKind]
     );
 
     const columnsDefs = useMemo(() => {

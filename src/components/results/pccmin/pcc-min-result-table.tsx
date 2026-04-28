@@ -35,14 +35,13 @@ const styles = {
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     result,
     isFetching,
-    goToFirstPage,
     setCsvHeaders,
     setIsCsvButtonDisabled,
 }) => {
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const filters = useSelector(
-        (state: AppState) => state.tableFilters.columnsFilters?.[TableType.PccMin]?.[PCCMIN_RESULT]?.columns
+        (state: AppState) => state.tableFilters.columnsFilters?.[TableType.PccMin]?.[PCCMIN_RESULT]
     );
     const gridRef = useRef<AgGridReact>(null);
     const { openSLD } = useWorkspacePanelActions();
@@ -67,10 +66,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [openSLD]
     );
 
-    const columns = useMemo(
-        () => getPccMinColumns(intl, voltageLevelIdRenderer, goToFirstPage),
-        [goToFirstPage, intl, voltageLevelIdRenderer]
-    );
+    const columns = useMemo(() => getPccMinColumns(intl, voltageLevelIdRenderer), [intl, voltageLevelIdRenderer]);
 
     const statusMessage = useIntlResultStatusMessages(intl, true, filters?.length > 0);
 

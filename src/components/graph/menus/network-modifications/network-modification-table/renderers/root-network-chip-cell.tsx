@@ -5,11 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback, useMemo, SetStateAction, FunctionComponent } from 'react';
-import { ActivableChip, NetworkModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import React, { useState, useCallback, useMemo, SetStateAction, FunctionComponent } from 'react';
+import {
+    ActivableChip,
+    ComposedModificationMetadata,
+    ExcludedNetworkModifications,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
-import { ExcludedNetworkModifications, RootNetworkMetadata } from '../../network-modification-menu.type';
+import { RootNetworkMetadata } from '../../network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import type { UUID } from 'node:crypto';
 import { AppState } from '../../../../../../redux/reducer.type';
@@ -54,7 +60,7 @@ function getUpdatedExcludedModifications(
 }
 
 interface RootNetworkChipCellRendererProps {
-    data?: NetworkModificationMetadata;
+    data?: ComposedModificationMetadata;
     modificationsToExclude: ExcludedNetworkModifications[];
     setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
     rootNetwork: RootNetworkMetadata;

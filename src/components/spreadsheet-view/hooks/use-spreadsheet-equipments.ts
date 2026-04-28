@@ -44,7 +44,7 @@ export const useSpreadsheetEquipments = () => {
 
     useEffect(() => {
         applyToAllTypes((type) => {
-            if (cleanOptional[type] && Object.keys(equipments[type].equipmentsByNodeId).length !== 0) {
+            if (cleanOptional[type] && equipments[type].isInitialized) {
                 dispatch(cleanEquipments(type));
                 equipmentsWithLoadingOptionsCleaned(type);
             }
@@ -75,7 +75,7 @@ export const useSpreadsheetEquipments = () => {
         if (nodesIdsToRemove.size > 0) {
             dispatch(removeSpreadsheetLoadedNodesIds([...nodesIdsToRemove]));
             applyToAllTypes((type) => {
-                if (Object.keys(equipments[type].equipmentsByNodeId).length !== 0) {
+                if (equipments[type].isInitialized) {
                     dispatch(removeNodeData(type, [...nodesIdsToRemove]));
                 }
             });
@@ -89,13 +89,13 @@ export const useSpreadsheetEquipments = () => {
         if (nodesIdsToFetch.size > 0) {
             dispatch(addSpreadsheetLoadedNodesIds([...nodesIdsToFetch]));
             applyToAllTypes((type) => {
-                if (Object.keys(equipments[type].equipmentsByNodeId).length !== 0) {
+                if (equipments[type].isInitialized) {
                     fetchNodesEquipmentData(type, nodesIdsToFetch);
                 }
             });
         } else {
             applyToAllTypes((type) => {
-                if (loadOptional[type] && Object.keys(equipments[type].equipmentsByNodeId).length !== 0) {
+                if (loadOptional[type] && equipments[type].isInitialized) {
                     fetchNodesEquipmentData(type, builtNodesIds);
                     equipmentsWithLoadingOptionsLoaded(type);
                 }

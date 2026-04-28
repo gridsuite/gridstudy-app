@@ -121,10 +121,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
 
     const { filters } = useComputationColumnFilters(TableType.SecurityAnalysis, getStoreFields(tabIndex));
 
-    const goToFirstPage = useCallback(() => {
-        dispatchPagination({ ...pagination, page: 0 });
-    }, [pagination, dispatchPagination]);
-
     const resetPaginationIfNKResults = useCallback(() => {
         if (tabIndex === NMK_RESULTS_TAB_INDEX) {
             dispatchPagination({ page: 0, rowsPerPage });
@@ -233,7 +229,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex, goToFirstPage);
+    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex);
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
     const downloadZipResult = useCallback(

@@ -4,10 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { debounce } from '@mui/material';
-import { GridApi } from 'ag-grid-community';
-import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import {
     FILTER_DATA_TYPES,
@@ -15,9 +13,17 @@ import {
     FilterConfig,
     FilterData,
     FilterParams,
+    TableType,
 } from '../../../../types/custom-aggrid-types';
-import { updateAgGridFilters } from '../utils/aggrid-filters-utils';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { AppState } from '../../../../redux/reducer.type';
+import { getColumnFiltersFromState } from '../../../../redux/selectors/filter-selectors';
+import { persistSpreadsheetColumnFilters } from '../../../spreadsheet-view/columns/utils/persist-spreadsheet-column-filters';
+import type { UUID } from 'node:crypto';
+import { updateColumnFiltersAction } from '../../../../redux/actions';
+
+import { persistComputationColumnFilters } from '../../../results/common/column-filter/persist-computation-column-filters';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -38,10 +44,11 @@ const changeValueFromArrayWithFieldValue = (
     }
 };
 
-export const useCustomAggridFilter = (
-    api: GridApi,
+const EMPTY_ARRAY: FilterConfig[] = [];
+
+export const useCustomAggridColumnFilter = (
     colId: string,
-    { type, tab, dataType, comparators = [], debounceMs = 1000, updateFilterCallback }: FilterParams
+    { type, tab, dataType, comparators = [], debounceMs = 1000 }: FilterParams
 ) => {
     const [selectedFilterComparator, setSelectedFilterComparator] = useState<string>('');
     const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
@@ -49,13 +56,27 @@ export const useCustomAggridFilter = (
 
     // Track if user is currently editing to prevent external sync from overriding input
     const isEditingRef = useRef(false);
-    const editingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const { filters, dispatchFilters } = useFilterSelector(type, tab);
-    const studyUuid = useSelector((state: any) => state.studyUuid);
+    const { snackError } = useSnackMessage();
+    const dispatch = useDispatch();
+    const filters = useSelector<AppState, FilterConfig[]>(
+        (state) => getColumnFiltersFromState(state, type, tab) ?? EMPTY_ARRAY
+    );
+    const studyUuid = useSelector<AppState, AppState['studyUuid']>((state) => state.studyUuid);
+    const tableDefinitions = useSelector<AppState, AppState['tables']['definitions']>(
+        (state) => state.tables.definitions
+    );
+    const colDef = useMemo(
+        () => tableDefinitions.find((t) => t.uuid === tab)?.columns?.find((col) => col.id === colId),
+        [tableDefinitions, tab, colId]
+    );
 
     const updateFilter = useCallback(
-        (colId: string, data: FilterData): void => {
+        (data: FilterData): void => {
+            if (!studyUuid) {
+                return;
+            }
+
             const newFilter = {
                 column: colId,
                 dataType: data.dataType,
@@ -77,43 +98,40 @@ export const useCustomAggridFilter = (
             } else {
                 updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
             }
-            updateAgGridFilters(api, updatedFilters);
-            updateFilterCallback?.(api, updatedFilters, colId, studyUuid, type, tab);
-            dispatchFilters(updatedFilters);
+
+            const onError = (error: unknown) => snackWithFallback(snackError, error);
+
+            // Data flow for logs table is: update redux state -> useEffect -> update hook state
+            if (type === TableType.Logs) {
+                dispatch(updateColumnFiltersAction(TableType.Logs, tab, updatedFilters));
+            }
+            // Data flow for spreadsheet / computation tables is: update backend database -> notification -> update redux state -> useEffect -> update hook state
+            else if (type === TableType.Spreadsheet) {
+                persistSpreadsheetColumnFilters(studyUuid, tab as UUID, colDef, updatedFilters, onError);
+            } else {
+                persistComputationColumnFilters(studyUuid, type, tab, colId, updatedFilters, onError);
+            }
         },
-        [updateFilterCallback, api, dispatchFilters, filters, studyUuid, type, tab]
+        [studyUuid, colId, type, filters, snackError, tab, dispatch, colDef]
     );
 
     // We intentionally exclude `updateFilter` from dependencies.
     // `updateFilter` depends on `filters`, which changes on every filter update.
     // Including it would recreate the debounced function on each change,
     // canceling any pending debounced call and preventing updates from being sent.
+    // PS: it only works because most of the props never change...
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedUpdateFilter = useCallback(
         debounce((data) => {
-            updateFilter(colId, data);
+            updateFilter(data);
             isEditingRef.current = false;
         }, debounceMs),
-        [colId, debounceMs]
+        [debounceMs]
     );
-
-    // Cleanup debounce on unmount
-    useEffect(() => {
-        return () => {
-            debouncedUpdateFilter.clear();
-            if (editingTimeoutRef.current) {
-                clearTimeout(editingTimeoutRef.current);
-            }
-        };
-    }, [debouncedUpdateFilter]);
 
     const handleChangeFilterValue = useCallback(
         (filterData: FilterData) => {
             isEditingRef.current = true;
-            if (editingTimeoutRef.current) clearTimeout(editingTimeoutRef.current);
-            editingTimeoutRef.current = setTimeout(() => {
-                isEditingRef.current = false;
-            }, debounceMs);
 
             setSelectedFilterData(filterData.value);
             setTolerance(filterData.tolerance);
@@ -124,23 +142,24 @@ export const useCustomAggridFilter = (
                 tolerance: filterData.tolerance,
             });
         },
-        [dataType, debouncedUpdateFilter, selectedFilterComparator, debounceMs]
+        [dataType, debouncedUpdateFilter, selectedFilterComparator]
     );
 
     const handleChangeComparator = useCallback(
         (newType: string) => {
+            isEditingRef.current = true;
             setSelectedFilterComparator(newType);
             const filterWithoutValue =
                 newType === FILTER_TEXT_COMPARATORS.IS_EMPTY || newType === FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY;
             if (filterWithoutValue) {
-                updateFilter(colId, {
+                debouncedUpdateFilter({
                     value: true,
                     type: newType,
                     dataType,
                     tolerance: tolerance,
                 });
             } else if (selectedFilterData && selectedFilterData !== true) {
-                updateFilter(colId, {
+                debouncedUpdateFilter({
                     value: selectedFilterData,
                     type: newType,
                     dataType,
@@ -149,22 +168,15 @@ export const useCustomAggridFilter = (
             } else {
                 // We switch from IS_EMPTY or IS_NOT_EMPTY comparator to a comparator with a value
                 setSelectedFilterData(undefined);
-                const updatedFilters = removeElementFromArrayWithFieldValue(filters, colId);
-                updateFilterCallback?.(api, updatedFilters);
-                dispatchFilters(updatedFilters);
+                debouncedUpdateFilter({
+                    value: undefined,
+                    type: newType,
+                    dataType,
+                    tolerance: tolerance,
+                });
             }
         },
-        [
-            colId,
-            dataType,
-            selectedFilterData,
-            tolerance,
-            updateFilter,
-            filters,
-            updateFilterCallback,
-            api,
-            dispatchFilters,
-        ]
+        [dataType, selectedFilterData, tolerance, debouncedUpdateFilter]
     );
 
     useEffect(() => {

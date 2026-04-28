@@ -19,7 +19,8 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
 import { v4 as uuid4 } from 'uuid';
 import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
-import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
+import { TableType } from '../../../../../types/custom-aggrid-types';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 import { SaveSpreadsheetModelDialog } from './save-spreadsheet-model-dialog';
 
@@ -33,7 +34,9 @@ export type SaveSpreadsheetDialogProps = {
 export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonly<SaveSpreadsheetDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const { nodeAliases } = useNodeAliases();
-    const tableFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD][tableDefinition.uuid]);
+    const tableFilters = useSelector(
+        (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet]?.[tableDefinition.uuid]
+    );
     const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition.uuid]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 

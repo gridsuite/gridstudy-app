@@ -43,7 +43,8 @@ import { updateSwitchState } from '../../../../../services/study/network-modific
 import { BusMenu } from 'components/menus/bus-menu';
 import { startShortCircuitAnalysis } from '../../../../../services/study/short-circuit-analysis';
 import { useOneBusShortcircuitAnalysisLoader } from './hooks/use-one-bus-shortcircuit-analysis-loader';
-import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../../../redux/actions';
+import { setComputationStarting, setComputingStatus, updateColumnFiltersAction } from '../../../../../redux/actions';
+import { TableType } from '../../../../../types/custom-aggrid-types';
 import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
@@ -243,7 +244,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
                 .finally(() => {
                     dispatch(setComputationStarting(false));
                     // we clear the computation logs filter when a new computation is started
-                    dispatch(setLogsFilter(ComputingType.SHORT_CIRCUIT_ONE_BUS, []));
+                    dispatch(updateColumnFiltersAction(TableType.Logs, ComputingType.SHORT_CIRCUIT_ONE_BUS, []));
                 });
         },
         [

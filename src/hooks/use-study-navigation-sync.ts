@@ -6,11 +6,11 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectSyncEnabled, setCurrentRootNetworkUuid, setCurrentTreeNode } from 'redux/actions';
 import { AppState } from 'redux/reducer.type';
-import { useStudyScopedNavigationKeys } from './use-study-scoped-navigation-keys';
+import { STUDY_NAVIGATION_SYNC_KEY, StudyNavigationSyncEntry } from 'redux/session-storage/navigation-local-storage';
 
 /**
  * Custom hook that synchronizes navigation state from localStorage to Redux when sync is enabled.
@@ -25,7 +25,8 @@ const useStudyNavigationSync = () => {
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const dispatch = useDispatch();
 
-    const STORAGE_KEYS = useStudyScopedNavigationKeys();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const studyNavigationSyncKey = studyUuid ? `${STUDY_NAVIGATION_SYNC_KEY}:${studyUuid}` : null;
 
     const updateRootNetworkUuid = useCallback(
         (uuid: UUID | null) => {
@@ -53,58 +54,43 @@ const useStudyNavigationSync = () => {
         [dispatch, currentTreeNode, treeModel]
     );
 
-    const keyActions = useMemo(
-        () => ({
-            [STORAGE_KEYS.ROOT_NETWORK_UUID]: updateRootNetworkUuid,
-            [STORAGE_KEYS.TREE_NODE_UUID]: updateTreeNode,
-        }),
-        [STORAGE_KEYS.ROOT_NETWORK_UUID, STORAGE_KEYS.TREE_NODE_UUID, updateRootNetworkUuid, updateTreeNode]
-    );
+    // Stable refs so the storage effect doesn't re-register listeners on every navigation
+    const updateRootNetworkUuidRef = useRef(updateRootNetworkUuid);
+    const updateTreeNodeRef = useRef(updateTreeNode);
+    useEffect(() => {
+        updateRootNetworkUuidRef.current = updateRootNetworkUuid;
+        updateTreeNodeRef.current = updateTreeNode;
+    });
 
     const syncFromLocalStorage = useCallback(() => {
         try {
-            Object.entries(keyActions).forEach(([key, updateFn]) => {
-                const rawValue = localStorage.getItem(key);
-                if (rawValue !== null) {
-                    const parsed = JSON.parse(rawValue);
-                    updateFn(parsed);
-                }
-            });
+            const raw = studyNavigationSyncKey ? localStorage.getItem(studyNavigationSyncKey) : null;
+            if (raw !== null) {
+                const entry = JSON.parse(raw) as StudyNavigationSyncEntry;
+                updateRootNetworkUuidRef.current(entry.rootNetworkUuid);
+                updateTreeNodeRef.current(entry.treeNodeUuid);
+            }
         } catch (err) {
             console.warn('Failed to sync from localStorage:', err);
         }
-    }, [keyActions]);
+    }, [studyNavigationSyncKey]);
 
     useEffect(() => {
         const handleStorage = (event: StorageEvent) => {
-            if (event.key === STORAGE_KEYS.SYNC_ENABLED) {
-                try {
-                    if (event.newValue === null) {
-                        return;
-                    }
-                    const newSync = JSON.parse(event.newValue);
-                    dispatch(selectSyncEnabled(newSync));
-                } catch (err) {
-                    console.warn('Failed to parse storage event value', err);
-                }
+            if (event.key !== studyNavigationSyncKey || event.newValue === null) {
                 return;
             }
-            if (
-                !syncEnabled ||
-                document.visibilityState !== 'visible' ||
-                event.newValue === null ||
-                event.key === null
-            ) {
-                return;
-            }
-            const updateFn = keyActions[event.key];
-            if (updateFn) {
-                try {
-                    const parsed = JSON.parse(event.newValue);
-                    updateFn(parsed);
-                } catch (err) {
-                    console.warn('Failed to parse storage event value', err);
+            try {
+                const entry = JSON.parse(event.newValue) as StudyNavigationSyncEntry;
+                // Always sync syncEnabled from other tabs
+                dispatch(selectSyncEnabled(entry.syncEnabled));
+                if (!entry.syncEnabled || document.visibilityState !== 'visible') {
+                    return;
                 }
+                updateRootNetworkUuidRef.current(entry.rootNetworkUuid);
+                updateTreeNodeRef.current(entry.treeNodeUuid);
+            } catch (err) {
+                console.warn('Failed to parse storage event value', err);
             }
         };
 
@@ -115,19 +101,19 @@ const useStudyNavigationSync = () => {
             syncFromLocalStorage();
         };
 
-        window.addEventListener('storage', handleStorage);
+        globalThis.addEventListener('storage', handleStorage);
         if (syncEnabled) {
             handleVisibility();
             document.addEventListener('visibilitychange', handleVisibility);
         }
 
         return () => {
-            window.removeEventListener('storage', handleStorage);
+            globalThis.removeEventListener('storage', handleStorage);
             if (syncEnabled) {
                 document.removeEventListener('visibilitychange', handleVisibility);
             }
         };
-    }, [dispatch, syncEnabled, syncFromLocalStorage, keyActions, STORAGE_KEYS.SYNC_ENABLED]);
+    }, [dispatch, syncEnabled, syncFromLocalStorage, studyNavigationSyncKey]);
 };
 
 export default useStudyNavigationSync;

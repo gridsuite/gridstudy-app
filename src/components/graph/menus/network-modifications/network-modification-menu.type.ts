@@ -33,11 +33,6 @@ export interface CaseInfos {
     caseFormat: string | null;
 }
 
-export interface ExcludedNetworkModifications {
-    rootNetworkUuid: UUID;
-    modificationUuidsToExclude: UUID[];
-}
-
 export enum NetworkModificationCopyType {
     COPY = 'COPY',
     MOVE = 'MOVE',

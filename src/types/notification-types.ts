@@ -239,6 +239,22 @@ interface SubtreeCreatedEventDataHeaders extends CommonStudyEventDataHeaders {
     parentNode: UUID;
 }
 
+interface SubtreeMovedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.SUBTREE_MOVED;
+    parentNode: UUID;
+    movedNode: UUID;
+}
+
+interface NodesColumnPositionsChangedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NODES_COLUMN_POSITION_CHANGED;
+    parentNode: UUID;
+}
+
+interface NodesUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NODES_UPDATED;
+    nodes: UUID[];
+}
+
 interface ModificationProgressionEventDataHeaders extends CommonStudyEventDataHeaders {
     parentNode: UUID;
     nodes: UUID[];
@@ -479,6 +495,32 @@ export interface SubtreeCreatedEventData extends CommonStudyEventData {
     headers: SubtreeCreatedEventDataHeaders;
     payload: undefined;
 }
+
+export interface SubtreeMovedEventData extends CommonStudyEventData {
+    headers: SubtreeMovedEventDataHeaders;
+    payload: undefined;
+}
+
+export interface NodesColumnPositionsChangedEventData extends CommonStudyEventData {
+    headers: NodesColumnPositionsChangedEventDataHeaders;
+    payload: string;
+}
+
+export interface NodesUpdatedEventData extends CommonStudyEventData {
+    headers: NodesUpdatedEventDataHeaders;
+    payload: undefined;
+}
+
+export type TreeModelUpdateEventData =
+    | NodesBuildStatusUpdatedEventData
+    | NodeCreatedEventData
+    | SubtreeCreatedEventData
+    | NodeMovedEventData
+    | SubtreeMovedEventData
+    | NodesColumnPositionsChangedEventData
+    | NodesDeletedEventData
+    | NodesUpdatedEventData
+    | NodeEditedEventData;
 
 export interface ModificationsCreationInProgressEventData extends CommonStudyEventData {
     headers: ModificationsCreationInProgressEventDataHeaders;

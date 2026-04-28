@@ -10,7 +10,7 @@ import { IconButton, MenuItem, Select } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
+import { useCustomAggridColumnFilter } from './hooks/use-custom-aggrid-column-filter';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { BooleanFilterValue } from './utils/aggrid-filters-utils';
@@ -28,14 +28,10 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterParams> = ({
-    api,
-    colId,
-    filterParams,
-}) => {
+export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterParams> = ({ colId, filterParams }) => {
     const intl = useIntl();
 
-    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, colId, filterParams);
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridColumnFilter(colId, filterParams);
 
     const handleValueChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value;

@@ -31,7 +31,7 @@ export const useAgGridInitialColumnFilters = (
             const api = params.api;
             if (!api) return;
             const { tableFilters } = store.getState();
-            const filters = tableFilters.columnsFilters?.[tableType]?.[computationSubType]?.columns;
+            const filters = tableFilters.columnsFilters?.[tableType]?.[computationSubType];
             updateAgGridFilters(api, filters);
             requestAnimationFrame(() => {
                 api.sizeColumnsToFit();

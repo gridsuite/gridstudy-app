@@ -15,7 +15,10 @@ import Button from '@mui/material/Button';
 import {
     AutocompleteInput,
     CustomFormProvider,
+    DynamicSimulationParametersInfos,
+    getDynamicMappings,
     getIdOrSelf,
+    MappingInfos,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -27,7 +30,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import GridItem from '../commons/grid-item';
 import type { UUID } from 'node:crypto';
-import { DynamicSimulationParametersInfos } from '../../../services/study/dynamic-simulation.type';
 
 const MAPPING_SELECTION_LABEL = 'DynamicSimulationMappingSelection';
 const MAPPING = 'mapping';
@@ -86,18 +88,23 @@ export function DynamicSimulationParametersSelector({
 
     useEffect(() => {
         fetchDynamicSimulationParameters(studyUuid)
-            .then((paramsPlusMappings) => {
+            .then((params) => {
                 // save all params to state
-                setDynamicSimulationParams(paramsPlusMappings);
-                // extract mappings configuration
-                const mappings = paramsPlusMappings.mappings?.map((elem) => elem.name);
-                setMappingNames(mappings ?? []);
-                reset({ ...emptyFormData, [MAPPING]: paramsPlusMappings.mapping });
+                setDynamicSimulationParams(params);
+                getDynamicMappings()
+                    .then((mappingInfosList: MappingInfos[]) => {
+                        const mappings = mappingInfosList?.map((elem) => elem.name);
+                        setMappingNames(mappings ?? []);
+                        reset({ ...emptyFormData, [MAPPING]: params.mapping });
+                    })
+                    .catch((error) => {
+                        snackWithFallback(snackError, error, {
+                            headerId: 'DynamicSimulationGetMappingError',
+                        });
+                    });
             })
             .catch((error) => {
-                snackWithFallback(snackError, error, {
-                    headerId: 'DynamicSimulationGetMappingError',
-                });
+                snackWithFallback(snackError, error);
             });
     }, [snackError, studyUuid, reset]);
 

@@ -320,6 +320,7 @@ export default function SpreadsheetTabs({
                         { id: 'spreadsheet/remove_spreadsheet_confirmation' },
                         { spreadsheetName: tabActionInProgressName }
                     )}
+                    isTranslationNeeded={false}
                     openConfirmationPopup={confirmationDialogOpen}
                     setOpenConfirmationPopup={setConfirmationDialogOpen}
                     handlePopupConfirmation={handleRemoveTab}

@@ -12,6 +12,7 @@ import { useIntl } from 'react-intl';
 import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
+import { TableType } from '../../../../../types/custom-aggrid-types';
 import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
 import { isCriteriaFilterType } from '../../../../results/common/utils';
@@ -47,7 +48,7 @@ export function useFilteredRowCounterInfo({
 
     const globalFilterSpreadsheetState = useSelectedGlobalFilters(tableDefinition.uuid);
     const spreadsheetColumnsFiltersState = useSelector(
-        (state: AppState) => state.spreadsheetFilter[tableDefinition?.uuid]
+        (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet]?.[tableDefinition?.uuid]
     );
 
     // Update is debounced to avoid displayed row count falsely set to 0 because of AG Grid internal behaviour which briefly set row count to 0 in between filters

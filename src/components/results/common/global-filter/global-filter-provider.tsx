@@ -112,12 +112,12 @@ export default function GlobalFilterProvider({
                 dispatch(addToGlobalFilterOptions(updatedFilters));
             }
             if (notFoundFilters.length) {
-                dispatch(markNotFoundGlobalFiltersAsDeleted(notFoundFilters, tableUuid));
+                dispatch(markNotFoundGlobalFiltersAsDeleted(notFoundFilters, tableUuid, tableType));
             }
         };
 
         checkSelectedFilters().catch((error) => console.error(error));
-    }, [dispatch, selectedGlobalFilters, tableUuid, updateGenericFilter]);
+    }, [dispatch, selectedGlobalFilters, tableType, tableUuid, updateGenericFilter]);
 
     const value = useMemo(
         () => ({

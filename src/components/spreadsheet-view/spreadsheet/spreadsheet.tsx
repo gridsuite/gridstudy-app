@@ -5,18 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import { rowIndexColumnDefinition } from '../columns/common-column-definitions';
 import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
-import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { isSecurityModificationNode, CurrentTreeNode } from 'components/graph/tree-node.type';
 import { AgGridReact } from 'ag-grid-react';
 import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { mapColumns } from '../columns/utils/column-mapper';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
 import type { UUID } from 'node:crypto';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import { CustomColDef } from '../../../types/custom-aggrid-types';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer.type';
 
 interface SpreadsheetProps {
     panelId: UUID;
@@ -29,8 +31,18 @@ interface SpreadsheetProps {
 export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabled, active }: SpreadsheetProps) => {
     const gridRef = useRef<AgGridReact>(null);
     const { snackError } = useSnackMessage();
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const columnsDefinitions = useMemo(() => mapColumns(tableDefinition, snackError), [tableDefinition, snackError]);
+    const columnsDefinitions = useMemo(
+        () => mapColumns(tableDefinition, snackError, loadFlowStatus, isSecurityModificationNode(currentNode)),
+        [tableDefinition, snackError, loadFlowStatus, currentNode]
+    );
+
+    // Refresh cells to apply styles when column definitions change (e.g. formula edit, load flow status)
+    useEffect(() => {
+        gridRef.current?.api?.refreshCells({ force: true, suppressFlash: true });
+    }, [columnsDefinitions]);
+
     const rowCounterInfos = useFilteredRowCounterInfo({
         gridRef,
         tableDefinition,

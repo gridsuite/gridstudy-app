@@ -10,7 +10,6 @@ import { useIntl } from 'react-intl';
 import { Box, Button, useTheme } from '@mui/material';
 import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import {
-    GridApi,
     GridReadyEvent,
     ICellRendererParams,
     RowClassParams,
@@ -35,7 +34,6 @@ import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-so
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
-    FilterConfig,
     FilterEnumsType,
     numericFilterParams,
     TableType,
@@ -46,8 +44,6 @@ import { resultsStyles } from '../common/utils';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from '../../workspace/types/workspace.types';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
-import type { UUID } from 'node:crypto';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 import { createMultiEnumFilterParams } from '../common/column-filter/utilis';
 
@@ -58,7 +54,6 @@ interface ShortCircuitAnalysisResultProps {
     filterEnums: FilterEnumsType;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
-    goToFirstPage: () => void;
     computationSubType: string;
 }
 
@@ -102,7 +97,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     filterEnums,
     onGridColumnsChanged,
     onRowDataUpdated,
-    goToFirstPage,
     computationSubType,
 }) => {
     const intl = useIntl();
@@ -110,8 +104,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     const { openSLD } = useWorkspacePanelActions();
 
     const filters = useSelector(
-        (state: AppState) =>
-            state.tableFilters.columnsFilters?.[TableType.ShortcircuitAnalysis]?.[computationSubType]?.columns
+        (state: AppState) => state.tableFilters.columnsFilters?.[TableType.ShortcircuitAnalysis]?.[computationSubType]
     );
     const voltageLevelIdRenderer = useCallback(
         (props: ICellRendererParams) => {
@@ -158,23 +151,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         const filterParams = {
             type: TableType.ShortcircuitAnalysis,
             tab: mappingTabs(analysisType),
-            updateFilterCallback: (
-                agGridApi?: GridApi,
-                filters?: FilterConfig[],
-                colId?: string,
-                studyUuid?: UUID,
-                filterType?: TableType,
-                filterSubType?: string
-            ) =>
-                updateComputationColumnsFilters(
-                    agGridApi,
-                    filters,
-                    colId,
-                    studyUuid,
-                    filterType,
-                    filterSubType,
-                    goToFirstPage
-                ),
         };
 
         const inputFilterParams = (
@@ -359,7 +335,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 hide: true,
             },
         ];
-    }, [analysisType, goToFirstPage, intl, voltageLevelIdRenderer, filterEnums, getEnumLabel]);
+    }, [analysisType, intl, voltageLevelIdRenderer, filterEnums, getEnumLabel]);
 
     const shortCircuitAnalysisStatus = useSelector(
         (state: AppState) =>

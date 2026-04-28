@@ -31,7 +31,6 @@ export const styles = {
             fontFamily: theme.typography.fontFamily,
         },
         '& .nad-pst-arrow': {
-            stroke: theme.palette.text.primary,
             strokeWidth: 3,
         },
     }),
@@ -128,14 +127,15 @@ export const styles = {
             {
                 opacity: INVALID_COMPUTATION_OPACITY,
             },
+        '& .nad-reactive, & text.nad-permanent-limit-percentage, & path.nad-permanent-limit-percentage, & .nad-active':
+            {
+                display: 'none !important',
+            },
         '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
             animation: 'none !important',
         },
-        '& .nad-active': {
-            fill: '#787F81', // Text color of the values and arrows on lines (same color in light and dark mode)
-        },
         '& .nad-bus-descr': {
-            color: '#787F81',
+            display: 'none !important',
         },
         '& .nad-branch-edges .nad-overload .nad-edge-path, & .nad-vl-nodes .nad-overvoltage, & .nad-vl-nodes .nad-undervoltage':
             {

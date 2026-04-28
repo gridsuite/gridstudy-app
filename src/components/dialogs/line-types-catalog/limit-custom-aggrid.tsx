@@ -29,6 +29,7 @@ interface LimitsCustomAgGridProps {
     undergroundRowData: LineTypeInfo[];
     aerialColumnDefs: ColDef[];
     undergroundColumnDefs: ColDef[];
+    onRowClicked: () => void;
     onSelectionChanged: () => void;
     onGridReady: () => void;
 }
@@ -40,6 +41,7 @@ export default function LimitCustomAgGrid({
     undergroundRowData,
     aerialColumnDefs,
     undergroundColumnDefs,
+    onRowClicked,
     onSelectionChanged,
     onGridReady,
 }: Readonly<LimitsCustomAgGridProps>) {
@@ -57,6 +59,7 @@ export default function LimitCustomAgGrid({
             defaultColDef={defaultColDef}
             columnDefs={columnDefs}
             rowSelection="single"
+            onRowClicked={onRowClicked}
             onSelectionChanged={onSelectionChanged}
             onGridReady={onGridReady}
             overrideLocales={AGGRID_LOCALES}
