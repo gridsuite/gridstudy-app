@@ -73,11 +73,6 @@ export function getEnergySourceLabel(energySourceId?: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
 
-export const REACTIVE_LIMIT_TYPES = [
-    { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
-    { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
-] as const;
-
 const PROPORTIONAL = { id: 'PROPORTIONAL', label: 'Proportional' } as const;
 const REGULAR_DISTRIBUTION = {
     id: 'REGULAR_DISTRIBUTION',
