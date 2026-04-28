@@ -181,8 +181,14 @@ const NetworkModificationNodeEditor = () => {
     const buttonAddRef = useRef<HTMLButtonElement>(null);
     const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
-    const { networkModificationsToCopy, copyInfos, copyNetworkModifications, cutNetworkModifications, cleanClipboard } =
-        useCopiedNetworkModifications();
+    const {
+        networkModificationsToCopy,
+        copyInfos,
+        copyNetworkModifications,
+        cutNetworkModifications,
+        cleanClipboard,
+        cleanOtherTabsClipboard,
+    } = useCopiedNetworkModifications();
 
     const copyInfosRef = useRef<NetworkModificationCopyInfos | null>(null);
     copyInfosRef.current = copyInfos;
@@ -190,9 +196,9 @@ const NetworkModificationNodeEditor = () => {
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', () => {
-            cleanClipboard(true, 'copiedModificationsInvalidationMsgFromStudyClosure');
+            cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
         });
-    }, [cleanClipboard]);
+    }, [cleanOtherTabsClipboard]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
