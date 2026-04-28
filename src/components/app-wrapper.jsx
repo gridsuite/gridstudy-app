@@ -6,7 +6,7 @@
  */
 
 import { useMemo } from 'react';
-import App from './app';
+import App from './app.jsx';
 import {
     createTheme,
     CssBaseline,

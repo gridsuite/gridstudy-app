@@ -51,7 +51,7 @@ const styles = {
     },
 };
 
-const AppTopBar = ({ user, userManager }) => {
+const AppTopBar = ({ userProfile, userManager }) => {
     const dispatch = useDispatch();
     const theme = useSelector((state) => state[PARAM_THEME]);
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -66,12 +66,12 @@ const AppTopBar = ({ user, userManager }) => {
     const [isDeveloperMode, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     useEffect(() => {
-        if (user !== null) {
+        if (userProfile !== null) {
             fetchAppsMetadata().then((res) => {
                 setAppsAndUrls(res);
             });
         }
-    }, [user]);
+    }, [userProfile]);
 
     return (
         <TopBar
@@ -79,7 +79,7 @@ const AppTopBar = ({ user, userManager }) => {
             appColor="#0CA789"
             appLogo={theme === LIGHT_THEME ? <GridStudyLogoLight /> : <GridStudyLogoDark />}
             onLogoutClick={() => logout(dispatch, userManager.instance)}
-            user={user}
+            userProfile={userProfile}
             appsAndUrls={appsAndUrls}
             onThemeClick={handleChangeTheme}
             appVersion={AppPackage.version}
@@ -95,7 +95,7 @@ const AppTopBar = ({ user, userManager }) => {
             language={languageLocal}
             dense
         >
-            {user && studyUuid && currentRootNetworkUuid && (
+            {userProfile && studyUuid && currentRootNetworkUuid && (
                 <Box sx={styles.boxContent}>
                     <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1.5, marginRight: 'auto' }}>
                         <WorkspaceToolbar />
@@ -121,7 +121,7 @@ const AppTopBar = ({ user, userManager }) => {
 };
 
 AppTopBar.propTypes = {
-    user: PropTypes.object,
+    userProfile: PropTypes.object,
     userManager: PropTypes.object.isRequired,
 };
 
