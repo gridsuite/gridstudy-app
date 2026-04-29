@@ -43,7 +43,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
 
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const EQUIPMENTS_EXCLUDED_IN_NON_DEV_MODE = [EquipmentType.DANGLING_LINE, EquipmentType.THREE_WINDINGS_TRANSFORMER];
+    const EQUIPMENTS_EXCLUDED_IN_NON_DEV_MODE = [EquipmentType.BOUNDARY_LINE, EquipmentType.THREE_WINDINGS_TRANSFORMER];
 
     const CONTINGENCY_EQUIPMENTS_FOR_NON_DEV_MODE = Object.fromEntries(
         Object.entries(CONTINGENCY_LIST_EQUIPMENTS).filter(

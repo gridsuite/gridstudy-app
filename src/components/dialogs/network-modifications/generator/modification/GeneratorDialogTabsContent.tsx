@@ -10,31 +10,23 @@ import { GeneratorDialogTab } from './generatorTabs.utils';
 import GridSection from 'components/dialogs/commons/grid-section';
 import {
     ActivePowerAdornment,
+    ActivePowerControlForm,
     CheckboxNullableInput,
     ConnectivityForm,
     ConnectivityNetworkProps,
+    FieldConstants,
     FloatInput,
+    GeneratorFormInfos,
     MVAPowerAdornment,
     PowerMeasurementsForm,
     PropertiesForm,
+    ReactiveLimitsForm,
     SetPointsForm,
+    ShortCircuitForm,
 } from '@gridsuite/commons-ui';
-import { GeneratorFormInfos } from '../generator-dialog.type';
 import { FormattedMessage, useIntl } from 'react-intl';
 import GridItem from 'components/dialogs/commons/grid-item';
-import { ReactiveLimitsForm } from 'components/dialogs/reactive-limits/reactive-limits-form';
-import {
-    FORCED_OUTAGE_RATE,
-    MARGINAL_COST,
-    MAXIMUM_ACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-    PLANNED_ACTIVE_POWER_SET_POINT,
-    PLANNED_OUTAGE_RATE,
-    RATED_NOMINAL_POWER,
-    VOLTAGE_REGULATION,
-} from 'components/utils/field-constants';
-import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
-import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
+import { VOLTAGE_REGULATION } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { VoltageRegulationForm } from 'components/dialogs/voltage-regulation/voltage-regulation-form';
 import type { UUID } from 'node:crypto';
@@ -105,7 +97,7 @@ export function GeneratorDialogTabsContent({
 
     const maximumActivePowerField = (
         <FloatInput
-            name={MAXIMUM_ACTIVE_POWER}
+            name={FieldConstants.MAXIMUM_ACTIVE_POWER}
             label={'MaximumActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={generatorToModify?.maxP}
@@ -115,7 +107,7 @@ export function GeneratorDialogTabsContent({
 
     const minimumActivePowerField = (
         <FloatInput
-            name={MINIMUM_ACTIVE_POWER}
+            name={FieldConstants.MINIMUM_ACTIVE_POWER}
             label={'MinimumActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={generatorToModify?.minP}
@@ -125,7 +117,7 @@ export function GeneratorDialogTabsContent({
 
     const ratedNominalPowerField = (
         <FloatInput
-            name={RATED_NOMINAL_POWER}
+            name={FieldConstants.RATED_NOMINAL_POWER}
             label={'RatedNominalPowerText'}
             adornment={MVAPowerAdornment}
             previousValue={generatorToModify?.ratedS}
@@ -135,7 +127,7 @@ export function GeneratorDialogTabsContent({
 
     const plannedActivePowerSetPointField = (
         <FloatInput
-            name={PLANNED_ACTIVE_POWER_SET_POINT}
+            name={FieldConstants.PLANNED_ACTIVE_POWER_SET_POINT}
             label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
             previousValue={generatorToModify?.generatorStartup?.plannedActivePowerSetPoint ?? undefined}
@@ -145,7 +137,7 @@ export function GeneratorDialogTabsContent({
 
     const marginalCostField = (
         <FloatInput
-            name={MARGINAL_COST}
+            name={FieldConstants.MARGINAL_COST}
             label={'MarginalCost'}
             previousValue={generatorToModify?.generatorStartup?.marginalCost ?? undefined}
             clearable={true}
@@ -154,7 +146,7 @@ export function GeneratorDialogTabsContent({
 
     const plannedOutageRateField = (
         <FloatInput
-            name={PLANNED_OUTAGE_RATE}
+            name={FieldConstants.PLANNED_OUTAGE_RATE}
             label={'plannedOutageRate'}
             previousValue={generatorToModify?.generatorStartup?.plannedOutageRate ?? undefined}
             clearable={true}
@@ -163,7 +155,7 @@ export function GeneratorDialogTabsContent({
 
     const forcedOutageRateField = (
         <FloatInput
-            name={FORCED_OUTAGE_RATE}
+            name={FieldConstants.FORCED_OUTAGE_RATE}
             label={'forcedOutageRate'}
             previousValue={generatorToModify?.generatorStartup?.forcedOutageRate ?? undefined}
             clearable={true}
@@ -199,7 +191,7 @@ export function GeneratorDialogTabsContent({
                 <Grid container spacing={2} paddingTop={2}>
                     <Box sx={{ width: '100%' }} />
                     <GridItem
-                        tooltip={watchVoltageRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />}
+                        tooltip={watchVoltageRegulation === null ? <FormattedMessage id={'NoModification'} /> : ''}
                         size={4}
                     >
                         {voltageRegulationField}
