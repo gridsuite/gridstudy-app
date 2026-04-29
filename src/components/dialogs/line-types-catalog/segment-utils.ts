@@ -10,6 +10,7 @@ import {
     AREA,
     LIMIT_SET_NAME,
     LIMIT_VALUE,
+    LINE_SEGMENTS,
     PERMANENT_LIMIT,
     SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
@@ -67,7 +68,8 @@ export type SegmentFormData = InferType<typeof SegmentSchema>;
 export type SegmentTemporaryLimitFormData = InferType<typeof SegmentTemporaryLimitSchema>;
 export type SegmentCurrentLimitsFormData = InferType<typeof SegmentCurrentLimitsSchema>;
 
-export interface SegmentsFormData extends Array<SegmentFormData> {
+export interface SegmentsFormData {
+    [LINE_SEGMENTS]: SegmentFormData[];
     [APPLY_SEGMENTS_LIMITS]?: boolean;
 }
 

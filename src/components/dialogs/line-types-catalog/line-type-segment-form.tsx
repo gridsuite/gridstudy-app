@@ -13,6 +13,7 @@ import {
     APPLY_SEGMENTS_LIMITS,
     AREA,
     FINAL_CURRENT_LIMITS,
+    LINE_SEGMENTS,
     SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_REACTANCE,
@@ -230,12 +231,12 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        if (!editData || editData.length === 0) {
+        if (!editData || editData[LINE_SEGMENTS]?.length === 0) {
             return;
         }
         arrayRef.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
-            const promises = editData.map((segment) => getSegmentLimits(segment));
+            const promises = editData[LINE_SEGMENTS]?.map((segment) => getSegmentLimits(segment));
 
             try {
                 const segmentsWithLimits = await Promise.all(promises);

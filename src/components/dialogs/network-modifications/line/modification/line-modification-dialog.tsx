@@ -506,9 +506,10 @@ const LineModificationDialog = ({
                             open={isOpenLineTypesCatalogDialog}
                             onClose={handleCloseLineTypesCatalogDialog}
                             onSave={handleLineSegmentsBuildSubmit}
-                            editData={Object.assign([...editSegmentsValue], {
+                            editData={{
+                                [LINE_SEGMENTS]: [...editSegmentsValue],
                                 [APPLY_SEGMENTS_LIMITS]: applySegmentsLimits,
-                            })}
+                            }}
                             isModification
                         />
                     </>
