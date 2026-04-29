@@ -80,7 +80,6 @@ export default function ShuntCompensatorModificationForm({
 
     const connectivityForm = (
         <ConnectivityForm
-            withPosition={true}
             isEquipmentModification={true}
             previousValues={shuntCompensatorToModify ?? undefined}
             voltageLevelOptions={voltageLevelOptions}

@@ -6,7 +6,6 @@
  */
 
 import {
-    EQUIPMENT,
     ID,
     NAME,
     NOMINAL_VOLTAGE,
@@ -15,10 +14,11 @@ import {
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 const regulatingTerminalEmptyFormData = () => ({
     [VOLTAGE_LEVEL]: null,
-    [EQUIPMENT]: null,
+    [FieldConstants.EQUIPMENT]: null,
 });
 
 export const getRegulatingTerminalEmptyFormData = () => {
@@ -98,7 +98,7 @@ export const getRegulatingTerminalFormData = ({
             voltageLevelSubstationId,
             voltageLevelTopologyKind,
         }),
-        [EQUIPMENT]: getRegulatingTerminalEquipmentData({
+        [FieldConstants.EQUIPMENT]: getRegulatingTerminalEquipmentData({
             equipmentId,
             equipmentName,
             equipmentType,
