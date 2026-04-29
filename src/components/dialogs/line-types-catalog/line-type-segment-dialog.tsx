@@ -51,7 +51,7 @@ export interface LineTypeSegmentDialogProps {
     onSave: (
         data: ComputedLineCharacteristics,
         lineSegments: DeepNullable<SegmentFormData | null>[],
-        applyLimits?: boolean | null
+        applyLimits: boolean | null
     ) => void;
     editData?: SegmentsFormData;
     isModification?: boolean;

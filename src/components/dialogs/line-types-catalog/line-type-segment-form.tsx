@@ -494,13 +494,17 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 <GridItem size={2}>{totalSusceptanceField}</GridItem>
                 <GridItem size={1}>{<div />}</GridItem>
             </Grid>
-            <Grid container>
-                <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
+            <Grid container direction="column">
+                <Grid>
+                    <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
+                </Grid>
                 {isModification && (
-                    <SwitchInput
-                        name={APPLY_SEGMENTS_LIMITS}
-                        label={watchedApplySegmentsLimits ? 'applied' : 'notApplied'}
-                    />
+                    <Grid>
+                        <SwitchInput
+                            name={APPLY_SEGMENTS_LIMITS}
+                            label={watchedApplySegmentsLimits ? 'applied' : 'notApplied'}
+                        />
+                    </Grid>
                 )}
             </Grid>
             <Grid container sx={{ height: '100%' }} direction="column">

@@ -104,23 +104,23 @@ export function convertLimitsToOperationalLimitsGroupFormSchema(limitSets: Curre
     const finalLimitSets: OperationalLimitsGroupFormSchema[] = [];
     limitSets.forEach((limitSet: CurrentLimitsInfo) => {
         const temporaryLimitsList: TemporaryLimitFormSchema[] = [];
-        item.temporaryLimits?.forEach((temporaryLimit) => {
+        limitSet.temporaryLimits?.forEach((temporaryLimit) => {
             temporaryLimitsList.push({
                 name: temporaryLimit.name,
                 acceptableDuration: temporaryLimit.acceptableDuration,
                 value: temporaryLimit.limitValue,
             });
         });
-        finalLimits.push({
-            id: item.limitSetName + APPLICABILITY.EQUIPMENT.id,
-            name: item.limitSetName,
+        finalLimitSets.push({
+            id: limitSet.limitSetName + APPLICABILITY.EQUIPMENT.id,
+            name: limitSet.limitSetName,
             applicability: APPLICABILITY.EQUIPMENT.id,
             currentLimits: {
-                id: item.limitSetName,
-                permanentLimit: item.permanentLimit,
+                id: limitSet.limitSetName,
+                permanentLimit: limitSet.permanentLimit,
                 temporaryLimits: temporaryLimitsList,
             },
         });
     });
-    return finalLimits;
+    return finalLimitSets;
 }

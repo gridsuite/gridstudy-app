@@ -196,8 +196,16 @@ const LineModificationDialog = ({
 
     const { reset, setValue, getValues, watch } = formMethods;
 
-    const editSegmentsValue = watch(LINE_SEGMENTS) ?? [];
-    const applySegmentsLimits = watch(APPLY_SEGMENTS_LIMITS) ?? true;
+    const editSegmentsValue = watch(LINE_SEGMENTS);
+    const applySegmentsLimits = watch(APPLY_SEGMENTS_LIMITS);
+
+    const editSegmentsData = useMemo(
+        () => ({
+            [LINE_SEGMENTS]: editSegmentsValue ?? [],
+            [APPLY_SEGMENTS_LIMITS]: applySegmentsLimits ?? true,
+        }),
+        [editSegmentsValue, applySegmentsLimits]
+    );
 
     const fromEditDataToFormValues = useCallback(
         (lineModification: LineModificationInfos) => {
@@ -415,7 +423,7 @@ const LineModificationDialog = ({
     const handleLineSegmentsBuildSubmit = (
         data: ComputedLineCharacteristics,
         lineSegments: DeepNullable<SegmentFormData | null>[],
-        applyLimits?: boolean | null
+        applyLimits: boolean | null
     ) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
@@ -430,8 +438,10 @@ const LineModificationDialog = ({
             shouldDirty: true,
         });
         setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
-        setValue(APPLY_SEGMENTS_LIMITS, applyLimits ?? true);
-        if (applyLimits) {
+
+        const shouldApplyLimits = applyLimits ?? true;
+        setValue(APPLY_SEGMENTS_LIMITS, shouldApplyLimits);
+        if (shouldApplyLimits) {
             const limitsFromSegments = convertLimitsToOperationalLimitsGroupFormSchema(data[FINAL_CURRENT_LIMITS]);
             const actualLimits: OperationalLimitsGroupFormSchema[] =
                 getValues(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`) ?? [];
@@ -506,10 +516,7 @@ const LineModificationDialog = ({
                             open={isOpenLineTypesCatalogDialog}
                             onClose={handleCloseLineTypesCatalogDialog}
                             onSave={handleLineSegmentsBuildSubmit}
-                            editData={{
-                                [LINE_SEGMENTS]: [...editSegmentsValue],
-                                [APPLY_SEGMENTS_LIMITS]: applySegmentsLimits,
-                            }}
+                            editData={editSegmentsData}
                             isModification
                         />
                     </>
