@@ -89,6 +89,14 @@ export const getQueryParamsList = (params: string[] | number[] | null | undefine
     return '';
 };
 
+export function getUrlWithToken(baseUrl: string, tokenId: string) {
+    if (baseUrl.includes('?')) {
+        return baseUrl + '&access_token=' + tokenId;
+    } else {
+        return baseUrl + '?access_token=' + tokenId;
+    }
+}
+
 export function fetchMapBoxToken() {
     console.info(`Fetching MapBoxToken...`);
     return fetchEnv().then((res) => res.mapBoxToken);

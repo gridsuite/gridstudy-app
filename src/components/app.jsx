@@ -77,7 +77,6 @@ import { useGlobalFilterOptions } from './results/common/global-filter/use-globa
 import { updateComputationColumnFilters, updateComputationGlobalFilters } from './results/common/utils.ts';
 import { isEditingGlobalFilter } from '../utils/editing-global-filter-sync.ts';
 import { cleanupStaleStudyData } from '../redux/session-storage/local-storage';
-import { Button } from '@mui/material';
 
 const noUserManager = { instance: null, error: null };
 

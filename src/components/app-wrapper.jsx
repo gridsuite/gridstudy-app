@@ -487,6 +487,7 @@ const AppWrapperWithRedux = () => {
     const theme = useSelector((state) => state[PARAM_THEME]);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
     const baseVoltages = useSelector((state) => state.baseVoltages);
+    const accessToken = useSelector((state) => state.user?.access_token);
 
     const rootCssVars = useMemo(() => {
         const themeVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
@@ -507,7 +508,7 @@ const AppWrapperWithRedux = () => {
                             <CssBaseline />
                             <GlobalStyles styles={{ ':root': rootCssVars }} />
                             <CardErrorBoundary>
-                                <NotificationsProvider urls={urlMapper}>
+                                <NotificationsProvider urls={urlMapper} accessToken={accessToken}>
                                     <App />
                                 </NotificationsProvider>
                             </CardErrorBoundary>
