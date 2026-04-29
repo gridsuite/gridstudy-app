@@ -100,9 +100,9 @@ export function convertToLineSegmentInfos(lineSegments: DeepNullable<SegmentForm
     );
 }
 
-export function convertLimitsToOperationalLimitsGroupFormSchema(limits: CurrentLimitsInfo[]) {
-    const finalLimits: OperationalLimitsGroupFormSchema[] = [];
-    limits.forEach((item: CurrentLimitsInfo) => {
+export function convertLimitsToOperationalLimitsGroupFormSchema(limitSets: CurrentLimitsInfo[]) {
+    const finalLimitSets: OperationalLimitsGroupFormSchema[] = [];
+    limitSets.forEach((limitSet: CurrentLimitsInfo) => {
         const temporaryLimitsList: TemporaryLimitFormSchema[] = [];
         item.temporaryLimits?.forEach((temporaryLimit) => {
             temporaryLimitsList.push({
