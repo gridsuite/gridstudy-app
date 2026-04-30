@@ -5,20 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ACTIVE_POWER_SET_POINT,
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    ID,
-    REACTIVE_POWER_SET_POINT,
-    VOLTAGE_LEVEL,
-} from '../../../utils/field-constants';
+import { EQUIPMENT_ID } from '../../../utils/field-constants';
 import {
     ActivePowerControlInfos,
     ConnectablePositionFormInfos,
@@ -30,18 +17,18 @@ import {
 } from '@gridsuite/commons-ui';
 
 export type BatteryDialogSchemaBaseForm = {
-    [EQUIPMENT_NAME]?: string;
+    [FieldConstants.EQUIPMENT_NAME]?: string;
     [FieldConstants.MAXIMUM_ACTIVE_POWER]: number | null;
     [FieldConstants.MINIMUM_ACTIVE_POWER]: number | null;
-    [REACTIVE_POWER_SET_POINT]?: number | null;
-    [ACTIVE_POWER_SET_POINT]?: number | null;
-    [CONNECTIVITY]: {
-        [VOLTAGE_LEVEL]: { [ID]?: string };
-        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string };
-        [CONNECTION_DIRECTION]?: string;
-        [CONNECTION_NAME]?: string;
-        [CONNECTION_POSITION]?: number;
-        [CONNECTED]?: boolean;
+    [FieldConstants.REACTIVE_POWER_SET_POINT]?: number | null;
+    [FieldConstants.ACTIVE_POWER_SET_POINT]?: number | null;
+    [FieldConstants.CONNECTIVITY]: {
+        [FieldConstants.VOLTAGE_LEVEL]: { [FieldConstants.ID]?: string };
+        [FieldConstants.BUS_OR_BUSBAR_SECTION]: { [FieldConstants.ID]?: string };
+        [FieldConstants.CONNECTION_DIRECTION]?: string;
+        [FieldConstants.CONNECTION_NAME]?: string;
+        [FieldConstants.CONNECTION_POSITION]?: number;
+        [FieldConstants.CONNECTED]?: boolean;
     };
     [FieldConstants.FREQUENCY_REGULATION]?: boolean | null;
     [FieldConstants.DROOP]?: number | null;
