@@ -61,15 +61,9 @@ const limitsGroupValidationSchema = () => ({
 
 const temporaryLimitsValidationSchema = () => {
     return yup.object().shape({
-        [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
+        [TEMPORARY_LIMIT_DURATION]: yup.number().required().min(0),
         [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-        [TEMPORARY_LIMIT_NAME]: yup
-            .string()
-            .nullable()
-            .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
-                is: (limitValue: number | null, limitDuration: number | null) => limitValue || limitDuration,
-                then: () => yup.string().nullable().required(),
-            }),
+        [TEMPORARY_LIMIT_NAME]: yup.string().nullable().required(),
     });
 };
 const limitsPropertyValidationSchema = () => {
