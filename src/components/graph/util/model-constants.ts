@@ -35,7 +35,7 @@ export const EQUIPMENT_TYPE_LABEL_KEYS: Record<EquipmentType, string> = {
     [EquipmentType.BUSBAR_SECTION]: 'BusbarSection',
     [EquipmentType.BATTERY]: 'Battery',
     [EquipmentType.STATIC_VAR_COMPENSATOR]: 'StaticVarCompensator',
-    [EquipmentType.DANGLING_LINE]: 'DanglingLine',
+    [EquipmentType.BOUNDARY_LINE]: 'BoundaryLine',
     [EquipmentType.HVDC_CONVERTER_STATION]: 'HvdcConverterStation',
     [EquipmentType.VSC_CONVERTER_STATION]: 'VscConverterStation',
     [EquipmentType.LCC_CONVERTER_STATION]: 'LccConverterStation',
