@@ -63,7 +63,7 @@ const temporaryLimitsValidationSchema = () => {
     return yup.object().shape({
         [TEMPORARY_LIMIT_DURATION]: yup.number().required().min(0),
         [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-        [TEMPORARY_LIMIT_NAME]: yup.string().nullable().required(),
+        [TEMPORARY_LIMIT_NAME]: yup.string().required(),
     });
 };
 const limitsPropertyValidationSchema = () => {
