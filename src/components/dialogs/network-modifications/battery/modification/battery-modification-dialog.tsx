@@ -348,7 +348,7 @@ export default function BatteryModificationDialog({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                maxWidth={'xl'}
+                maxWidth={'md'}
                 PaperProps={{ sx: { height: '75vh' } }}
                 titleId="ModifyBattery"
                 open={open}

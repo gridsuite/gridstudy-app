@@ -17,7 +17,7 @@ export interface BatteryDialogHeaderProps {
 export function BatteryDialogHeader({ batteryToModify, equipmentId }: Readonly<BatteryDialogHeaderProps>) {
     return (
         <Grid container spacing={2}>
-            <Grid item xs>
+            <Grid item xs={4}>
                 <TextField
                     size="small"
                     fullWidth
@@ -30,7 +30,7 @@ export function BatteryDialogHeader({ batteryToModify, equipmentId }: Readonly<B
                     {...filledTextField}
                 />
             </Grid>
-            <Grid item xs>
+            <Grid item xs={4}>
                 <TextInput
                     name={FieldConstants.EQUIPMENT_NAME}
                     label={'Name'}
