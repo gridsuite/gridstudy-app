@@ -6,18 +6,6 @@
  */
 
 import { FieldConstants } from '@gridsuite/commons-ui';
-import {
-    ACTIVE_POWER_SET_POINT,
-    CONNECTIVITY,
-    DROOP,
-    FREQUENCY_REGULATION,
-    MAXIMUM_ACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-    REACTIVE_LIMITS,
-    REACTIVE_POWER_SET_POINT,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
-} from 'components/utils/field-constants';
 
 export enum BatteryDialogTab {
     CONNECTIVITY_TAB = 0,
@@ -30,16 +18,16 @@ export enum BatteryDialogTab {
 // object is keyed by the raw field name strings — so app-local constants are compatible at runtime
 // even when they aren't part of the commons-ui enum. The double cast keeps TypeScript happy.
 export const BATTERY_TAB_FIELDS: Readonly<Partial<Record<BatteryDialogTab, FieldConstants[]>>> = {
-    [BatteryDialogTab.CONNECTIVITY_TAB]: [CONNECTIVITY] as unknown as FieldConstants[],
+    [BatteryDialogTab.CONNECTIVITY_TAB]: [FieldConstants.CONNECTIVITY],
     [BatteryDialogTab.LIMITS_AND_SETPOINTS_TAB]: [
-        MINIMUM_ACTIVE_POWER,
-        MAXIMUM_ACTIVE_POWER,
-        REACTIVE_LIMITS,
-        ACTIVE_POWER_SET_POINT,
-        REACTIVE_POWER_SET_POINT,
-        FREQUENCY_REGULATION,
-        DROOP,
-    ] as unknown as FieldConstants[],
-    [BatteryDialogTab.SPECIFIC_TAB]: [TRANSIENT_REACTANCE, TRANSFORMER_REACTANCE] as unknown as FieldConstants[],
+        FieldConstants.MINIMUM_ACTIVE_POWER,
+        FieldConstants.MAXIMUM_ACTIVE_POWER,
+        FieldConstants.REACTIVE_LIMITS,
+        FieldConstants.ACTIVE_POWER_SET_POINT,
+        FieldConstants.REACTIVE_POWER_SET_POINT,
+        FieldConstants.FREQUENCY_REGULATION,
+        FieldConstants.DROOP,
+    ],
+    [BatteryDialogTab.SPECIFIC_TAB]: [FieldConstants.TRANSIENT_REACTANCE, FieldConstants.TRANSFORMER_REACTANCE],
     [BatteryDialogTab.ADDITIONAL_INFORMATION_TAB]: [FieldConstants.ADDITIONAL_PROPERTIES],
 };

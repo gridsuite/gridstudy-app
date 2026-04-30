@@ -6,8 +6,7 @@
  */
 
 import { Grid, TextField } from '@mui/material';
-import { filledTextField, TextInput } from '@gridsuite/commons-ui';
-import { EQUIPMENT_NAME } from 'components/utils/field-constants';
+import { FieldConstants, filledTextField, TextInput } from '@gridsuite/commons-ui';
 import { BatteryFormInfos } from '../battery-dialog.type';
 
 export interface BatteryDialogHeaderProps {
@@ -33,7 +32,7 @@ export function BatteryDialogHeader({ batteryToModify, equipmentId }: Readonly<B
             </Grid>
             <Grid item xs>
                 <TextInput
-                    name={EQUIPMENT_NAME}
+                    name={FieldConstants.EQUIPMENT_NAME}
                     label={'Name'}
                     formProps={filledTextField}
                     previousValue={batteryToModify?.name}

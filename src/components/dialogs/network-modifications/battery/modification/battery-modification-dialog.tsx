@@ -38,19 +38,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import {
-    ACTIVE_POWER_SET_POINT,
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
-    EQUIPMENT_NAME,
-    ID,
-    REACTIVE_POWER_SET_POINT,
-    VOLTAGE_LEVEL,
-} from 'components/utils/field-constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
@@ -71,7 +58,7 @@ import { EquipmentModificationDialogProps } from '../../../../graph/menus/networ
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
-    [EQUIPMENT_NAME]: '',
+    [FieldConstants.EQUIPMENT_NAME]: '',
     [FieldConstants.MAXIMUM_ACTIVE_POWER]: null,
     [FieldConstants.MINIMUM_ACTIVE_POWER]: null,
     ...getConnectivityWithPositionEmptyFormData(true),
@@ -85,7 +72,7 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_NAME]: yup.string().nullable(),
+        [FieldConstants.EQUIPMENT_NAME]: yup.string().nullable(),
         [FieldConstants.MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
         [FieldConstants.MINIMUM_ACTIVE_POWER]: yup
             .number()
@@ -98,7 +85,7 @@ const formSchema = yup
                         'MinActivePowerMustBeLessOrEqualToMaxActivePower'
                     ),
             }),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
+        [FieldConstants.CONNECTIVITY]: getConnectivityWithPositionSchema(true),
         [FieldConstants.REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
         ...getSetPointsSchema(true),
         ...getActivePowerControlSchema(true),
@@ -152,11 +139,11 @@ export default function BatteryModificationDialog({
                 setSelectedId(editData.equipmentId);
             }
             reset({
-                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
+                [FieldConstants.EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                 [FieldConstants.MAXIMUM_ACTIVE_POWER]: editData?.maxP?.value ?? null,
                 [FieldConstants.MINIMUM_ACTIVE_POWER]: editData?.minP?.value ?? null,
-                [ACTIVE_POWER_SET_POINT]: editData?.targetP?.value ?? null,
-                [REACTIVE_POWER_SET_POINT]: editData?.targetQ?.value ?? null,
+                [FieldConstants.ACTIVE_POWER_SET_POINT]: editData?.targetP?.value ?? null,
+                [FieldConstants.REACTIVE_POWER_SET_POINT]: editData?.targetQ?.value ?? null,
                 [FieldConstants.FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [FieldConstants.DROOP]: editData?.droop?.value ?? null,
                 ...getConnectivityFormData({
@@ -289,17 +276,29 @@ export default function BatteryModificationDialog({
                 type: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
                 uuid: editData?.uuid ?? null,
                 equipmentId: selectedId,
-                equipmentName: toModificationOperation(sanitizeString(battery[EQUIPMENT_NAME])),
+                equipmentName: toModificationOperation(sanitizeString(battery[FieldConstants.EQUIPMENT_NAME])),
                 minP: toModificationOperation(battery[FieldConstants.MINIMUM_ACTIVE_POWER]),
                 maxP: toModificationOperation(battery[FieldConstants.MAXIMUM_ACTIVE_POWER]),
-                targetP: toModificationOperation(battery[ACTIVE_POWER_SET_POINT]),
-                targetQ: toModificationOperation(battery[REACTIVE_POWER_SET_POINT]),
-                voltageLevelId: toModificationOperation(battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
-                busOrBusbarSectionId: toModificationOperation(battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
-                connectionName: toModificationOperation(sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME])),
-                connectionDirection: toModificationOperation(battery[CONNECTIVITY]?.[CONNECTION_DIRECTION]),
-                connectionPosition: toModificationOperation(battery[CONNECTIVITY]?.[CONNECTION_POSITION]),
-                terminalConnected: toModificationOperation(battery[CONNECTIVITY]?.[CONNECTED]),
+                targetP: toModificationOperation(battery[FieldConstants.ACTIVE_POWER_SET_POINT]),
+                targetQ: toModificationOperation(battery[FieldConstants.REACTIVE_POWER_SET_POINT]),
+                voltageLevelId: toModificationOperation(
+                    battery[FieldConstants.CONNECTIVITY]?.[FieldConstants.VOLTAGE_LEVEL]?.[FieldConstants.ID]
+                ),
+                busOrBusbarSectionId: toModificationOperation(
+                    battery[FieldConstants.CONNECTIVITY]?.[FieldConstants.BUS_OR_BUSBAR_SECTION]?.[FieldConstants.ID]
+                ),
+                connectionName: toModificationOperation(
+                    sanitizeString(battery[FieldConstants.CONNECTIVITY]?.[FieldConstants.CONNECTION_NAME])
+                ),
+                connectionDirection: toModificationOperation(
+                    battery[FieldConstants.CONNECTIVITY]?.[FieldConstants.CONNECTION_DIRECTION]
+                ),
+                connectionPosition: toModificationOperation(
+                    battery[FieldConstants.CONNECTIVITY]?.[FieldConstants.CONNECTION_POSITION]
+                ),
+                terminalConnected: toModificationOperation(
+                    battery[FieldConstants.CONNECTIVITY]?.[FieldConstants.CONNECTED]
+                ),
                 reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
                 participate: toModificationOperation(battery[FieldConstants.FREQUENCY_REGULATION]),
                 droop: toModificationOperation(battery[FieldConstants.DROOP]) ?? null,
