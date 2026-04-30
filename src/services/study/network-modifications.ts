@@ -1996,6 +1996,23 @@ export function moveVoltageLevelFeederBays({
     });
 }
 
+export function mergeModificationsIntoComposite(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuids: UUID[]
+) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('uuids', String(modificationUuids));
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modification?${urlSearchParams}`;
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
 export function getNetworkModificationsFromComposite(
     compositeModificationUuids: string[],
     onlyMetadata: boolean = true

@@ -6,10 +6,12 @@
  */
 
 import {
+    ArrowsInputIcon,
     ComposedModificationMetadata,
     ElementSaveDialog,
     ElementType,
     EquipmentType,
+    ErrorMessage,
     ExcludedNetworkModifications,
     fetchNetworkModification,
     IElementCreationDialog,
@@ -84,6 +86,7 @@ import { copyOrMoveModifications } from '../../../../services/study';
 import {
     fetchExcludedNetworkModifications,
     fetchNetworkModifications,
+    mergeModificationsIntoComposite,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
@@ -913,6 +916,25 @@ const NetworkModificationNodeEditor = () => {
         networkModificationsToCopy,
     ]);
 
+    const doMergeModificationsIntoComposite = useCallback(() => {
+        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
+
+        // TODO : check max depth 5
+
+        setSaveInProgress(true);
+        mergeModificationsIntoComposite(studyUuid, currentNode?.id, selectedModificationsUuid)
+            .then(() => {
+                // TODO : glisser vers la composite
+                // TODO : la mettre en édition (après GRD-4232)
+            })
+            .catch((error: ErrorMessage) => {
+                snackWithFallback(snackError, error, { headerId: 'MergeIntoCompositeError' }); // TODO : tester ça
+            })
+            .finally(() => {
+                setSaveInProgress(false);
+            });
+    }, [currentNode?.id, selectedNetworkModifications, snackError, studyUuid]);
+
     const doCreateCompositeModificationsElements = ({
         name,
         description,
@@ -1202,6 +1224,19 @@ const NetworkModificationNodeEditor = () => {
                             disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
                         >
                             <AddIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
+                <Tooltip title={<FormattedMessage id={'MergeIntoComposite'} />}>
+                    <span>
+                        <IconButton
+                            onClick={doMergeModificationsIntoComposite}
+                            size={'small'}
+                            disabled={
+                                selectedNetworkModifications?.length === 0 || saveInProgress === true || isRootNode
+                            }
+                        >
+                            <ArrowsInputIcon />
                         </IconButton>
                     </span>
                 </Tooltip>

@@ -1056,6 +1056,8 @@
     "importAndReplaceFromGridExplore": "Importer et remplacer à partir de GridExplore",
     "SaveToGridexplore": "Enregistrer dans GridExplore",
     "SaveToGridexploreError": "Une erreur est survenue lors de la sauvegarde dans GridExplore",
+    "MergeIntoComposite": "Créer une modification composite",
+    "MergeIntoCompositeError": "Une erreur est survenue lors de la création de la modification composite",
     "diagramConfigCreationMsg": "Création de l'image nodale de zone dans {directory}",
     "diagramConfigUpdateMsg": "Mise à jour de l'image nodale de zone {item}",
     "diagramConfigCreationError": "Une erreur est survenue lors de la création de l'image nodale de zone",
