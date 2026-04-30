@@ -57,6 +57,33 @@ export function BatteryDialogTabsContent({
             </Box>
 
             <Box hidden={tabIndex !== BatteryDialogTab.LIMITS_AND_SETPOINTS_TAB}>
+                <GridSection title="Setpoints" />
+                <Grid container spacing={2}>
+                    <GridItem size={4}>
+                        <FloatInput
+                            name={FieldConstants.ACTIVE_POWER_SET_POINT}
+                            label={'ActivePowerText'}
+                            adornment={ActivePowerAdornment}
+                            previousValue={batteryToModify?.targetP}
+                            clearable={true}
+                        />
+                    </GridItem>
+                    <GridItem size={4}>
+                        <FloatInput
+                            name={FieldConstants.REACTIVE_POWER_SET_POINT}
+                            label={'ReactivePowerText'}
+                            adornment={ReactivePowerAdornment}
+                            previousValue={batteryToModify?.targetQ}
+                            clearable={true}
+                        />
+                    </GridItem>
+                </Grid>
+                <Grid container spacing={2} paddingTop={2}>
+                    <ActivePowerControlForm
+                        isEquipmentModification={true}
+                        previousValues={batteryToModify?.activePowerControl}
+                    />
+                </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <h3>
@@ -99,33 +126,6 @@ export function BatteryDialogTabsContent({
                     previousMinMaxReactiveLimits={batteryToModify?.minMaxReactiveLimits}
                     updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
                 />
-                <GridSection title="Setpoints" />
-                <Grid container spacing={2}>
-                    <GridItem size={4}>
-                        <FloatInput
-                            name={FieldConstants.ACTIVE_POWER_SET_POINT}
-                            label={'ActivePowerText'}
-                            adornment={ActivePowerAdornment}
-                            previousValue={batteryToModify?.targetP}
-                            clearable={true}
-                        />
-                    </GridItem>
-                    <GridItem size={4}>
-                        <FloatInput
-                            name={FieldConstants.REACTIVE_POWER_SET_POINT}
-                            label={'ReactivePowerText'}
-                            adornment={ReactivePowerAdornment}
-                            previousValue={batteryToModify?.targetQ}
-                            clearable={true}
-                        />
-                    </GridItem>
-                </Grid>
-                <Grid container spacing={2} paddingTop={2}>
-                    <ActivePowerControlForm
-                        isEquipmentModification={true}
-                        previousValues={batteryToModify?.activePowerControl}
-                    />
-                </Grid>
             </Box>
 
             <Box hidden={tabIndex !== BatteryDialogTab.SPECIFIC_TAB}>
