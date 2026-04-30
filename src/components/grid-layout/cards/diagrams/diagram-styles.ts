@@ -123,15 +123,19 @@ export const styles = {
         },
     },
     divDiagramLoadflowInvalid: {
-        '& .sld-active-power, & .sld-reactive-power, & .sld-current-value, & .sld-permanent-limit-percentage, & .sld-voltage, & .sld-angle, & .sld-consumption-sum, & .sld-production-sum, & .sld-balance , & .nad-reactive, & text.nad-permanent-limit-percentage, & path.nad-permanent-limit-percentage, & .nad-active':
+        '& .sld-active-power, & .sld-reactive-power, & .sld-current-value, & .sld-permanent-limit-percentage, & .sld-voltage, & .sld-angle, & .sld-consumption-sum, & .sld-production-sum, & .sld-balance':
             {
                 opacity: INVALID_COMPUTATION_OPACITY,
+            },
+        '& .nad-reactive, & text.nad-permanent-limit-percentage, & path.nad-permanent-limit-percentage, & .nad-active':
+            {
+                display: 'none !important',
             },
         '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
             animation: 'none !important',
         },
         '& .nad-bus-descr': {
-            color: '#787F81',
+            display: 'none !important',
         },
         '& .nad-branch-edges .nad-overload .nad-edge-path, & .nad-vl-nodes .nad-overvoltage, & .nad-vl-nodes .nad-undervoltage':
             {

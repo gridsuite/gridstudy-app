@@ -114,5 +114,6 @@ export const useCopiedNetworkModifications = () => {
         copyNetworkModifications,
         cutNetworkModifications,
         cleanClipboard,
+        cleanOtherTabsClipboard,
     };
 };

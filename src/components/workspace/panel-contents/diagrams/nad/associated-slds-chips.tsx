@@ -288,6 +288,7 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
             {showRemoveAllConfirmation && (
                 <PopupConfirmationDialog
                     message={intl.formatMessage({ id: 'removeAllAssociatedSldsConfirmation' })}
+                    isTranslationNeeded={false}
                     openConfirmationPopup
                     setOpenConfirmationPopup={() => setShowRemoveAllConfirmation(false)}
                     handlePopupConfirmation={handleConfirmRemoveAll}

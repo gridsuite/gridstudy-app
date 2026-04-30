@@ -22,7 +22,7 @@ export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = Infinity;
 
 // Array of zoom levels used to determine level-of-detail rendering by applying in the network-viewer the
 // corresponding css class 'nad-zoom-{level}' to the NAD's SVG.
-export const NAD_ZOOM_LEVELS = [0, 500, 1000, 2000, 3500, 5000, 6000, 9000, 12000, 15000];
+export const NAD_ZOOM_LEVELS = [0, 500, 1000, 2500, 3500, 5000, 6000, 9000, 12000, 15000];
 
 // be careful when using this method because there are treatments made on purpose
 export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): {
@@ -38,8 +38,8 @@ export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): 
             return { equipmentType: EquipmentType.BATTERY };
         case FEEDER_TYPES.TIE_LINE:
             return { equipmentType: EquipmentType.TIE_LINE };
-        case FEEDER_TYPES.DANGLING_LINE:
-            return { equipmentType: EquipmentType.DANGLING_LINE };
+        case FEEDER_TYPES.BOUNDARY_LINE:
+            return { equipmentType: EquipmentType.BOUNDARY_LINE };
         case FEEDER_TYPES.GENERATOR:
             return { equipmentType: EquipmentType.GENERATOR };
         case FEEDER_TYPES.LCC_CONVERTER_STATION:
@@ -86,7 +86,7 @@ export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentT
         case EquipmentType.LOAD:
         case EquipmentType.BATTERY:
         case EquipmentType.TIE_LINE:
-        case EquipmentType.DANGLING_LINE:
+        case EquipmentType.BOUNDARY_LINE:
         case EquipmentType.GENERATOR:
         case EquipmentType.HVDC_LINE:
         case EquipmentType.SHUNT_COMPENSATOR:

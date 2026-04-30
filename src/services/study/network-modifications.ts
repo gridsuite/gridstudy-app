@@ -23,7 +23,10 @@ import {
     VoltageLevelModificationDto,
     ByFilterDeletionDto,
     EquipmentType,
+    ExcludedNetworkModifications,
     ModificationByAssignmentDto,
+    GeneratorCreationDto,
+    GeneratorModificationDto,
 } from '@gridsuite/commons-ui';
 import {
     getBaseNetworkModificationUrl,
@@ -44,8 +47,6 @@ import {
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
-    GeneratorCreationInfos,
-    GeneratorModificationInfos,
     LCCCreationInfo,
     LccModificationInfos,
     LineCreationInfos,
@@ -65,7 +66,6 @@ import {
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
-import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import {
     ENABLE_OLG_MODIFICATION,
@@ -103,6 +103,9 @@ export function changeNetworkModificationOrder(
  *  - source only   → extract from composite to root level
  *  - target only   → embed root-level modification into a composite
  *
+ * @param studyUuid
+ * @param nodeUuid
+ * @param modificationUuid
  * @param sourceCompositeUuid  UUID of the composite that currently owns the modification; null if at root
  * @param targetCompositeUuid  UUID of the target composite; null to place at root level
  * @param beforeUuid           insert before this UUID in the target collection; null to append at end
@@ -478,13 +481,13 @@ export function modifyLoad(
 }
 
 export function modifyGenerator({
-    generatorModificationInfos,
+    dto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    generatorModificationInfos: GeneratorModificationInfos;
+    dto: GeneratorModificationDto;
     studyUuid: UUID;
     nodeUuid?: UUID;
     modificationUuid: string | null;
@@ -504,18 +507,18 @@ export function modifyGenerator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorModificationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
 export function createGenerator({
-    generatorCreationInfos,
+    dto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    generatorCreationInfos: GeneratorCreationInfos;
+    dto: GeneratorCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
@@ -534,7 +537,7 @@ export function createGenerator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorCreationInfos),
+        body: JSON.stringify(dto),
     });
 }
 

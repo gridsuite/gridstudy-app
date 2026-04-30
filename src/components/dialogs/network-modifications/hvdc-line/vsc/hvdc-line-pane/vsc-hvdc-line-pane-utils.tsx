@@ -12,7 +12,6 @@ import {
     CONVERTERS_MODE,
     NOMINAL_V,
     R,
-    DROOP,
     MAX_P,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
@@ -20,6 +19,7 @@ import {
 } from '../../../../../utils/field-constants';
 import { VscFormInfos } from '../vsc-dialog.type';
 import { VscCreationInfos } from '../../../../../../services/network-modification-types';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 export function getVscHvdcLinePaneSchema() {
     return yup.object().shape(
@@ -36,12 +36,12 @@ export function getVscHvdcLinePaneSchema() {
                 .number()
                 .nullable()
                 .default(null)
-                .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, DROOP], {
+                .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, FieldConstants.DROOP], {
                     is: (angleDroopActivePowerControl: boolean, droop: number) =>
                         angleDroopActivePowerControl || (droop !== null && droop !== undefined),
                     then: (schema) => schema.required(),
                 }),
-            [DROOP]: yup
+            [FieldConstants.DROOP]: yup
                 .number()
                 .nullable()
                 .default(null)
@@ -51,7 +51,7 @@ export function getVscHvdcLinePaneSchema() {
                     then: (schema) => schema.required(),
                 }),
         },
-        [[P0, DROOP]]
+        [[P0, FieldConstants.DROOP]]
     );
 }
 
@@ -68,9 +68,9 @@ export function getVscHvdcLineModificationPaneSchema(id: string) {
                 [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: yup.boolean().nullable(),
                 [ACTIVE_POWER_SETPOINT]: yup.number().nullable().nullable(),
                 [P0]: yup.number().nullable(),
-                [DROOP]: yup.number().nullable(),
+                [FieldConstants.DROOP]: yup.number().nullable(),
             },
-            [[P0, DROOP]]
+            [[P0, FieldConstants.DROOP]]
         ),
     };
 }
@@ -85,7 +85,7 @@ export function getVscHvdcLinePaneEmptyFormData(isModification: boolean) {
         [ACTIVE_POWER_SETPOINT]: null,
         [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: isModification ? null : false,
         [P0]: null,
-        [DROOP]: null,
+        [FieldConstants.DROOP]: null,
     };
 }
 
@@ -100,7 +100,7 @@ export function getVscHvdcLineTabFormData(hvdcLine: VscFormInfos) {
         [ACTIVE_POWER_SETPOINT]: hvdcLine?.activePowerSetpoint,
         [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine?.hvdcAngleDroopActivePowerControl?.isEnabled,
         [P0]: hvdcLine?.hvdcAngleDroopActivePowerControl?.p0,
-        [DROOP]: hvdcLine?.hvdcAngleDroopActivePowerControl?.droop,
+        [FieldConstants.DROOP]: hvdcLine?.hvdcAngleDroopActivePowerControl?.droop,
     };
 }
 
@@ -116,7 +116,7 @@ export function getVscHvdcLineTabFormEditData(id: string, hvdcLine: VscCreationI
             [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
             [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine?.angleDroopActivePowerControl,
             [P0]: hvdcLine?.p0,
-            [DROOP]: hvdcLine?.droop,
+            [FieldConstants.DROOP]: hvdcLine?.droop,
         },
     };
 }
@@ -133,7 +133,7 @@ export function getVscHvdcLineModificationTabFormData(id: string, hvdcLine: any)
             [ACTIVE_POWER_SETPOINT]: hvdcLine?.activePowerSetpoint?.value ?? null,
             [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine?.angleDroopActivePowerControl?.value ?? null,
             [P0]: hvdcLine?.p0?.value ?? null,
-            [DROOP]: hvdcLine?.droop?.value ?? null,
+            [FieldConstants.DROOP]: hvdcLine?.droop?.value ?? null,
         },
     };
 }
