@@ -1057,7 +1057,7 @@
     "importAndReplaceFromGridExplore": "Import and replace from GridExplore",
     "SaveToGridexplore": "Save to GridExplore",
     "SaveToGridexploreError": "An error occurred while saving to GridExplore",
-    "CompositeNestingLimitReached": "You can't save the current selection otherwise you will cross the composite modification nesting limit",
+    "CompositeNestingLimitReached": "Save to GridExplore is not possible : would exeed nesting limit ({limit})",
     "diagramConfigCreationMsg": "Network area diagram created in {directory}",
     "diagramConfigUpdateMsg": "Network area diagram {item} updated",
     "diagramConfigCreationError": "Network area diagram creation error",

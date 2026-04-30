@@ -33,7 +33,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Alert, Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
+import { Alert, Badge, Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -1226,29 +1226,37 @@ const NetworkModificationNodeEditor = () => {
                 </Tooltip>
                 <Tooltip
                     title={
-                        <>
+                        isCompositeNestingLimitReached ? (
+                            <FormattedMessage
+                                id={'CompositeNestingLimitReached'}
+                                values={{ limit: MAX_COMPOSITE_NESTING_DEPTH }}
+                            />
+                        ) : (
                             <FormattedMessage id={'SaveToGridexplore'} />
-                            {isCompositeNestingLimitReached && (
-                                <Box component="span" sx={{ display: 'block' }}>
-                                    <FormattedMessage id={'CompositeNestingLimitReached'} />
-                                </Box>
-                            )}
-                        </>
+                        )
                     }
                 >
                     <span>
-                        <IconButton
-                            onClick={openCreateCompositeModificationDialog}
-                            size={'small'}
-                            disabled={
-                                selectedNetworkModifications?.length === 0 ||
-                                saveInProgress ||
-                                isRootNode ||
-                                isCompositeNestingLimitReached
-                            }
+                        <Badge
+                            overlap={'circular'}
+                            color="error"
+                            invisible={!isCompositeNestingLimitReached}
+                            badgeContent={'×'}
+                            sx={styles.badgeStyle}
                         >
-                            <SaveIcon />
-                        </IconButton>
+                            <IconButton
+                                onClick={openCreateCompositeModificationDialog}
+                                size={'small'}
+                                disabled={
+                                    selectedNetworkModifications?.length === 0 ||
+                                    saveInProgress ||
+                                    isRootNode ||
+                                    isCompositeNestingLimitReached
+                                }
+                            >
+                                <SaveIcon />
+                            </IconButton>
+                        </Badge>
                     </span>
                 </Tooltip>
                 <Tooltip title={<FormattedMessage id={'cut'} />}>
