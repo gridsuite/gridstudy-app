@@ -5,15 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, SetStateAction, useCallback, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { Switch, Tooltip } from '@mui/material';
-import {
-    ComposedModificationMetadata,
-    findModificationInTree,
-    snackWithFallback,
-    updateModificationFieldInTree,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { ComposedModificationMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { setModificationMetadata } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -22,11 +16,10 @@ import { AppState } from '../../../../../../redux/reducer.type';
 
 export interface SwitchCellRendererProps {
     data: ComposedModificationMetadata;
-    setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>;
 }
 
 const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
-    const { data, setModifications } = props;
+    const { data } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -36,39 +29,36 @@ const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
     const { snackError } = useSnackMessage();
 
     const modificationUuid = data?.uuid;
-    const modificationActivated = data?.activated;
+    const [modificationActivated, setModificationActivated] = useState(data?.activated);
 
-    const updateModification = useCallback(
-        (activated: boolean) => {
+    // Re-sync the local checked state when the row data is refreshed (e.g. after a server notification).
+    useEffect(() => {
+        setModificationActivated(data?.activated);
+    }, [data?.activated]);
+
+    const toggleModificationActive = useCallback(
+        (_event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
             if (!modificationUuid) {
                 return;
             }
+
+            setIsLoading(true);
+            setModificationActivated(checked);
+
             setModificationMetadata(studyUuid, currentNode?.id, modificationUuid, {
-                activated: activated,
+                activated: checked,
                 type: data?.type,
             })
-                .catch((error) => {
+                ?.catch((error) => {
+                    setModificationActivated(data?.activated); // rollback
                     snackWithFallback(snackError, error, { headerId: 'networkModificationActivationError' });
                 })
                 .finally(() => {
                     setIsLoading(false);
                 });
         },
-        [modificationUuid, studyUuid, currentNode?.id, data?.type, snackError]
+        [modificationUuid, studyUuid, currentNode?.id, data?.type, data?.activated, snackError]
     );
-
-    const toggleModificationActive = useCallback(() => {
-        setIsLoading(true);
-        setModifications((oldModifications) => {
-            const target = findModificationInTree(modificationUuid, oldModifications);
-            if (!target) {
-                return oldModifications;
-            }
-            const newStatus = !target.activated;
-            updateModification(newStatus);
-            return updateModificationFieldInTree(modificationUuid, { activated: newStatus }, oldModifications);
-        });
-    }, [modificationUuid, updateModification, setModifications]);
 
     return (
         <Tooltip
@@ -81,7 +71,7 @@ const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
                     size="small"
                     disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
                     checked={modificationActivated}
-                    onClick={toggleModificationActive}
+                    onChange={toggleModificationActive}
                 />
             </span>
         </Tooltip>
