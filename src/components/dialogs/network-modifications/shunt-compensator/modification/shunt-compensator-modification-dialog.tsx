@@ -7,25 +7,28 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentType,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    MODIFICATION_TYPES,
-    modificationPropertiesSchema,
-    snackWithFallback,
-    toModificationProperties,
-    useSnackMessage,
-    DeepNullable,
-    sanitizeString,
     FieldConstants,
-    toModificationOperation,
-    getConnectivityWithPositionEmptyFormData,
+    getCharacteristicsEmptyFormData,
+    getCharacteristicsFormData,
+    getCharacteristicsFormValidationSchema,
+    getConcatenatedProperties,
     getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionSchema,
     getInjectionActiveReactivePowerEditData,
     getInjectionActiveReactivePowerEmptyFormData,
     getInjectionActiveReactivePowerValidationSchemaProperties,
+    getPropertiesFromModification,
+    MODIFICATION_TYPES,
+    modificationPropertiesSchema,
+    sanitizeString,
+    snackWithFallback,
+    toModificationOperation,
+    toModificationProperties,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -65,11 +68,6 @@ import { ShuntCompensatorModificationInfos } from '../../../../../services/netwo
 import { ShuntCompensatorModificationDialogSchemaForm } from '../shunt-compensator-dialog.type';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
-import {
-    getCharacteristicsEmptyFormData,
-    getCharacteristicsFormData,
-    getCharacteristicsFormValidationSchema,
-} from '../characteristics-pane/characteristics-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

@@ -27,6 +27,7 @@ import {
     ModificationByAssignmentDto,
     GeneratorCreationDto,
     GeneratorModificationDto,
+    ShuntCompensatorCreationDto,
 } from '@gridsuite/commons-ui';
 import {
     getBaseNetworkModificationUrl,
@@ -54,7 +55,6 @@ import {
     LinesAttachToSplitLinesInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    ShuntCompensatorCreationInfos,
     ShuntCompensatorModificationInfos,
     StaticVarCompensatorCreationInfo,
     TopologyVoltageLevelModificationInfos,
@@ -548,7 +548,7 @@ export function createShuntCompensator({
     modificationUuid,
     isUpdate,
 }: {
-    shuntCompensatorCreationInfos: ShuntCompensatorCreationInfos;
+    shuntCompensatorCreationInfos: ShuntCompensatorCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string;
