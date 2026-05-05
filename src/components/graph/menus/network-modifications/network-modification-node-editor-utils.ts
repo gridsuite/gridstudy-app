@@ -19,8 +19,9 @@ export const styles = {
         '& .MuiBadge-badge': {
             minWidth: theme.spacing(1.6),
             height: theme.spacing(1.6),
-            fontSize: '0.7rem',
+            fontSize: theme.typography.caption.fontSize,
             padding: theme.spacing(0),
+            transform: 'translate(15%, -15%)',
         },
     }),
     listItem: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
