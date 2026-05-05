@@ -84,6 +84,7 @@ import { copyOrMoveModifications } from '../../../../services/study';
 import {
     fetchExcludedNetworkModifications,
     fetchNetworkModifications,
+    setModificationMetadata,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
@@ -802,6 +803,27 @@ const NetworkModificationNodeEditor = () => {
         modificationsToExclude,
     ]);
 
+    const updateModification = useCallback(
+        async (modif: ComposedModificationMetadata, newName: string) => {
+            return setModificationMetadata(studyUuid, currentNode?.id, modif.uuid, {
+                name: newName,
+                type: modif?.type,
+            }).finally(() => {});
+        },
+        [studyUuid, currentNode?.id]
+    );
+    const handleCellEdit = useCallback(
+        async (modification: ComposedModificationMetadata, newName?: string) => {
+            console.log('rename →', modification, 'newName:', newName);
+
+            if (!newName || newName.trim() === '') {
+                return;
+            }
+
+            await updateModification(modification as ComposedModificationMetadata, newName.trim());
+        },
+        [updateModification]
+    );
     const handleEvent = useCallback(
         (event: MessageEvent) => {
             const eventData = parseEventData<CommonStudyEventData>(event);
@@ -1087,7 +1109,13 @@ const NetworkModificationNodeEditor = () => {
             nameHeaderProps: NameHeaderProps,
             setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
         ): ColumnDef<ComposedModificationMetadata>[] => [
-            ...createBaseColumns(isRowDragDisabled, modificationsCount, nameHeaderProps, setModifications),
+            ...createBaseColumns(
+                isRowDragDisabled,
+                modificationsCount,
+                nameHeaderProps,
+                setModifications,
+                handleCellEdit
+            ),
             ...(isMonoRootStudy
                 ? []
                 : createRootNetworksColumns(
@@ -1098,7 +1126,7 @@ const NetworkModificationNodeEditor = () => {
                       setModificationsToExclude
                   )),
         ],
-        [isMonoRootStudy, rootNetworks, currentRootNetworkUuid, modificationsToExclude]
+        [handleCellEdit, isMonoRootStudy, rootNetworks, currentRootNetworkUuid, modificationsToExclude]
     );
 
     const renderNetworkModificationsTable = () => {
