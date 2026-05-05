@@ -2001,15 +2001,14 @@ export function mergeModificationsIntoComposite(
     nodeUuid: UUID | undefined,
     modificationUuids: UUID[]
 ) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('uuids', String(modificationUuids));
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modification?${urlSearchParams}`;
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modification`;
     return backendFetchJson(url, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
+        body: JSON.stringify(modificationUuids),
     });
 }
 
