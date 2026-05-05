@@ -30,10 +30,10 @@ import RootNetworkChipCell from './root-network-chip-cell';
  * are routed via react-table's `meta` (table-wide via `table.options.meta`, per-column via `column.columnDef.meta`).
  */
 
-type Ctx = CellContext<ComposedModificationMetadata, unknown>;
+type CCtx = CellContext<ComposedModificationMetadata, unknown>;
 type HCtx = HeaderContext<ComposedModificationMetadata, unknown>;
 
-export function DragHandleRenderer({ table }: Ctx) {
+export function DragHandleRenderer({ table }: CCtx) {
     return <DragHandleCell isRowDragDisabled={table.options.meta?.isRowDragDisabled ?? false} />;
 }
 
@@ -41,7 +41,7 @@ export function SelectHeaderRenderer({ table }: HCtx) {
     return <SelectHeaderCell table={table} />;
 }
 
-export function SelectCellRenderer({ row, table }: Ctx) {
+export function SelectCellRenderer({ row, table }: CCtx) {
     return <SelectCell row={row} table={table} />;
 }
 
@@ -56,15 +56,15 @@ export function NameHeaderRenderer({ table }: HCtx) {
     );
 }
 
-export function NameCellRenderer({ row }: Ctx) {
+export function NameCellRenderer({ row }: CCtx) {
     return <NameCell row={row} />;
 }
 
-export function DescriptionCellRenderer({ row }: Ctx) {
+export function DescriptionCellRenderer({ row }: CCtx) {
     return <DescriptionCell data={row.original} />;
 }
 
-export function SwitchCellRenderer({ row }: Ctx) {
+export function SwitchCellRenderer({ row }: CCtx) {
     return <SwitchCell data={row.original} />;
 }
 
@@ -87,7 +87,7 @@ export function RootNetworkHeaderRenderer({ column, table }: HCtx) {
     );
 }
 
-export function RootNetworkCellRenderer({ row, column }: Ctx) {
+export function RootNetworkCellRenderer({ row, column }: CCtx) {
     const meta = column.columnDef.meta;
     if (!meta?.rootNetwork || !meta.modificationsToExclude || !meta.setModificationsToExclude) {
         return null;

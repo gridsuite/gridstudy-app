@@ -49,7 +49,7 @@ const SwitchCell: FunctionComponent<SwitchCellRendererProps> = (props) => {
                 activated: checked,
                 type: data?.type,
             })
-                ?.catch((error) => {
+                .catch((error) => {
                     setModificationActivated(data?.activated); // rollback
                     snackWithFallback(snackError, error, { headerId: 'networkModificationActivationError' });
                 })
