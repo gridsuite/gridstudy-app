@@ -38,7 +38,7 @@ export const EQUIPMENTS_WITH_TWO_NOMINAL_VOLTAGES = [
     EquipmentType.LINE,
     EquipmentType.TWO_WINDINGS_TRANSFORMER,
     EquipmentType.HVDC_LINE,
-    EquipmentType.DANGLING_LINE,
+    EquipmentType.BOUNDARY_LINE,
     EquipmentType.TIE_LINE,
 ];
 

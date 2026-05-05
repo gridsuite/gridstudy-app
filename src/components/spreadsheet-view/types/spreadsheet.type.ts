@@ -27,7 +27,7 @@ export enum SpreadsheetEquipmentType {
     LCC_CONVERTER_STATION = 'LCC_CONVERTER_STATION',
     VSC_CONVERTER_STATION = 'VSC_CONVERTER_STATION',
     TIE_LINE = 'TIE_LINE',
-    DANGLING_LINE = 'DANGLING_LINE',
+    BOUNDARY_LINE = 'BOUNDARY_LINE',
     BUS = 'BUS',
     BUSBAR_SECTION = 'BUSBAR_SECTION',
 }
@@ -86,6 +86,7 @@ export type ColumnStateDto = {
 export type SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: Record<UUID, Record<string, Identifiable>>;
     isFetching: boolean;
+    isInitialized: boolean;
 };
 
 export type SpreadsheetConfig = {

@@ -12,9 +12,11 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LIMITS,
+    LINE_SEGMENTS,
     STATE_ESTIMATION,
 } from '../../../../utils/field-constants';
 import { FieldConstants, Property } from '@gridsuite/commons-ui';
+import { LineSegmentInfos } from '../../../../../services/network-modification-types';
 
 export interface LineCharacteristics {
     r: number | null;
@@ -33,4 +35,5 @@ export interface LineModificationFormSchema {
     [LIMITS]: OperationalLimitsGroupsFormSchema;
     [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
     [STATE_ESTIMATION]: any;
+    [LINE_SEGMENTS]?: LineSegmentInfos[];
 }

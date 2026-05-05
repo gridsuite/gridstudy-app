@@ -322,8 +322,8 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): Spread
             return SpreadsheetEquipmentType.LOAD;
         case EquipmentUpdateType.BATTERIES:
             return SpreadsheetEquipmentType.BATTERY;
-        case EquipmentUpdateType.DANGLING_LINES:
-            return SpreadsheetEquipmentType.DANGLING_LINE;
+        case EquipmentUpdateType.BOUNDARY_LINES:
+            return SpreadsheetEquipmentType.BOUNDARY_LINE;
         case EquipmentUpdateType.HVDC_LINES:
             return SpreadsheetEquipmentType.HVDC_LINE;
         case EquipmentUpdateType.LCC_CONVERTER_STATIONS:
@@ -405,6 +405,7 @@ const initialLogsPaginationState: LogsPaginationState = {
 const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: {},
     isFetching: false,
+    isInitialized: false,
 };
 
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
@@ -414,7 +415,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
         [SpreadsheetEquipmentType.BRANCH]: emptySpreadsheetEquipmentsByNodes,
         [SpreadsheetEquipmentType.BUS]: emptySpreadsheetEquipmentsByNodes,
         [SpreadsheetEquipmentType.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
-        [SpreadsheetEquipmentType.DANGLING_LINE]: emptySpreadsheetEquipmentsByNodes,
+        [SpreadsheetEquipmentType.BOUNDARY_LINE]: emptySpreadsheetEquipmentsByNodes,
         [SpreadsheetEquipmentType.GENERATOR]: emptySpreadsheetEquipmentsByNodes,
         [SpreadsheetEquipmentType.HVDC_LINE]: emptySpreadsheetEquipmentsByNodes,
         [SpreadsheetEquipmentType.LCC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
@@ -1142,6 +1143,7 @@ export const reducer = createReducer(initialState, (builder) => {
         ).forEach(([nodeId, equipments]) => {
             state.spreadsheetNetwork.equipments[action.equipmentType].equipmentsByNodeId[nodeId] = equipments;
         });
+        state.spreadsheetNetwork.equipments[action.equipmentType].isInitialized = true;
     });
 
     builder.addCase(REMOVE_NODE_DATA, (state, action: RemoveNodeDataAction) => {
@@ -1152,17 +1154,12 @@ export const reducer = createReducer(initialState, (builder) => {
             Object.entries(equipmentsByNodeId).filter(([nodeId]) => !action.nodesIdToRemove.includes(nodeId))
         );
 
-        state.spreadsheetNetwork.equipments[action.spreadsheetEquipmentType] = {
-            equipmentsByNodeId: updatedEquipmentsByNodeId,
-            isFetching: false,
-        };
+        state.spreadsheetNetwork.equipments[action.spreadsheetEquipmentType].equipmentsByNodeId =
+            updatedEquipmentsByNodeId;
     });
 
     builder.addCase(REMOVE_EQUIPMENT_DATA, (state, action: RemoveEquipmentDataAction) => {
-        state.spreadsheetNetwork.equipments[action.equipmentType] = {
-            equipmentsByNodeId: {},
-            isFetching: false,
-        };
+        state.spreadsheetNetwork.equipments[action.equipmentType] = emptySpreadsheetEquipmentsByNodes;
     });
 
     builder.addCase(SET_SPREADSHEET_FETCHING, (state, action: SetSpreadsheetFetchingAction) => {

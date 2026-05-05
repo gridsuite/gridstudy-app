@@ -5,65 +5,43 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { EQUIPMENT_ID } from '../../../utils/field-constants';
 import {
-    ACTIVE_POWER_SET_POINT,
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
-    DROOP,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    FREQUENCY_REGULATION,
-    ID,
-    MAXIMUM_ACTIVE_POWER,
-    MAXIMUM_REACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-    MINIMUM_REACTIVE_POWER,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-    REACTIVE_LIMITS,
-    REACTIVE_POWER_SET_POINT,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
-    VOLTAGE_LEVEL,
-} from '../../../utils/field-constants';
-import {
+    ActivePowerControlInfos,
+    ConnectablePositionFormInfos,
+    FieldConstants,
     MinMaxReactiveLimitsFormInfos,
+    Property,
     ReactiveCapabilityCurvePoints,
-} from '../../reactive-limits/reactive-limits.type';
-import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
-import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
-import { ConnectablePositionFormInfos, FieldConstants, Property } from '@gridsuite/commons-ui';
+    ShortCircuitInfos,
+} from '@gridsuite/commons-ui';
 
 export type BatteryDialogSchemaBaseForm = {
-    [EQUIPMENT_NAME]?: string;
-    [MAXIMUM_ACTIVE_POWER]: number | null;
-    [MINIMUM_ACTIVE_POWER]: number | null;
-    [REACTIVE_POWER_SET_POINT]?: number | null;
-    [ACTIVE_POWER_SET_POINT]?: number | null;
-    [CONNECTIVITY]: {
-        [VOLTAGE_LEVEL]: { [ID]?: string };
-        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string };
-        [CONNECTION_DIRECTION]?: string;
-        [CONNECTION_NAME]?: string;
-        [CONNECTION_POSITION]?: number;
-        [CONNECTED]?: boolean;
+    [FieldConstants.EQUIPMENT_NAME]?: string;
+    [FieldConstants.MAXIMUM_ACTIVE_POWER]: number | null;
+    [FieldConstants.MINIMUM_ACTIVE_POWER]: number | null;
+    [FieldConstants.REACTIVE_POWER_SET_POINT]?: number | null;
+    [FieldConstants.ACTIVE_POWER_SET_POINT]?: number | null;
+    [FieldConstants.CONNECTIVITY]: {
+        [FieldConstants.VOLTAGE_LEVEL]: { [FieldConstants.ID]?: string };
+        [FieldConstants.BUS_OR_BUSBAR_SECTION]: { [FieldConstants.ID]?: string };
+        [FieldConstants.CONNECTION_DIRECTION]?: string;
+        [FieldConstants.CONNECTION_NAME]?: string;
+        [FieldConstants.CONNECTION_POSITION]?: number;
+        [FieldConstants.CONNECTED]?: boolean;
     };
-    [FREQUENCY_REGULATION]?: boolean | null;
-    [DROOP]?: number | null;
-    [REACTIVE_LIMITS]: {
-        [MINIMUM_REACTIVE_POWER]?: number | null;
-        [MAXIMUM_REACTIVE_POWER]?: number | null;
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
-        [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
+    [FieldConstants.FREQUENCY_REGULATION]?: boolean | null;
+    [FieldConstants.DROOP]?: number | null;
+    [FieldConstants.REACTIVE_LIMITS]: {
+        [FieldConstants.MINIMUM_REACTIVE_POWER]?: number | null;
+        [FieldConstants.MAXIMUM_REACTIVE_POWER]?: number | null;
+        [FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
+        [FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
     };
     // Properties
     [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
-    [TRANSFORMER_REACTANCE]?: number | null;
-    [TRANSIENT_REACTANCE]?: number | null;
+    [FieldConstants.TRANSFORMER_REACTANCE]?: number | null;
+    [FieldConstants.TRANSIENT_REACTANCE]?: number | null;
 };
 
 export type BatteryCreationDialogSchemaForm = { [EQUIPMENT_ID]: string } & BatteryDialogSchemaBaseForm;
@@ -80,7 +58,7 @@ export interface BatteryFormInfos {
     connectablePosition: ConnectablePositionFormInfos;
     minMaxReactiveLimits: MinMaxReactiveLimitsFormInfos;
     activePowerControl: ActivePowerControlInfos;
-    batteryShortCircuit: ShortCircuitFormInfos;
+    batteryShortCircuit: ShortCircuitInfos;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     voltageLevelId: string;
     busOrBusbarSectionId: string;

@@ -92,7 +92,7 @@ import { createLine } from '../../../../../services/study/network-modifications'
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 import { LimitsPane } from '../../../limits/limits-pane';
-import { LineCreationInfos, LineSegmentInfos } from '../../../../../services/network-modification-types';
+import { LineCreationInfos } from '../../../../../services/network-modification-types';
 import { LineModificationFormSchema } from '../modification/line-modification-type';
 import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
 import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
@@ -102,7 +102,7 @@ import {
     TemporaryLimitFormSchema,
 } from '../../../limits/operational-limits-groups-types';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { SegmentFormData } from '../../../line-types-catalog/segment-utils';
+import { convertToLineSegmentInfos, SegmentFormData } from '../../../line-types-catalog/segment-utils';
 
 const emptyFormData: any = {
     ...getHeaderEmptyFormData(),
@@ -318,17 +318,7 @@ const LineCreationDialog = ({
             });
         });
         setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, finalLimits);
-        const segments: LineSegmentInfos[] =
-            lineSegments?.map((segment) => {
-                return {
-                    segmentTypeId: segment?.segmentTypeId ?? '',
-                    segmentDistanceValue: segment?.segmentDistanceValue ?? 0,
-                    area: segment?.area ?? '',
-                    temperature: segment?.temperature ?? '',
-                    shapeFactor: segment?.shapeFactor ?? null,
-                };
-            }) ?? [];
-        setValue(LINE_SEGMENTS, segments);
+        setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
     };
 
     const onSubmit = useCallback(

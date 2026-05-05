@@ -11,6 +11,7 @@ import {
     convertOutputValue,
     createConnectivityData,
     CustomFormProvider,
+    DeepNullable,
     emptyProperties,
     EquipmentType,
     FieldConstants,
@@ -48,6 +49,7 @@ import {
     G1,
     G2,
     LIMITS,
+    LINE_SEGMENTS,
     MEASUREMENT_P1,
     MEASUREMENT_P2,
     MEASUREMENT_Q1,
@@ -103,6 +105,7 @@ import { LineModificationInfos } from '../../../../../services/network-modificat
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
 import { ComputedLineCharacteristics } from '../../../line-types-catalog/line-catalog.type';
+import { convertToLineSegmentInfos, SegmentFormData } from '../../../line-types-catalog/segment-utils';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -181,7 +184,9 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, getValues } = formMethods;
+    const { reset, setValue, getValues, watch } = formMethods;
+
+    const editSegmentsValue = watch(LINE_SEGMENTS);
 
     const fromEditDataToFormValues = useCallback(
         (lineModification: LineModificationInfos) => {
@@ -216,6 +221,7 @@ const LineModificationDialog = ({
                     lineModification[ENABLE_OLG_MODIFICATION]
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
+                [LINE_SEGMENTS]: lineModification.lineSegments,
             });
         },
         [reset]
@@ -234,6 +240,7 @@ const LineModificationDialog = ({
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
             const limits: OperationalLimitsGroupsFormSchema = line[LIMITS];
+            const segments = line[LINE_SEGMENTS];
             modifyLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -283,6 +290,7 @@ const LineModificationDialog = ({
                 p2MeasurementValidity: stateEstimationData[MEASUREMENT_P2][VALIDITY],
                 q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][FieldConstants.VALUE],
                 q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
+                lineSegments: segments,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'LineModificationError' });
             });
@@ -392,7 +400,10 @@ const LineModificationDialog = ({
         setIsOpenLineTypesCatalogDialog(false);
     };
 
-    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics) => {
+    const handleLineSegmentsBuildSubmit = (
+        data: ComputedLineCharacteristics,
+        lineSegments: DeepNullable<SegmentFormData | null>[]
+    ) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
@@ -405,6 +416,7 @@ const LineModificationDialog = ({
         setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
+        setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
     };
 
     const headerAndTabs = (
@@ -466,6 +478,7 @@ const LineModificationDialog = ({
                             open={isOpenLineTypesCatalogDialog}
                             onClose={handleCloseLineTypesCatalogDialog}
                             onSave={handleLineSegmentsBuildSubmit}
+                            editData={editSegmentsValue}
                         />
                     </>
                 )}
