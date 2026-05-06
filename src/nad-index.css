@@ -289,10 +289,10 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 }
 
 :is(.nad-zoom-6000, .nad-zoom-5000, .nad-zoom-3500, .nad-zoom-2500, .nad-zoom-1000, .nad-zoom-500, .nad-zoom-0) :is(.nad-active, .nad-permanent-limit-percentage) {
-   display: inline;
+    display: inline;
 }
 :is(.nad-zoom-1000, .nad-zoom-500, .nad-zoom-0) :is(.nad-reactive) {
-   display: inline;
+    display: inline;
 }
 
 .nad-zoom-0 .nad-edge-infos text { font-size: 20px; stroke-width: 5px; }
@@ -326,7 +326,7 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 /* Make arrows scale with zoom */
 :is(.nad-zoom-2500) .nad-edge-infos path {
     stroke-width: 2px;
-} 
+}
 :is(.nad-zoom-3500) .nad-edge-infos path {
     stroke-width: 8px;
 }
