@@ -13,7 +13,6 @@ import {
     getPccMinStudyParameters,
     NotificationsUrlKeys,
     PccMinParametersEnriched,
-    PccMinParameters,
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
