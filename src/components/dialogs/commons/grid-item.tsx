@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { PropsWithChildren, ReactNode } from 'react';
-import { Grid, GridSize, Tooltip } from '@mui/material';
+import { Grid, GridProps, Tooltip } from '@mui/material';
 
 export interface GridItemProps extends PropsWithChildren {
-    size?: GridSize;
+    size?: GridProps['xs'];
     alignItem?: string;
     tooltip?: ReactNode;
 }

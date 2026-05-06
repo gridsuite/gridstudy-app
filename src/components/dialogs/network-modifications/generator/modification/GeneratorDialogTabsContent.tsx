@@ -18,6 +18,7 @@ import {
     FloatInput,
     GeneratorFormInfos,
     MVAPowerAdornment,
+    PowerMeasurementsForm,
     PropertiesForm,
     ReactiveLimitsForm,
     SetPointsForm,
@@ -243,6 +244,11 @@ export function GeneratorDialogTabsContent({
                         <GridItem size={4}>{forcedOutageRateField}</GridItem>
                     </Grid>
                 </Grid>
+                <GridSection title="MeasurementsSection" />
+                <PowerMeasurementsForm
+                    activePowerMeasurement={generatorToModify?.measurementP}
+                    reactivePowerMeasurement={generatorToModify?.measurementQ}
+                />
             </Box>
 
             <Box hidden={tabIndex !== GeneratorDialogTab.ADDITIONAL_INFORMATION_TAB}>

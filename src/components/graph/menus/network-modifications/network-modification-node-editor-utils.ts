@@ -15,6 +15,15 @@ export const styles = {
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
     }),
+    badgeStyle: (theme) => ({
+        '& .MuiBadge-badge': {
+            minWidth: theme.spacing(1.6),
+            height: theme.spacing(1.6),
+            fontSize: theme.typography.caption.fontSize,
+            padding: theme.spacing(0),
+            transform: 'translate(15%, -15%)',
+        },
+    }),
     listItem: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
     checkBoxLabel: { flexGrow: '1' },
     disabledModification: { opacity: 0.4 },
