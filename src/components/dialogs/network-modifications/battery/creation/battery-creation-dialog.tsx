@@ -30,11 +30,7 @@ import {
     batteryCreationFormToDto,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    ACTIVE_POWER_SET_POINT,
-    EQUIPMENT_NAME,
-    REACTIVE_POWER_SET_POINT,
-} from 'components/utils/field-constants';
+import { ACTIVE_POWER_SET_POINT, EQUIPMENT_NAME, REACTIVE_POWER_SET_POINT } from 'components/utils/field-constants';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createBattery } from '../../../../../services/study/network-modifications';
