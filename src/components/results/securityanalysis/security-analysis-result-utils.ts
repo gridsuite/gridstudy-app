@@ -84,13 +84,15 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
         return undefined;
     }
 
-    result?.forEach(({ subjectLimitViolations = [], contingency }: ConstraintsFromContingencyItem) => {
+    result?.forEach(({ subjectLimitViolations = [], contingency }: ConstraintsFromContingencyItem, index: number) => {
         const { contingencyId, status, elements = [] } = contingency || {};
+        const elementId = `${contingencyId ?? ''}#${index}`;
         rows.push({
             contingencyId,
             contingencyEquipmentsIds: elements.map((element) => element.id),
             status: status,
             violationCount: subjectLimitViolations.length,
+            elementId,
         });
         subjectLimitViolations?.forEach((constraint: Constraint) => {
             const { limitViolation = {} as LimitViolation, subjectId } = constraint || {};
@@ -107,7 +109,7 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
                 limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
                 nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
                 side: limitViolation.side,
-                linkedElementId: contingencyId,
+                linkedElementId: elementId,
                 // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                 acceptableDuration:
                     limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
@@ -129,9 +131,10 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
         return undefined;
     }
 
-    result?.forEach(({ contingencies = [], subjectId }) => {
+    result?.forEach(({ contingencies = [], subjectId }, index) => {
         if (!rows.find((row) => row.subjectId === subjectId)) {
-            rows.push({ subjectId });
+            const elementId = `${subjectId ?? ''}#${index}`;
+            rows.push({ subjectId, elementId });
 
             contingencies.forEach(({ contingency = {}, limitViolation = {} }) => {
                 rows.push({
@@ -155,7 +158,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     loading: limitViolation.loading,
                     patlLoading: limitViolation.patlLoading,
                     locationId: limitViolation.locationId,
-                    linkedElementId: subjectId,
+                    linkedElementId: elementId,
                 });
             });
         }
@@ -560,12 +563,9 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     ];
 };
 
-export const handlePostSortRows = (params: PostSortRowsParams) => {
-    const isFromContingency = !params.nodes.find((node) => Object.keys(node.data).length === 1);
-
+export const handlePostSortRows = (isFromContingency: boolean) => (params: PostSortRowsParams) => {
     const agGridRows = params.nodes;
     const idField = isFromContingency ? 'contingencyId' : 'subjectId';
-    const linkedElementId = 'linkedElementId';
     const isContingency = !isFromContingency;
 
     // Because Map remembers the original insertion order of the keys.
@@ -575,27 +575,21 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
         mappedRows.set('contingencies', []);
     }
 
-    // first index by main resource idField
+    // index parents by their unique elementId
     agGridRows.forEach((row) => {
         if (row.data[idField] != null) {
-            mappedRows.set(row.data[idField], [row]);
+            mappedRows.set(row.data.elementId, [row]);
         }
     });
 
-    // then index by linked resource linkedElementId
-    let currentRows;
+    // attach children to their parent group via linkedElementId
     agGridRows.forEach((row) => {
-        if (isContingency && !row.data[linkedElementId] && !row.data[idField]) {
-            currentRows = mappedRows.get('contingencies');
-            if (currentRows) {
-                currentRows.push(row);
-                mappedRows.set('contingencies', currentRows);
-            }
+        if (isContingency && !row.data.linkedElementId && !row.data[idField]) {
+            mappedRows.get('contingencies').push(row); // orphans
         } else if (row.data[idField] == null) {
-            currentRows = mappedRows.get(row.data[linkedElementId]);
-            if (currentRows) {
-                currentRows.push(row);
-                mappedRows.set(row.data[linkedElementId], currentRows);
+            const group = mappedRows.get(row.data.linkedElementId);
+            if (group) {
+                group.push(row);
             }
         }
     });

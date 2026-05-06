@@ -66,6 +66,7 @@ export interface SecurityAnalysisNmkTableRow {
     limitName?: string | null;
     nextLimitName?: string | null;
     limitType?: string;
+    elementId?: string;
     linkedElementId?: string;
     loading?: number;
     patlLoading?: number;
