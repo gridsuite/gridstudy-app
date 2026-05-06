@@ -761,7 +761,11 @@ const NetworkModificationNodeEditor = () => {
         setIsFetchingModifications(true);
         fetchExcludedNetworkModifications(studyUuid, currentNode.id)
             .then((res: ExcludedNetworkModifications[]) => {
-                setModificationsToExclude(res);
+                // Check if during asynchronous request currentNode has already changed
+                // otherwise accept fetch results
+                if (currentNode.id === currentNodeIdRef.current) {
+                    setModificationsToExclude(res);
+                }
             })
             .catch((error: Error) => {
                 snackWithFallback(snackError, error);
