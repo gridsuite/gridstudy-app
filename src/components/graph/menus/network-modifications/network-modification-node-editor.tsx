@@ -6,15 +6,20 @@
  */
 
 import {
+    ComposedModificationMetadata,
     ElementSaveDialog,
     ElementType,
     EquipmentType,
+    ExcludedNetworkModifications,
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
+    MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
     ModificationType,
+    NameHeaderProps,
     NetworkModificationMetadata,
+    NetworkModificationsTable,
     NotificationsUrlKeys,
     removeNullFields,
     snackWithFallback,
@@ -28,7 +33,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Alert, Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
+import { Alert, Badge, Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -63,7 +68,7 @@ import VoltageLevelModificationDialog from 'components/dialogs/network-modificat
 import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/creation/vsc-creation-dialog';
 import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications/network-modifications-menu';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
@@ -83,7 +88,6 @@ import {
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
-    ExcludedNetworkModifications,
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
     MenuSection,
@@ -97,7 +101,6 @@ import ByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
-import NetworkModificationsTable from './network-modification-table/network-modifications-table';
 import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
@@ -123,6 +126,8 @@ import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modificati
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
 import { FetchStatus } from '../../../../services/utils.type';
+import { createBaseColumns, createRootNetworksColumns } from './network-modification-table/createColumns';
+import { ColumnDef } from '@tanstack/react-table';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -155,11 +160,14 @@ const NetworkModificationNodeEditor = () => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isRootNode = currentNode?.type === NodeType.ROOT;
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
 
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
-    const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationMetadata[]>([]);
+    const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
+        []
+    );
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -174,9 +182,16 @@ const NetworkModificationNodeEditor = () => {
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
+    const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
-    const { networkModificationsToCopy, copyInfos, copyNetworkModifications, cutNetworkModifications, cleanClipboard } =
-        useCopiedNetworkModifications();
+    const {
+        networkModificationsToCopy,
+        copyInfos,
+        copyNetworkModifications,
+        cutNetworkModifications,
+        cleanClipboard,
+        cleanOtherTabsClipboard,
+    } = useCopiedNetworkModifications();
 
     const copyInfosRef = useRef<NetworkModificationCopyInfos | null>(null);
     copyInfosRef.current = copyInfos;
@@ -184,9 +199,9 @@ const NetworkModificationNodeEditor = () => {
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', () => {
-            cleanClipboard(true, 'copiedModificationsInvalidationMsgFromStudyClosure');
+            cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
         });
-    }, [cleanClipboard]);
+    }, [cleanOtherTabsClipboard]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -960,17 +975,14 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
-    const selectedModificationsIds = useCallback(() => {
-        const allModificationsIds = modifications.map((m) => m.uuid);
-        // sort the selected modifications in the same order as they appear in the whole modifications list
-        return selectedNetworkModifications
-            .sort((a, b) => allModificationsIds.indexOf(a.uuid) - allModificationsIds.indexOf(b.uuid))
-            .map((m) => m.uuid);
-    }, [modifications, selectedNetworkModifications]);
+    const selectedModificationsIds = useMemo(
+        () => selectedNetworkModifications.map((m) => m.uuid),
+        [selectedNetworkModifications]
+    );
 
     const doCutModifications = useCallback(() => {
         cutNetworkModifications({
-            networkModificationUuids: selectedModificationsIds(),
+            networkModificationUuids: selectedModificationsIds,
             copyInfos: {
                 copyType: NetworkModificationCopyType.MOVE,
                 originStudyUuid: studyUuid ?? undefined,
@@ -981,7 +993,7 @@ const NetworkModificationNodeEditor = () => {
 
     const doCopyModifications = useCallback(() => {
         copyNetworkModifications({
-            networkModificationUuids: selectedModificationsIds(),
+            networkModificationUuids: selectedModificationsIds,
             copyInfos: {
                 copyType: NetworkModificationCopyType.COPY,
                 originStudyUuid: studyUuid ?? undefined,
@@ -1043,7 +1055,7 @@ const NetworkModificationNodeEditor = () => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
-    const handleRowSelected = useCallback((selectedRows: NetworkModificationMetadata[]) => {
+    const handleRowSelected = useCallback((selectedRows: ComposedModificationMetadata[]) => {
         setSelectedNetworkModifications(selectedRows);
     }, []);
 
@@ -1071,6 +1083,27 @@ const NetworkModificationNodeEditor = () => {
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
 
+    const createAllColumns = useCallback(
+        (
+            isRowDragDisabled: boolean,
+            modificationsCount: number,
+            nameHeaderProps: NameHeaderProps,
+            setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
+        ): ColumnDef<ComposedModificationMetadata>[] => [
+            ...createBaseColumns(isRowDragDisabled, modificationsCount, nameHeaderProps, setModifications),
+            ...(isMonoRootStudy
+                ? []
+                : createRootNetworksColumns(
+                      rootNetworks,
+                      currentRootNetworkUuid!,
+                      modificationsCount,
+                      modificationsToExclude,
+                      setModificationsToExclude
+                  )),
+        ],
+        [isMonoRootStudy, rootNetworks, currentRootNetworkUuid, modificationsToExclude]
+    );
+
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
             return (
@@ -1086,7 +1119,6 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationsTable
                 handleCellClick={debounce(handleCellClick, 300)}
                 modifications={modifications}
-                setModifications={setModifications}
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 onRowSelected={handleRowSelected}
@@ -1095,8 +1127,10 @@ const NetworkModificationNodeEditor = () => {
                 notificationMessageId={notificationMessageId}
                 isFetchingModifications={isFetchingModifications}
                 pendingState={pendingState}
-                modificationsToExclude={modificationsToExclude}
-                setModificationsToExclude={setModificationsToExclude}
+                createAllColumns={createAllColumns}
+                highlightedModificationUuid={highlightedModificationUuid}
+                studyUuid={studyUuid}
+                currentNodeId={currentNode?.id}
             />
         );
     };
@@ -1158,6 +1192,11 @@ const NetworkModificationNodeEditor = () => {
         return modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress;
     }, [modificationsToRestore.length, isAnyNodeBuilding, deleteInProgress]);
 
+    const isCompositeNestingLimitReached = useMemo(
+        () => selectedNetworkModifications.some((row) => (row.maxDepth ?? 0) >= MAX_COMPOSITE_NESTING_DEPTH),
+        [selectedNetworkModifications]
+    );
+
     return (
         <>
             <Toolbar sx={styles.toolbar}>
@@ -1185,17 +1224,39 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
+                <Tooltip
+                    title={
+                        isCompositeNestingLimitReached ? (
+                            <FormattedMessage
+                                id={'CompositeNestingLimitReached'}
+                                values={{ limit: MAX_COMPOSITE_NESTING_DEPTH }}
+                            />
+                        ) : (
+                            <FormattedMessage id={'SaveToGridexplore'} />
+                        )
+                    }
+                >
                     <span>
-                        <IconButton
-                            onClick={openCreateCompositeModificationDialog}
-                            size={'small'}
-                            disabled={
-                                selectedNetworkModifications?.length === 0 || saveInProgress === true || isRootNode
-                            }
+                        <Badge
+                            overlap={'circular'}
+                            color="error"
+                            invisible={!isCompositeNestingLimitReached}
+                            badgeContent={'×'}
+                            sx={styles.badgeStyle}
                         >
-                            <SaveIcon />
-                        </IconButton>
+                            <IconButton
+                                onClick={openCreateCompositeModificationDialog}
+                                size={'small'}
+                                disabled={
+                                    selectedNetworkModifications?.length === 0 ||
+                                    saveInProgress ||
+                                    isRootNode ||
+                                    isCompositeNestingLimitReached
+                                }
+                            >
+                                <SaveIcon />
+                            </IconButton>
+                        </Badge>
                     </span>
                 </Tooltip>
                 <Tooltip title={<FormattedMessage id={'cut'} />}>

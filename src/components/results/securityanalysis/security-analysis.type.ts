@@ -42,16 +42,10 @@ interface Element {
     id?: string;
 }
 
-export interface ConnectivityResult {
-    disconnectedLoadActivePower: number;
-    disconnectedGenerationActivePower: number;
-}
-
 export interface ContingencyItem {
     status?: string;
     contingencyId?: string;
     elements?: Element[];
-    connectivityResult?: ConnectivityResult;
 }
 
 export interface Contingency {
@@ -65,8 +59,6 @@ export interface SecurityAnalysisNmkTableRow {
     acceptableDuration?: number | null;
     upcomingAcceptableDuration?: number | null;
     status?: string;
-    disconnectedLoadActivePower?: number;
-    disconnectedGenerationActivePower?: number;
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
     limit?: number;

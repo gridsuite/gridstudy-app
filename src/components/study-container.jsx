@@ -178,9 +178,8 @@ export function StudyContainer() {
                 });
             }
             if (updateTypeHeader === NotificationType.NODE_BUILD_FAILED) {
-                snackError({
+                snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'NodeBuildingError',
-                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === NotificationType.SECURITY_ANALYSIS_FAILED) {

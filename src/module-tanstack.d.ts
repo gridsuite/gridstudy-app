@@ -9,7 +9,7 @@ import { RefObject } from 'react';
 
 declare module '@tanstack/react-table' {
     interface TableMeta<TData extends RowData> {
-        lastClickedIndex: RefObject<number | null>;
+        lastClickedRowId: RefObject<string | null>;
         onRowSelected?: (selectedRows: TData[]) => void;
     }
 }
