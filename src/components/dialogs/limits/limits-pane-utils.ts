@@ -74,6 +74,7 @@ const temporaryLimitsValidationSchema = () => {
             [TEMPORARY_LIMIT_NAME]: yup
                 .string()
                 .nullable()
+                .trim()
                 .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
                     is: (value: number | null, duration: number | null) => value != null || duration != null,
                     then: (schema) => schema.required(),
