@@ -86,13 +86,12 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
 
     result?.forEach(({ subjectLimitViolations = [], contingency }: ConstraintsFromContingencyItem, index: number) => {
         const { contingencyId, status, elements = [] } = contingency || {};
-        const elementId = `${contingencyId ?? ''}#${index}`;
         rows.push({
             contingencyId,
             contingencyEquipmentsIds: elements.map((element) => element.id),
             status: status,
             violationCount: subjectLimitViolations.length,
-            elementId,
+            elementId: index,
         });
         subjectLimitViolations?.forEach((constraint: Constraint) => {
             const { limitViolation = {} as LimitViolation, subjectId } = constraint || {};
@@ -109,7 +108,7 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
                 limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
                 nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
                 side: limitViolation.side,
-                linkedElementId: elementId,
+                linkedElementId: index,
                 // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                 acceptableDuration:
                     limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
@@ -133,8 +132,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
 
     result?.forEach(({ contingencies = [], subjectId }, index) => {
         if (!rows.find((row) => row.subjectId === subjectId)) {
-            const elementId = `${subjectId ?? ''}#${index}`;
-            rows.push({ subjectId, elementId });
+            rows.push({ subjectId, elementId: index });
 
             contingencies.forEach(({ contingency = {}, limitViolation = {} }) => {
                 rows.push({
@@ -158,7 +156,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     loading: limitViolation.loading,
                     patlLoading: limitViolation.patlLoading,
                     locationId: limitViolation.locationId,
-                    linkedElementId: elementId,
+                    linkedElementId: index,
                 });
             });
         }
