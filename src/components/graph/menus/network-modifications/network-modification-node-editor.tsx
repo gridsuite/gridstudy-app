@@ -811,19 +811,18 @@ const NetworkModificationNodeEditor = () => {
             return setModificationMetadata(studyUuid, currentNode?.id, modif.uuid, {
                 name: newName,
                 type: modif?.type,
-            }).finally(() => {});
+            });
         },
         [studyUuid, currentNode?.id]
     );
     const handleCellEdit = useCallback(
         async (modification: ComposedModificationMetadata, newName?: string) => {
-            console.log('rename →', modification, 'newName:', newName);
 
             if (!newName || newName.trim() === '') {
                 return;
             }
 
-            await updateModification(modification as ComposedModificationMetadata, newName.trim());
+            await updateModification(modification, newName.trim());
         },
         [updateModification]
     );
