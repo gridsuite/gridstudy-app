@@ -318,11 +318,11 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
                 yup.object().shape({
                     [VOLTAGE_LEVEL]: yup.string().required(),
                     [WEIGHT_V]: yup.number().required().min(0).label(WEIGHT_V),
-                    [WEIGHT_ACT_TRANSIT]: yup.number().required().max(0).label(WEIGHT_ACT_TRANSIT),
+                    [WEIGHT_ACT_TRANSIT]: yup.number().required().min(0).label(WEIGHT_ACT_TRANSIT),
                     [WEIGHT_REA_TRANSIT]: yup.number().required().min(0).label(WEIGHT_REA_TRANSIT),
-                    [WEIGHT_ACT_PROD]: yup.number().required().max(0).label(WEIGHT_ACT_PROD),
+                    [WEIGHT_ACT_PROD]: yup.number().required().min(0).label(WEIGHT_ACT_PROD),
                     [WEIGHT_REA_PROD]: yup.number().required().min(0).label(WEIGHT_REA_PROD),
-                    [WEIGHT_ACT_LOAD]: yup.number().required().max(0).label(WEIGHT_ACT_LOAD),
+                    [WEIGHT_ACT_LOAD]: yup.number().required().min(0).label(WEIGHT_ACT_LOAD),
                     [WEIGHT_REA_LOAD]: yup.number().required().min(0).label(WEIGHT_REA_LOAD),
                     [WEIGHT_IN]: yup.number().required().min(0).label(WEIGHT_IN),
                 })

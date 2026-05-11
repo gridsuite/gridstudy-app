@@ -8,7 +8,6 @@
 import {
     CURRENT_LIMITER_REGULATING_VALUE,
     ENABLED,
-    EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_TYPE_FIELD,
     FLOW_SET_POINT_REGULATING_VALUE,
@@ -50,6 +49,7 @@ import {
     TapChangerStep,
     TwoWindingsTransformerMapInfos,
 } from '../../two-windings-transformer.types';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -66,7 +66,7 @@ const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
             is: (enabled: boolean, regulationType: string) => enabled && regulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
-    [EQUIPMENT]: yup
+    [FieldConstants.EQUIPMENT]: yup
         .object()
         .nullable()
         .shape({
