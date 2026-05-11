@@ -239,7 +239,7 @@ export default function GeneratorCreationDialog({
                     maximumReactivePower: editData?.maxQ,
                     reactiveCapabilityCurvePoints: editData?.reactiveCapabilityCurve
                         ? editData?.reactiveCapabilityCurvePoints
-                        : [{}, {}],
+                        : null,
                 }),
                 ...getRegulatingTerminalFormData({
                     equipmentId: editData.regulatingTerminalId,
