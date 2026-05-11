@@ -6,6 +6,8 @@
  */
 
 import { useMemo } from 'react';
+// need to configuer yup before creating the form schemas
+import './utils/yup-config';
 import App from './app';
 import {
     createTheme,
