@@ -294,6 +294,10 @@ const LineAttachToVoltageLevelDialog = ({
                     shouldValidate: true,
                     shouldDirty: true,
                 });
+                // this is only used to validate schema if something was changed except ID and not used elsewhere
+                setValue('_dirtyTrigger', JSON.stringify(preparedLine), {
+                    shouldDirty: true,
+                });
             });
         },
         [setValue]
