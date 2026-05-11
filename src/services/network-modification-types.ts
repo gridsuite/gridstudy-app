@@ -478,6 +478,7 @@ export interface LineModificationInfos {
     selectedOperationalLimitsGroupId1: AttributeModification<string> | null;
     selectedOperationalLimitsGroupId2: AttributeModification<string> | null;
     [ENABLE_OLG_MODIFICATION]: boolean;
+    applySegmentsLimits: boolean;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
