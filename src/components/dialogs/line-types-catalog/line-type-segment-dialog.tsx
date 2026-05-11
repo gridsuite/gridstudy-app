@@ -13,8 +13,9 @@ import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider, DeepNullable } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
-import { SegmentFormData, SegmentSchema } from './segment-utils';
+import { SegmentFormData, SegmentSchema, SegmentsFormData } from './segment-utils';
 import {
+    APPLY_SEGMENTS_LIMITS,
     FINAL_CURRENT_LIMITS,
     SEGMENTS,
     TOTAL_REACTANCE,
@@ -29,6 +30,7 @@ const LineTypeSegmentSchema = yup
         [TOTAL_RESISTANCE]: yup.number().required(),
         [TOTAL_REACTANCE]: yup.number().required(),
         [TOTAL_SUSCEPTANCE]: yup.number().required(),
+        [APPLY_SEGMENTS_LIMITS]: yup.boolean().required().default(true),
         [FINAL_CURRENT_LIMITS]: yup.array(),
         [SEGMENTS]: yup.array().of(SegmentSchema).required().min(1, 'AtLeastOneSegmentNeeded'),
     })
@@ -38,6 +40,7 @@ const emptyFormData = {
     [TOTAL_RESISTANCE]: 0.0,
     [TOTAL_REACTANCE]: 0.0,
     [TOTAL_SUSCEPTANCE]: 0.0,
+    [APPLY_SEGMENTS_LIMITS]: true,
     [FINAL_CURRENT_LIMITS]: [],
     [SEGMENTS]: [],
 };
@@ -45,8 +48,13 @@ const emptyFormData = {
 export interface LineTypeSegmentDialogProps {
     open: boolean;
     onClose: () => void;
-    onSave: (data: ComputedLineCharacteristics, lineSegments: DeepNullable<SegmentFormData | null>[]) => void;
-    editData?: SegmentFormData[];
+    onSave: (
+        data: ComputedLineCharacteristics,
+        lineSegments: DeepNullable<SegmentFormData | null>[],
+        applyLimits: boolean | null
+    ) => void;
+    editData?: SegmentsFormData;
+    isModification?: boolean;
 }
 
 export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
@@ -56,6 +64,7 @@ export default function LineTypeSegmentDialog({
     onSave,
     onClose,
     editData,
+    isModification = false,
 }: Readonly<LineTypeSegmentDialogProps>) {
     const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
         defaultValues: emptyFormData,
@@ -70,7 +79,7 @@ export default function LineTypeSegmentDialog({
 
     const onSubmit = useCallback(
         (data: ComputedLineCharacteristics) => {
-            onSave(data, getValues(`${SEGMENTS}`) ?? []);
+            onSave(data, getValues(`${SEGMENTS}`) ?? [], getValues(APPLY_SEGMENTS_LIMITS));
         },
         [getValues, onSave]
     );
@@ -86,7 +95,7 @@ export default function LineTypeSegmentDialog({
                 onClose={onClose}
                 onSave={onSubmit}
             >
-                <LineTypeSegmentForm editData={editData} />
+                <LineTypeSegmentForm editData={editData} isModification={isModification} />
             </ModificationDialog>
         </CustomFormProvider>
     );
