@@ -43,7 +43,7 @@ export function SpreadsheetModelGlobalEditorTable() {
         [getValues]
     );
 
-    const COLUMNS_MODEL_DEFINITIONS: (DndColumn & { initialValue?: string | null | string[] })[] = useMemo(() => {
+    const COLUMNS_MODEL_DEFINITIONS: DndColumn[] = useMemo(() => {
         return [
             {
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_name' }),
@@ -157,13 +157,11 @@ export function SpreadsheetModelGlobalEditorTable() {
 
     return (
         <DndTable
-            arrayFormName={`${COLUMNS_MODEL}`}
+            name={`${COLUMNS_MODEL}`}
             columnsDefinition={COLUMNS_MODEL_DEFINITIONS}
             useFieldArrayOutput={useColumnsModelFieldArrayOutput}
             createRows={createColumnRows}
             withAddRowsDialog={false}
-            disableDragAndDrop={false}
-            showMoveArrow={false}
             tableHeight={450}
         />
     );
