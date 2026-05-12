@@ -30,7 +30,6 @@ import {
     batteryCreationFormToDto,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ACTIVE_POWER_SET_POINT, EQUIPMENT_NAME, REACTIVE_POWER_SET_POINT } from 'components/utils/field-constants';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createBattery } from '../../../../../services/study/network-modifications';
@@ -72,11 +71,11 @@ export default function BatteryCreationDialog({
         reset(
             {
                 [FieldConstants.EQUIPMENT_ID]: battery.id + '(1)',
-                [EQUIPMENT_NAME]: battery.name ?? '',
+                [FieldConstants.EQUIPMENT_NAME]: battery.name ?? '',
                 [FieldConstants.MAXIMUM_ACTIVE_POWER]: battery.maxP,
                 [FieldConstants.MINIMUM_ACTIVE_POWER]: battery.minP,
-                [ACTIVE_POWER_SET_POINT]: battery.targetP,
-                [REACTIVE_POWER_SET_POINT]: battery.targetQ,
+                [FieldConstants.ACTIVE_POWER_SET_POINT]: battery.targetP,
+                [FieldConstants.REACTIVE_POWER_SET_POINT]: battery.targetQ,
                 [FieldConstants.FREQUENCY_REGULATION]: battery.activePowerControl?.participate,
                 [FieldConstants.DROOP]: battery.activePowerControl?.droop,
                 ...getConnectivityFormData({
