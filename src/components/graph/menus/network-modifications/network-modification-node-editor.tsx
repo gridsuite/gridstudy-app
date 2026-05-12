@@ -817,12 +817,33 @@ const NetworkModificationNodeEditor = () => {
     );
     const handleCellEdit = useCallback(
         async (modification: ComposedModificationMetadata, newName?: string) => {
-
             if (!newName || newName.trim() === '') {
                 return;
             }
+            const trimmed = newName.trim();
 
-            await updateModification(modification, newName.trim());
+            // Optimistic update immédiat
+            setModifications((prev) =>
+                prev.map((m) => {
+                    if (m.uuid !== modification.uuid) return m;
+                    try {
+                        const parsed = JSON.parse(m.messageValues);
+                        return {
+                            ...m,
+                            messageValues: JSON.stringify({ ...parsed, name: trimmed }),
+                        };
+                    } catch {
+                        return m;
+                    }
+                })
+            );
+
+            try {
+                await updateModification(modification, trimmed);
+            } catch {
+                // Rollback en cas d'erreur
+                setModifications((prev) => prev.map((m) => (m.uuid !== modification.uuid ? m : modification)));
+            }
         },
         [updateModification]
     );
