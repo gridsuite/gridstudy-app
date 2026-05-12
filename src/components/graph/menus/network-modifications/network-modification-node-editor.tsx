@@ -822,7 +822,7 @@ const NetworkModificationNodeEditor = () => {
             }
             const trimmed = newName.trim();
 
-            // Optimistic update immédiat
+            // Optimistic immediate update
             setModifications((prev) =>
                 prev.map((m) => {
                     if (m.uuid !== modification.uuid) return m;
@@ -841,7 +841,7 @@ const NetworkModificationNodeEditor = () => {
             try {
                 await updateModification(modification, trimmed);
             } catch {
-                // Rollback en cas d'erreur
+                // Rollback in case of an error
                 setModifications((prev) => prev.map((m) => (m.uuid !== modification.uuid ? m : modification)));
             }
         },
