@@ -40,7 +40,7 @@ export interface TapChangerStepsProps {
     tapChanger: string;
     ruleType: RuleType;
     createTapRuleColumn: string;
-    columnsDefinition: (DndColumn & { initialValue?: number })[];
+    columnsDefinition: DndColumn[];
     csvColumns: string[];
     createRuleMessageId: string;
     createRuleAllowNegativeValues: boolean;
@@ -322,7 +322,7 @@ const TapChangerSteps = ({
             </Grid>
 
             <DndTable
-                arrayFormName={`${tapChanger}.${STEPS}`}
+                name={`${tapChanger}.${STEPS}`}
                 useFieldArrayOutput={useFieldArrayOutput}
                 columnsDefinition={completedColumnsDefinition}
                 tableHeight={400}
@@ -338,6 +338,7 @@ const TapChangerSteps = ({
                 withResetButton={isModification && areStepsModified}
                 disableAddingRows={disableAddingRows}
                 disabled={disabled}
+                disableDragAndDrop
             />
             <CreateRuleDialog
                 ruleType={ruleType}
