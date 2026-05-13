@@ -12,90 +12,40 @@ import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
     CustomFormProvider,
-    emptyProperties,
     EquipmentType,
-    getPropertiesFromModification,
-    MODIFICATION_TYPES,
     snackWithFallback,
-    toModificationProperties,
     useSnackMessage,
     DeepNullable,
-    sanitizeString,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
     getConnectivityFormData,
-    getSetPointsSchema,
-    getSetPointsEmptyFormData,
-    UNDEFINED_CONNECTION_DIRECTION,
-    getActivePowerControlEmptyFormData,
-    getActivePowerControlSchema,
     FieldConstants,
-    getShortCircuitEmptyFormData,
-    getShortCircuitFormSchema,
     getShortCircuitFormData,
-    getReactiveLimitsValidationSchema,
     getReactiveLimitsFormData,
-    getReactiveLimitsEmptyFormData,
+    BatteryCreationFormData,
+    batteryCreationFormSchema,
+    batteryCreationEmptyFormData,
+    BatteryCreationDto,
+    batteryCreationDtoToForm,
+    BatteryCreationForm,
+    batteryCreationFormToDto,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
-import {
-    ACTIVE_POWER_SET_POINT,
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    ID,
-    REACTIVE_POWER_SET_POINT,
-    VOLTAGE_LEVEL,
-} from 'components/utils/field-constants';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createBattery } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils.type';
-import { BatteryCreationDialogSchemaForm, BatteryFormInfos } from '../battery-dialog.type';
-import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
-import BatteryCreationForm from './battery-creation-form';
+import { WithModificationId } from '../../../../../services/network-modification-types';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { BatteryFormInfos } from '../battery-dialog.type';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
-const emptyFormData = {
-    [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
-    [FieldConstants.MAXIMUM_ACTIVE_POWER]: null,
-    [FieldConstants.MINIMUM_ACTIVE_POWER]: null,
-    ...getSetPointsEmptyFormData(),
-    ...getConnectivityWithPositionEmptyFormData(),
-    ...getReactiveLimitsEmptyFormData(),
-    ...getActivePowerControlEmptyFormData(),
-    ...emptyProperties,
-    ...getShortCircuitEmptyFormData(),
-};
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [FieldConstants.MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [FieldConstants.MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(),
-        [FieldConstants.REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(),
-        ...getSetPointsSchema(),
-        ...getActivePowerControlSchema(),
-        ...getShortCircuitFormSchema(),
-    })
-    .concat(creationPropertiesSchema)
-    .required();
+interface BatteryCreationDtoWithId extends BatteryCreationDto, WithModificationId {}
 
 export type BatteryCreationDialogProps = NetworkModificationDialogProps & {
-    editData: BatteryCreationInfos;
+    editData: BatteryCreationDtoWithId;
 };
 
 export default function BatteryCreationDialog({
@@ -109,22 +59,23 @@ export default function BatteryCreationDialog({
 }: Readonly<BatteryCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
-    const formMethods = useForm<DeepNullable<BatteryCreationDialogSchemaForm>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<BatteryCreationDialogSchemaForm>>(formSchema),
+    const formMethods = useForm<DeepNullable<BatteryCreationFormData>>({
+        defaultValues: batteryCreationEmptyFormData,
+        resolver: yupResolver<DeepNullable<BatteryCreationFormData>>(batteryCreationFormSchema),
     });
 
     const { reset } = formMethods;
     const fromSearchCopyToFormValues = (battery: BatteryFormInfos) => {
         reset(
             {
-                [EQUIPMENT_ID]: battery.id + '(1)',
-                [EQUIPMENT_NAME]: battery.name ?? '',
+                [FieldConstants.EQUIPMENT_ID]: battery.id + '(1)',
+                [FieldConstants.EQUIPMENT_NAME]: battery.name ?? '',
                 [FieldConstants.MAXIMUM_ACTIVE_POWER]: battery.maxP,
                 [FieldConstants.MINIMUM_ACTIVE_POWER]: battery.minP,
-                [ACTIVE_POWER_SET_POINT]: battery.targetP,
-                [REACTIVE_POWER_SET_POINT]: battery.targetQ,
+                [FieldConstants.ACTIVE_POWER_SET_POINT]: battery.targetP,
+                [FieldConstants.REACTIVE_POWER_SET_POINT]: battery.targetQ,
                 [FieldConstants.FREQUENCY_REGULATION]: battery.activePowerControl?.participate,
                 [FieldConstants.DROOP]: battery.activePowerControl?.droop,
                 ...getConnectivityFormData({
@@ -152,96 +103,37 @@ export default function BatteryCreationDialog({
     };
     const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.BATTERY);
 
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
+
     useEffect(() => {
         if (editData) {
-            reset({
-                [EQUIPMENT_ID]: editData.equipmentId,
-                [EQUIPMENT_NAME]: editData.equipmentName ?? '',
-                [FieldConstants.MAXIMUM_ACTIVE_POWER]: editData.maxP,
-                [FieldConstants.MINIMUM_ACTIVE_POWER]: editData.minP,
-                [ACTIVE_POWER_SET_POINT]: editData.targetP,
-                [REACTIVE_POWER_SET_POINT]: editData.targetQ,
-                [FieldConstants.FREQUENCY_REGULATION]: editData.participate,
-                [FieldConstants.DROOP]: editData.droop,
-                ...getConnectivityFormData({
-                    voltageLevelId: editData.voltageLevelId,
-                    busbarSectionId: editData.busOrBusbarSectionId,
-                    connectionDirection: editData.connectionDirection,
-                    connectionName: editData.connectionName,
-                    connectionPosition: editData.connectionPosition,
-                    terminalConnected: editData.terminalConnected,
-                }),
-                ...getReactiveLimitsFormData({
-                    id: FieldConstants.REACTIVE_LIMITS,
-                    reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
-                    minimumReactivePower: editData?.minQ,
-                    maximumReactivePower: editData?.maxQ,
-                    reactiveCapabilityCurvePoints: editData?.reactiveCapabilityCurve
-                        ? editData?.reactiveCapabilityCurvePoints
-                        : [{}, {}],
-                }),
-                ...getPropertiesFromModification(editData?.properties ?? undefined),
-                ...getShortCircuitFormData({
-                    directTransX: editData.directTransX,
-                    stepUpTransformerX: editData.stepUpTransformerX,
-                }),
-            });
+            reset(batteryCreationDtoToForm(editData));
         }
     }, [editData, reset]);
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(batteryCreationEmptyFormData);
     }, [reset]);
 
     const onSubmit = useCallback(
-        (battery: BatteryCreationDialogSchemaForm) => {
-            const reactiveLimits = battery[FieldConstants.REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn =
-                reactiveLimits[FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
-            const batteryCreationInfos = {
-                type: MODIFICATION_TYPES.BATTERY_CREATION.type,
-                uuid: editData?.uuid,
-                equipmentId: battery[EQUIPMENT_ID],
-                equipmentName: sanitizeString(battery[EQUIPMENT_NAME]) ?? null,
-                voltageLevelId: battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID] ?? null,
-                busOrBusbarSectionId: battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID] ?? null,
-                connectionName: sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME]),
-                connectionDirection: battery[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-                connectionPosition: battery[CONNECTIVITY]?.[CONNECTION_POSITION],
-                terminalConnected: battery[CONNECTIVITY]?.[CONNECTED],
-                minP: battery[FieldConstants.MINIMUM_ACTIVE_POWER],
-                maxP: battery[FieldConstants.MAXIMUM_ACTIVE_POWER],
-                reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-                minQ: isReactiveCapabilityCurveOn
-                    ? null
-                    : (reactiveLimits[FieldConstants.MINIMUM_REACTIVE_POWER] ?? null),
-                maxQ: isReactiveCapabilityCurveOn
-                    ? null
-                    : (reactiveLimits[FieldConstants.MAXIMUM_REACTIVE_POWER] ?? null),
-                reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? (reactiveLimits[FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
-                    : null,
-                targetP: battery[ACTIVE_POWER_SET_POINT] ?? null,
-                targetQ: battery[REACTIVE_POWER_SET_POINT] ?? null,
-                participate: battery[FieldConstants.FREQUENCY_REGULATION] ?? null,
-                droop: battery[FieldConstants.DROOP] ?? null,
-                properties: toModificationProperties(battery) ?? null,
-                directTransX: battery[FieldConstants.TRANSIENT_REACTANCE] ?? null,
-                stepUpTransformerX: battery[FieldConstants.TRANSFORMER_REACTANCE] ?? null,
-            } satisfies BatteryCreationInfos;
-            createBattery({
-                batteryCreationInfos: batteryCreationInfos,
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
-                isUpdate: !!editData,
-            }).catch((error) => {
+        (batteryForm: BatteryCreationFormData) => {
+            const dto = batteryCreationFormToDto(batteryForm);
+            createBattery(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: Error) => {
                 snackWithFallback(snackError, error, {
                     headerId: 'BatteryCreationError',
                 });
             });
         },
-        [studyUuid, currentNodeUuid, editData, snackError]
+        [studyUuid, currentNodeUuid, editData?.uuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({
@@ -250,7 +142,11 @@ export default function BatteryCreationDialog({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            validationSchema={batteryCreationFormSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -263,9 +159,9 @@ export default function BatteryCreationDialog({
                 {...dialogProps}
             >
                 <BatteryCreationForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    voltageLevelOptions={voltageLevelOptions}
+                    PositionDiagramPane={PositionDiagramPane}
+                    fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                 />
 
                 <EquipmentSearchDialog
