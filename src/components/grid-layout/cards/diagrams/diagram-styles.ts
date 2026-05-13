@@ -33,6 +33,14 @@ export const styles = {
         '& .nad-pst-arrow': {
             strokeWidth: 3,
         },
+        '& .nad-lock': {
+            strokeWidth: 3,
+            fill: theme.palette.text.primary,
+        },
+        '& .nad-flash': {
+            strokeWidth: 3,
+            fill: theme.palette.text.primary,
+        },
     }),
     divSingleLineDiagram: (theme) => ({
         '& polyline': {
