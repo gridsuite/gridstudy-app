@@ -38,7 +38,8 @@ export const createBaseColumns = (
     isRowDragDisabled: boolean,
     modificationsCount: number,
     nameHeaderProps: NameHeaderProps,
-    setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
+    setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>,
+    handleCellNameEdit?: (modification: ComposedModificationMetadata, newName: string) => void
 ): ColumnDef<ComposedModificationMetadata>[] => [
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
@@ -66,7 +67,7 @@ export const createBaseColumns = (
         header: () => (
             <NetworkModificationEditorNameHeader modificationCount={modificationsCount} {...nameHeaderProps} />
         ),
-        cell: ({ row }) => <NameCell row={row} />,
+        cell: ({ row }) => <NameCell row={row} onEditNameCell={handleCellNameEdit} />,
         meta: {
             cellStyle: networkModificationTableStyles.columnCell.modificationName,
         },
