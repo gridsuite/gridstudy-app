@@ -200,14 +200,6 @@ export function calculateReactance(distance: number, linearReactance: number) {
     return Number(distance) * Number(linearReactance);
 }
 
-export const computeSwitchedOnValue = (
-    sectionCount: number,
-    maximumSectionCount: number,
-    linkedSwitchedOnValue: number
-) => {
-    return (linkedSwitchedOnValue / maximumSectionCount) * sectionCount;
-};
-
 export const computeQAtNominalV = (susceptance: number, nominalVoltage: number) => {
     return Math.abs(susceptance * Math.pow(nominalVoltage, 2));
 };

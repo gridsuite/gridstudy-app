@@ -7,7 +7,6 @@
 
 import {
     CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
     ID,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
@@ -20,6 +19,7 @@ import {
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
+import { CHARACTERISTICS_CHOICES } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import { Schema } from 'yup';
