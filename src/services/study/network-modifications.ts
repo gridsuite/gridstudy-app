@@ -28,7 +28,11 @@ import {
     GeneratorCreationDto,
     GeneratorModificationDto,
 } from '@gridsuite/commons-ui';
-import { getBaseNetworkModificationUrl, getStudyUrlWithNodeUuid } from './index';
+import {
+    getBaseNetworkModificationUrl,
+    getStudyUrlWithNodeUuid,
+    getStudyUrlWithNodeUuidAndRootNetworkUuid,
+} from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
@@ -135,6 +139,46 @@ export function stashModifications(studyUuid: UUID | null, nodeUuid: UUID | unde
     const modificationDeleteUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
+        method: 'PUT',
+    });
+}
+
+export function setModificationMetadata(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuid: UUID | undefined,
+    metadata: Partial<NetworkModificationMetadata>
+): Promise<Response> {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('uuids', String([modificationUuid]));
+    const modificationUpdateUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    return backendFetch(modificationUpdateUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(metadata),
+    });
+}
+
+export function updateModificationStatusByRootNetwork(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    rootNetworkUuid: UUID,
+    modificationUuid: UUID,
+    activated: boolean
+) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('activated', String(activated));
+    urlSearchParams.append('uuids', String([modificationUuid]));
+    const modificationUpdateActiveUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
+        '/network-modifications' +
+        '?' +
+        urlSearchParams.toString();
+    console.debug(modificationUpdateActiveUrl);
+    return backendFetch(modificationUpdateActiveUrl, {
         method: 'PUT',
     });
 }

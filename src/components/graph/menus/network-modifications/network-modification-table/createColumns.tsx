@@ -8,19 +8,23 @@ import {
     BASE_MODIFICATION_TABLE_COLUMNS,
     ComposedModificationMetadata,
     computeTagMinSize,
+    ExcludedNetworkModifications,
+    networkModificationTableStyles,
+} from '@gridsuite/commons-ui';
+import React, { SetStateAction } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
+import { RootNetworkMetadata } from '../network-modification-menu.type';
+import {
     DescriptionCellRenderer,
     DragHandleRenderer,
     NameCellRenderer,
     NameHeaderRenderer,
-    networkModificationTableStyles,
     RootNetworkCellRenderer,
     RootNetworkHeaderRenderer,
     SelectCellRenderer,
     SelectHeaderRenderer,
     SwitchCellRenderer,
-} from '@gridsuite/commons-ui';
-import { ColumnDef } from '@tanstack/react-table';
-import { RootNetworkMetadata } from '../network-modification-menu.type';
+} from './renderers/cell-renderers';
 
 /**
  * Column definition is broken up in 2 parts : base columns which are always on display and root networks columns.
@@ -79,10 +83,14 @@ export const BASE_COLUMNS: ColumnDef<ComposedModificationMetadata>[] = [
 ];
 
 export const createRootNetworksColumns = (
-    rootNetworks: RootNetworkMetadata[]
+    rootNetworks: RootNetworkMetadata[],
+    currentRootNetworkUuid: string,
+    modificationsToExclude: ExcludedNetworkModifications[],
+    setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>
 ): ColumnDef<ComposedModificationMetadata>[] => {
     const tagMinSizes = rootNetworks.map((rootNetwork) => computeTagMinSize(rootNetwork.tag ?? ''));
     const sharedSize = Math.max(Math.min(...tagMinSizes), 56);
+    const currentRootNetworkTag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
 
     return rootNetworks.map((rootNetwork, index) => ({
         id: rootNetwork.rootNetworkUuid,
@@ -92,6 +100,11 @@ export const createRootNetworksColumns = (
         minSize: tagMinSizes[index],
         meta: {
             cellStyle: networkModificationTableStyles.columnCell.rootNetworkChip,
+            rootNetwork,
+            modificationsToExclude,
+            setModificationsToExclude,
+            isCurrentRootNetwork: rootNetwork.rootNetworkUuid === currentRootNetworkUuid,
+            currentRootNetworkTag,
         },
     }));
 };
