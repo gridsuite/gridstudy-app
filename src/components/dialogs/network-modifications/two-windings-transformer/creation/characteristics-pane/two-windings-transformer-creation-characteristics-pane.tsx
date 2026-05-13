@@ -59,7 +59,6 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
     const connectivity1Field = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_1}`}
-            withPosition={true}
             voltageLevelOptions={voltageLevelOptions}
             PositionDiagramPane={PositionDiagramPane}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
@@ -69,7 +68,6 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
     const connectivity2Field = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_2}`}
-            withPosition={true}
             voltageLevelOptions={voltageLevelOptions}
             PositionDiagramPane={PositionDiagramPane}
             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}

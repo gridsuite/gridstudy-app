@@ -14,6 +14,7 @@ import {
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
+    MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
     ModificationType,
     NameHeaderProps,
@@ -32,7 +33,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Alert, Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
+import { Alert, Badge, Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -164,7 +165,9 @@ const NetworkModificationNodeEditor = () => {
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
-    const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationMetadata[]>([]);
+    const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
+        []
+    );
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -1052,7 +1055,7 @@ const NetworkModificationNodeEditor = () => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
-    const handleRowSelected = useCallback((selectedRows: NetworkModificationMetadata[]) => {
+    const handleRowSelected = useCallback((selectedRows: ComposedModificationMetadata[]) => {
         setSelectedNetworkModifications(selectedRows);
     }, []);
 
@@ -1189,6 +1192,11 @@ const NetworkModificationNodeEditor = () => {
         return modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress;
     }, [modificationsToRestore.length, isAnyNodeBuilding, deleteInProgress]);
 
+    const isCompositeNestingLimitReached = useMemo(
+        () => selectedNetworkModifications.some((row) => (row.maxDepth ?? 0) >= MAX_COMPOSITE_NESTING_DEPTH),
+        [selectedNetworkModifications]
+    );
+
     return (
         <>
             <Toolbar sx={styles.toolbar}>
@@ -1216,17 +1224,39 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
+                <Tooltip
+                    title={
+                        isCompositeNestingLimitReached ? (
+                            <FormattedMessage
+                                id={'CompositeNestingLimitReached'}
+                                values={{ limit: MAX_COMPOSITE_NESTING_DEPTH }}
+                            />
+                        ) : (
+                            <FormattedMessage id={'SaveToGridexplore'} />
+                        )
+                    }
+                >
                     <span>
-                        <IconButton
-                            onClick={openCreateCompositeModificationDialog}
-                            size={'small'}
-                            disabled={
-                                selectedNetworkModifications?.length === 0 || saveInProgress === true || isRootNode
-                            }
+                        <Badge
+                            overlap={'circular'}
+                            color="error"
+                            invisible={!isCompositeNestingLimitReached}
+                            badgeContent={'×'}
+                            sx={styles.badgeStyle}
                         >
-                            <SaveIcon />
-                        </IconButton>
+                            <IconButton
+                                onClick={openCreateCompositeModificationDialog}
+                                size={'small'}
+                                disabled={
+                                    selectedNetworkModifications?.length === 0 ||
+                                    saveInProgress ||
+                                    isRootNode ||
+                                    isCompositeNestingLimitReached
+                                }
+                            >
+                                <SaveIcon />
+                            </IconButton>
+                        </Badge>
                     </span>
                 </Tooltip>
                 <Tooltip title={<FormattedMessage id={'cut'} />}>

@@ -25,6 +25,9 @@ import {
     EquipmentType,
     ExcludedNetworkModifications,
     ModificationByAssignmentDto,
+    GeneratorCreationDto,
+    GeneratorModificationDto,
+    BatteryCreationDto,
 } from '@gridsuite/commons-ui';
 import {
     getBaseNetworkModificationUrl,
@@ -36,7 +39,6 @@ import type { UUID } from 'node:crypto';
 import {
     AttachLineInfo,
     BalancesAdjustmentInfos,
-    BatteryCreationInfos,
     BatteryModificationInfos,
     ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
@@ -45,8 +47,6 @@ import {
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
-    GeneratorCreationInfos,
-    GeneratorModificationInfos,
     LCCCreationInfo,
     LccModificationInfos,
     LineCreationInfos,
@@ -376,19 +376,12 @@ export function generatorScaling(
     );
 }
 
-export function createBattery({
-    batteryCreationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    batteryCreationInfos: BatteryCreationInfos;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: string | null;
-    isUpdate: boolean;
-}) {
+export function createBattery(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: BatteryCreationDto
+) {
     let createBatteryUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
@@ -397,12 +390,12 @@ export function createBattery({
         console.info('Creating battery creation');
     }
     return backendFetchText(createBatteryUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(batteryCreationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -481,13 +474,13 @@ export function modifyLoad(
 }
 
 export function modifyGenerator({
-    generatorModificationInfos,
+    dto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    generatorModificationInfos: GeneratorModificationInfos;
+    dto: GeneratorModificationDto;
     studyUuid: UUID;
     nodeUuid?: UUID;
     modificationUuid: string | null;
@@ -507,18 +500,18 @@ export function modifyGenerator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorModificationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
 export function createGenerator({
-    generatorCreationInfos,
+    dto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    generatorCreationInfos: GeneratorCreationInfos;
+    dto: GeneratorCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
@@ -537,7 +530,7 @@ export function createGenerator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorCreationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
