@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_ID } from '../../../utils/field-constants';
 import {
     ActivePowerControlInfos,
     ConnectablePositionFormInfos,
@@ -43,8 +42,6 @@ export type BatteryDialogSchemaBaseForm = {
     [FieldConstants.TRANSFORMER_REACTANCE]?: number | null;
     [FieldConstants.TRANSIENT_REACTANCE]?: number | null;
 };
-
-export type BatteryCreationDialogSchemaForm = { [EQUIPMENT_ID]: string } & BatteryDialogSchemaBaseForm;
 
 export type BatteryModificationDialogSchemaForm = Partial<BatteryDialogSchemaBaseForm>;
 
