@@ -25,6 +25,7 @@ import {
     EquipmentType,
     ExcludedNetworkModifications,
     ModificationByAssignmentDto,
+    ComposedModificationMetadata,
     GeneratorCreationDto,
     GeneratorModificationDto,
     ShuntCompensatorCreationDto,
@@ -147,7 +148,7 @@ export function setModificationMetadata(
     studyUuid: UUID | null,
     nodeUuid: UUID | undefined,
     modificationUuid: UUID | undefined,
-    metadata: Partial<NetworkModificationMetadata>
+    metadata: Partial<NetworkModificationMetadata | ComposedModificationMetadata>
 ): Promise<Response> {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('uuids', String([modificationUuid]));
