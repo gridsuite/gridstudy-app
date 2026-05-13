@@ -190,6 +190,14 @@ code {
     stroke: none;
     fill: black;
 }
+.nad-lock {
+    stroke: none;
+    fill: black;
+}
+.nad-flash {
+    stroke: none;
+    fill: black;
+}
 .sld-grid {
     stroke: #003700;
     stroke-dasharray: 1, 10;

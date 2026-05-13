@@ -40,6 +40,9 @@ import {
     GeneratorModificationDto,
     GeneratorModificationDialogSchemaForm,
     GeneratorFormInfos,
+    getInjectionActiveReactivePowerValidationSchemaProperties,
+    getInjectionActiveReactivePowerEditData,
+    getInjectionActiveReactivePowerEmptyFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -54,7 +57,11 @@ import {
     ENERGY_SOURCE,
     EQUIPMENT_NAME,
     ID,
+    MEASUREMENT_P,
+    MEASUREMENT_Q,
     REACTIVE_POWER_SET_POINT,
+    STATE_ESTIMATION,
+    VALIDITY,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
@@ -96,6 +103,7 @@ const emptyFormData = {
     ...getActivePowerControlEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
     ...emptyProperties,
+    ...getInjectionActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
 };
 
 const formSchema = yup
@@ -127,6 +135,7 @@ const formSchema = yup
         ...getSetPointsSchema(true),
         ...getVoltageRegulationSchema(true),
         ...getActivePowerControlSchema(true),
+        [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
     })
     .concat(modificationPropertiesSchema)
     .required();
@@ -217,6 +226,7 @@ export default function GeneratorModificationDialog({
                     equipmentType: editData?.regulatingTerminalType?.value,
                     voltageLevelId: editData?.regulatingTerminalVlId?.value,
                 }),
+                ...getInjectionActiveReactivePowerEditData(STATE_ESTIMATION, editData),
                 ...getPropertiesFromModification(editData?.properties ?? undefined),
             });
         },
@@ -329,7 +339,7 @@ export default function GeneratorModificationDialog({
                     editData,
                     generatorToModify?.reactiveCapabilityCurvePoints
                 ) === 'CURVE';
-
+            const stateEstimationData = generator[STATE_ESTIMATION];
             const generatorModificationInfos = {
                 type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
                 uuid: editData?.uuid ?? null,
@@ -374,6 +384,14 @@ export default function GeneratorModificationDialog({
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
                     ? (reactiveLimits?.[FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
+                pMeasurementValue: toModificationOperation(
+                    stateEstimationData?.[MEASUREMENT_P]?.[FieldConstants.VALUE]
+                ),
+                pMeasurementValidity: toModificationOperation(stateEstimationData?.[MEASUREMENT_P]?.[VALIDITY]),
+                qMeasurementValue: toModificationOperation(
+                    stateEstimationData?.[MEASUREMENT_Q]?.[FieldConstants.VALUE]
+                ),
+                qMeasurementValidity: toModificationOperation(stateEstimationData?.[MEASUREMENT_Q]?.[VALIDITY]),
                 properties: toModificationProperties(generator) ?? null,
             } satisfies GeneratorModificationDto;
 
