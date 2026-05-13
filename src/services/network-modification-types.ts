@@ -396,32 +396,6 @@ export interface Assignment {
     propertyName?: string;
 }
 
-export interface BatteryCreationInfos {
-    type: ModificationType;
-    uuid: string | null;
-    equipmentId: string;
-    equipmentName: string | null;
-    minP: number | null;
-    maxP: number | null;
-    reactiveCapabilityCurve?: boolean | null;
-    targetP: number | null;
-    targetQ: number | null;
-    voltageLevelId: string | null;
-    busOrBusbarSectionId: string | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
-    directTransX: number | null;
-    stepUpTransformerX: number | null;
-    participate: boolean | null;
-    droop: number | null;
-    maxQ: number | null;
-    minQ: number | null;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean | null;
-    properties: Property[] | null;
-}
-
 export interface ShuntCompensatorCreationInfos {
     type: ModificationType;
     uuid?: string;
@@ -497,6 +471,7 @@ export interface LineModificationInfos {
     selectedOperationalLimitsGroupId1: AttributeModification<string> | null;
     selectedOperationalLimitsGroupId2: AttributeModification<string> | null;
     [ENABLE_OLG_MODIFICATION]: boolean;
+    applySegmentsLimits: boolean;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
