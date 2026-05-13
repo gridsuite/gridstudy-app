@@ -294,7 +294,9 @@ const LineAttachToVoltageLevelDialog = ({
                     shouldValidate: true,
                     shouldDirty: true,
                 });
-                // this is only used to validate schema if something was changed except ID and not used elsewhere
+                // Force the form dirty when attachment line props change but ID does not.
+                // The value itself is never read — any non-empty string would work; we use the
+                // stringified line for parity with onAttachmentPointModificationDo and for debug visibility.
                 setValue('_dirtyTrigger', JSON.stringify(preparedLine), {
                     shouldDirty: true,
                 });
