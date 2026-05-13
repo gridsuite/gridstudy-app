@@ -11,8 +11,7 @@ import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { IconButton, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { DndColumnType, DndTable, ElementType, EquipmentType } from '@gridsuite/commons-ui';
-import { EnrichedDndColumn } from './substations-generators-ordering-pane';
+import { DndColumn, DndColumnType, DndTable, ElementType, EquipmentType } from '@gridsuite/commons-ui';
 
 interface FrequencyReservePaneProps {
     id?: string;
@@ -21,7 +20,7 @@ interface FrequencyReservePaneProps {
 const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<FrequencyReservePaneProps>) => {
     const intl = useIntl();
 
-    const columnsDefinition = useMemo<EnrichedDndColumn[]>(() => {
+    const columnsDefinition = useMemo<DndColumn[]>(() => {
         return [
             {
                 label: intl
@@ -83,7 +82,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<F
 
     return (
         <DndTable
-            arrayFormName={`${id}`}
+            name={`${id}`}
             useFieldArrayOutput={useFieldArrayOutputFrequencyReserve}
             createRows={createFrequencyReserveRows}
             columnsDefinition={completedColumnsDefinition}
