@@ -1080,18 +1080,8 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const columns = useMemo<ColumnDef<ComposedModificationMetadata>[]>(
-        () => [
-            ...BASE_COLUMNS,
-            ...(isMonoRootStudy
-                ? []
-                : createRootNetworksColumns(
-                      rootNetworks,
-                      currentRootNetworkUuid!,
-                      modificationsToExclude,
-                      setModificationsToExclude
-                  )),
-        ],
-        [isMonoRootStudy, rootNetworks, currentRootNetworkUuid, modificationsToExclude]
+        () => [...BASE_COLUMNS, ...(isMonoRootStudy ? [] : createRootNetworksColumns(rootNetworks))],
+        [isMonoRootStudy, rootNetworks]
     );
 
     const renderNetworkModificationsTable = () => {
@@ -1121,6 +1111,11 @@ const NetworkModificationNodeEditor = () => {
                 highlightedModificationUuid={highlightedModificationUuid}
                 studyUuid={studyUuid}
                 currentNodeId={currentNode?.id}
+                currentRootNetworkUuid={currentRootNetworkUuid ?? undefined}
+                rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
+                modificationsToExclude={modificationsToExclude}
+                setModificationsToExclude={setModificationsToExclude}
+                isDisabled={isAnyNodeBuilding || mapDataLoading}
             />
         );
     };
