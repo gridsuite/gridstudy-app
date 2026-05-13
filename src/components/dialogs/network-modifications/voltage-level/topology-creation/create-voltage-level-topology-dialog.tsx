@@ -16,7 +16,7 @@ import {
     snackWithFallback,
     useSnackMessage,
     DeepNullable,
-    FieldConstants,
+    MAX_SECTIONS_COUNT,
 } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
@@ -31,7 +31,6 @@ import { createVoltageLevelTopology } from '../../../../../services/study/networ
 import { CreateVoltageLevelTopologyInfos } from '../../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../../services/utils';
 import { useIntl } from 'react-intl';
-import { MAX_SECTIONS_COUNT } from '@gridsuite/commons-ui/components/network-modifications/voltageLevel/creation/voltageLevel.constants';
 
 const emptyFormData = {
     [SECTION_COUNT]: null,
