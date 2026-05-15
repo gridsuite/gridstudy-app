@@ -1994,7 +1994,7 @@ export function mergeModificationsIntoComposite(
     studyUuid: UUID | null,
     nodeUuid: UUID | undefined,
     modificationUuids: UUID[]
-) {
+): Promise<UUID> {
     const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modification`;
     return backendFetchJson(url, {
         method: 'POST',

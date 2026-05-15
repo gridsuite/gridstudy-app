@@ -1037,6 +1037,7 @@
     "SaveToGridexploreError": "Une erreur est survenue lors de la sauvegarde dans GridExplore",
     "MergeIntoComposite": "Créer une modification composite",
     "MergeIntoCompositeError": "Une erreur est survenue lors de la création de la modification composite",
+    "DefaultCompositeName": "Modification Composite",
     "CompositeNestingLimitReached": "Enregistrement dans Gridexplore Impossible : dépasserait la limite d'imbrication ({limit})",
     "diagramConfigCreationMsg": "Création de l'image nodale de zone dans {directory}",
     "diagramConfigUpdateMsg": "Mise à jour de l'image nodale de zone {item}",
