@@ -967,9 +967,6 @@
     "GeneratorsFiltersFrequencyReserveToolTip": "Les saisies sont appliquées dans l’ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si un groupe est inclus dans plusieurs filtres)",
     "GeneratorsOrdering": "Hiérarchie des sites",
     "ReplacingLine": "Liaison de remplacement",
-    "YupRequired": "Ce champ doit être renseigné",
-    "YupNotTypeNumber": "Ce champ n'accepte que des valeurs numériques",
-    "YupNotTypeDefault": "La valeur du champ n'est pas au bon format",
 
     "NetworkEquipmentNotFound": "L'ouvrage \"{equipmentId}\" n'existe pas dans ce réseau",
 
