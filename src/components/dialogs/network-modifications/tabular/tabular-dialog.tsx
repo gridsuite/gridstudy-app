@@ -6,7 +6,14 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FieldConstants,
+    ModificationType,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { v4 as uuid4 } from 'uuid';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
@@ -111,6 +118,7 @@ export function TabularDialog({
                     }
                 }
                 modification = addPropertiesFromBack(modification, modif?.[TABULAR_PROPERTIES]);
+                modification[FieldConstants.AG_GRID_ROW_UUID] = uuid4();
                 return modification;
             });
             reset({
@@ -126,7 +134,10 @@ export function TabularDialog({
     const initTabularCreationData = useCallback(
         (editData: TabularModificationEditDataType) => {
             const equipmentType = getEquipmentTypeFromCreationType(editData?.modificationType);
-            const creations = convertCreations(editData?.modifications);
+            const creations = convertCreations(editData?.modifications).map((creation) => ({
+                ...creation,
+                [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+            }));
             reset({
                 [TYPE]: equipmentType,
                 [MODIFICATIONS_TABLE]: creations,

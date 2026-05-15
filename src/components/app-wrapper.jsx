@@ -219,6 +219,9 @@ const lightTheme = createTheme({
         },
         highlightColor: '#1976D214',
     },
+    agGridBackground: {
+        color: 'white',
+    },
     networkModificationPanel: {
         backgroundColor: 'white',
         border: 'solid 1px #babfc7',
@@ -334,6 +337,9 @@ const darkTheme = createTheme({
             background: '#121212',
         },
         highlightColor: '#90CAF929',
+    },
+    agGridBackground: {
+        color: '#383838',
     },
     networkModificationPanel: {
         backgroundColor: '#252525',

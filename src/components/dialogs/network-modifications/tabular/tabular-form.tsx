@@ -5,27 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { type FieldValues, useFormContext, type UseFieldArrayReturn, useWatch } from 'react-hook-form';
 import {
     AutocompleteInput,
     BooleanNullableCellRenderer,
-    CustomAGGrid,
+    CustomAgGridTable,
     DefaultCellRenderer,
     DirectoryItemSelector,
     ElementType,
     EquipmentType,
-    ErrorInput,
     fetchStudyMetadata,
-    FieldErrorAlert,
+    FieldConstants,
     getObjectId,
     LANG_FRENCH,
     type MuiStyles,
+    NumericEditor,
     type TreeViewFinderNodeProps,
     useSnackMessage,
     useStateBoolean,
 } from '@gridsuite/commons-ui';
+import { v4 as uuid4 } from 'uuid';
 import {
     CSV_FILENAME,
     EQUIPMENT_ID,
@@ -53,7 +54,7 @@ import {
     transformIfFrenchNumber,
 } from './tabular-common';
 import { ColDef } from 'ag-grid-community';
-import { BOOLEAN } from '../../../network/constants';
+import { BOOLEAN, ENUM, NUMBER } from '../../../network/constants';
 import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
 import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
 import { useFilterCsvGenerator } from './use-filter-csv-generator';
@@ -75,6 +76,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const { snackWarning } = useSnackMessage();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, setError } = useFormContext();
+    const tableRef = useRef<UseFieldArrayReturn<FieldValues, string>>(null);
     const propertiesDialogOpen = useStateBoolean(false);
     const generateFromFilterOpen = useStateBoolean(false);
     const prefilledModelDialogOpen = useStateBoolean(false);
@@ -90,9 +92,6 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     });
     const tabularProperties = useWatch({
         name: TABULAR_PROPERTIES,
-    });
-    const watchTable = useWatch({
-        name: MODIFICATIONS_TABLE,
     });
     const watchFileName = useWatch({
         name: CSV_FILENAME,
@@ -301,11 +300,15 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 } else {
                     handleTabularModificationParsingError(results);
                 }
-                setValue(MODIFICATIONS_TABLE, results.data, { shouldDirty: true });
+                const rowsWithUuid = results.data.map((row) => ({
+                    ...row,
+                    [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+                }));
+                tableRef.current?.replace(rowsWithUuid);
                 setValue(CSV_FILENAME, selectedFile?.name);
             } else {
                 // If the file is undefined we don't update the values because it's outdated
-                setValue(MODIFICATIONS_TABLE, []);
+                tableRef.current?.replace([]);
                 setValue(CSV_FILENAME, undefined);
             }
             setIsFetching(false);
@@ -336,7 +339,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
 
     useEffect(() => {
         if (selectedFileError) {
-            setValue(MODIFICATIONS_TABLE, []);
+            tableRef.current?.replace([]);
             setValue(CSV_FILENAME, undefined);
             clearErrors(MODIFICATIONS_TABLE);
             setIsFetching(false);
@@ -373,7 +376,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const handleTypeChange = useCallback(() => {
         setTypeChangedTrigger(!typeChangedTrigger);
         clearErrors(MODIFICATIONS_TABLE);
-        setValue(MODIFICATIONS_TABLE, []);
+        tableRef.current?.replace([]);
         setValue(CSV_FILENAME, undefined);
         setValue(TABULAR_PROPERTIES, []);
         resetFile();
@@ -406,25 +409,58 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const columnDefs = useMemo(() => {
         return csvFields
             .map((field) => {
-                const columnDef: ColDef = {};
+                const columnDef: ColDef = {
+                    field: field.id,
+                    headerName: intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : ''),
+                    editable: true,
+                    singleClickEdit: true,
+                };
                 if (field.id === EQUIPMENT_ID) {
                     columnDef.pinned = true;
+                    columnDef.rowDrag = true;
                 }
-                columnDef.field = field.id;
-                columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-                columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
+                switch (field.type) {
+                    case BOOLEAN:
+                        columnDef.cellRenderer = BooleanNullableCellRenderer;
+                        columnDef.cellEditor = 'agSelectCellEditor';
+                        columnDef.cellEditorParams = { values: [null, true, false] };
+                        break;
+                    case NUMBER:
+                        columnDef.cellRenderer = DefaultCellRenderer;
+                        columnDef.cellEditor = NumericEditor;
+                        break;
+                    case ENUM:
+                        columnDef.cellRenderer = DefaultCellRenderer;
+                        columnDef.cellEditor = 'agSelectCellEditor';
+                        columnDef.cellEditorParams = { values: [null, ...(field.options ?? [])] };
+                        break;
+                    default:
+                        columnDef.cellRenderer = DefaultCellRenderer;
+                        break;
+                }
                 return columnDef;
             })
             .concat(
-                selectedProperties.map((propertyName: string) => {
-                    const columnDef: ColDef = {};
-                    columnDef.field = PROPERTY_CSV_COLUMN_PREFIX + propertyName;
-                    columnDef.headerName = propertyName;
-                    columnDef.cellRenderer = DefaultCellRenderer;
-                    return columnDef;
-                })
+                selectedProperties.map((propertyName: string) => ({
+                    field: PROPERTY_CSV_COLUMN_PREFIX + propertyName,
+                    headerName: propertyName,
+                    cellRenderer: DefaultCellRenderer,
+                    editable: true,
+                    singleClickEdit: true,
+                }))
             );
     }, [csvFields, selectedProperties, intl]);
+
+    const makeDefaultRowData = useCallback(() => {
+        const row: Record<string, any> = { [FieldConstants.AG_GRID_ROW_UUID]: uuid4() };
+        csvFields.forEach((field) => {
+            row[field.id] = null;
+        });
+        selectedProperties.forEach((propertyName) => {
+            row[PROPERTY_CSV_COLUMN_PREFIX + propertyName] = '';
+        });
+        return row;
+    }, [csvFields, selectedProperties]);
 
     const onPropertiesChange = (formData: PropertiesFormType) => {
         const newSelectedProperties =
@@ -434,7 +470,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         if (newSelectedProperties.toString() !== selectedProperties.toString()) {
             // new columns => reset table
             clearErrors(MODIFICATIONS_TABLE);
-            setValue(MODIFICATIONS_TABLE, []);
+            tableRef.current?.replace([]);
             setValue(CSV_FILENAME, undefined);
         }
         setValue(TABULAR_PROPERTIES, formData[TABULAR_PROPERTIES], { shouldDirty: true });
@@ -509,21 +545,30 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                         </Button>
                     </Grid>
                 )}
-                <Grid item>
-                    <ErrorInput name={MODIFICATIONS_TABLE} InputField={FieldErrorAlert} />
-                    {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
-                </Grid>
+                {selectedFileError && (
+                    <Grid item>
+                        <Alert severity="error">{selectedFileError}</Alert>
+                    </Grid>
+                )}
             </Grid>
             <Grid item xs={12} sx={dialogStyles.grid}>
-                <CustomAGGrid
-                    rowData={watchTable}
-                    loading={isFetching}
-                    defaultColDef={defaultColDef}
+                <CustomAgGridTable
+                    ref={tableRef}
+                    name={MODIFICATIONS_TABLE}
                     columnDefs={columnDefs}
+                    defaultColDef={defaultColDef}
+                    makeDefaultRowData={makeDefaultRowData}
+                    loading={isFetching}
                     pagination
-                    paginationPageSize={100}
-                    suppressDragLeaveHidesColumns
+                    rowSelection={{
+                        mode: 'multiRow',
+                        enableClickSelection: false,
+                        checkboxes: true,
+                        headerCheckbox: true,
+                    }}
                     overrideLocales={AGGRID_LOCALES}
+                    csvProps={undefined}
+                    cssProps={{ height: 500 }}
                 />
             </Grid>
             <DefinePropertiesDialog
