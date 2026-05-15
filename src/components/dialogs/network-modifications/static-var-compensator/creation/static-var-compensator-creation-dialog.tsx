@@ -6,6 +6,7 @@
  */
 
 import {
+    CHARACTERISTICS_CHOICES,
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
@@ -32,7 +33,6 @@ import {
     B0,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
     CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
