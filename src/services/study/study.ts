@@ -6,8 +6,21 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { PREFIX_STUDY_QUERIES, getStudyUrl } from '.';
-import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from '.';
+import { backendFetch, backendFetchJson, ComputingType } from '@gridsuite/commons-ui';
+import RunningStatus, {
+    getDynamicMarginCalculationRunningStatus,
+    getDynamicSecurityAnalysisRunningStatus,
+    getDynamicSimulationRunningStatus,
+    getLoadFlowRunningStatus,
+    getPccMinRunningStatus,
+    getSecurityAnalysisRunningStatus,
+    getSensitivityAnalysisRunningStatus,
+    getShortCircuitAnalysisRunningStatus,
+    getStateEstimationRunningStatus,
+    getVoltageInitRunningStatus,
+} from '../../components/utils/running-status';
+import { fetchLoadFlowComputationInfos } from './loadflow';
 
 interface BasicStudyInfos {
     uniqueId: string;
@@ -96,4 +109,56 @@ export function unbuildAllStudyNodes(studyUuid: UUID) {
     const url = getStudyUrl(studyUuid) + '/nodes/unbuild-all';
     console.debug(url);
     return backendFetch(url, { method: 'post' });
+}
+
+export function getComputingStatusParametersFetcher(
+    computingType: ComputingType
+): ((studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>) | undefined {
+    if (computingType === ComputingType.LOAD_FLOW) {
+        return fetchLoadFlowComputationInfos;
+    } else {
+        return undefined;
+    }
+}
+
+export function getRunningStatusByComputingType(statusValue: string, computingType: ComputingType): RunningStatus {
+    switch (computingType) {
+        case ComputingType.PCC_MIN:
+            return getPccMinRunningStatus(statusValue);
+        case ComputingType.LOAD_FLOW:
+            return getLoadFlowRunningStatus(statusValue);
+        case ComputingType.SECURITY_ANALYSIS:
+            return getSecurityAnalysisRunningStatus(statusValue);
+        case ComputingType.SENSITIVITY_ANALYSIS:
+            return getSensitivityAnalysisRunningStatus(statusValue);
+        case ComputingType.SHORT_CIRCUIT:
+            return getShortCircuitAnalysisRunningStatus(statusValue);
+        case ComputingType.SHORT_CIRCUIT_ONE_BUS:
+            return getShortCircuitAnalysisRunningStatus(statusValue);
+        case ComputingType.DYNAMIC_SIMULATION:
+            return getDynamicSimulationRunningStatus(statusValue);
+        case ComputingType.DYNAMIC_SECURITY_ANALYSIS:
+            return getDynamicSecurityAnalysisRunningStatus(statusValue);
+        case ComputingType.DYNAMIC_MARGIN_CALCULATION:
+            return getDynamicMarginCalculationRunningStatus(statusValue);
+        case ComputingType.VOLTAGE_INITIALIZATION:
+            return getVoltageInitRunningStatus(statusValue);
+        case ComputingType.STATE_ESTIMATION:
+            return getStateEstimationRunningStatus(statusValue);
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
+export function fetchAllComputationStatus(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+): Promise<Record<ComputingType, string>> {
+    console.info(
+        `Fetching all computation status on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${nodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/computations/status';
+    return backendFetchJson(url);
 }
