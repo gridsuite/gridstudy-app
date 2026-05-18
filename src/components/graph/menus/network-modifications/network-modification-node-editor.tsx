@@ -6,10 +6,12 @@
  */
 
 import {
+    ArrowsInputIcon,
     ComposedModificationMetadata,
     ElementSaveDialog,
     ElementType,
     EquipmentType,
+    ErrorMessage,
     ExcludedNetworkModifications,
     fetchNetworkModification,
     IElementCreationDialog,
@@ -71,7 +73,12 @@ import NetworkModificationsMenu from 'components/graph/menus/network-modificatio
 import { SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
+import {
+    addNotification,
+    removeNotificationByNode,
+    setHighlightModification,
+    setModificationsInProgress,
+} from '../../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
@@ -85,6 +92,7 @@ import { copyOrMoveModifications } from '../../../../services/study';
 import {
     fetchExcludedNetworkModifications,
     fetchNetworkModifications,
+    mergeModificationsIntoComposite,
     setModificationMetadata,
     stashModifications,
 } from '../../../../services/study/network-modifications';
@@ -734,14 +742,10 @@ const NetworkModificationNodeEditor = () => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
-                    const liveModifications = res.filter(
-                        (networkModification) => networkModification.stashed === false
-                    );
+                    const liveModifications = res.filter((networkModification) => !networkModification.stashed);
                     updateSelectedItems(liveModifications);
                     setModifications(liveModifications);
-                    setModificationsToRestore(
-                        res.filter((networkModification) => networkModification.stashed === true)
-                    );
+                    setModificationsToRestore(res.filter((networkModification) => networkModification.stashed));
                 }
             })
             .catch((error) => {
@@ -957,6 +961,25 @@ const NetworkModificationNodeEditor = () => {
         cleanClipboard,
         networkModificationsToCopy,
     ]);
+
+    const doMergeModificationsIntoComposite = useCallback(() => {
+        const selectedModUuids: UUID[] = selectedNetworkModifications.map((item) => item.uuid);
+        setSaveInProgress(true);
+        mergeModificationsIntoComposite(studyUuid, currentNode?.id, selectedModUuids)
+            .then((compositeUuid: UUID) => {
+                dispatch(setHighlightModification(compositeUuid));
+                // TODO : la mettre en édition (après GRD-4232)
+                // TODO : tout désélectionner : ce qui suit ne fonctionne pas....
+                setSelectedNetworkModifications([]);
+                // TODO : tout "refermer"
+            })
+            .catch((error: ErrorMessage) => {
+                snackWithFallback(snackError, error, { headerId: 'MergeIntoCompositeError' });
+            })
+            .finally(() => {
+                setSaveInProgress(false);
+            });
+    }, [currentNode?.id, dispatch, selectedNetworkModifications, snackError, studyUuid]);
 
     const doCreateCompositeModificationsElements = ({
         name,
@@ -1259,6 +1282,41 @@ const NetworkModificationNodeEditor = () => {
                         >
                             <AddIcon />
                         </IconButton>
+                    </span>
+                </Tooltip>
+                <Tooltip
+                    title={
+                        isCompositeNestingLimitReached ? (
+                            <FormattedMessage
+                                id={'CompositeNestingLimitReached'}
+                                values={{ limit: MAX_COMPOSITE_NESTING_DEPTH }}
+                            />
+                        ) : (
+                            <FormattedMessage id={'MergeIntoComposite'} />
+                        )
+                    }
+                >
+                    <span>
+                        <Badge
+                            overlap={'circular'}
+                            color="error"
+                            invisible={!isCompositeNestingLimitReached}
+                            badgeContent={'×'}
+                            sx={styles.badgeStyle}
+                        >
+                            <IconButton
+                                onClick={doMergeModificationsIntoComposite}
+                                size={'small'}
+                                disabled={
+                                    selectedNetworkModifications?.length === 0 ||
+                                    saveInProgress ||
+                                    isRootNode ||
+                                    isCompositeNestingLimitReached
+                                }
+                            >
+                                <ArrowsInputIcon />
+                            </IconButton>
+                        </Badge>
                     </span>
                 </Tooltip>
                 <Tooltip title={<FormattedMessage id={'importFromGridExplore'} />}>

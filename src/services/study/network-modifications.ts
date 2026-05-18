@@ -1990,6 +1990,22 @@ export function moveVoltageLevelFeederBays({
     });
 }
 
+export function mergeModificationsIntoComposite(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuids: UUID[]
+): Promise<UUID> {
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modification`;
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(modificationUuids),
+    });
+}
+
 export function getNetworkModificationsFromComposite(
     compositeModificationUuids: string[],
     onlyMetadata: boolean = true
