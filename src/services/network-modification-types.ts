@@ -83,6 +83,10 @@ export interface BatteryModificationInfos {
     connectionName: AttributeModification<string> | null;
     connectionPosition: AttributeModification<number> | null;
     terminalConnected: AttributeModification<boolean> | null;
+    pMeasurementValue: AttributeModification<number> | null;
+    pMeasurementValidity: AttributeModification<boolean> | null;
+    qMeasurementValue: AttributeModification<number> | null;
+    qMeasurementValidity: AttributeModification<boolean> | null;
     properties: Property[] | null;
     directTransX: AttributeModification<number> | null;
     stepUpTransformerX: AttributeModification<number> | null;
