@@ -419,8 +419,6 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     columnDef.rowDrag = true;
                 }
                 switch (field.type) {
-                    case BOOLEAN:
-                        break;
                     case NUMBER:
                         columnDef.cellEditor = NumericEditor;
                         break;
@@ -554,9 +552,6 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     pagination
                     rowSelection={{
                         mode: 'multiRow',
-                        enableClickSelection: false,
-                        checkboxes: true,
-                        headerCheckbox: true,
                     }}
                     overrideLocales={AGGRID_LOCALES}
                     csvProps={undefined}
