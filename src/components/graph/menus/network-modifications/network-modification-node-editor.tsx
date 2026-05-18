@@ -742,14 +742,10 @@ const NetworkModificationNodeEditor = () => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
-                    const liveModifications = res.filter(
-                        (networkModification) => networkModification.stashed === false
-                    );
+                    const liveModifications = res.filter((networkModification) => !networkModification.stashed);
                     updateSelectedItems(liveModifications);
                     setModifications(liveModifications);
-                    setModificationsToRestore(
-                        res.filter((networkModification) => networkModification.stashed === true)
-                    );
+                    setModificationsToRestore(res.filter((networkModification) => networkModification.stashed));
                 }
             })
             .catch((error) => {
@@ -968,8 +964,6 @@ const NetworkModificationNodeEditor = () => {
 
     const doMergeModificationsIntoComposite = useCallback(() => {
         const selectedModUuids: UUID[] = selectedNetworkModifications.map((item) => item.uuid);
-        // TODO : check max depth 5
-
         setSaveInProgress(true);
         mergeModificationsIntoComposite(studyUuid, currentNode?.id, selectedModUuids)
             .then((compositeUuid: UUID) => {
@@ -980,7 +974,7 @@ const NetworkModificationNodeEditor = () => {
                 // TODO : tout "refermer"
             })
             .catch((error: ErrorMessage) => {
-                snackWithFallback(snackError, error, { headerId: 'MergeIntoCompositeError' }); // TODO : tester ça
+                snackWithFallback(snackError, error, { headerId: 'MergeIntoCompositeError' });
             })
             .finally(() => {
                 setSaveInProgress(false);
@@ -1290,17 +1284,39 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id={'MergeIntoComposite'} />}>
+                <Tooltip
+                    title={
+                        isCompositeNestingLimitReached ? (
+                            <FormattedMessage
+                                id={'CompositeNestingLimitReached'}
+                                values={{ limit: MAX_COMPOSITE_NESTING_DEPTH }}
+                            />
+                        ) : (
+                            <FormattedMessage id={'MergeIntoComposite'} />
+                        )
+                    }
+                >
                     <span>
-                        <IconButton
-                            onClick={doMergeModificationsIntoComposite}
-                            size={'small'}
-                            disabled={
-                                selectedNetworkModifications?.length === 0 || saveInProgress === true || isRootNode
-                            }
+                        <Badge
+                            overlap={'circular'}
+                            color="error"
+                            invisible={!isCompositeNestingLimitReached}
+                            badgeContent={'×'}
+                            sx={styles.badgeStyle}
                         >
-                            <ArrowsInputIcon />
-                        </IconButton>
+                            <IconButton
+                                onClick={doMergeModificationsIntoComposite}
+                                size={'small'}
+                                disabled={
+                                    selectedNetworkModifications?.length === 0 ||
+                                    saveInProgress ||
+                                    isRootNode ||
+                                    isCompositeNestingLimitReached
+                                }
+                            >
+                                <ArrowsInputIcon />
+                            </IconButton>
+                        </Badge>
                     </span>
                 </Tooltip>
                 <Tooltip title={<FormattedMessage id={'importFromGridExplore'} />}>
