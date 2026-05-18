@@ -35,6 +35,7 @@ import {
     getBaseNetworkModificationUrl,
     getStudyUrlWithNodeUuid,
     getStudyUrlWithNodeUuidAndRootNetworkUuid,
+    PREFIX_STUDY_QUERIES,
 } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
@@ -1613,7 +1614,7 @@ export function fetchNetworkModifications(
 
 export function fetchNetworkModificationsToExport(studyUuid: UUID | null, nodeUuid: string) {
     console.info('Fetching network modifications to export for nodeUuid : ', nodeUuid);
-    const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '/export';
+    const modificationsGetUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/export`;
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }

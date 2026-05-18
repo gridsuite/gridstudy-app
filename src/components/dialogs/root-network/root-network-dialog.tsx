@@ -111,6 +111,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     const {
         reset,
         setValue,
+        getValues,
         setError,
         formState: { errors },
     } = formMethods;
@@ -180,7 +181,8 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     );
 
     const isFormValid = isObjectEmpty(errors);
-
+    const caseFile = getValues(FieldConstants.CASE_FILE);
+    const isJsonImport = caseFile instanceof File && caseFile.name.toLowerCase().endsWith('.json');
     return (
         <CustomFormProvider validationSchema={getSchema(isModification)} {...formMethods}>
             <ModificationDialog
@@ -229,7 +231,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                         />
                     </Grid>
                 </Grid>
-                {!isModification && <ImportParametersSection />}
+                {(!isModification || !isJsonImport) && <ImportParametersSection />}
             </ModificationDialog>
         </CustomFormProvider>
     );

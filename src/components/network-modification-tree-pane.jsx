@@ -311,31 +311,24 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
         console.info('node with id ' + nodeId + ' from study ' + studyUuid + ' selected for copy');
         copyNode(studyUuid, nodeId, CopyType.SUBTREE_COPY);
     };
-    const treeNodes = useSelector((state) => state.networkModificationTreeModel?.treeNodes);
 
     const handleExportNodeInfos = async (node) => {
         try {
             const data = await fetchNetworkModificationsToExport(studyUuid, node.id);
-            let nodeName = treeNodes?.find((n) => n.id === node.id)?.data.label;
-            const exportNodeInfos = {
-                nodeName: nodeName,
-                modifications: data.modifications,
-                unexportedModifications: data.unexported,
-            };
 
-            const blob = new Blob([JSON.stringify(exportNodeInfos, null, 2)], { type: 'application/json' });
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
 
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'exportNode.json';
+            link.download = 'exportStudy.json';
 
             document.body.appendChild(link);
             link.click();
             link.remove();
             URL.revokeObjectURL(url);
         } catch (error) {
-            console.error('Error while exporting node Infos:', error);
+            console.error('Error while exporting study:', error);
         }
     };
 
