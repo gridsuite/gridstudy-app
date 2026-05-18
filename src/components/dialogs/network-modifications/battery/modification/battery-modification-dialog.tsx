@@ -35,6 +35,9 @@ import {
     getReactiveLimitsValidationSchema,
     getReactiveLimitsFormData,
     REMOVE,
+    getInjectionActiveReactivePowerEmptyFormData,
+    getInjectionActiveReactivePowerValidationSchemaProperties,
+    getInjectionActiveReactivePowerEditData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -56,6 +59,7 @@ import BatteryModificationForm from './battery-modification-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { MEASUREMENT_P, MEASUREMENT_Q, VALIDITY } from '../../../../utils/field-constants';
 
 const emptyFormData = {
     [FieldConstants.EQUIPMENT_NAME]: '',
@@ -67,6 +71,7 @@ const emptyFormData = {
     ...getActivePowerControlEmptyFormData(true),
     ...emptyProperties,
     ...getShortCircuitEmptyFormData(),
+    ...getInjectionActiveReactivePowerEmptyFormData(FieldConstants.STATE_ESTIMATION),
 };
 
 const formSchema = yup
@@ -87,6 +92,7 @@ const formSchema = yup
             }),
         [FieldConstants.CONNECTIVITY]: getConnectivityWithPositionSchema(true),
         [FieldConstants.REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
+        [FieldConstants.STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
         ...getSetPointsSchema(true),
         ...getActivePowerControlSchema(true),
         ...getShortCircuitFormSchema(true),
@@ -166,6 +172,7 @@ export default function BatteryModificationDialog({
                     directTransX: editData?.directTransX?.value ?? null,
                     stepUpTransformerX: editData?.stepUpTransformerX?.value ?? null,
                 }),
+                ...getInjectionActiveReactivePowerEditData(FieldConstants.STATE_ESTIMATION, editData),
             });
         },
         [reset]
@@ -272,6 +279,7 @@ export default function BatteryModificationDialog({
             const reactiveLimits = battery[FieldConstants.REACTIVE_LIMITS];
             const isReactiveCapabilityCurveOn =
                 reactiveLimits?.[FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const stateEstimationData = battery[FieldConstants.STATE_ESTIMATION];
             const batteryModificationInfos = {
                 type: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
                 uuid: editData?.uuid ?? null,
@@ -311,6 +319,14 @@ export default function BatteryModificationDialog({
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
                     ? (reactiveLimits[FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
+                pMeasurementValue: toModificationOperation(
+                    stateEstimationData?.[MEASUREMENT_P]?.[FieldConstants.VALUE]
+                ),
+                pMeasurementValidity: toModificationOperation(stateEstimationData?.[MEASUREMENT_P]?.[VALIDITY]),
+                qMeasurementValue: toModificationOperation(
+                    stateEstimationData?.[MEASUREMENT_Q]?.[FieldConstants.VALUE]
+                ),
+                qMeasurementValidity: toModificationOperation(stateEstimationData?.[MEASUREMENT_Q]?.[VALIDITY]),
                 properties: toModificationProperties(battery) ?? null,
                 directTransX: toModificationOperation(battery[FieldConstants.TRANSIENT_REACTANCE]),
                 stepUpTransformerX: toModificationOperation(battery[FieldConstants.TRANSFORMER_REACTANCE]),
