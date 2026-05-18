@@ -437,7 +437,6 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 selectedProperties.map((propertyName: string) => ({
                     field: PROPERTY_CSV_COLUMN_PREFIX + propertyName,
                     headerName: propertyName,
-                    cellRenderer: DefaultCellRenderer,
                     editable: true,
                     singleClickEdit: true,
                 }))
