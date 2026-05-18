@@ -252,6 +252,7 @@ export function TabularDialog({
                 titleId={dialogMode === TabularModificationType.CREATION ? 'TabularCreation' : 'TabularModification'}
                 open={open}
                 isDataFetching={dataFetching}
+                slotProps={{ paper: { sx: { height: '83vh' } } }}
                 {...dialogProps}
             >
                 <TabularForm dataFetching={dataFetching} dialogMode={dialogMode} />

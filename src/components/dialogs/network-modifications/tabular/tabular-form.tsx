@@ -555,7 +555,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     }}
                     overrideLocales={AGGRID_LOCALES}
                     csvProps={undefined}
-                    cssProps={{ height: 500 }}
+                    cssProps={{ height: 535 }}
                 />
             </Grid>
             <DefinePropertiesDialog
