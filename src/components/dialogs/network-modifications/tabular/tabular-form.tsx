@@ -53,7 +53,7 @@ import {
     transformIfFrenchNumber,
 } from './tabular-common';
 import { ColDef } from 'ag-grid-community';
-import { BOOLEAN, ENUM, NUMBER } from '../../../network/constants';
+import { ENUM, NUMBER } from '../../../network/constants';
 import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
 import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
 import { useFilterCsvGenerator } from './use-filter-csv-generator';

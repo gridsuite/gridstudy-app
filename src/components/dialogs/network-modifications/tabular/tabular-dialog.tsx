@@ -18,7 +18,7 @@ import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
 import { FORM_LOADING_DELAY } from 'components/network/constants.js';
-import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, CSV_FILENAME, TYPE } from 'components/utils/field-constants.js';
+import { CSV_FILENAME, MODIFICATIONS_TABLE, TABULAR_PROPERTIES, TYPE } from 'components/utils/field-constants.js';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { createTabularModification } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.type';
