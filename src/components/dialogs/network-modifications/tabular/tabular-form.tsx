@@ -7,10 +7,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { type FieldValues, useFormContext, type UseFieldArrayReturn, useWatch } from 'react-hook-form';
+import { type FieldValues, type UseFieldArrayReturn, useFormContext, useWatch } from 'react-hook-form';
 import {
     AutocompleteInput,
-    BooleanNullableCellRenderer,
     CustomAgGridTable,
     DefaultCellRenderer,
     DirectoryItemSelector,
@@ -421,21 +420,15 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 }
                 switch (field.type) {
                     case BOOLEAN:
-                        columnDef.cellRenderer = BooleanNullableCellRenderer;
-                        columnDef.cellEditor = 'agSelectCellEditor';
-                        columnDef.cellEditorParams = { values: [null, true, false] };
                         break;
                     case NUMBER:
-                        columnDef.cellRenderer = DefaultCellRenderer;
                         columnDef.cellEditor = NumericEditor;
                         break;
                     case ENUM:
-                        columnDef.cellRenderer = DefaultCellRenderer;
                         columnDef.cellEditor = 'agSelectCellEditor';
                         columnDef.cellEditorParams = { values: [null, ...(field.options ?? [])] };
                         break;
                     default:
-                        columnDef.cellRenderer = DefaultCellRenderer;
                         break;
                 }
                 return columnDef;
