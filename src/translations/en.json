@@ -1547,5 +1547,8 @@
     "deactivateModification": "Deactivate network modification",
     "deselectModification": "Deselect modification",
     "selectModification": "Select modification",
-    "moveModification": "Move modification"
-} 
+    "moveModification": "Move modification",
+    "disconnectedLoadActivePower": "Load cut off (MW)",
+    "disconnectedGenerationActivePower": "Power cut off (MW)",
+    "ConstraintsFromPowerCutOff": "Power cut off"
+}

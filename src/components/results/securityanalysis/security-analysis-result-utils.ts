@@ -785,3 +785,63 @@ export const getStoreFields = (index: number): string => {
             return '';
     }
 };
+
+export const flattenNmKPowerCutOff = (result: ConstraintsFromContingencyItem[] | null) => {
+    if (!result) {
+        return undefined;
+    }
+    return result.map(({ contingency }) => {
+        const { contingencyId, status, elements = [], connectivityResult } = contingency || {};
+        return {
+            contingencyId,
+            contingencyEquipmentsIds: elements.map((e) => e.id),
+            status,
+            disconnectedLoadActivePower: connectivityResult?.disconnectedLoadActivePower,
+            disconnectedGenerationActivePower: connectivityResult?.disconnectedGenerationActivePower,
+        };
+    });
+};
+
+export const securityAnalysisTableNmKPowerCutOffColumnsDefinition = (
+    intl: IntlShape,
+    filterEnums: FilterEnumsType,
+    getEnumLabel: (value: string) => string,
+    tabIndex: number
+): ColDef[] => {
+    const { sortParams, filterParams } = createTableParams(tabIndex);
+
+    return [
+        makeAgGridCustomHeaderColumn({
+            ...makeAgGridStringColumn('Contingency', 'contingencyId', intl, filterParams, sortParams),
+            valueGetter: contingencyGetterValues,
+            cellRenderer: ContingencyCellRenderer,
+        }),
+        createEnumColumn(
+            'status',
+            'ComputationStatus',
+            filterEnums['status'] ?? [],
+            getEnumLabel,
+            intl,
+            sortParams,
+            filterParams
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn(
+                'disconnectedLoadActivePower',
+                'disconnectedLoadActivePower',
+                intl,
+                filterParams,
+                sortParams
+            )
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn(
+                'disconnectedGenerationActivePower',
+                'disconnectedGenerationActivePower',
+                intl,
+                filterParams,
+                sortParams
+            )
+        ),
+    ];
+};

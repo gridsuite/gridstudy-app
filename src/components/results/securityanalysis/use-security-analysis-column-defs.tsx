@@ -17,6 +17,7 @@ import {
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
+    securityAnalysisTableNmKPowerCutOffColumnsDefinition,
 } from './security-analysis-result-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
@@ -33,13 +34,15 @@ export interface SecurityAnalysisFilterEnumsType {
 type UseSecurityAnalysisColumnsDefsProps = (
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
-    tabIndex: number
+    tabIndex: number,
+    isPowerCutOffView: boolean
 ) => ColDef[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
     filterEnums,
     resultType,
-    tabIndex
+    tabIndex,
+    isPowerCutOffView
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -132,6 +135,9 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
     );
 
     const columnDefs = useMemo(() => {
+        if (isPowerCutOffView) {
+            return securityAnalysisTableNmKPowerCutOffColumnsDefinition(intl, filterEnums.nmk, getEnumLabel, tabIndex);
+        }
         switch (resultType) {
             case RESULT_TYPE.NMK_CONTINGENCIES:
                 return securityAnalysisTableNmKContingenciesColumnsDefinition(
@@ -152,7 +158,16 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
             case RESULT_TYPE.N:
                 return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex);
         }
-    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex]);
+    }, [
+        isPowerCutOffView,
+        resultType,
+        intl,
+        filterEnums.nmk,
+        filterEnums.n,
+        getEnumLabel,
+        tabIndex,
+        SubjectIdRenderer,
+    ]);
 
     return columnDefs;
 };

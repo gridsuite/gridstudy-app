@@ -9,7 +9,7 @@ import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, use
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AppState } from '../../../redux/reducer.type';
-import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
+import { Badge, Box, LinearProgress, MenuItem, Select, SelectChangeEvent, Tab, Tabs } from '@mui/material';
 import {
     downloadSecurityAnalysisResultZippedCsv,
     fetchSecurityAnalysisResult,
@@ -21,7 +21,13 @@ import { ComputingType, EquipmentType, GsLangUser, type MuiStyles, PARAM_DEVELOP
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { RESULT_TYPE, SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
+import {
+    ConstraintsFromContingencyItem,
+    ContingenciesFromConstraintItem,
+    RESULT_TYPE,
+    SecurityAnalysisQueryParams,
+    SecurityAnalysisTabProps,
+} from './security-analysis.type';
 import {
     convertFilterValues,
     getStoreFields,
@@ -75,7 +81,8 @@ const styles = {
 const N_RESULTS_TAB_INDEX = 0;
 const NMK_RESULTS_TAB_INDEX = 1;
 const LOGS_TAB_INDEX = 2;
-
+const POWER_CUT_OFF_VIEW = 'constraints-from-power-cut-off' as const;
+type NmkView = NMK_TYPE | typeof POWER_CUT_OFF_VIEW;
 export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabProps> = ({
     studyUuid,
     nodeUuid,
@@ -86,9 +93,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const [tabIndex, setTabIndex] = useState(isDeveloperMode ? N_RESULTS_TAB_INDEX : NMK_RESULTS_TAB_INDEX);
     const tabIndexRef = useRef<number>(null);
     tabIndexRef.current = tabIndex;
-    const [nmkType, setNmkType] = useState(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
     const [count, setCount] = useState<number>(0);
+    const [nmkView, setNmkView] = useState<NmkView>(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
+    const nmkType: NMK_TYPE = nmkView === POWER_CUT_OFF_VIEW ? NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES : nmkView;
 
+    const isPowerCutOffView = nmkView === POWER_CUT_OFF_VIEW;
     useEffect(() => {
         if (!isDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
             // handle tabIndex when dev mode is disabled
@@ -185,14 +194,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         setCount(0);
     }, [setResult]);
 
-    const handleChangeNmkType = () => {
+    const handleChangeNmkType = (event: SelectChangeEvent<NmkView>) => {
         dispatchPagination({ page: 0, rowsPerPage });
         resetResultStates();
-        setNmkType(
-            nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                ? NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS
-                : NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-        );
+        setNmkView(event.target.value as NmkView);
     };
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
@@ -229,7 +234,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex);
+    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex, isPowerCutOffView);
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
     const downloadZipResult = useCallback(
@@ -279,6 +284,30 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         return allFilterTypes;
     }, [tabIndex]);
 
+    const hasPowerCutOffData = useMemo(() => {
+        const content = result?.content;
+        if (!content) {
+            return false;
+        }
+        const hasCutOff = (
+            cr?: {
+                disconnectedLoadActivePower?: number | null;
+                disconnectedGenerationActivePower?: number | null;
+            } | null
+        ) => cr?.disconnectedLoadActivePower != null || cr?.disconnectedGenerationActivePower != null;
+
+        if (resultType === RESULT_TYPE.NMK_CONTINGENCIES) {
+            return (content as ConstraintsFromContingencyItem[]).some((item) =>
+                hasCutOff(item.contingency?.connectivityResult)
+            );
+        }
+        if (resultType === RESULT_TYPE.NMK_LIMIT_VIOLATIONS) {
+            return (content as ContingenciesFromConstraintItem[]).some((item) =>
+                item.contingencies?.some((c) => hasCutOff(c.contingency?.connectivityResult))
+            );
+        }
+        return false;
+    }, [result, resultType]);
     return (
         <>
             <Box sx={styles.tabsAndToolboxContainer}>
@@ -307,20 +336,31 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 )}
                 <Box sx={styles.toolboxContainer}>
                     {tabIndex === NMK_RESULTS_TAB_INDEX && (
-                        <Select
-                            labelId="nmk-type-label"
-                            value={nmkType}
-                            onChange={handleChangeNmkType}
-                            autoWidth={true}
-                            size="small"
+                        <Badge
+                            overlap="circular"
+                            color="info"
+                            variant="dot"
+                            invisible={!hasPowerCutOffData || isPowerCutOffView}
+                            sx={{ '& .MuiBadge-badge': { right: -4, top: 8 } }}
                         >
-                            <MenuItem value={NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}>
-                                <FormattedMessage id="ConstraintsFromContingencies" />
-                            </MenuItem>
-                            <MenuItem value={NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS}>
-                                <FormattedMessage id="ContingenciesFromConstraints" />
-                            </MenuItem>
-                        </Select>
+                            <Select
+                                labelId="nmk-type-label"
+                                value={nmkView}
+                                onChange={handleChangeNmkType}
+                                autoWidth={true}
+                                size="small"
+                            >
+                                <MenuItem value={NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}>
+                                    <FormattedMessage id="ConstraintsFromContingencies" />
+                                </MenuItem>
+                                <MenuItem value={NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS}>
+                                    <FormattedMessage id="ContingenciesFromConstraints" />
+                                </MenuItem>
+                                <MenuItem value={POWER_CUT_OFF_VIEW}>
+                                    <FormattedMessage id="ConstraintsFromPowerCutOff" />
+                                </MenuItem>
+                            </Select>
+                        </Badge>
                     )}
                     {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                         <SecurityAnalysisExportButton
@@ -349,6 +389,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
                         isFromContingency={nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}
+                        isPowerCutOffView={isPowerCutOffView}
                         paginationProps={{
                             count,
                             rowsPerPage: rowsPerPage as number,

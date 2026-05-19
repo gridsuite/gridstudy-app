@@ -129,6 +129,7 @@ export interface SecurityAnalysisResultNmkProps {
     columnDefs: ColDef<any>[];
     isLoadingResult: boolean;
     isFromContingency: boolean;
+    isPowerCutOffView: boolean;
     paginationProps: TablePaginationProps;
     computationSubType: string;
 }

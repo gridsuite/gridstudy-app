@@ -13,6 +13,7 @@ import {
     SecurityAnalysisResultNmkProps,
 } from './security-analysis.type';
 import {
+    flattenNmKPowerCutOff,
     flattenNmKResultsConstraints,
     flattenNmKResultsContingencies,
     handlePostSortRows,
@@ -37,6 +38,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
     columnDefs,
     isLoadingResult,
     isFromContingency,
+    isPowerCutOffView,
     paginationProps,
     computationSubType,
 }) => {
@@ -45,23 +47,27 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
     const theme = useTheme();
     const intl: IntlShape = useIntl();
 
-    const rows = useMemo(
-        () =>
-            isFromContingency
-                ? flattenNmKResultsContingencies(intl, content as ConstraintsFromContingencyItem[])
-                : flattenNmKResultsConstraints(intl, content as ContingenciesFromConstraintItem[]),
-        [content, intl, isFromContingency]
-    );
+    const rows = useMemo(() => {
+        if (isPowerCutOffView) {
+            return flattenNmKPowerCutOff(content as ConstraintsFromContingencyItem[]);
+        }
+        return isFromContingency
+            ? flattenNmKResultsContingencies(intl, content as ConstraintsFromContingencyItem[])
+            : flattenNmKResultsConstraints(intl, content as ContingenciesFromConstraintItem[]);
+    }, [content, intl, isFromContingency, isPowerCutOffView]);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
+            if (isPowerCutOffView) {
+                return undefined;
+            }
             if ((isFromContingency && params?.data?.contingencyId) || (!isFromContingency && params?.data?.subjectId)) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
             }
         },
-        [isFromContingency, theme.selectedRow.background]
+        [isFromContingency, isPowerCutOffView, theme.selectedRow.background]
     );
 
     const agGridProps = {
