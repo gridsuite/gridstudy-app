@@ -191,6 +191,7 @@ const NetworkModificationNodeEditor = () => {
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
+    const [selectionResetKey, setSelectionResetKey] = useState(0);
     const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
     const {
@@ -968,10 +969,9 @@ const NetworkModificationNodeEditor = () => {
         mergeModificationsIntoComposite(studyUuid, currentNode?.id, selectedModUuids)
             .then((compositeUuid: UUID) => {
                 dispatch(setHighlightModification(compositeUuid));
+                setSelectionResetKey((k) => k + 1);
                 // TODO : la mettre en édition (après GRD-4232)
-                // TODO : tout désélectionner : ce qui suit ne fonctionne pas....
-                setSelectedNetworkModifications([]);
-                // TODO : tout "refermer"
+                // TODO : tout "refermer" -> les composites restent
             })
             .catch((error: ErrorMessage) => {
                 snackWithFallback(snackError, error, { headerId: 'MergeIntoCompositeError' });
@@ -1200,6 +1200,7 @@ const NetworkModificationNodeEditor = () => {
                 pendingState={pendingState}
                 createAllColumns={createAllColumns}
                 highlightedModificationUuid={highlightedModificationUuid}
+                selectionResetKey={selectionResetKey}
                 studyUuid={studyUuid}
                 currentNodeId={currentNode?.id}
             />
