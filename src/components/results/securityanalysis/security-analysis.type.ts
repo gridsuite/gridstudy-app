@@ -46,11 +46,17 @@ export interface ContingencyItem {
     status?: string;
     contingencyId?: string;
     elements?: Element[];
+    connectivityResult?: ConnectivityResult;
 }
 
 export interface Contingency {
     contingency?: ContingencyItem;
     limitViolation?: LimitViolation;
+}
+
+export interface ConnectivityResult {
+    disconnectedLoadActivePower: number;
+    disconnectedGenerationActivePower: number;
 }
 
 export interface SecurityAnalysisNmkTableRow {
