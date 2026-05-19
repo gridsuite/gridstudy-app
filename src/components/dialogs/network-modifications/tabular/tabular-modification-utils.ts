@@ -13,6 +13,7 @@ import {
     FieldType,
     MODIFICATION_TYPES,
     ReactiveCapabilityCurvePoints,
+    SHUNT_COMPENSATOR_TYPES,
     toModificationOperation,
 } from '@gridsuite/commons-ui';
 import {
@@ -104,7 +105,6 @@ import {
     LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
     REGULATING_TERMINAL_TYPES,
-    SHUNT_COMPENSATOR_TYPES,
     SIDE as SIDE_CONSTANTS,
 } from '../../../network/constants';
 import {
