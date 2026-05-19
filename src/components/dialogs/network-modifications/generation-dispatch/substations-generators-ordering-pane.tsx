@@ -5,24 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SUBSTATIONS_GENERATORS_ORDERING, SUBSTATION_IDS } from 'components/utils/field-constants';
+import { SUBSTATION_IDS, SUBSTATIONS_GENERATORS_ORDERING } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
 import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
-import { DndTable, DndColumnType, DndColumn } from '@gridsuite/commons-ui';
+import { DndColumn, DndColumnType, DndTable } from '@gridsuite/commons-ui';
 import SubstationsAutocomplete from './substations-autocomplete.js';
 
 interface SubstationsGeneratorsOrderingPaneProps {
     substations: string[];
 }
 
-export type EnrichedDndColumn = DndColumn & { initialValue: unknown[] | null };
-
 const SubstationsGeneratorsOrderingPane = ({ substations }: Readonly<SubstationsGeneratorsOrderingPaneProps>) => {
     const intl = useIntl();
     const id = SUBSTATIONS_GENERATORS_ORDERING;
 
-    const columnsDefinition = useMemo<EnrichedDndColumn[]>(() => {
+    const columnsDefinition = useMemo<DndColumn[]>(() => {
         return [
             {
                 label: intl
@@ -55,7 +53,7 @@ const SubstationsGeneratorsOrderingPane = ({ substations }: Readonly<Substations
 
     return (
         <DndTable
-            arrayFormName={`${id}`}
+            name={`${id}`}
             useFieldArrayOutput={useFieldArraySubstationsGeneratorsOrdering}
             createRows={createSubstationsGeneratorsOrderingRows}
             columnsDefinition={columnsDefinition}
