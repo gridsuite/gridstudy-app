@@ -65,8 +65,8 @@ export function NameHeaderRenderer({ table }: HCtx) {
     );
 }
 
-export function NameCellRenderer({ row }: CCtx) {
-    return <NameCell row={row} />;
+export function NameCellRenderer({ row, column }: CCtx) {
+    return <NameCell row={row} onEditNameCell={column.columnDef.meta?.onEditNameCell} />;
 }
 
 export function DescriptionCellRenderer({ row }: CCtx) {

@@ -7,7 +7,7 @@
 
 import { Dispatch, RefObject, SetStateAction } from 'react';
 import { SxProps, Theme } from '@mui/material';
-import { ExcludedNetworkModifications, NameHeaderProps } from '@gridsuite/commons-ui';
+import { ComposedModificationMetadata, ExcludedNetworkModifications, NameHeaderProps } from '@gridsuite/commons-ui';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 declare module '@tanstack/react-table' {
@@ -33,5 +33,6 @@ declare module '@tanstack/react-table' {
         setModificationsToExclude?: Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
         isCurrentRootNetwork?: boolean;
         currentRootNetworkTag?: string;
+        onEditNameCell?: (modification: ComposedModificationMetadata, newName?: string) => void;
     }
 }

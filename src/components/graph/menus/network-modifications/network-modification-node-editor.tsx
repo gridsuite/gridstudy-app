@@ -126,7 +126,7 @@ import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modificati
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
 import { FetchStatus } from '../../../../services/utils.type';
-import { BASE_COLUMNS, createRootNetworksColumns } from './network-modification-table/createColumns';
+import { createBaseColumns, createRootNetworksColumns } from './network-modification-table/createColumns';
 import { ColumnDef } from '@tanstack/react-table';
 
 const nonEditableModificationTypes = new Set([
@@ -1126,7 +1126,7 @@ const NetworkModificationNodeEditor = () => {
 
     const columns = useMemo<ColumnDef<ComposedModificationMetadata>[]>(
         () => [
-            ...BASE_COLUMNS,
+            ...createBaseColumns(handleCellEdit),
             ...(isMonoRootStudy
                 ? []
                 : createRootNetworksColumns(
