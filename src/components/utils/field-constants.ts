@@ -161,10 +161,6 @@ export const REGULATING_TERMINAL_CONNECTABLE_TYPE = 'regulatingTerminalConnectab
 //ShuntCompensator
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
 export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
-export const CHARACTERISTICS_CHOICES = {
-    Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
-    SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
-} as const;
 export const VOLTAGE_REGULATION_MODE = 'voltageRegulationMode';
 export const VOLTAGE_REGULATION_MODES = {
     VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
@@ -230,6 +226,7 @@ export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
 export const AREA = 'area';
 export const TEMPERATURE = 'temperature';
 export const SHAPE_FACTOR = 'shapeFactor';
+export const APPLY_SEGMENTS_LIMITS = 'applySegmentsLimits';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
