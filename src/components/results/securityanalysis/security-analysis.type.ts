@@ -108,6 +108,7 @@ export type SecurityAnalysisQueryParams = {
     sort?: SortConfig[];
     page?: number;
     size?: number;
+    isPowerCutOffView?: boolean;
 };
 
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;

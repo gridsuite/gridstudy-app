@@ -745,7 +745,10 @@ export enum NMK_TYPE {
     CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
 }
 
-export const mappingColumnToField = (resultType: RESULT_TYPE) => {
+export const mappingColumnToField = (resultType: RESULT_TYPE, isPowerCutOffView = false) => {
+    if (resultType === RESULT_TYPE.NMK_CONTINGENCIES && isPowerCutOffView) {
+        return FROM_COLUMN_TO_FIELD_NMK_POWER_CUT_OFF;
+    }
     switch (resultType) {
         case RESULT_TYPE.N:
             return FROM_COLUMN_TO_FIELD_N;
@@ -800,6 +803,13 @@ export const flattenNmKPowerCutOff = (result: ConstraintsFromContingencyItem[] |
             disconnectedGenerationActivePower: connectivityResult?.disconnectedGenerationActivePower,
         };
     });
+};
+
+export const FROM_COLUMN_TO_FIELD_NMK_POWER_CUT_OFF: Record<string, string> = {
+    contingencyId: 'contingencyId',
+    status: 'status',
+    disconnectedLoadActivePower: 'connectivityResult.disconnectedLoadActivePower',
+    disconnectedGenerationActivePower: 'connectivityResult.disconnectedGenerationActivePower',
 };
 
 export const securityAnalysisTableNmKPowerCutOffColumnsDefinition = (

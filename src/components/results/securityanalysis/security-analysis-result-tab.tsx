@@ -164,8 +164,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         if (globalFilters) {
             params['globalFilters'] = globalFilters;
         }
+        if (isPowerCutOffView) {
+            params['isPowerCutOffView'] = true;
+        }
         return params;
-    }, [resultType, tabIndex, sortConfig, filters, globalFiltersFromState, page, rowsPerPage, intl]);
+    }, [resultType, tabIndex, sortConfig, filters, globalFiltersFromState, isPowerCutOffView, page, rowsPerPage, intl]);
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {

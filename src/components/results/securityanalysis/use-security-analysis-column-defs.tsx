@@ -135,7 +135,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
     );
 
     const columnDefs = useMemo(() => {
-        if (isPowerCutOffView) {
+        if (isPowerCutOffView && resultType === RESULT_TYPE.NMK_CONTINGENCIES) {
             return securityAnalysisTableNmKPowerCutOffColumnsDefinition(intl, filterEnums.nmk, getEnumLabel, tabIndex);
         }
         switch (resultType) {
