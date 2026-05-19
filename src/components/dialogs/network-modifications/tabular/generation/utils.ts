@@ -9,10 +9,10 @@ import {
     Identifiable,
     type MuiStyles,
     ReactiveCapabilityCurvePoints,
+    SHUNT_COMPENSATOR_TYPES,
     type UseStateBooleanReturn,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
-import { SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import {
     MAX_Q_AT_NOMINAL_V,
     REACTIVE_CAPABILITY_CURVE,

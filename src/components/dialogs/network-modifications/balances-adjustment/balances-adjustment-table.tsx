@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { DndTable, DndColumnType, SelectInput } from '@gridsuite/commons-ui';
+import { DndColumnType, DndTable, SelectInput } from '@gridsuite/commons-ui';
 import {
     BALANCES_ADJUSTMENT,
     BALANCES_ADJUSTMENT_COUNTRIES,
@@ -33,7 +33,7 @@ export default function BalancesAdjustmentTable() {
                 editable: true,
                 type: DndColumnType.TEXT as const,
                 initialValue: '',
-                width: '100px',
+                width: '110px',
             },
             {
                 label: 'BalancesAdjustmentCountry',
@@ -45,8 +45,8 @@ export default function BalancesAdjustmentTable() {
                         name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_COUNTRIES}`,
                     }),
                 initialValue: [],
-                width: '300px',
-                maxWidth: '300px',
+                width: '280px',
+                maxWidth: '280px',
             },
             {
                 label: 'BalancesAdjustmentShiftEquipmentType',
@@ -88,7 +88,7 @@ export default function BalancesAdjustmentTable() {
                 editable: true,
                 type: DndColumnType.NUMERIC as const,
                 initialValue: 0,
-                width: '100px',
+                width: '110px',
             },
         ].map((column) => ({
             ...column,
@@ -111,14 +111,12 @@ export default function BalancesAdjustmentTable() {
 
     return (
         <DndTable
-            arrayFormName={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}`}
+            name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}`}
             useFieldArrayOutput={useFieldArrayOutputBalancesAdjustment}
             createRows={createRow}
             columnsDefinition={columnsDefinition}
             tableHeight={450}
             withAddRowsDialog={false}
-            disableDragAndDrop={true}
-            showMoveArrow={false}
         />
     );
 }
