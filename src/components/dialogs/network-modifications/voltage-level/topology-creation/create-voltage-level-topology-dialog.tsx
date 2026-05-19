@@ -16,6 +16,7 @@ import {
     snackWithFallback,
     useSnackMessage,
     DeepNullable,
+    MAX_SECTIONS_COUNT,
 } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
@@ -37,7 +38,12 @@ const emptyFormData = {
     [SWITCH_KINDS]: [],
 };
 const formSchema = yup.object().shape({
-    [SECTION_COUNT]: yup.number().required().nullable().min(1, 'AtLeastOneSectionAdded'),
+    [SECTION_COUNT]: yup
+        .number()
+        .required()
+        .nullable()
+        .min(1, 'AtLeastOneSectionAdded')
+        .max(MAX_SECTIONS_COUNT, 'SectionCountMustBeLessThanOrEqualToTwenty'),
     [SWITCHES_BETWEEN_SECTIONS]: yup
         .string()
         .nullable()

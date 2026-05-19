@@ -10,7 +10,6 @@ import {
     B0,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICE_AUTOMATON,
-    CHARACTERISTICS_CHOICES,
     MAX_Q_AT_NOMINAL_V,
     MAX_Q_AUTOMATON,
     MAX_S_AUTOMATON,
@@ -22,7 +21,12 @@ import {
     Q0,
     SETPOINTS_LIMITS,
 } from 'components/utils/field-constants';
-import { FloatInput, ReactivePowerAdornment, SusceptanceAdornment } from '@gridsuite/commons-ui';
+import {
+    CHARACTERISTICS_CHOICES,
+    FloatInput,
+    ReactivePowerAdornment,
+    SusceptanceAdornment,
+} from '@gridsuite/commons-ui';
 import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { InputAdornment, Grid, TextField } from '@mui/material';

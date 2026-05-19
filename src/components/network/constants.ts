@@ -25,11 +25,6 @@ export const ENERGY_SOURCES = [
     { id: 'OTHER', label: 'Other' },
 ] as const;
 
-export const SHUNT_COMPENSATOR_TYPES = {
-    REACTOR: { id: 'REACTOR', label: 'Reactor' },
-    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
-} as const;
-
 export const REGULATION_TYPES = {
     DISTANT: { id: 'DISTANT', label: 'Distant' },
     LOCAL: { id: 'LOCAL', label: 'Local' },
@@ -72,11 +67,6 @@ export const APPLICABILITY = {
 export function getEnergySourceLabel(energySourceId?: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
-
-export const REACTIVE_LIMIT_TYPES = [
-    { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
-    { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
-] as const;
 
 const PROPORTIONAL = { id: 'PROPORTIONAL', label: 'Proportional' } as const;
 const REGULAR_DISTRIBUTION = {
@@ -168,7 +158,7 @@ export const REGULATING_TERMINAL_TYPES = [
     'BATTERY',
     'SHUNT_COMPENSATOR',
     'STATIC_VAR_COMPENSATOR',
-    'DANGLING_LINE',
+    'BOUNDARY_LINE',
     'HVDC_CONVERTER_STATION',
     'BUSBAR_SECTION',
 ];

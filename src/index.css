@@ -95,7 +95,7 @@ code {
     stroke: var(--vl-color, #c80000);
     fill: none;
 }
-.sld-wire.sld-dangling-line {
+.sld-wire.sld-boundary-line {
     stroke-width: 2px;
 }
 .sld-wire.sld-tie-line {
@@ -187,6 +187,14 @@ code {
     fill: black;
 }
 .sld-lock {
+    stroke: none;
+    fill: black;
+}
+.nad-lock {
+    stroke: none;
+    fill: black;
+}
+.nad-flash {
     stroke: none;
     fill: black;
 }

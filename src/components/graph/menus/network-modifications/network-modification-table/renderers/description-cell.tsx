@@ -64,7 +64,7 @@ const DescriptionCell: FunctionComponent<{ data: ComposedModificationMetadata }>
                     updateElement={updateModification}
                 />
             )}
-            <Tooltip title={description ?? <FormattedMessage id={'addDescription'} />} arrow placement="right">
+            <Tooltip title={description ?? <FormattedMessage id={'addDescription'} />} arrow enterDelay={250}>
                 <span>
                     <IconButton
                         onClick={handleModifyDescription}

@@ -60,17 +60,28 @@ const limitsGroupValidationSchema = () => ({
 });
 
 const temporaryLimitsValidationSchema = () => {
-    return yup.object().shape({
-        [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
-        [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-        [TEMPORARY_LIMIT_NAME]: yup
-            .string()
-            .nullable()
-            .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
-                is: (limitValue: number | null, limitDuration: number | null) => limitValue || limitDuration,
-                then: () => yup.string().nullable().required(),
-            }),
-    });
+    return yup.object().shape(
+        {
+            [TEMPORARY_LIMIT_DURATION]: yup
+                .number()
+                .nullable()
+                .min(0)
+                .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_NAME], {
+                    is: (value: number | null, name: string | null) => value != null || !!name,
+                    then: (schema) => schema.required(),
+                }),
+            [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
+            [TEMPORARY_LIMIT_NAME]: yup
+                .string()
+                .nullable()
+                .trim()
+                .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
+                    is: (value: number | null, duration: number | null) => value != null || duration != null,
+                    then: (schema) => schema.required(),
+                }),
+        },
+        [[TEMPORARY_LIMIT_DURATION, TEMPORARY_LIMIT_NAME]]
+    );
 };
 const limitsPropertyValidationSchema = () => {
     return yup.object().shape({

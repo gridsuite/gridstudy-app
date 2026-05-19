@@ -39,7 +39,6 @@ import {
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
     ENABLED,
-    EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FLOW_SET_POINT_REGULATING_VALUE,
@@ -512,8 +511,8 @@ const TwoWindingsTransformerCreationDialog = ({
     };
 
     const computeRegulatingTerminalType = (tapChangerValue: RatioTapChangerFormSchema | PhaseTapChangerFormSchema) => {
-        if (tapChangerValue?.[EQUIPMENT]?.type) {
-            return tapChangerValue?.[EQUIPMENT]?.type;
+        if (tapChangerValue?.[FieldConstants.EQUIPMENT]?.type) {
+            return tapChangerValue?.[FieldConstants.EQUIPMENT]?.type;
         }
 
         if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
@@ -546,7 +545,7 @@ const TwoWindingsTransformerCreationDialog = ({
         if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
             return currentTwtId;
         } else {
-            return tapChangerValue?.[EQUIPMENT]?.id;
+            return tapChangerValue?.[FieldConstants.EQUIPMENT]?.id;
         }
     };
 
