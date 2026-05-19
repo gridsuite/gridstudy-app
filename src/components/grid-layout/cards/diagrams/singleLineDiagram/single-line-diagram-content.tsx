@@ -244,10 +244,13 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
 
     const handleRunShortcircuitAnalysis = useCallback(
         (busId: string, debug: boolean) => {
+            if (!currentNode || !currentRootNetworkUuid) {
+                return;
+            }
             dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
-            dispatch(setOneBusShortcircuitAnalysisContext(equipmentId, currentRootNetworkUuid!, currentNode!.id));
+            dispatch(setOneBusShortcircuitAnalysisContext(equipmentId, currentRootNetworkUuid, currentNode.id));
             dispatch(setComputationStarting(true));
-            startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, busId, debug)
+            startShortCircuitAnalysis(studyUuid, currentNode.id, currentRootNetworkUuid, busId, debug)
                 .then(() => {
                     debug && subscribeDebug(ComputingType.SHORT_CIRCUIT_ONE_BUS);
                 })
