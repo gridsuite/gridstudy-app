@@ -6,6 +6,7 @@
  */
 
 import { memo, useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../../../utils/running-status';
 import {
@@ -28,7 +29,7 @@ import {
 } from '@powsybl/network-viewer';
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
-import { useTheme } from '@mui/material/styles';
+import { darken, lighten, Theme, useTheme } from '@mui/material/styles';
 import {
     ComputingType,
     EquipmentType,
@@ -38,12 +39,18 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import LinearProgress from '@mui/material/LinearProgress';
+
 import { updateSwitchState } from '../../../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
 import { startShortCircuitAnalysis } from '../../../../../services/study/short-circuit-analysis';
-import { useOneBusShortcircuitAnalysisLoader } from './hooks/use-one-bus-shortcircuit-analysis-loader';
-import { setComputationStarting, setComputingStatus, updateColumnFiltersAction } from '../../../../../redux/actions';
+import {
+    setComputationStarting,
+    setComputingStatus,
+    setOneBusShortcircuitAnalysisContext,
+    updateColumnFiltersAction,
+} from '../../../../../redux/actions';
 import { TableType } from '../../../../../types/custom-aggrid-types';
 import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
@@ -57,10 +64,20 @@ import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-typ
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import useDebugSubscription from '../../../../../hooks/computation-debug/use-debug-subscription';
 
+const oneBusLoaderStyle = (theme: Theme) => ({
+    display: 'flex',
+    position: 'relative',
+    width: 'fit-content',
+    margin: '5px auto',
+    backgroundColor:
+        theme.palette.mode === 'light'
+            ? darken(theme.palette.background.paper, 0.1)
+            : lighten(theme.palette.background.paper, 0.2),
+});
+
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly studyUuid: UUID;
-    readonly panelId: UUID;
     readonly svg?: string;
     readonly svgMetadata?: SLDMetadata;
     readonly loadingState: boolean;
@@ -88,7 +105,6 @@ const defaultBusMenuState: BusMenuState = {
 const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const {
         studyUuid,
-        panelId,
         visible,
         diagramParams,
         onNextVoltageLevelDiagram,
@@ -119,13 +135,15 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const shortCircuitStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]);
 
-    const [
-        oneBusShortcircuitAnalysisLoaderMessage,
-        isDiagramRunningOneBusShortcircuitAnalysis,
-        displayOneBusShortcircuitAnalysisLoader,
-        resetOneBusShortcircuitAnalysisLoader,
-    ] = useOneBusShortcircuitAnalysisLoader(panelId);
-
+    const equipmentId =
+        diagramParams.type === DiagramType.VOLTAGE_LEVEL ? diagramParams.voltageLevelId : diagramParams.substationId;
+    const isOneBusScRunning = useSelector(
+        (state: AppState) =>
+            state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS] === RunningStatus.RUNNING &&
+            state.oneBusShortCircuitAnalysisContext?.equipmentId === equipmentId &&
+            state.oneBusShortCircuitAnalysisContext?.nodeId === state.currentTreeNode?.id &&
+            state.oneBusShortCircuitAnalysisContext?.rootNetworkUuid === state.currentRootNetworkUuid
+    );
     /**
      * DIAGRAM INTERACTIVITY
      */
@@ -227,7 +245,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const handleRunShortcircuitAnalysis = useCallback(
         (busId: string, debug: boolean) => {
             dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
-            displayOneBusShortcircuitAnalysisLoader();
+            dispatch(setOneBusShortcircuitAnalysisContext(equipmentId, currentRootNetworkUuid!, currentNode!.id));
             dispatch(setComputationStarting(true));
             startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, busId, debug)
                 .then(() => {
@@ -236,7 +254,6 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
                 .catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'startShortCircuitError' });
                     dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.FAILED));
-                    resetOneBusShortcircuitAnalysisLoader();
                 })
                 .finally(() => {
                     dispatch(setComputationStarting(false));
@@ -244,16 +261,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
                     dispatch(updateColumnFiltersAction(TableType.Logs, ComputingType.SHORT_CIRCUIT_ONE_BUS, []));
                 });
         },
-        [
-            dispatch,
-            displayOneBusShortcircuitAnalysisLoader,
-            studyUuid,
-            currentNode?.id,
-            currentRootNetworkUuid,
-            snackError,
-            resetOneBusShortcircuitAnalysisLoader,
-            subscribeDebug,
-        ]
+        [dispatch, equipmentId, studyUuid, currentNode, currentRootNetworkUuid, snackError, subscribeDebug]
     );
 
     const displayBusMenu = () => {
@@ -450,10 +458,14 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     return (
         <>
             <Box height={2}>
-                {(loadingState || modificationInProgress || isDiagramRunningOneBusShortcircuitAnalysis) && (
-                    <LinearProgress />
+                {(loadingState || modificationInProgress || isOneBusScRunning) && <LinearProgress />}
+                {isOneBusScRunning && (
+                    <Chip
+                        label={<FormattedMessage id="ShortcircuitInProgress" />}
+                        variant="outlined"
+                        sx={oneBusLoaderStyle}
+                    />
                 )}
-                {oneBusShortcircuitAnalysisLoaderMessage}
             </Box>
             <Box
                 ref={svgRef}
