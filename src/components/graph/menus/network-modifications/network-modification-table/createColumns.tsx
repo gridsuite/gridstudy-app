@@ -29,7 +29,7 @@ import { RootNetworkMetadata } from '../network-modification-menu.type';
  */
 
 export const createBaseColumns = (
-    onNameCellEdit: (modification: ComposedModificationMetadata, newName: string) => Promise<unknown>
+    onNameChange: (modification: ComposedModificationMetadata, newName: string) => Promise<unknown>
 ): ColumnDef<ComposedModificationMetadata>[] => [
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
@@ -58,7 +58,7 @@ export const createBaseColumns = (
         cell: NameCellRenderer,
         meta: {
             cellStyle: networkModificationTableStyles.columnCell.modificationName,
-            onChange: onNameCellEdit,
+            onChange: onNameChange,
         },
         minSize: 160,
     },

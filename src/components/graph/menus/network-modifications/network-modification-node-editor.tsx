@@ -102,6 +102,7 @@ import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-fi
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
 import {
+    CommonStudyEventData,
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
     isNodeDeletedNotification,
@@ -113,7 +114,6 @@ import {
     ModificationsUpdatingInProgressEventData,
     NotificationType,
     parseEventData,
-    CommonStudyEventData,
 } from 'types/notification-types';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level/topology-modification/voltage-level-topology-modification-dialog';
@@ -809,6 +809,15 @@ const NetworkModificationNodeEditor = () => {
         modificationsToExclude,
     ]);
 
+    const handleNameChange = useCallback(
+        (modification: ComposedModificationMetadata, newName: string) =>
+            setModificationMetadata(studyUuid, currentNode?.id, modification.uuid, {
+                name: newName,
+                type: modification.type,
+            }),
+        [studyUuid, currentNode?.id]
+    );
+
     const handleEvent = useCallback(
         (event: MessageEvent) => {
             const eventData = parseEventData<CommonStudyEventData>(event);
@@ -1085,15 +1094,6 @@ const NetworkModificationNodeEditor = () => {
         (modification: NetworkModificationMetadata) =>
             !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
         [isAnyNodeBuilding, mapDataLoading, isDragging]
-    );
-
-    const handleNameChange = useCallback(
-        (modification: ComposedModificationMetadata, newName: string) =>
-            setModificationMetadata(studyUuid, currentNode?.id, modification.uuid, {
-                name: newName,
-                type: modification.type,
-            }),
-        [studyUuid, currentNode?.id]
     );
 
     const columns = useMemo<ColumnDef<ComposedModificationMetadata>[]>(
