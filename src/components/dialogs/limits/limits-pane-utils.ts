@@ -10,12 +10,12 @@ import {
     CURRENT_LIMITS,
     ENABLE_OLG_MODIFICATION,
     ID,
-    LIMIT_SETS_MODIFICATION_TYPE,
     LIMITS,
     LIMITS_PROPERTIES,
     NAME,
     OLG_IS_DUPLICATE,
     OPERATIONAL_LIMITS_GROUPS,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     PERMANENT_LIMIT,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
@@ -60,17 +60,28 @@ const limitsGroupValidationSchema = () => ({
 });
 
 const temporaryLimitsValidationSchema = () => {
-    return yup.object().shape({
-        [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
-        [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-        [TEMPORARY_LIMIT_NAME]: yup
-            .string()
-            .nullable()
-            .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
-                is: (limitValue: number | null, limitDuration: number | null) => limitValue || limitDuration,
-                then: () => yup.string().nullable().required(),
-            }),
-    });
+    return yup.object().shape(
+        {
+            [TEMPORARY_LIMIT_DURATION]: yup
+                .number()
+                .nullable()
+                .min(0)
+                .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_NAME], {
+                    is: (value: number | null, name: string | null) => value != null || !!name,
+                    then: (schema) => schema.required(),
+                }),
+            [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
+            [TEMPORARY_LIMIT_NAME]: yup
+                .string()
+                .nullable()
+                .trim()
+                .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
+                    is: (value: number | null, duration: number | null) => value != null || duration != null,
+                    then: (schema) => schema.required(),
+                }),
+        },
+        [[TEMPORARY_LIMIT_DURATION, TEMPORARY_LIMIT_NAME]]
+    );
 };
 const limitsPropertyValidationSchema = () => {
     return yup.object().shape({
@@ -177,7 +188,7 @@ export const formatOpLimitGroupsToFormInfos = (
     return limitGroups
         .filter(
             (opLimitGroup: OperationalLimitsGroup | OperationalLimitsGroupModificationInfos) =>
-                opLimitGroup.modificationType !== LIMIT_SETS_MODIFICATION_TYPE.DELETE
+                opLimitGroup.modificationType !== OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.DELETE
         )
         .map((opLimitGroup: OperationalLimitsGroup | OperationalLimitsGroupModificationInfos) => {
             return {
@@ -349,7 +360,7 @@ export const addModificationTypeToOpLimitsGroups = (
             applicability: limitsGroupForm.applicability,
             limitsProperties: limitsGroupForm.limitsProperties,
             currentLimits: currentLimits,
-            modificationType: LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD,
+            modificationType: OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.MODIFY_OR_ADD,
             temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
         };
     });

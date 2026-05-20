@@ -14,12 +14,14 @@ import {
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
+    MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
     ModificationType,
     NetworkModificationMetadata,
     NetworkModificationsTable,
     NotificationsUrlKeys,
     removeNullFields,
+    setModificationMetadata,
     snackWithFallback,
     useNotificationsListener,
     usePrevious,
@@ -31,7 +33,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Alert, Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
+import { Alert, Badge, Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -163,7 +165,9 @@ const NetworkModificationNodeEditor = () => {
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
-    const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationMetadata[]>([]);
+    const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
+        []
+    );
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -757,7 +761,11 @@ const NetworkModificationNodeEditor = () => {
         setIsFetchingModifications(true);
         fetchExcludedNetworkModifications(studyUuid, currentNode.id)
             .then((res: ExcludedNetworkModifications[]) => {
-                setModificationsToExclude(res);
+                // Check if during asynchronous request currentNode has already changed
+                // otherwise accept fetch results
+                if (currentNode.id === currentNodeIdRef.current) {
+                    setModificationsToExclude(res);
+                }
             })
             .catch((error: Error) => {
                 snackWithFallback(snackError, error);
@@ -801,6 +809,47 @@ const NetworkModificationNodeEditor = () => {
         modificationsToExclude,
     ]);
 
+    const updateModification = useCallback(
+        async (modif: ComposedModificationMetadata, newName: string) => {
+            return setModificationMetadata(studyUuid, currentNode?.id, modif.uuid, {
+                name: newName,
+                type: modif?.type,
+            });
+        },
+        [studyUuid, currentNode?.id]
+    );
+    const handleCellEdit = useCallback(
+        async (modification: ComposedModificationMetadata, newName?: string) => {
+            if (!newName || newName.trim() === '') {
+                return;
+            }
+            const trimmed = newName.trim();
+
+            // Optimistic immediate update
+            setModifications((prev) =>
+                prev.map((m) => {
+                    if (m.uuid !== modification.uuid) return m;
+                    try {
+                        const parsed = JSON.parse(m.messageValues);
+                        return {
+                            ...m,
+                            messageValues: JSON.stringify({ ...parsed, name: trimmed }),
+                        };
+                    } catch {
+                        return m;
+                    }
+                })
+            );
+
+            try {
+                await updateModification(modification, trimmed);
+            } catch {
+                // Rollback in case of an error
+                setModifications((prev) => prev.map((m) => (m.uuid !== modification.uuid ? m : modification)));
+            }
+        },
+        [updateModification]
+    );
     const handleEvent = useCallback(
         (event: MessageEvent) => {
             const eventData = parseEventData<CommonStudyEventData>(event);
@@ -1051,7 +1100,7 @@ const NetworkModificationNodeEditor = () => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
-    const handleRowSelected = useCallback((selectedRows: NetworkModificationMetadata[]) => {
+    const handleRowSelected = useCallback((selectedRows: ComposedModificationMetadata[]) => {
         setSelectedNetworkModifications(selectedRows);
     }, []);
 
@@ -1116,6 +1165,7 @@ const NetworkModificationNodeEditor = () => {
                 modificationsToExclude={modificationsToExclude}
                 setModificationsToExclude={setModificationsToExclude}
                 isDisabled={isAnyNodeBuilding || mapDataLoading}
+                onEditNameCell={handleCellEdit}
             />
         );
     };
@@ -1177,6 +1227,11 @@ const NetworkModificationNodeEditor = () => {
         return modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress;
     }, [modificationsToRestore.length, isAnyNodeBuilding, deleteInProgress]);
 
+    const isCompositeNestingLimitReached = useMemo(
+        () => selectedNetworkModifications.some((row) => (row.maxDepth ?? 0) >= MAX_COMPOSITE_NESTING_DEPTH),
+        [selectedNetworkModifications]
+    );
+
     return (
         <>
             <Toolbar sx={styles.toolbar}>
@@ -1204,17 +1259,39 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
+                <Tooltip
+                    title={
+                        isCompositeNestingLimitReached ? (
+                            <FormattedMessage
+                                id={'CompositeNestingLimitReached'}
+                                values={{ limit: MAX_COMPOSITE_NESTING_DEPTH }}
+                            />
+                        ) : (
+                            <FormattedMessage id={'SaveToGridexplore'} />
+                        )
+                    }
+                >
                     <span>
-                        <IconButton
-                            onClick={openCreateCompositeModificationDialog}
-                            size={'small'}
-                            disabled={
-                                selectedNetworkModifications?.length === 0 || saveInProgress === true || isRootNode
-                            }
+                        <Badge
+                            overlap={'circular'}
+                            color="error"
+                            invisible={!isCompositeNestingLimitReached}
+                            badgeContent={'×'}
+                            sx={styles.badgeStyle}
                         >
-                            <SaveIcon />
-                        </IconButton>
+                            <IconButton
+                                onClick={openCreateCompositeModificationDialog}
+                                size={'small'}
+                                disabled={
+                                    selectedNetworkModifications?.length === 0 ||
+                                    saveInProgress ||
+                                    isRootNode ||
+                                    isCompositeNestingLimitReached
+                                }
+                            >
+                                <SaveIcon />
+                            </IconButton>
+                        </Badge>
                     </span>
                 </Tooltip>
                 <Tooltip title={<FormattedMessage id={'cut'} />}>

@@ -27,6 +27,8 @@ import {
     ModificationByAssignmentDto,
     GeneratorCreationDto,
     GeneratorModificationDto,
+    ShuntCompensatorCreationDto,
+    BatteryCreationDto,
 } from '@gridsuite/commons-ui';
 import { getBaseNetworkModificationUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -34,7 +36,6 @@ import type { UUID } from 'node:crypto';
 import {
     AttachLineInfo,
     BalancesAdjustmentInfos,
-    BatteryCreationInfos,
     BatteryModificationInfos,
     ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
@@ -50,7 +51,6 @@ import {
     LinesAttachToSplitLinesInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    ShuntCompensatorCreationInfos,
     ShuntCompensatorModificationInfos,
     StaticVarCompensatorCreationInfo,
     TopologyVoltageLevelModificationInfos,
@@ -332,19 +332,12 @@ export function generatorScaling(
     );
 }
 
-export function createBattery({
-    batteryCreationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    batteryCreationInfos: BatteryCreationInfos;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: string | null;
-    isUpdate: boolean;
-}) {
+export function createBattery(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: BatteryCreationDto
+) {
     let createBatteryUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
@@ -353,12 +346,12 @@ export function createBattery({
         console.info('Creating battery creation');
     }
     return backendFetchText(createBatteryUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(batteryCreationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -504,7 +497,7 @@ export function createShuntCompensator({
     modificationUuid,
     isUpdate,
 }: {
-    shuntCompensatorCreationInfos: ShuntCompensatorCreationInfos;
+    shuntCompensatorCreationInfos: ShuntCompensatorCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string;

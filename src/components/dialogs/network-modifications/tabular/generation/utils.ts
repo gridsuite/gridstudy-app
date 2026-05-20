@@ -9,10 +9,10 @@ import {
     Identifiable,
     type MuiStyles,
     ReactiveCapabilityCurvePoints,
+    SHUNT_COMPENSATOR_TYPES,
     type UseStateBooleanReturn,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
-import { SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import {
     MAX_Q_AT_NOMINAL_V,
     REACTIVE_CAPABILITY_CURVE,
@@ -184,7 +184,7 @@ export const mapShuntCompensatorToFormFields = (shuntCompensator: Record<string,
     return {
         ...formattedCompensator,
         [MAX_Q_AT_NOMINAL_V]:
-            Number(formattedCompensator.qatNominalV) * Number(formattedCompensator.maximumSectionCount),
+            Number(formattedCompensator.qAtNominalV) * Number(formattedCompensator.maximumSectionCount),
     };
 };
 
