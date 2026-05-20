@@ -8,18 +8,6 @@
 import type { UUID } from 'node:crypto';
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from '.';
 import { backendFetch, backendFetchJson, ComputingType } from '@gridsuite/commons-ui';
-import RunningStatus, {
-    getDynamicMarginCalculationRunningStatus,
-    getDynamicSecurityAnalysisRunningStatus,
-    getDynamicSimulationRunningStatus,
-    getLoadFlowRunningStatus,
-    getPccMinRunningStatus,
-    getSecurityAnalysisRunningStatus,
-    getSensitivityAnalysisRunningStatus,
-    getShortCircuitAnalysisRunningStatus,
-    getStateEstimationRunningStatus,
-    getVoltageInitRunningStatus,
-} from '../../components/utils/running-status';
 import { fetchLoadFlowComputationInfos } from './loadflow';
 
 interface BasicStudyInfos {
