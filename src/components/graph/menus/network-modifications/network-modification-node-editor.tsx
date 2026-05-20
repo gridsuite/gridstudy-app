@@ -21,6 +21,7 @@ import {
     NetworkModificationsTable,
     NotificationsUrlKeys,
     removeNullFields,
+    setModificationMetadata,
     snackWithFallback,
     useNotificationsListener,
     usePrevious,
@@ -125,7 +126,7 @@ import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modificati
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
 import { FetchStatus } from '../../../../services/utils.type';
-import { BASE_COLUMNS, createRootNetworksColumns } from './network-modification-table/createColumns';
+import { createBaseColumns, createRootNetworksColumns } from './network-modification-table/createColumns';
 import { ColumnDef } from '@tanstack/react-table';
 
 const nonEditableModificationTypes = new Set([
@@ -1086,9 +1087,21 @@ const NetworkModificationNodeEditor = () => {
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
 
+    const handleNameChange = useCallback(
+        (modification: ComposedModificationMetadata, newName: string) =>
+            setModificationMetadata(studyUuid, currentNode?.id, modification.uuid, {
+                name: newName,
+                type: modification.type,
+            }),
+        [studyUuid, currentNode?.id]
+    );
+
     const columns = useMemo<ColumnDef<ComposedModificationMetadata>[]>(
-        () => [...BASE_COLUMNS, ...(isMonoRootStudy ? [] : createRootNetworksColumns(rootNetworks))],
-        [isMonoRootStudy, rootNetworks]
+        () => [
+            ...createBaseColumns(handleNameChange),
+            ...(isMonoRootStudy ? [] : createRootNetworksColumns(rootNetworks)),
+        ],
+        [handleNameChange, isMonoRootStudy, rootNetworks]
     );
 
     const renderNetworkModificationsTable = () => {

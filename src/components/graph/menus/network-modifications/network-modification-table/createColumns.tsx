@@ -28,7 +28,9 @@ import { RootNetworkMetadata } from '../network-modification-menu.type';
  * for each individual root network hence they all have a dedicated column generated on the fly
  */
 
-export const BASE_COLUMNS: ColumnDef<ComposedModificationMetadata>[] = [
+export const createBaseColumns = (
+    onNameCellEdit: (modification: ComposedModificationMetadata, newName: string) => Promise<unknown>
+): ColumnDef<ComposedModificationMetadata>[] => [
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
         cell: DragHandleRenderer,
@@ -56,6 +58,7 @@ export const BASE_COLUMNS: ColumnDef<ComposedModificationMetadata>[] = [
         cell: NameCellRenderer,
         meta: {
             cellStyle: networkModificationTableStyles.columnCell.modificationName,
+            onChange: onNameCellEdit,
         },
         minSize: 160,
     },
