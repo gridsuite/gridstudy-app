@@ -64,11 +64,14 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
         [isFromContingency, theme.selectedRow.background]
     );
 
-    const agGridProps = {
-        postSortRows: handlePostSortRows,
-        getRowStyle,
-        tooltipShowDelay: 0,
-    };
+    const agGridProps = useMemo(
+        () => ({
+            postSortRows: handlePostSortRows(isFromContingency),
+            getRowStyle,
+            tooltipShowDelay: 0,
+        }),
+        [isFromContingency, getRowStyle]
+    );
 
     return (
         <Box sx={styles.container}>
