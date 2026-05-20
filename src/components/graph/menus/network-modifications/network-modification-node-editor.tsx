@@ -21,7 +21,6 @@ import {
     NetworkModificationsTable,
     NotificationsUrlKeys,
     removeNullFields,
-    setModificationMetadata,
     snackWithFallback,
     useNotificationsListener,
     usePrevious,
@@ -809,47 +808,6 @@ const NetworkModificationNodeEditor = () => {
         modificationsToExclude,
     ]);
 
-    const updateModification = useCallback(
-        async (modif: ComposedModificationMetadata, newName: string) => {
-            return setModificationMetadata(studyUuid, currentNode?.id, modif.uuid, {
-                name: newName,
-                type: modif?.type,
-            });
-        },
-        [studyUuid, currentNode?.id]
-    );
-    const handleCellEdit = useCallback(
-        async (modification: ComposedModificationMetadata, newName?: string) => {
-            if (!newName || newName.trim() === '') {
-                return;
-            }
-            const trimmed = newName.trim();
-
-            // Optimistic immediate update
-            setModifications((prev) =>
-                prev.map((m) => {
-                    if (m.uuid !== modification.uuid) return m;
-                    try {
-                        const parsed = JSON.parse(m.messageValues);
-                        return {
-                            ...m,
-                            messageValues: JSON.stringify({ ...parsed, name: trimmed }),
-                        };
-                    } catch {
-                        return m;
-                    }
-                })
-            );
-
-            try {
-                await updateModification(modification, trimmed);
-            } catch {
-                // Rollback in case of an error
-                setModifications((prev) => prev.map((m) => (m.uuid !== modification.uuid ? m : modification)));
-            }
-        },
-        [updateModification]
-    );
     const handleEvent = useCallback(
         (event: MessageEvent) => {
             const eventData = parseEventData<CommonStudyEventData>(event);
@@ -1165,7 +1123,6 @@ const NetworkModificationNodeEditor = () => {
                 modificationsToExclude={modificationsToExclude}
                 setModificationsToExclude={setModificationsToExclude}
                 isDisabled={isAnyNodeBuilding || mapDataLoading}
-                onEditNameCell={handleCellEdit}
             />
         );
     };
