@@ -25,8 +25,10 @@ import {
     EquipmentType,
     ExcludedNetworkModifications,
     ModificationByAssignmentDto,
+    ComposedModificationMetadata,
     GeneratorCreationDto,
     GeneratorModificationDto,
+    ShuntCompensatorCreationDto,
     BatteryCreationDto,
 } from '@gridsuite/commons-ui';
 import {
@@ -54,7 +56,6 @@ import {
     LinesAttachToSplitLinesInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    ShuntCompensatorCreationInfos,
     ShuntCompensatorModificationInfos,
     StaticVarCompensatorCreationInfo,
     TopologyVoltageLevelModificationInfos,
@@ -147,7 +148,7 @@ export function setModificationMetadata(
     studyUuid: UUID | null,
     nodeUuid: UUID | undefined,
     modificationUuid: UUID | undefined,
-    metadata: Partial<NetworkModificationMetadata>
+    metadata: Partial<NetworkModificationMetadata | ComposedModificationMetadata>
 ): Promise<Response> {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('uuids', String([modificationUuid]));
@@ -541,7 +542,7 @@ export function createShuntCompensator({
     modificationUuid,
     isUpdate,
 }: {
-    shuntCompensatorCreationInfos: ShuntCompensatorCreationInfos;
+    shuntCompensatorCreationInfos: ShuntCompensatorCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string;

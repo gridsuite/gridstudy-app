@@ -396,25 +396,6 @@ export interface Assignment {
     propertyName?: string;
 }
 
-export interface ShuntCompensatorCreationInfos {
-    type: ModificationType;
-    uuid?: string;
-    equipmentId: string;
-    equipmentName: string | null;
-    maxSusceptance: number | null;
-    maxQAtNominalV: number | null;
-    shuntCompensatorType: string | null;
-    sectionCount: number;
-    maximumSectionCount: number;
-    voltageLevelId: string | null;
-    busOrBusbarSectionId: string | null;
-    connectionDirection: string | null;
-    connectionName: string | null;
-    connectionPosition: number | null;
-    terminalConnected: boolean | null;
-    properties: Property[] | null;
-}
-
 export interface LineSegmentInfos {
     [SEGMENT_TYPE_ID]: string; //used to fetch LineTypeInfo
     [SEGMENT_DISTANCE_VALUE]: number;

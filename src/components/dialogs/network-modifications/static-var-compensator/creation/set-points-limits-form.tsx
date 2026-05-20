@@ -8,7 +8,6 @@
 import Grid from '@mui/material/Grid';
 import {
     CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
@@ -19,6 +18,7 @@ import {
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
 import {
+    CHARACTERISTICS_CHOICES,
     EquipmentType,
     FieldConstants,
     FloatInput,
