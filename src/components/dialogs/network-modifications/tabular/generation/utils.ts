@@ -184,7 +184,7 @@ export const mapShuntCompensatorToFormFields = (shuntCompensator: Record<string,
     return {
         ...formattedCompensator,
         [MAX_Q_AT_NOMINAL_V]:
-            Number(formattedCompensator.qatNominalV) * Number(formattedCompensator.maximumSectionCount),
+            Number(formattedCompensator.qAtNominalV) * Number(formattedCompensator.maximumSectionCount),
     };
 };
 
