@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RunningStatus } from 'components/utils/running-status';
+import { getComputationRunningStatus, RunningStatus } from 'components/utils/running-status';
 import type { UUID } from 'node:crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
@@ -13,7 +13,6 @@ import { ComputingType, NotificationsUrlKeys, useNotificationsListener } from '@
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
 import { parseEventData, StudyUpdatedEventData } from '../../types/notification-types';
-import { getRunningStatusByComputingType } from '../../services/study/study';
 
 interface UseComputingStatusProps {
     (
@@ -24,7 +23,7 @@ interface UseComputingStatusProps {
             studyUuid: UUID,
             nodeUuid: UUID,
             currentRootNetworkUuid: UUID
-        ) => Promise<Record<ComputingType, string> | null>
+        ) => Promise<Map<ComputingType, string> | null>
     ): void;
 }
 
@@ -34,7 +33,7 @@ interface LastUpdateProps {
         studyUuid: UUID,
         nodeUuid: UUID,
         currentRootNetworkUuid: UUID
-    ) => Promise<Record<ComputingType, string> | null>;
+    ) => Promise<Map<ComputingType, string> | null>;
 }
 
 function isWorthUpdate(
@@ -103,8 +102,8 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
         nodeUuidRef.current = nodeUuid;
         rootNetworkUuidRef.current = currentRootNetworkUuid;
         try {
-            // fetch computing status
-            const computingStatusResult: Record<ComputingType, string> | null = await allComputingStatusFetcher(
+            // fetch computing statuses
+            const computingStatusesResult: Map<ComputingType, string> | null = await allComputingStatusFetcher(
                 studyUuid,
                 nodeUuid,
                 currentRootNetworkUuid
@@ -120,13 +119,11 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
             ) {
                 return;
             }
-            // if request has not been canceled for any reason, fetch if necessary computingStatusParameters
-            const allStatusInfos = computingStatusResult;
-            if (allStatusInfos != null) {
+            // if request has not been canceled for any reason
+            if (computingStatusesResult != null) {
                 // for each status
-                const allStatusInfosMap = new Map(Object.entries(allStatusInfos) as [ComputingType, string][]);
-                allStatusInfosMap.forEach(async (statusValue, computingType) => {
-                    const status = getRunningStatusByComputingType(statusValue, computingType);
+                computingStatusesResult.forEach((statusValue, computingType) => {
+                    const status = getComputationRunningStatus(statusValue, computingType);
                     dispatch(setComputingStatus(computingType, status));
                 });
             }

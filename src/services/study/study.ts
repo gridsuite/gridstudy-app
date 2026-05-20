@@ -121,40 +121,11 @@ export function getComputingStatusParametersFetcher(
     }
 }
 
-export function getRunningStatusByComputingType(statusValue: string, computingType: ComputingType): RunningStatus {
-    switch (computingType) {
-        case ComputingType.PCC_MIN:
-            return getPccMinRunningStatus(statusValue);
-        case ComputingType.LOAD_FLOW:
-            return getLoadFlowRunningStatus(statusValue);
-        case ComputingType.SECURITY_ANALYSIS:
-            return getSecurityAnalysisRunningStatus(statusValue);
-        case ComputingType.SENSITIVITY_ANALYSIS:
-            return getSensitivityAnalysisRunningStatus(statusValue);
-        case ComputingType.SHORT_CIRCUIT:
-            return getShortCircuitAnalysisRunningStatus(statusValue);
-        case ComputingType.SHORT_CIRCUIT_ONE_BUS:
-            return getShortCircuitAnalysisRunningStatus(statusValue);
-        case ComputingType.DYNAMIC_SIMULATION:
-            return getDynamicSimulationRunningStatus(statusValue);
-        case ComputingType.DYNAMIC_SECURITY_ANALYSIS:
-            return getDynamicSecurityAnalysisRunningStatus(statusValue);
-        case ComputingType.DYNAMIC_MARGIN_CALCULATION:
-            return getDynamicMarginCalculationRunningStatus(statusValue);
-        case ComputingType.VOLTAGE_INITIALIZATION:
-            return getVoltageInitRunningStatus(statusValue);
-        case ComputingType.STATE_ESTIMATION:
-            return getStateEstimationRunningStatus(statusValue);
-        default:
-            return RunningStatus.IDLE;
-    }
-}
-
 export function fetchAllComputationStatus(
     studyUuid: UUID,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID
-): Promise<Record<ComputingType, string>> {
+): Promise<Map<ComputingType, string>> {
     console.info(
         `Fetching all computation status on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${nodeUuid}' ...`
     );
