@@ -1540,6 +1540,6 @@
     "deselectModification": "Désélectionner la modification",
     "selectModification": "Sélectionner la modification",
     "moveModification": "Déplacer la modification",
-    "disconnectedLoadActivePower": "Consommation coupée (Mvar)",
-    "disconnectedGenerationActivePower": "Production coupée (Mvar)"
+    "disconnectedLoadActivePower": "Consommation coupée (MW)",
+    "disconnectedGenerationActivePower": "Production coupée (MW)"
 }
