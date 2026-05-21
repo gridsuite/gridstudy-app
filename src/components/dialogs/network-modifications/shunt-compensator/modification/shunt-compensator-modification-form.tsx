@@ -6,11 +6,13 @@
  */
 
 import {
-    TextInput,
-    PropertiesForm,
-    filledTextField,
+    CharacteristicsForm,
     ConnectivityForm,
+    filledTextField,
     PowerMeasurementsForm,
+    PropertiesForm,
+    ShuntCompensatorFormInfos,
+    TextInput,
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
 import { Grid, TextField } from '@mui/material';
@@ -19,8 +21,6 @@ import GridSection from '../../../commons/grid-section';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos.js';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
-import CharacteristicsForm from '../characteristics-pane/characteristics-form';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
@@ -75,12 +75,11 @@ export default function ShuntCompensatorModificationForm({
     );
 
     const characteristicsForm = (
-        <CharacteristicsForm previousValues={shuntCompensatorToModify ?? undefined} isModification={true} />
+        <CharacteristicsForm previousValues={shuntCompensatorToModify ?? undefined} isModification />
     );
 
     const connectivityForm = (
         <ConnectivityForm
-            withPosition={true}
             isEquipmentModification={true}
             previousValues={shuntCompensatorToModify ?? undefined}
             voltageLevelOptions={voltageLevelOptions}

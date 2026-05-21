@@ -11,14 +11,14 @@ import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
     NMK_TYPE,
-    PowerCutOffFromContingencyItem,
+    CutOffPowerFromConstraintsItem,
     SecurityAnalysisResultNmkProps,
 } from './security-analysis.type';
 import {
     flattenNmKResultsConstraints,
     flattenNmKResultsContingencies,
     handlePostSortRows,
-    mapNmKResultsPowerCutOff,
+    mapNmKResultsCutOffPower,
     PAGE_OPTIONS,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
@@ -54,8 +54,8 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
                 return flattenNmKResultsContingencies(intl, content as ConstraintsFromContingencyItem[]);
             case NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS:
                 return flattenNmKResultsConstraints(intl, content as ContingenciesFromConstraintItem[]);
-            case NMK_TYPE.POWER_CUT_OFF_FROM_CONTINGENCIES:
-                return mapNmKResultsPowerCutOff(content as PowerCutOffFromContingencyItem[]);
+            case NMK_TYPE.CUT_OFF_Power_FROM_CONSTRAINTS:
+                return mapNmKResultsCutOffPower(content as CutOffPowerFromConstraintsItem[]);
         }
     }, [nmkType, intl, content]);
 
@@ -63,7 +63,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
         (params: RowClassParams) => {
             if (
                 ((nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES ||
-                    nmkType === NMK_TYPE.POWER_CUT_OFF_FROM_CONTINGENCIES) &&
+                    nmkType === NMK_TYPE.CUT_OFF_Power_FROM_CONSTRAINTS) &&
                     params?.data?.contingencyId) ||
                 (nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS && params?.data?.subjectId)
             ) {
@@ -75,11 +75,14 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
         [nmkType, theme.selectedRow.background]
     );
 
-    const agGridProps = {
-        postSortRows: handlePostSortRows,
-        getRowStyle,
-        tooltipShowDelay: 0,
-    };
+    const agGridProps = useMemo(
+        () => ({
+            postSortRows: handlePostSortRows(nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES),
+            getRowStyle,
+            tooltipShowDelay: 0,
+        }),
+        [getRowStyle, nmkType]
+    );
 
     return (
         <Box sx={styles.container}>

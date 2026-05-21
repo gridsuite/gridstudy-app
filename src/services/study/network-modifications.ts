@@ -23,7 +23,13 @@ import {
     VoltageLevelModificationDto,
     ByFilterDeletionDto,
     EquipmentType,
+    ExcludedNetworkModifications,
     ModificationByAssignmentDto,
+    ComposedModificationMetadata,
+    GeneratorCreationDto,
+    GeneratorModificationDto,
+    ShuntCompensatorCreationDto,
+    BatteryCreationDto,
 } from '@gridsuite/commons-ui';
 import {
     getBaseNetworkModificationUrl,
@@ -35,7 +41,6 @@ import type { UUID } from 'node:crypto';
 import {
     AttachLineInfo,
     BalancesAdjustmentInfos,
-    BatteryCreationInfos,
     BatteryModificationInfos,
     ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
@@ -44,8 +49,6 @@ import {
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
-    GeneratorCreationInfos,
-    GeneratorModificationInfos,
     LCCCreationInfo,
     LccModificationInfos,
     LineCreationInfos,
@@ -53,7 +56,6 @@ import {
     LinesAttachToSplitLinesInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    ShuntCompensatorCreationInfos,
     ShuntCompensatorModificationInfos,
     StaticVarCompensatorCreationInfo,
     TopologyVoltageLevelModificationInfos,
@@ -65,7 +67,6 @@ import {
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
-import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import {
     ENABLE_OLG_MODIFICATION,
@@ -103,6 +104,9 @@ export function changeNetworkModificationOrder(
  *  - source only   → extract from composite to root level
  *  - target only   → embed root-level modification into a composite
  *
+ * @param studyUuid
+ * @param nodeUuid
+ * @param modificationUuid
  * @param sourceCompositeUuid  UUID of the composite that currently owns the modification; null if at root
  * @param targetCompositeUuid  UUID of the target composite; null to place at root level
  * @param beforeUuid           insert before this UUID in the target collection; null to append at end
@@ -144,7 +148,7 @@ export function setModificationMetadata(
     studyUuid: UUID | null,
     nodeUuid: UUID | undefined,
     modificationUuid: UUID | undefined,
-    metadata: Partial<NetworkModificationMetadata>
+    metadata: Partial<NetworkModificationMetadata | ComposedModificationMetadata>
 ): Promise<Response> {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('uuids', String([modificationUuid]));
@@ -373,19 +377,12 @@ export function generatorScaling(
     );
 }
 
-export function createBattery({
-    batteryCreationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    batteryCreationInfos: BatteryCreationInfos;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: string | null;
-    isUpdate: boolean;
-}) {
+export function createBattery(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: BatteryCreationDto
+) {
     let createBatteryUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
@@ -394,12 +391,12 @@ export function createBattery({
         console.info('Creating battery creation');
     }
     return backendFetchText(createBatteryUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(batteryCreationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -478,13 +475,13 @@ export function modifyLoad(
 }
 
 export function modifyGenerator({
-    generatorModificationInfos,
+    dto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    generatorModificationInfos: GeneratorModificationInfos;
+    dto: GeneratorModificationDto;
     studyUuid: UUID;
     nodeUuid?: UUID;
     modificationUuid: string | null;
@@ -504,18 +501,18 @@ export function modifyGenerator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorModificationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
 export function createGenerator({
-    generatorCreationInfos,
+    dto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    generatorCreationInfos: GeneratorCreationInfos;
+    dto: GeneratorCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
@@ -534,7 +531,7 @@ export function createGenerator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorCreationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -545,7 +542,7 @@ export function createShuntCompensator({
     modificationUuid,
     isUpdate,
 }: {
-    shuntCompensatorCreationInfos: ShuntCompensatorCreationInfos;
+    shuntCompensatorCreationInfos: ShuntCompensatorCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string;

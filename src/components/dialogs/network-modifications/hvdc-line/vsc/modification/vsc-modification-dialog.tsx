@@ -17,22 +17,15 @@ import {
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTERS_MODE,
-    DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
     MAX_P,
-    MAX_Q,
-    MIN_Q,
     NOMINAL_V,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
-    P,
     P0,
     R,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-    REACTIVE_LIMITS,
 } from '../../../../../utils/field-constants';
 import { FetchStatus } from '../../../../../../services/utils';
 import {
@@ -53,11 +46,6 @@ import { modifyVsc } from 'services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
 import { VscModificationInfo } from 'services/network-modification-types';
 import {
-    REMOVE,
-    setCurrentReactiveCapabilityCurveTable,
-    setSelectedReactiveLimits,
-} from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import {
     CustomFormProvider,
     emptyProperties,
     ExtendedEquipmentType,
@@ -65,13 +53,16 @@ import {
     getConcatenatedProperties,
     getPropertiesFromModification,
     modificationPropertiesSchema,
+    ReactiveCapabilityCurvePoints,
+    REMOVE,
     sanitizeString,
+    setCurrentReactiveCapabilityCurveTable,
+    setSelectedReactiveLimits,
     snackWithFallback,
     toModificationProperties,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
-import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const formSchema = yup
@@ -183,7 +174,7 @@ const VscModificationDialog: React.FC<any> = ({
                             if (previousReactiveCapabilityCurveTable1) {
                                 setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable1,
-                                    `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                    `${CONVERTER_STATION_1}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     setValue
                                 );
                             }
@@ -193,18 +184,18 @@ const VscModificationDialog: React.FC<any> = ({
                             if (previousReactiveCapabilityCurveTable2) {
                                 setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable2,
-                                    `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                    `${CONVERTER_STATION_2}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     setValue
                                 );
                             }
                             setSelectedReactiveLimits(
-                                `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
+                                `${CONVERTER_STATION_1}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE}`,
                                 value.converterStation1?.minMaxReactiveLimits,
                                 setValue
                             );
 
                             setSelectedReactiveLimits(
-                                `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
+                                `${CONVERTER_STATION_2}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE}`,
                                 value.converterStation2?.minMaxReactiveLimits,
                                 setValue
                             );
@@ -282,7 +273,7 @@ const VscModificationDialog: React.FC<any> = ({
             activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
             angleDroopActivePowerControl: hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
             p0: hvdcLineTab[P0],
-            droop: hvdcLineTab[DROOP],
+            droop: hvdcLineTab[FieldConstants.DROOP],
             converterStation1: converterStation1,
             converterStation2: converterStation2,
             properties: toModificationProperties(hvdcLine),
@@ -305,9 +296,9 @@ const VscModificationDialog: React.FC<any> = ({
         action === REMOVE
             ? newRccValues.splice(index, 1)
             : newRccValues.splice(index, 0, {
-                  [P]: null,
-                  [MIN_Q]: null,
-                  [MAX_Q]: null,
+                  [FieldConstants.P]: null,
+                  [FieldConstants.MIN_Q]: null,
+                  [FieldConstants.MAX_Q]: null,
               });
         return {
             ...previousValue,

@@ -21,6 +21,7 @@ import {
     DeepNullable,
     filledTextField,
     sanitizeString,
+    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -30,7 +31,6 @@ import {
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTERS_MODE,
-    DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
@@ -214,7 +214,7 @@ export default function VscCreationDialog({
                 activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
                 angleDroopActivePowerControl: hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL] ?? null,
                 p0: hvdcLineTab[P0] ?? null,
-                droop: hvdcLineTab[DROOP] ?? null,
+                droop: hvdcLineTab[FieldConstants.DROOP] ?? null,
                 converterStation1: getConverterStationCreationData(hvdcLine[CONVERTER_STATION_1]),
                 converterStation2: getConverterStationCreationData(hvdcLine[CONVERTER_STATION_2]),
                 properties: toModificationProperties(hvdcLine),

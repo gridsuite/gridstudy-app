@@ -33,10 +33,16 @@ export function OperationalLimitsGroupTabLabel({
 }: Readonly<OperationalLimitsGroupTabLabelProps>) {
     const { errors } = useFormState<LimitsFormSchema>({ name: `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}` });
 
+    const temporaryLimitsErrors = errors?.limits?.operationalLimitsGroups?.[index]?.currentLimits?.temporaryLimits;
+    const hasTemporaryLimitError =
+        Array.isArray(temporaryLimitsErrors) &&
+        temporaryLimitsErrors.some((tl) => tl?.name?.message || tl?.acceptableDuration?.message);
+
     const hasError =
         errors?.limits?.operationalLimitsGroups?.[index]?.name?.message ||
         errors?.limits?.operationalLimitsGroups?.[index]?.currentLimits?.permanentLimit?.message ||
-        errors?.limits?.operationalLimitsGroups?.[index]?.[OLG_IS_DUPLICATE]?.message;
+        errors?.limits?.operationalLimitsGroups?.[index]?.[OLG_IS_DUPLICATE]?.message ||
+        hasTemporaryLimitError;
 
     return (
         <Box

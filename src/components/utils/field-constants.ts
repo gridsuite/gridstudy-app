@@ -56,17 +56,9 @@ export const EXPORT_FORMAT = 'exportFormat';
 export const EXPORT_PARAMETERS = 'exportParameters';
 export const EXPORT_DESTINATION = 'exportDestination';
 
-export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
 export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
 export const MODIFICATION_TYPE = 'modificationType';
-export const LIMIT_SETS_MODIFICATION_TYPE = {
-    MODIFY: 'MODIFY',
-    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
-    ADD: 'ADD',
-    REPLACE: 'REPLACE',
-    DELETE: 'DELETE',
-} as const;
 export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
@@ -97,32 +89,15 @@ export const CONNECTIVITY_2 = 'connectivity2';
 export const LINE_SEGMENTS = 'lineSegments';
 
 export const ENERGY_SOURCE = 'energySource';
-export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
-export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
 export const MAX_P = 'maxP';
 export const MIN_P = 'minP';
-export const RATED_NOMINAL_POWER = 'ratedNominalPower';
 export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
 export const TARGET_P = 'targetP';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
 export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
 export const TARGET_Q = 'targetQ';
-export const VOLTAGE_REGULATION_TYPE = 'voltageRegulationType';
-export const VOLTAGE_SET_POINT = 'voltageSetpoint';
-export const TRANSIENT_REACTANCE = 'directTransX';
-export const Q_PERCENT = 'qPercent';
-export const FREQUENCY_REGULATION = 'frequencyRegulation';
 export const PARTICIPATE = 'participate';
-export const DROOP = 'droop';
-export const TRANSFORMER_REACTANCE = 'transformerReactance';
-export const PLANNED_ACTIVE_POWER_SET_POINT = 'plannedActivePowerSetPoint';
-export const MARGINAL_COST = 'marginalCost';
-export const PLANNED_OUTAGE_RATE = 'plannedOutageRate';
-export const FORCED_OUTAGE_RATE = 'forcedOutageRate';
-export const REACTIVE_LIMITS = 'reactiveLimits';
 export const REACTIVE_CAPABILITY_CURVE = 'reactiveCapabilityCurve';
-export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
-export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
 
 /* Tabylar creations reactive capability curve table values for csv */
 export const REACTIVE_CAPABILITY_CURVE_POINTS = 'reactiveCapabilityCurvePoints';
@@ -136,11 +111,6 @@ export const REACTIVE_CAPABILITY_CURVE_P_MAX = 'reactiveCapabilityCurvePmax';
 export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX = 'reactiveCapabilityCurveQminPmax';
 export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX = 'reactiveCapabilityCurveQmaxPmax';
 
-export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
-export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
-export const MIN_Q = 'minQ';
-export const MAX_Q = 'maxQ';
-export const P = 'p';
 export const V = 'v';
 export const ANGLE = 'angle';
 
@@ -184,10 +154,6 @@ export const REGULATING_TERMINAL_CONNECTABLE_TYPE = 'regulatingTerminalConnectab
 //ShuntCompensator
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
 export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
-export const CHARACTERISTICS_CHOICES = {
-    Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
-    SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
-} as const;
 export const VOLTAGE_REGULATION_MODE = 'voltageRegulationMode';
 export const VOLTAGE_REGULATION_MODES = {
     VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
@@ -227,10 +193,13 @@ export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
 } as const;
 // Determines how all the operational limits groups will be modified as a group
 export const OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE = {
+    ADD: 'ADD',
     // Modification types for Tabular modifications :
     MODIFY: 'MODIFY', // standard mode : the olg modifications are applied. The unspecified olg are not changed at all
+    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
     // Modification type for simple form modifications :
     REPLACE: 'REPLACE', // All the olg are removed, then the olg modification/add etc are applied
+    DELETE: 'DELETE',
 } as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
@@ -253,6 +222,7 @@ export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
 export const AREA = 'area';
 export const TEMPERATURE = 'temperature';
 export const SHAPE_FACTOR = 'shapeFactor';
+export const APPLY_SEGMENTS_LIMITS = 'applySegmentsLimits';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';

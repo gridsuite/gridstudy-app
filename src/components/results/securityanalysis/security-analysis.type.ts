@@ -23,7 +23,7 @@ export enum RESULT_TYPE {
 export enum NMK_TYPE {
     CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
     CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
-    POWER_CUT_OFF_FROM_CONTINGENCIES = 'power-cut-off-from-contingencies',
+    CUT_OFF_Power_FROM_CONSTRAINTS = 'cut-off-power-from-constraints',
 }
 export interface LimitViolation {
     subjectId?: string;
@@ -47,16 +47,10 @@ interface Element {
     id?: string;
 }
 
-export interface ConnectivityResult {
-    disconnectedLoadActivePower: number;
-    disconnectedGenerationActivePower: number;
-}
-
 export interface ContingencyItem {
     status?: string;
     contingencyId?: string;
     elements?: Element[];
-    connectivityResult?: ConnectivityResult;
 }
 
 export interface Contingency {
@@ -79,7 +73,8 @@ export interface SecurityAnalysisNmkTableRow {
     limitName?: string | null;
     nextLimitName?: string | null;
     limitType?: string;
-    linkedElementId?: string;
+    elementId?: number;
+    linkedElementId?: number;
     loading?: number;
     patlLoading?: number;
     side?: string;
@@ -102,12 +97,16 @@ export interface ConstraintsFromContingencyItem {
     contingency?: ContingencyItem;
 }
 
-export interface PowerCutOffFromContingencyItem {
+export interface CutOffPowerFromConstraintsItem {
     status?: string;
     contingencyId?: string;
     connectivityResult?: ConnectivityResult;
 }
 
+export interface ConnectivityResult {
+    disconnectedLoadActivePower: number;
+    disconnectedGenerationActivePower: number;
+}
 export interface PreContingencyResult {
     subjectId?: string;
     status: string;
@@ -126,7 +125,7 @@ export type SecurityAnalysisQueryParams = {
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
 export type SecurityAnalysisNmkResult = Page<
-    ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | PowerCutOffFromContingencyItem[] | null
+    ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | CutOffPowerFromConstraintsItem[] | null
 >;
 
 // Components props interfaces
