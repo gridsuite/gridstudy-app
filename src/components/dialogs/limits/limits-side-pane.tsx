@@ -74,7 +74,6 @@ export function LimitsSidePane({
                 editable: true,
                 type: DndColumnType.TEXT as const,
                 maxWidth: 200,
-                //hideErrorMessage: true,
             },
             {
                 label: 'TemporaryLimitDuration',
@@ -83,7 +82,6 @@ export function LimitsSidePane({
                 editable: true,
                 type: DndColumnType.NUMERIC as const,
                 maxWidth: 100,
-                //hideErrorMessage: true,
             },
             {
                 label: 'TemporaryLimitValue',
@@ -92,7 +90,6 @@ export function LimitsSidePane({
                 editable: true,
                 type: DndColumnType.NUMERIC as const,
                 maxWidth: 100,
-                //hideErrorMessage: true,
             },
         ].map((column) => ({
             ...column,
