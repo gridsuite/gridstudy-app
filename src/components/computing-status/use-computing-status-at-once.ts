@@ -10,9 +10,10 @@ import type { UUID } from 'node:crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ComputingType, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
-import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
+import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
 import { parseEventData, StudyUpdatedEventData } from '../../types/notification-types';
+import { isParameterizedComputingType, toComputingStatusParameters } from './computing-status-utils';
 
 interface UseComputingStatusProps {
     (
@@ -23,7 +24,11 @@ interface UseComputingStatusProps {
             studyUuid: UUID,
             nodeUuid: UUID,
             currentRootNetworkUuid: UUID
-        ) => Promise<Map<ComputingType, string> | null>
+        ) => Promise<Record<string, string> | null>,
+        computingStatusParametersFetcherMap: Map<
+            ComputingType,
+            (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>
+        >
     ): void;
 }
 
@@ -33,7 +38,7 @@ interface LastUpdateProps {
         studyUuid: UUID,
         nodeUuid: UUID,
         currentRootNetworkUuid: UUID
-    ) => Promise<Map<ComputingType, string> | null>;
+    ) => Promise<Record<string, string> | null>;
 }
 
 function isWorthUpdate(
@@ -54,10 +59,7 @@ function isWorthUpdate(
     if (!updateType) {
         return false;
     }
-    if (updateType === 'buildCompleted' || updateType === 'all_computation_status') {
-        return true;
-    }
-    return rootNetworkUuidRef.current !== currentRootNetworkUuid;
+    return updateType === 'all_computation_status';
 }
 
 const shouldRequestBeCanceled = (
@@ -73,23 +75,62 @@ const shouldRequestBeCanceled = (
 };
 
 /**
- *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
+ *  this hook loads all <computingType> state into redux at once, then updates it according to notifications for all computation
  * @param studyUuid current study uuid
  * @param nodeUuid current node uuid
  * @param allComputingStatusFetcher method fetching all <computingType> state
  * @param currentRootNetworkUuid
- * @param getCompletions
+ * @param computingStatusParametersFetcherMap
  */
 export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    allComputingStatusFetcher
+    allComputingStatusFetcher,
+    computingStatusParametersFetcherMap
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch<AppDispatch>();
+
+    const handleComputingStatusParameters = useCallback(
+        async (computationStatus: RunningStatus, canceledRequest: boolean, computingType: ComputingType) => {
+            const computingStatusParametersFetcher = computingStatusParametersFetcherMap.get(computingType);
+            if (
+                computingStatusParametersFetcher &&
+                computationStatus !== RunningStatus.IDLE &&
+                isParameterizedComputingType(computingType)
+            ) {
+                nodeUuidRef.current = nodeUuid;
+                rootNetworkUuidRef.current = currentRootNetworkUuid;
+
+                const computingStatusParametersResult = await computingStatusParametersFetcher?.(
+                    studyUuid,
+                    nodeUuid,
+                    currentRootNetworkUuid
+                );
+                if (
+                    shouldRequestBeCanceled(
+                        canceledRequest,
+                        nodeUuidRef.current,
+                        nodeUuid,
+                        rootNetworkUuidRef.current,
+                        currentRootNetworkUuid
+                    )
+                ) {
+                    return;
+                }
+                dispatch(
+                    setComputingStatusParameters(
+                        computingType,
+                        toComputingStatusParameters(computingStatusParametersResult, computingType)
+                    )
+                );
+            }
+        },
+        [computingStatusParametersFetcherMap, currentRootNetworkUuid, dispatch, nodeUuid, studyUuid]
+    );
 
     const updateAll = useCallback(async () => {
         // this is used to prevent race conditions from happening
@@ -103,7 +144,7 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
         rootNetworkUuidRef.current = currentRootNetworkUuid;
         try {
             // fetch computing statuses
-            const computingStatusesResult: Map<ComputingType, string> | null = await allComputingStatusFetcher(
+            const computingStatusesResult: Record<string, string> | null = await allComputingStatusFetcher(
                 studyUuid,
                 nodeUuid,
                 currentRootNetworkUuid
@@ -122,10 +163,14 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
             // if request has not been canceled for any reason
             if (computingStatusesResult != null) {
                 // for each status
-                computingStatusesResult.forEach((statusValue, computingType) => {
-                    const status = getComputationRunningStatus(statusValue, computingType);
-                    dispatch(setComputingStatus(computingType, status));
-                });
+                const allStatusInfosMap = new Map(Object.entries(computingStatusesResult) as [ComputingType, string][]);
+                await Promise.all(
+                    Array.from(allStatusInfosMap).map(async ([computingType, statusValue]) => {
+                        const status = getComputationRunningStatus(statusValue, computingType);
+                        dispatch(setComputingStatus(computingType, status));
+                        await handleComputingStatusParameters(status, canceledRequest, computingType);
+                    })
+                );
             }
         } catch (e: any) {
             if (!canceledRequest) {
@@ -140,7 +185,14 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
         return () => {
             canceledRequest = true;
         };
-    }, [dispatch, nodeUuid, currentRootNetworkUuid, allComputingStatusFetcher, studyUuid]);
+    }, [
+        dispatch,
+        nodeUuid,
+        currentRootNetworkUuid,
+        allComputingStatusFetcher,
+        studyUuid,
+        handleComputingStatusParameters,
+    ]);
 
     const evaluateUpdate = useCallback(
         (event?: MessageEvent) => {
