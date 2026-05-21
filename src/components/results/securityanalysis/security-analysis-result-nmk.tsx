@@ -54,7 +54,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
                 return flattenNmKResultsContingencies(intl, content as ConstraintsFromContingencyItem[]);
             case NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS:
                 return flattenNmKResultsConstraints(intl, content as ContingenciesFromConstraintItem[]);
-            case NMK_TYPE.CUT_OFF_Power_FROM_CONSTRAINTS:
+            case NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS:
                 return mapNmKResultsCutOffPower(content as CutOffPowerFromConstraintsItem[]);
         }
     }, [nmkType, intl, content]);
@@ -63,7 +63,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
         (params: RowClassParams) => {
             if (
                 ((nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES ||
-                    nmkType === NMK_TYPE.CUT_OFF_Power_FROM_CONSTRAINTS) &&
+                    nmkType === NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS) &&
                     params?.data?.contingencyId) ||
                 (nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS && params?.data?.subjectId)
             ) {

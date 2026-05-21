@@ -1539,10 +1539,12 @@
     "downloadNetworkModifications": "Download modifications",
     "moveToTrash": "Move to trash",
     "visualizedRootNetwork": "Visualized root network : {tag}",
-    "addDescription" : "Add description",
-    "activateModification" : "Activate network modification",
-    "deactivateModification" : "Deactivate network modification",
+    "addDescription": "Add description",
+    "activateModification": "Activate network modification",
+    "deactivateModification": "Deactivate network modification",
     "deselectModification": "Deselect modification",
     "selectModification": "Select modification",
-    "moveModification": "Move modification"
+    "moveModification": "Move modification",
+    "disconnectedLoadActivePower": "Load cut off (Mvar)",
+    "disconnectedGenerationActivePower": "Generation cut off (Mvar)"
 } 

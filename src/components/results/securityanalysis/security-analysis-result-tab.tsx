@@ -107,7 +107,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 return RESULT_TYPE.NMK_CONTINGENCIES;
             case NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS:
                 return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
-            case NMK_TYPE.CUT_OFF_Power_FROM_CONSTRAINTS:
+            case NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS:
                 return RESULT_TYPE.NMK_POWER_CUT_OFF;
         }
     }, [tabIndex, nmkType, isDeveloperMode]);
@@ -320,7 +320,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                                 <FormattedMessage id="ContingenciesFromConstraints" />
                             </MenuItem>
                             {isDeveloperMode && (
-                                <MenuItem value={NMK_TYPE.CUT_OFF_Power_FROM_CONSTRAINTS}>
+                                <MenuItem value={NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS}>
                                     <FormattedMessage id="CutOffPowerFromConstraints" />
                                 </MenuItem>
                             )}

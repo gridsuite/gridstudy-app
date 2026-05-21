@@ -23,8 +23,9 @@ export enum RESULT_TYPE {
 export enum NMK_TYPE {
     CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
     CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
-    CUT_OFF_Power_FROM_CONSTRAINTS = 'cut-off-power-from-constraints',
+    CUT_OFF_POWER_FROM_CONSTRAINTS = 'cut-off-power-from-constraints',
 }
+
 export interface LimitViolation {
     subjectId?: string;
     acceptableDuration?: number;
