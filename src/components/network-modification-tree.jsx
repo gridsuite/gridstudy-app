@@ -30,7 +30,6 @@ import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
-import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 import { PanelType } from './workspace/types/workspace.types';
 import { selectActiveWorkspaceId } from '../redux/slices/workspace-selectors';
@@ -111,7 +110,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, panelId }) => {
                 setCurrentTreeNodeWithSync(node);
             }
         },
-        [currentNode, openToolPanel, setCurrentTreeNodeWithSync]
+        [currentNode, setCurrentTreeNodeWithSync]
     );
 
     /**
