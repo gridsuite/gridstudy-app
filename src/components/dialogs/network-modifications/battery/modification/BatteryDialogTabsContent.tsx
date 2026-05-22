@@ -14,6 +14,7 @@ import {
     ConnectivityNetworkProps,
     FieldConstants,
     FloatInput,
+    PowerMeasurementsForm,
     PropertiesForm,
     ReactiveLimitsForm,
     ReactivePowerAdornment,
@@ -131,6 +132,11 @@ export function BatteryDialogTabsContent({
             <Box hidden={tabIndex !== BatteryDialogTab.SPECIFIC_TAB}>
                 <GridSection title="ShortCircuit" />
                 <ShortCircuitForm previousValues={batteryToModify?.batteryShortCircuit} />
+                <GridSection title="MeasurementsSection" />
+                <PowerMeasurementsForm
+                    activePowerMeasurement={batteryToModify?.measurementP}
+                    reactivePowerMeasurement={batteryToModify?.measurementQ}
+                />
             </Box>
 
             <Box hidden={tabIndex !== BatteryDialogTab.ADDITIONAL_INFORMATION_TAB}>
