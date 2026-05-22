@@ -150,7 +150,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     getEnumLabel,
                     tabIndex
                 );
-            case RESULT_TYPE.NMK_POWER_CUT_OFF:
+            case RESULT_TYPE.NMK_CUT_OFF_POWER:
                 return securityAnalysisTableNmKCutOffPowerColumnsDefinition(
                     intl,
                     filterEnums.nmk,

@@ -108,7 +108,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             case NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS:
                 return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
             case NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS:
-                return RESULT_TYPE.NMK_POWER_CUT_OFF;
+                return RESULT_TYPE.NMK_CUT_OFF_POWER;
         }
     }, [tabIndex, nmkType, isDeveloperMode]);
 

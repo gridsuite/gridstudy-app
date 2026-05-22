@@ -817,7 +817,7 @@ export const mappingColumnToField = (resultType: RESULT_TYPE) => {
             return FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES;
         case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
             return FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS;
-        case RESULT_TYPE.NMK_POWER_CUT_OFF:
+        case RESULT_TYPE.NMK_CUT_OFF_POWER:
             return FROM_COLUMN_TO_FIELD_NMK_POWER_CUT_OFF;
     }
 };
