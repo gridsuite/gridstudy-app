@@ -107,9 +107,6 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, panelId }) => {
 
     const onNodeClick = useCallback(
         (event, node) => {
-            if (node.type === NodeType.NETWORK_MODIFICATION) {
-                openToolPanel(PanelType.MODIFICATIONS);
-            }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);
             }
