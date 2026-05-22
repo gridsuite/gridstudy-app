@@ -972,10 +972,6 @@
     "GeneratorsOrdering": "Substations hierarchy",
     "ReplacingLine": "Replacing line",
 
-    "YupRequired": "This field is required",
-    "YupNotTypeNumber": "This field only accepts numeric values",
-    "YupNotTypeDefault": "Field value format is incorrect",
-
     "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
     "SLDOpenedInTheGrid": "The {diagramType} \"{equipmentId}\" was opened in the image grid",
     "NADOpenedInTheGrid": "The network area diagram \"{elementId}\" was opened in the image grid",
