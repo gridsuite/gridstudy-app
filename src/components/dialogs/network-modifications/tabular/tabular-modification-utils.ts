@@ -13,6 +13,7 @@ import {
     FieldType,
     MODIFICATION_TYPES,
     ReactiveCapabilityCurvePoints,
+    SHUNT_COMPENSATOR_TYPES,
     toModificationOperation,
 } from '@gridsuite/commons-ui';
 import {
@@ -42,7 +43,6 @@ import {
     IP_MIN,
     IS_ACTIVE,
     LIMIT_GROUP_NAME,
-    LIMIT_SETS_MODIFICATION_TYPE,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOAD_TYPE,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -54,6 +54,7 @@ import {
     MIN_P,
     MODIFICATION_TYPE,
     NOMINAL_V,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     P0,
     PARTICIPATE,
     PERMANENT_LIMIT,
@@ -104,7 +105,6 @@ import {
     LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
     REGULATING_TERMINAL_TYPES,
-    SHUNT_COMPENSATOR_TYPES,
     SIDE as SIDE_CONSTANTS,
 } from '../../../network/constants';
 import {
@@ -167,7 +167,7 @@ export const LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS: TabularField[] = [
         id: MODIFICATION_TYPE,
         required: true,
         type: ENUM,
-        options: Object.values(LIMIT_SETS_MODIFICATION_TYPE),
+        options: Object.values(OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE),
     },
     {
         id: TEMPORARY_LIMITS_MODIFICATION_TYPE,

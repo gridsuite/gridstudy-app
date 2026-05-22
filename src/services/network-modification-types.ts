@@ -83,6 +83,10 @@ export interface BatteryModificationInfos {
     connectionName: AttributeModification<string> | null;
     connectionPosition: AttributeModification<number> | null;
     terminalConnected: AttributeModification<boolean> | null;
+    pMeasurementValue: AttributeModification<number> | null;
+    pMeasurementValidity: AttributeModification<boolean> | null;
+    qMeasurementValue: AttributeModification<number> | null;
+    qMeasurementValidity: AttributeModification<boolean> | null;
     properties: Property[] | null;
     directTransX: AttributeModification<number> | null;
     stepUpTransformerX: AttributeModification<number> | null;
@@ -394,25 +398,6 @@ export interface Assignment {
     filters: Filter[];
     editedField: string;
     propertyName?: string;
-}
-
-export interface ShuntCompensatorCreationInfos {
-    type: ModificationType;
-    uuid?: string;
-    equipmentId: string;
-    equipmentName: string | null;
-    maxSusceptance: number | null;
-    maxQAtNominalV: number | null;
-    shuntCompensatorType: string | null;
-    sectionCount: number;
-    maximumSectionCount: number;
-    voltageLevelId: string | null;
-    busOrBusbarSectionId: string | null;
-    connectionDirection: string | null;
-    connectionName: string | null;
-    connectionPosition: number | null;
-    terminalConnected: boolean | null;
-    properties: Property[] | null;
 }
 
 export interface LineSegmentInfos {

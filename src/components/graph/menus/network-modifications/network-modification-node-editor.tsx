@@ -17,11 +17,11 @@ import {
     MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
     ModificationType,
-    NameHeaderProps,
     NetworkModificationMetadata,
     NetworkModificationsTable,
     NotificationsUrlKeys,
     removeNullFields,
+    setModificationMetadata,
     snackWithFallback,
     useNotificationsListener,
     usePrevious,
@@ -33,7 +33,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Alert, Badge, Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
+import { Alert, Badge, Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -68,7 +68,7 @@ import VoltageLevelModificationDialog from 'components/dialogs/network-modificat
 import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/creation/vsc-creation-dialog';
 import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications/network-modifications-menu';
-import { SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
@@ -85,7 +85,6 @@ import { copyOrMoveModifications } from '../../../../services/study';
 import {
     fetchExcludedNetworkModifications,
     fetchNetworkModifications,
-    setModificationMetadata,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
@@ -103,6 +102,7 @@ import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-fi
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
 import {
+    CommonStudyEventData,
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
     isNodeDeletedNotification,
@@ -114,7 +114,6 @@ import {
     ModificationsUpdatingInProgressEventData,
     NotificationType,
     parseEventData,
-    CommonStudyEventData,
 } from 'types/notification-types';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level/topology-modification/voltage-level-topology-modification-dialog';
@@ -762,7 +761,11 @@ const NetworkModificationNodeEditor = () => {
         setIsFetchingModifications(true);
         fetchExcludedNetworkModifications(studyUuid, currentNode.id)
             .then((res: ExcludedNetworkModifications[]) => {
-                setModificationsToExclude(res);
+                // Check if during asynchronous request currentNode has already changed
+                // otherwise accept fetch results
+                if (currentNode.id === currentNodeIdRef.current) {
+                    setModificationsToExclude(res);
+                }
             })
             .catch((error: Error) => {
                 snackWithFallback(snackError, error);
@@ -806,47 +809,15 @@ const NetworkModificationNodeEditor = () => {
         modificationsToExclude,
     ]);
 
-    const updateModification = useCallback(
-        async (modif: ComposedModificationMetadata, newName: string) => {
-            return setModificationMetadata(studyUuid, currentNode?.id, modif.uuid, {
+    const handleNameChange = useCallback(
+        (modification: ComposedModificationMetadata, newName: string) =>
+            setModificationMetadata(studyUuid, currentNode?.id, modification.uuid, {
                 name: newName,
-                type: modif?.type,
-            });
-        },
+                type: modification.type,
+            }),
         [studyUuid, currentNode?.id]
     );
-    const handleCellEdit = useCallback(
-        async (modification: ComposedModificationMetadata, newName?: string) => {
-            if (!newName || newName.trim() === '') {
-                return;
-            }
-            const trimmed = newName.trim();
 
-            // Optimistic immediate update
-            setModifications((prev) =>
-                prev.map((m) => {
-                    if (m.uuid !== modification.uuid) return m;
-                    try {
-                        const parsed = JSON.parse(m.messageValues);
-                        return {
-                            ...m,
-                            messageValues: JSON.stringify({ ...parsed, name: trimmed }),
-                        };
-                    } catch {
-                        return m;
-                    }
-                })
-            );
-
-            try {
-                await updateModification(modification, trimmed);
-            } catch {
-                // Rollback in case of an error
-                setModifications((prev) => prev.map((m) => (m.uuid !== modification.uuid ? m : modification)));
-            }
-        },
-        [updateModification]
-    );
     const handleEvent = useCallback(
         (event: MessageEvent) => {
             const eventData = parseEventData<CommonStudyEventData>(event);
@@ -1125,31 +1096,12 @@ const NetworkModificationNodeEditor = () => {
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
 
-    const createAllColumns = useCallback(
-        (
-            isRowDragDisabled: boolean,
-            modificationsCount: number,
-            nameHeaderProps: NameHeaderProps,
-            setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
-        ): ColumnDef<ComposedModificationMetadata>[] => [
-            ...createBaseColumns(
-                isRowDragDisabled,
-                modificationsCount,
-                nameHeaderProps,
-                setModifications,
-                handleCellEdit
-            ),
-            ...(isMonoRootStudy
-                ? []
-                : createRootNetworksColumns(
-                      rootNetworks,
-                      currentRootNetworkUuid!,
-                      modificationsCount,
-                      modificationsToExclude,
-                      setModificationsToExclude
-                  )),
+    const columns = useMemo<ColumnDef<ComposedModificationMetadata>[]>(
+        () => [
+            ...createBaseColumns(handleNameChange),
+            ...(isMonoRootStudy ? [] : createRootNetworksColumns(rootNetworks)),
         ],
-        [handleCellEdit, isMonoRootStudy, rootNetworks, currentRootNetworkUuid, modificationsToExclude]
+        [handleNameChange, isMonoRootStudy, rootNetworks]
     );
 
     const renderNetworkModificationsTable = () => {
@@ -1165,7 +1117,7 @@ const NetworkModificationNodeEditor = () => {
 
         return (
             <NetworkModificationsTable
-                handleCellClick={debounce(handleCellClick, 300)}
+                handleCellClick={handleCellClick}
                 modifications={modifications}
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
@@ -1175,10 +1127,15 @@ const NetworkModificationNodeEditor = () => {
                 notificationMessageId={notificationMessageId}
                 isFetchingModifications={isFetchingModifications}
                 pendingState={pendingState}
-                createAllColumns={createAllColumns}
+                columns={columns}
                 highlightedModificationUuid={highlightedModificationUuid}
                 studyUuid={studyUuid}
                 currentNodeId={currentNode?.id}
+                currentRootNetworkUuid={currentRootNetworkUuid ?? undefined}
+                rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
+                modificationsToExclude={modificationsToExclude}
+                setModificationsToExclude={setModificationsToExclude}
+                isDisabled={isAnyNodeBuilding || mapDataLoading}
             />
         );
     };

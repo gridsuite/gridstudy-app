@@ -59,13 +59,6 @@ export const EXPORT_DESTINATION = 'exportDestination';
 export const TYPE = 'type';
 export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
 export const MODIFICATION_TYPE = 'modificationType';
-export const LIMIT_SETS_MODIFICATION_TYPE = {
-    MODIFY: 'MODIFY',
-    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
-    ADD: 'ADD',
-    REPLACE: 'REPLACE',
-    DELETE: 'DELETE',
-} as const;
 export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
@@ -161,10 +154,6 @@ export const REGULATING_TERMINAL_CONNECTABLE_TYPE = 'regulatingTerminalConnectab
 //ShuntCompensator
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
 export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
-export const CHARACTERISTICS_CHOICES = {
-    Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
-    SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
-} as const;
 export const VOLTAGE_REGULATION_MODE = 'voltageRegulationMode';
 export const VOLTAGE_REGULATION_MODES = {
     VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
@@ -204,10 +193,13 @@ export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
 } as const;
 // Determines how all the operational limits groups will be modified as a group
 export const OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE = {
+    ADD: 'ADD',
     // Modification types for Tabular modifications :
     MODIFY: 'MODIFY', // standard mode : the olg modifications are applied. The unspecified olg are not changed at all
+    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
     // Modification type for simple form modifications :
     REPLACE: 'REPLACE', // All the olg are removed, then the olg modification/add etc are applied
+    DELETE: 'DELETE',
 } as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';

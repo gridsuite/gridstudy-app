@@ -10,11 +10,12 @@ import { SECTION_COUNT } from 'components/utils/field-constants';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 export interface CreateVoltageLevelTopologyFormProps {
     voltageLevelId: string;
@@ -27,6 +28,13 @@ export default function CreateVoltageLevelTopologyForm({
 }: Readonly<CreateVoltageLevelTopologyFormProps>) {
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
+
+    const { trigger } = useFormContext();
+    const watchSectionCount = useWatch({ name: SECTION_COUNT });
+
+    useEffect(() => {
+        trigger(SECTION_COUNT);
+    }, [watchSectionCount, trigger]);
 
     const handleCloseDiagramPane = useCallback(() => {
         setIsDiagramPaneOpen(false);
