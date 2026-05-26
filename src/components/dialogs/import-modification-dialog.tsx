@@ -57,10 +57,6 @@ import { ACTION, SELECTED_MODIFICATIONS } from 'components/utils/field-constants
 import { UUID } from 'node:crypto';
 import { useParameterState } from './parameters/use-parameters-state';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
 interface ImportModificationDialogProps {
     open: boolean;
     onClose: () => void;
@@ -82,10 +78,6 @@ const emptyFormData: FormData = {
     [ACTION]: CompositeModificationAction.SPLIT,
     [SELECTED_MODIFICATIONS]: [],
 };
-
-// ---------------------------------------------------------------------------
-// Sub-components — defined outside main component to respect Rules of Hooks
-// ---------------------------------------------------------------------------
 
 interface SharedCellProps {
     rowIndex: number;
@@ -135,10 +127,6 @@ function InsertNameCell({ rowIndex }: Readonly<InsertNameCellProps>) {
     );
 }
 
-// ---------------------------------------------------------------------------
-// Validation schema
-// ---------------------------------------------------------------------------
-
 const formSchema = yup
     .object()
     .shape({
@@ -171,10 +159,6 @@ type FormSchemaType = yup.InferType<typeof formSchema>;
 const STEP_SELECTION = 0;
 const STEP_ORGANIZATION = 1;
 
-// ---------------------------------------------------------------------------
-// Main component
-// ---------------------------------------------------------------------------
-
 const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModificationDialogProps>): JSX.Element => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -184,10 +168,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
     const [activeStep, setActiveStep] = useState(STEP_SELECTION);
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-
-    // -----------------------------------------------------------------------
-    // Form
-    // -----------------------------------------------------------------------
 
     const formMethods = useForm<FormSchemaType>({
         defaultValues: emptyFormData,
@@ -214,10 +194,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         name: SELECTED_MODIFICATIONS,
     }) as unknown as UseFieldArrayReturn;
 
-    // -----------------------------------------------------------------------
     // Column definitions
-    // -----------------------------------------------------------------------
-
     // Shared column — same in both modes, shows disabled checkbox only when isShared=true
     const sharedColumn: DndColumn = useMemo(
         () => ({
@@ -265,10 +242,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
     const columnsDefinition = isInsertMode ? insertColumnsDefinition : splitColumnsDefinition;
 
-    // -----------------------------------------------------------------------
-    // Lifecycle
-    // -----------------------------------------------------------------------
-
     useEffect(() => {
         if (open) {
             setActiveStep(STEP_SELECTION);
@@ -285,10 +258,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         }
     }, [isDeveloperMode, action, setValue]);
 
-    // -----------------------------------------------------------------------
-    // Selection handler
-    // -----------------------------------------------------------------------
-
     const handleSelectModification = useCallback(
         (selectedElements: TreeViewFinderNodeProps[]) => {
             setIsSelectorOpen(false);
@@ -304,8 +273,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 id: e.id as UUID,
                 name: e.name,
                 originalName: e.name,
-                // isShared comes from the directory element; default false if not provided
-                isShared: false,
+                isShared: false, // actually is false, to be computed later
             }));
 
             setValue(SELECTED_MODIFICATIONS, newRows, {
@@ -315,10 +283,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         },
         [setValue, selectedModifications.length, onClose]
     );
-
-    // -----------------------------------------------------------------------
-    // Navigation
-    // -----------------------------------------------------------------------
 
     const handleNext = useCallback(() => {
         if (!selectedModifications.length) return;
@@ -336,10 +300,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         setIsSelectorOpen(false);
         onClose();
     }, [reset, onClose]);
-
-    // -----------------------------------------------------------------------
-    // Save
-    // -----------------------------------------------------------------------
 
     const handleSave = useCallback(() => {
         if (!studyUuid || !currentNode || !isValid) return;
@@ -430,7 +390,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                                 </FormControl>
                             </Box>
 
-                            {/* Section label */}
                             <Typography variant="body2">
                                 <FormattedMessage id="importComposites.selected" />
                             </Typography>
@@ -452,22 +411,21 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                     )}
                 </DialogContent>
 
-                {/* ---- Actions ---- */}
                 <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box>
                         {activeStep === STEP_ORGANIZATION && (
                             <Button onClick={handlePrevious}>
-                                <FormattedMessage id="Previous" />
+                                <FormattedMessage id="button.previous" />
                             </Button>
                         )}
                     </Box>
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <Button onClick={handleClose}>
-                            <FormattedMessage id="cancel" />
+                            <FormattedMessage id="button.cancel" />
                         </Button>
                         {activeStep === STEP_SELECTION ? (
                             <Button variant="contained" onClick={handleNext} disabled={!selectedModifications.length}>
-                                <FormattedMessage id="next" />
+                                <FormattedMessage id="button.next" />
                             </Button>
                         ) : (
                             <Button variant="contained" onClick={handleSave} disabled={!isValid}>
