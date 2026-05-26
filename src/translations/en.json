@@ -1229,6 +1229,7 @@
     "guidancePopUp.action": "Close editor",
     "generateNad": "Generate",
     "networkModificationActivationError": "An error occurred while enabling / disabling modification",
+    "networkModificationRenamingError": "An error occurred while renaming the modification",
     "AddAutomaton": "Add an automaton",
     "BusBarCountMustBeGreaterThanOrEqualToOne": "Number of busbars must be greater than or equal to 1",
     "SectionCountMustBeGreaterThanOrEqualToOne": "Number of sections must be greater than or equal to 1",
