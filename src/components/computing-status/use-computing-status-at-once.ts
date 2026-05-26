@@ -32,24 +32,13 @@ interface UseComputingStatusProps {
     ): void;
 }
 
-interface LastUpdateProps {
-    eventData: StudyUpdatedEventData | null;
-    allComputingStatusFetcher: (
-        studyUuid: UUID,
-        nodeUuid: UUID,
-        currentRootNetworkUuid: UUID
-    ) => Promise<Record<string, string> | null>;
-}
-
 function isWorthUpdate(
-    eventData: StudyUpdatedEventData | null,
+    updateType: string | undefined,
     nodeUuidRef: RefObject<UUID | null>,
     rootNetworkUuidRef: RefObject<UUID | null>,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID
 ): boolean {
-    const headers = eventData?.headers;
-    const updateType = headers?.updateType;
     if (rootNetworkUuidRef.current !== currentRootNetworkUuid) {
         return true;
     }
@@ -59,7 +48,7 @@ function isWorthUpdate(
     if (!updateType) {
         return false;
     }
-    return updateType === 'all_computation_status';
+    return updateType === 'all_computation_status' || updateType === 'all_computation_status_without_loadflow';
 }
 
 const shouldRequestBeCanceled = (
@@ -91,7 +80,6 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);
-    const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch<AppDispatch>();
 
     const handleComputingStatusParameters = useCallback(
@@ -132,67 +120,78 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
         [computingStatusParametersFetcherMap, currentRootNetworkUuid, dispatch, nodeUuid, studyUuid]
     );
 
-    const updateAll = useCallback(async () => {
-        // this is used to prevent race conditions from happening
-        // if another request is sent, the previous one won't do anything
-        let canceledRequest = false;
+    const updateAll = useCallback(
+        async (updateType: string | undefined) => {
+            // this is used to prevent race conditions from happening
+            // if another request is sent, the previous one won't do anything
+            let canceledRequest = false;
 
-        //upon changing node we reset the last completed computation to prevent results misredirection
-        dispatch(setLastCompletedComputation());
+            //upon changing node we reset the last completed computation to prevent results misredirection
+            dispatch(setLastCompletedComputation());
 
-        nodeUuidRef.current = nodeUuid;
-        rootNetworkUuidRef.current = currentRootNetworkUuid;
-        try {
-            // fetch computing statuses
-            const computingStatusesResult: Record<string, string> | null = await allComputingStatusFetcher(
-                studyUuid,
-                nodeUuid,
-                currentRootNetworkUuid
-            );
-            if (
-                shouldRequestBeCanceled(
-                    canceledRequest,
-                    nodeUuidRef.current,
+            nodeUuidRef.current = nodeUuid;
+            rootNetworkUuidRef.current = currentRootNetworkUuid;
+            try {
+                // fetch computing statuses
+                const computingStatusesResult: Record<string, string> | null = await allComputingStatusFetcher(
+                    studyUuid,
                     nodeUuid,
-                    rootNetworkUuidRef.current,
                     currentRootNetworkUuid
-                )
-            ) {
-                return;
-            }
-            // if request has not been canceled for any reason
-            if (computingStatusesResult != null) {
-                // for each status
-                const allStatusInfosMap = new Map(Object.entries(computingStatusesResult) as [ComputingType, string][]);
-                await Promise.all(
-                    Array.from(allStatusInfosMap).map(async ([computingType, statusValue]) => {
-                        const status = getComputationRunningStatus(statusValue, computingType);
-                        dispatch(setComputingStatus(computingType, status));
-                        await handleComputingStatusParameters(status, canceledRequest, computingType);
-                    })
                 );
-            }
-        } catch (e: any) {
-            if (!canceledRequest) {
-                // for each status
-                for (const computingType of Object.values(ComputingType)) {
-                    dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
-                    console.error(e?.message);
+                if (
+                    shouldRequestBeCanceled(
+                        canceledRequest,
+                        nodeUuidRef.current,
+                        nodeUuid,
+                        rootNetworkUuidRef.current,
+                        currentRootNetworkUuid
+                    )
+                ) {
+                    return;
+                }
+                // if request has not been canceled for any reason
+                if (computingStatusesResult != null) {
+                    // for each status
+                    const allStatusInfosMap = new Map(
+                        Object.entries(computingStatusesResult) as [ComputingType, string][]
+                    );
+                    await Promise.all(
+                        Array.from(allStatusInfosMap).map(async ([computingType, statusValue]) => {
+                            if (
+                                computingType === ComputingType.LOAD_FLOW &&
+                                updateType === 'all_computation_status_without_loadflow'
+                            ) {
+                                return;
+                            }
+                            const status = getComputationRunningStatus(statusValue, computingType);
+                            dispatch(setComputingStatus(computingType, status));
+                            await handleComputingStatusParameters(status, canceledRequest, computingType);
+                        })
+                    );
+                }
+            } catch (e: any) {
+                if (!canceledRequest) {
+                    // for each status
+                    for (const computingType of Object.values(ComputingType)) {
+                        dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
+                        console.error(e?.message);
+                    }
                 }
             }
-        }
 
-        return () => {
-            canceledRequest = true;
-        };
-    }, [
-        dispatch,
-        nodeUuid,
-        currentRootNetworkUuid,
-        allComputingStatusFetcher,
-        studyUuid,
-        handleComputingStatusParameters,
-    ]);
+            return () => {
+                canceledRequest = true;
+            };
+        },
+        [
+            dispatch,
+            nodeUuid,
+            currentRootNetworkUuid,
+            allComputingStatusFetcher,
+            studyUuid,
+            handleComputingStatusParameters,
+        ]
+    );
 
     const evaluateUpdate = useCallback(
         (event?: MessageEvent) => {
@@ -200,21 +199,23 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
                 return;
             }
             const eventData = parseEventData<StudyUpdatedEventData>(event ?? null);
+            const headers = eventData?.headers;
+            const updateType = headers?.updateType;
             const isUpdateForUs = isWorthUpdate(
-                eventData,
+                updateType,
                 nodeUuidRef,
                 rootNetworkUuidRef,
                 nodeUuid,
                 currentRootNetworkUuid
             );
-            lastUpdateRef.current = { eventData, allComputingStatusFetcher };
             if (isUpdateForUs) {
-                updateAll();
+                updateAll(updateType);
             }
         },
-        [allComputingStatusFetcher, currentRootNetworkUuid, nodeUuid, studyUuid, updateAll]
+        [currentRootNetworkUuid, nodeUuid, studyUuid, updateAll]
     );
 
+    // evaluate at each notification
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: evaluateUpdate,
     });

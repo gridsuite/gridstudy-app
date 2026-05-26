@@ -69,11 +69,12 @@ function isWorthUpdate(
     if (!updateType) {
         return false;
     }
-    // if node is updated all status are updated in use-computating-status-at-once
+    // if node is updated with 'all status' notification it is done in use-computating-status-at-once
     if (
         updateType === 'nodeBuildStatusUpdated' ||
         updateType === 'buildCompleted' ||
-        updateType === 'all_computation_status'
+        updateType === 'all_computation_status' ||
+        updateType === 'all_computation_status_without_loadflow'
     ) {
         return false;
     }
