@@ -31,6 +31,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    Divider,
     FormControl,
     FormControlLabel,
     Radio,
@@ -202,7 +203,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             dataKey: 'isShared',
             initialValue: false,
             editable: true,
-            width: 160,
+            width: '25%',
             type: DndColumnType.CUSTOM,
             component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} />,
         }),
@@ -217,6 +218,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 dataKey: 'name',
                 initialValue: '',
                 editable: false,
+                width: '75%',
                 type: DndColumnType.TEXT,
             },
             sharedColumn,
@@ -232,6 +234,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 dataKey: 'name',
                 initialValue: '',
                 editable: true,
+                width: '75%',
                 type: DndColumnType.CUSTOM,
                 component: (rowIndex: number) => <InsertNameCell rowIndex={rowIndex} />,
             },
@@ -334,7 +337,14 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', minHeight: 380 }}>
                     {/* ---- Stepper ---- */}
-                    <Stepper activeStep={activeStep}>
+                    <Stepper
+                        activeStep={activeStep}
+                        sx={{
+                            justifyContent: 'center',
+                            '& .MuiStepConnector-root': { flex: '0 1 150px', minWidth: 0 },
+                            '& .MuiStepConnector-line': { minWidth: 0 },
+                        }}
+                    >
                         <Step completed={activeStep > STEP_SELECTION}>
                             <StepLabel>
                                 <FormattedMessage id="importComposites.step.selection" />
@@ -346,6 +356,8 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                             </StepLabel>
                         </Step>
                     </Stepper>
+
+                    <Divider sx={{ mt: 2 }} />
 
                     {/* ======================================================
                         STEP 1 — SELECTION
