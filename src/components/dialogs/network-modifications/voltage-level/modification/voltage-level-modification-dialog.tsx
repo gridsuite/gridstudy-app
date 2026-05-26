@@ -9,7 +9,6 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     BusbarSectionVMeasurementInfo,
-    BusbarSectionVoltageMeasurementsForm,
     convertInputValue,
     CustomFormProvider,
     DeepNullable,
@@ -20,16 +19,16 @@ import {
     getConcatenatedProperties,
     Identifiable,
     snackWithFallback,
-    toModificationOperation,
     useSnackMessage,
     VoltageLevelDto,
     VoltageLevelModificationDto,
     VoltageLevelModificationForm,
-    VoltageLevelModificationFormData,
-    voltageLevelModificationDtoToForm,
+    VoltageLevelModificationWithMeasurementsFormData,
+    voltageLevelModificationWithMeasurementsDtoToForm,
+    voltageLevelModificationWithMeasurementsFormSchema,
+    voltageLevelModificationWithMeasurementsFormToDto,
     voltageLevelModificationEmptyFormData,
-    voltageLevelModificationFormSchema,
-    voltageLevelModificationFormToDto,
+    BusbarSectionVMeasurementDto,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -37,44 +36,18 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
-import { fetchBusesOrBusbarSectionsForVoltageLevel, fetchNetworkElementInfos } from '../../../../../services/study/network';
+import {
+    fetchBusesOrBusbarSectionsForVoltageLevel,
+    fetchNetworkElementInfos,
+} from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import yup from 'components/utils/yup-config';
-import { Box, Tab, Tabs } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
-import { getTabIndicatorStyle, getTabStyle } from 'components/utils/tab-utils';
-import GridSection from 'components/dialogs/commons/grid-section';
 import { BusbarSectionFormInfos, BusbarSectionMeasurementFormItem } from '../voltage-level-dialog.type';
-import { BusbarSectionVMeasurementDto } from '../../../../../services/network-modification-types';
 
 type FetchStatusType = (typeof FetchStatus)[keyof typeof FetchStatus];
-
-const BUSBAR_SECTION_V_MEASUREMENTS = 'busbarSectionVMeasurements';
-
-enum VoltageLevelDialogTab {
-    CHARACTERISTICS_TAB = 0,
-    STATE_ESTIMATION_TAB = 1,
-}
-
-const bbsMeasurementSchema = yup.object().shape({
-    busbarSectionId: yup.string().required(),
-    value: yup.number().nullable(),
-    validity: yup.boolean().nullable(),
-});
-
-const extendedFormSchema = voltageLevelModificationFormSchema.concat(
-    yup.object().shape({
-        [BUSBAR_SECTION_V_MEASUREMENTS]: yup.array().of(bbsMeasurementSchema).nullable(),
-    })
-);
-
-type ExtendedFormData = VoltageLevelModificationFormData & {
-    [BUSBAR_SECTION_V_MEASUREMENTS]: BusbarSectionMeasurementFormItem[] | null;
-};
 
 interface VoltageLevelModificationDialogProps {
     editData?: VoltageLevelModificationDto & { busbarSectionVMeasurements?: BusbarSectionVMeasurementDto[] | null };
@@ -102,21 +75,22 @@ const VoltageLevelModificationDialog = ({
     const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
     const [voltageLevelToModify, setVoltageLevelToModify] = useState<VoltageLevelDto | undefined>();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-    const [tabIndex, setTabIndex] = useState(VoltageLevelDialogTab.CHARACTERISTICS_TAB);
     const [busbarSections, setBusbarSections] = useState<BusbarSectionFormInfos[]>([]);
 
     const emptyFormData = useMemo(
         () => ({
             ...voltageLevelModificationEmptyFormData,
             [FieldConstants.HIDE_SUBSTATION_FIELD]: false,
-            [BUSBAR_SECTION_V_MEASUREMENTS]: [],
+            busbarSectionVMeasurements: [],
         }),
         []
     );
 
-    const formMethods = useFormWithDirtyTracking<DeepNullable<ExtendedFormData>>({
-        defaultValues: emptyFormData as DeepNullable<ExtendedFormData>,
-        resolver: yupResolver<DeepNullable<ExtendedFormData>>(extendedFormSchema as any),
+    const formMethods = useFormWithDirtyTracking<DeepNullable<VoltageLevelModificationWithMeasurementsFormData>>({
+        defaultValues: emptyFormData as DeepNullable<VoltageLevelModificationWithMeasurementsFormData>,
+        resolver: yupResolver<DeepNullable<VoltageLevelModificationWithMeasurementsFormData>>(
+            voltageLevelModificationWithMeasurementsFormSchema as any
+        ),
     });
 
     const { reset, getValues, subscribe, trigger, setValue } = formMethods;
@@ -155,11 +129,16 @@ const VoltageLevelModificationDialog = ({
 
     const fetchBusbarSections = useCallback(
         (voltageLevelId: string, existingMeasurements?: BusbarSectionVMeasurementDto[] | null) => {
-            fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid as UUID, currentRootNetworkUuid, voltageLevelId)
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid as UUID,
+                currentRootNetworkUuid,
+                voltageLevelId
+            )
                 .then((bbsList: Identifiable[]) => {
                     if (!bbsList || bbsList.length === 0) {
                         setBusbarSections([]);
-                        setValue(BUSBAR_SECTION_V_MEASUREMENTS as any, []);
+                        setValue('busbarSectionVMeasurements' as any, []);
                         return;
                     }
                     Promise.all(
@@ -172,20 +151,20 @@ const VoltageLevelModificationDialog = ({
                                 EQUIPMENT_INFOS_TYPES.FORM.type,
                                 bbs.id,
                                 true
-                            ).catch(() => ({ id: bbs.id, name: bbs.name ?? undefined } as BusbarSectionFormInfos))
+                            ).catch(() => ({ id: bbs.id, name: bbs.name ?? undefined }) as BusbarSectionFormInfos)
                         )
                     ).then((formDataList) => {
                         const bbsFormData = formDataList as BusbarSectionFormInfos[];
                         setBusbarSections(bbsFormData);
                         setValue(
-                            BUSBAR_SECTION_V_MEASUREMENTS as any,
+                            'busbarSectionVMeasurements' as any,
                             buildBbsMeasurementItems(bbsFormData, existingMeasurements)
                         );
                     });
                 })
                 .catch(() => {
                     setBusbarSections([]);
-                    setValue(BUSBAR_SECTION_V_MEASUREMENTS as any, []);
+                    setValue('busbarSectionVMeasurements' as any, []);
                 });
         },
         [studyUuid, currentNodeUuid, currentRootNetworkUuid, setValue, buildBbsMeasurementItems]
@@ -197,10 +176,10 @@ const VoltageLevelModificationDialog = ({
                 setSelectedId(editData.equipmentId);
             }
             reset({
-                ...voltageLevelModificationDtoToForm(editData),
+                ...voltageLevelModificationWithMeasurementsDtoToForm(editData),
                 [FieldConstants.HIDE_SUBSTATION_FIELD]: false,
-                [BUSBAR_SECTION_V_MEASUREMENTS]: [],
-            } as DeepNullable<ExtendedFormData>);
+                busbarSectionVMeasurements: [],
+            } as DeepNullable<VoltageLevelModificationWithMeasurementsFormData>);
         }
     }, [editData, reset]);
 
@@ -260,10 +239,21 @@ const VoltageLevelModificationDialog = ({
             } else {
                 setVoltageLevelToModify(undefined);
                 setBusbarSections([]);
-                reset(emptyFormData as DeepNullable<ExtendedFormData>, { keepDefaultValues: true });
+                reset(emptyFormData as DeepNullable<VoltageLevelModificationWithMeasurementsFormData>, {
+                    keepDefaultValues: true,
+                });
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData, emptyFormData, fetchBusbarSections]
+        [
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            reset,
+            getValues,
+            editData,
+            emptyFormData,
+            fetchBusbarSections,
+        ]
     );
 
     useEffect(() => {
@@ -273,22 +263,13 @@ const VoltageLevelModificationDialog = ({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (vlForm: ExtendedFormData) => {
-            const bbsMeasurements = vlForm[BUSBAR_SECTION_V_MEASUREMENTS];
+        (vlForm: VoltageLevelModificationWithMeasurementsFormData) => {
             modifyVoltageLevel({
                 studyUuid,
                 nodeUuid: currentNodeUuid as UUID,
                 modificationUuid: editData?.uuid,
-                ...voltageLevelModificationFormToDto(vlForm),
-                busbarSectionVMeasurements:
-                    bbsMeasurements && bbsMeasurements.length > 0
-                        ? bbsMeasurements.map((item) => ({
-                              busbarSectionId: item.busbarSectionId,
-                              vMeasurementValue: toModificationOperation(item.value ?? null),
-                              vMeasurementValidity: toModificationOperation(item.validity ?? null),
-                          }))
-                        : null,
-            } as any).catch((error: Error) => {
+                ...voltageLevelModificationWithMeasurementsFormToDto(vlForm),
+            }).catch((error: Error) => {
                 snackWithFallback(snackError, error, { headerId: 'VoltageLevelModificationError' });
             });
         },
@@ -296,7 +277,7 @@ const VoltageLevelModificationDialog = ({
     );
 
     const clear = useCallback(() => {
-        reset(emptyFormData as DeepNullable<ExtendedFormData>);
+        reset(emptyFormData as DeepNullable<VoltageLevelModificationWithMeasurementsFormData>);
         setBusbarSections([]);
     }, [emptyFormData, reset]);
 
@@ -310,7 +291,7 @@ const VoltageLevelModificationDialog = ({
 
     return (
         <CustomFormProvider
-            validationSchema={extendedFormSchema as any}
+            validationSchema={voltageLevelModificationWithMeasurementsFormSchema as any}
             removeOptional={true}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -338,32 +319,10 @@ const VoltageLevelModificationDialog = ({
                     />
                 )}
                 {selectedId != null && (
-                    <>
-                        <Tabs
-                            value={tabIndex}
-                            variant="scrollable"
-                            onChange={(_event, newValue: number) => setTabIndex(newValue)}
-                            TabIndicatorProps={{
-                                sx: getTabIndicatorStyle([], tabIndex),
-                            }}
-                        >
-                            <Tab
-                                label={<FormattedMessage id="CharacteristicsTab" />}
-                                sx={getTabStyle([], VoltageLevelDialogTab.CHARACTERISTICS_TAB)}
-                            />
-                            <Tab
-                                label={<FormattedMessage id="StateEstimationTab" />}
-                                sx={getTabStyle([], VoltageLevelDialogTab.STATE_ESTIMATION_TAB)}
-                            />
-                        </Tabs>
-                        <Box hidden={tabIndex !== VoltageLevelDialogTab.CHARACTERISTICS_TAB} p={1}>
-                            <VoltageLevelModificationForm voltageLevelToModify={voltageLevelToModify} />
-                        </Box>
-                        <Box hidden={tabIndex !== VoltageLevelDialogTab.STATE_ESTIMATION_TAB} p={1}>
-                            <GridSection title="MeasurementsSection" />
-                            <BusbarSectionVoltageMeasurementsForm busbarSections={busbarSections as BusbarSectionVMeasurementInfo[]} />
-                        </Box>
-                    </>
+                    <VoltageLevelModificationForm
+                        voltageLevelToModify={voltageLevelToModify}
+                        busbarSections={busbarSections as BusbarSectionVMeasurementInfo[]}
+                    />
                 )}
             </ModificationDialog>
         </CustomFormProvider>
