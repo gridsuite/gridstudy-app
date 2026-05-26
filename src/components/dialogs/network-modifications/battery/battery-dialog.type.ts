@@ -9,6 +9,7 @@ import {
     ActivePowerControlInfos,
     ConnectablePositionFormInfos,
     FieldConstants,
+    MeasurementInfo,
     MinMaxReactiveLimitsFormInfos,
     Property,
     ReactiveCapabilityCurvePoints,
@@ -43,7 +44,12 @@ export type BatteryDialogSchemaBaseForm = {
     [FieldConstants.TRANSIENT_REACTANCE]?: number | null;
 };
 
-export type BatteryModificationDialogSchemaForm = Partial<BatteryDialogSchemaBaseForm>;
+export type BatteryModificationDialogSchemaForm = {
+    [FieldConstants.STATE_ESTIMATION]?: {
+        [FieldConstants.MEASUREMENT_P]?: MeasurementInfo;
+        [FieldConstants.MEASUREMENT_Q]?: MeasurementInfo;
+    };
+} & Partial<BatteryDialogSchemaBaseForm>;
 
 export interface BatteryFormInfos {
     id: string;
@@ -63,5 +69,7 @@ export interface BatteryFormInfos {
     connectionName?: string | null;
     connectionPosition: string | null;
     terminalConnected?: boolean | null;
+    measurementP: MeasurementInfo | undefined;
+    measurementQ: MeasurementInfo | undefined;
     properties: Record<string, string> | undefined;
 }
