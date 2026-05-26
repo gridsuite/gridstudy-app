@@ -972,10 +972,6 @@
     "GeneratorsOrdering": "Substations hierarchy",
     "ReplacingLine": "Replacing line",
 
-    "YupRequired": "This field is required",
-    "YupNotTypeNumber": "This field only accepts numeric values",
-    "YupNotTypeDefault": "Field value format is incorrect",
-
     "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
     "SLDOpenedInTheGrid": "The {diagramType} \"{equipmentId}\" was opened in the image grid",
     "NADOpenedInTheGrid": "The network area diagram \"{elementId}\" was opened in the image grid",
@@ -1233,6 +1229,7 @@
     "guidancePopUp.action": "Close editor",
     "generateNad": "Generate",
     "networkModificationActivationError": "An error occurred while enabling / disabling modification",
+    "networkModificationRenamingError": "An error occurred while renaming the modification",
     "AddAutomaton": "Add an automaton",
     "BusBarCountMustBeGreaterThanOrEqualToOne": "Number of busbars must be greater than or equal to 1",
     "SectionCountMustBeGreaterThanOrEqualToOne": "Number of sections must be greater than or equal to 1",
