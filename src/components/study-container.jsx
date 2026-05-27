@@ -63,6 +63,7 @@ import {
 import useExportNotification from '../hooks/use-export-notification.js';
 import { useWorkspaceNotifications } from './workspace/hooks/use-workspace-notifications';
 import { saveStudyAccessTimestamp } from '../redux/session-storage/local-storage';
+import { getLastRootNetworkUuid } from 'redux/session-storage/last-root-network-local-storage';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -94,8 +95,13 @@ function useStudy(studyUuidRequest) {
                 // 3) fetch root networks and set the first one as the current root network
                 const rootNetworks = await fetchRootNetworks(studyUuidRequest);
                 if (rootNetworks && rootNetworks.length > 0) {
-                    dispatch(setCurrentRootNetworkUuid(rootNetworks[0].rootNetworkUuid));
                     dispatch(setRootNetworks(rootNetworks));
+                    const storedLastRootNetwork = getLastRootNetworkUuid(studyUuidRequest);
+                    const currentRootNetworkUuid =
+                        storedLastRootNetwork && rootNetworks.some((rn) => rn.rootNetworkUuid === storedLastRootNetwork)
+                            ? storedLastRootNetwork
+                            : rootNetworks[0].rootNetworkUuid;
+                    dispatch(setCurrentRootNetworkUuid(currentRootNetworkUuid));
                 } else {
                     setErrMessage(
                         intlRef.current.formatMessage({ id: 'rootNetworkNotFound' }, { studyUuid: studyUuidRequest })
