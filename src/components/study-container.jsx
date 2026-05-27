@@ -15,7 +15,6 @@ import {
     loadNetworkModificationTreeSuccess,
     openStudy,
     resetEquipmentsPostComputation,
-    setCurrentRootNetworkUuid,
     setCurrentTreeNode,
     setMonoRootStudy,
     setRootNetworkIndexationStatus,
@@ -64,6 +63,7 @@ import useExportNotification from '../hooks/use-export-notification.js';
 import { useWorkspaceNotifications } from './workspace/hooks/use-workspace-notifications';
 import { saveStudyAccessTimestamp } from '../redux/session-storage/local-storage';
 import { getLastRootNetworkUuid } from 'redux/session-storage/last-root-network-local-storage';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -71,6 +71,7 @@ function useStudy(studyUuidRequest) {
     const [pending, setPending] = useState(true);
     const [errMessage, setErrMessage] = useState(undefined);
     const intlRef = useIntlRef();
+    const { setCurrentRootNetworkUuidWithSync } = useSyncNavigationActions();
 
     useEffect(() => {
         const loadStudy = async () => {
@@ -101,7 +102,7 @@ function useStudy(studyUuidRequest) {
                         storedLastRootNetwork && rootNetworks.some((rn) => rn.rootNetworkUuid === storedLastRootNetwork)
                             ? storedLastRootNetwork
                             : rootNetworks[0].rootNetworkUuid;
-                    dispatch(setCurrentRootNetworkUuid(currentRootNetworkUuid));
+                    setCurrentRootNetworkUuidWithSync(currentRootNetworkUuid);
                 } else {
                     setErrMessage(
                         intlRef.current.formatMessage({ id: 'rootNetworkNotFound' }, { studyUuid: studyUuidRequest })
@@ -122,7 +123,7 @@ function useStudy(studyUuidRequest) {
         };
 
         loadStudy();
-    }, [studyUuidRequest, dispatch, intlRef]);
+    }, [studyUuidRequest, dispatch, intlRef, setCurrentRootNetworkUuidWithSync]);
 
     return [studyUuid, pending, errMessage];
 }
