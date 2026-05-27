@@ -27,7 +27,7 @@ import type {
     ComputingStatusParameters,
     CopiedNetworkModifications,
     NodeSelectionForCopy,
-    OneBusShortCircuitAnalysisDiagram,
+    OneBusShortCircuitAnalysisContext,
 } from './reducer.type';
 import type { TableSortConfig, TableSortKeysType } from '../types/custom-aggrid-types';
 import {
@@ -108,8 +108,7 @@ export type AppActions =
     | SetComputationStartingAction
     | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
-    | SetOneBusShortcircuitAnalysisDiagramAction
-    | ResetOneBusShortcircuitAnalysisDiagramAction
+    | SetOneBusShortcircuitAnalysisContextAction
     | AddToGlobalFilterOptionsAction
     | RemoveFromGlobalFilterOptionsAction
     | SetLastCompletedComputationAction
@@ -899,35 +898,21 @@ export function setOptionalServices(optionalServices: IOptionalService[]): SetOp
     };
 }
 
-export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type SetOneBusShortcircuitAnalysisDiagramAction = Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM> &
-    OneBusShortCircuitAnalysisDiagram & {
-        [key: string]: any;
-    };
-export function setOneBusShortcircuitAnalysisDiagram(
-    diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'],
-    studyUuid: OneBusShortCircuitAnalysisDiagram['studyUuid'],
-    rootNetworkUuid: OneBusShortCircuitAnalysisDiagram['rootNetworkUuid'],
-    nodeId: OneBusShortCircuitAnalysisDiagram['nodeId']
-): SetOneBusShortcircuitAnalysisDiagramAction {
+export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT = 'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT';
+export type SetOneBusShortcircuitAnalysisContextAction = Readonly<
+    Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT>
+> &
+    OneBusShortCircuitAnalysisContext;
+export function setOneBusShortcircuitAnalysisContext(
+    equipmentId: string,
+    rootNetworkUuid: UUID,
+    nodeId: UUID
+): SetOneBusShortcircuitAnalysisContextAction {
     return {
-        type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-        diagramId: diagramId,
-        studyUuid: studyUuid,
-        rootNetworkUuid: rootNetworkUuid,
-        nodeId: nodeId,
-    };
-}
-
-export const RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type ResetOneBusShortcircuitAnalysisDiagramAction = Action<
-    typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM
-> & {
-    [key: string]: any;
-};
-export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircuitAnalysisDiagramAction {
-    return {
-        type: RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+        type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT,
+        equipmentId,
+        nodeId,
+        rootNetworkUuid,
     };
 }
 
