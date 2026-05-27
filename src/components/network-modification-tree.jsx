@@ -12,7 +12,6 @@ import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { reorderNetworkModificationTreeNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
-import { useWorkspacePanelActions } from './workspace/hooks/use-workspace-panel-actions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
@@ -30,7 +29,6 @@ import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
-import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 import { PanelType } from './workspace/types/workspace.types';
 import { selectActiveWorkspaceId } from '../redux/slices/workspace-selectors';
@@ -66,7 +64,6 @@ const styles = {
 
 const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, panelId }) => {
     const dispatch = useDispatch();
-    const { openToolPanel } = useWorkspacePanelActions();
     const { snackError } = useSnackMessage();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
@@ -107,14 +104,11 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, panelId }) => {
 
     const onNodeClick = useCallback(
         (event, node) => {
-            if (node.type === NodeType.NETWORK_MODIFICATION) {
-                openToolPanel(PanelType.MODIFICATIONS);
-            }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);
             }
         },
-        [currentNode, openToolPanel, setCurrentTreeNodeWithSync]
+        [currentNode, setCurrentTreeNodeWithSync]
     );
 
     /**
