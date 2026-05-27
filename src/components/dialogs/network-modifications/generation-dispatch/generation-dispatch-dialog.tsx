@@ -74,7 +74,12 @@ const getGeneratorsFrequencyReserveSchema = () => {
                 )
                 .min(1, 'FilterInputMinError')
                 .required(),
-            [FREQUENCY_RESERVE]: yup.number().nullable().min(0).max(100).required(),
+            [FREQUENCY_RESERVE]: yup
+                .number()
+                .nullable()
+                .min(0, 'NormalizedPercentage')
+                .max(100, 'NormalizedPercentage')
+                .required(),
         })
     );
 };

@@ -65,7 +65,7 @@ const temporaryLimitsValidationSchema = () => {
             [TEMPORARY_LIMIT_DURATION]: yup
                 .number()
                 .nullable()
-                .min(0)
+                .min(0, 'mustBeGreaterOrEqualToZero')
                 .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_NAME], {
                     is: (value: number | null, name: string | null) => value != null || !!name,
                     then: (schema) => schema.required(),
