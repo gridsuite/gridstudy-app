@@ -12,6 +12,7 @@ import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
+import { saveLastRootNetworkUuid } from 'redux/session-storage/last-root-network-local-storage';
 
 /**
  * Custom hook that provides synchronized navigation actions for setting the current root network UUID and tree node.
@@ -27,8 +28,12 @@ export const useSyncNavigationActions = () => {
     const setCurrentRootNetworkUuidWithSync = useCallback(
         (uuid: UUID) => {
             dispatch(setCurrentRootNetworkUuid(uuid));
-            if (syncEnabled && studyUuid) {
-                saveStudyNavigationSync(studyUuid, { rootNetworkUuid: uuid });
+            if (studyUuid) {
+                saveLastRootNetworkUuid(studyUuid, uuid);
+
+                if (syncEnabled) {
+                    saveStudyNavigationSync(studyUuid, { rootNetworkUuid: uuid });
+                }
             }
         },
         [dispatch, syncEnabled, studyUuid]
