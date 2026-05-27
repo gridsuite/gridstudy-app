@@ -11,7 +11,6 @@ import {
     EQUIPMENT_ID,
     IS_ACTIVE,
     LIMIT_GROUP_NAME,
-    LIMIT_SETS_MODIFICATION_TYPE,
     MODIFICATION_TYPE,
     MODIFICATIONS_TABLE,
     PERMANENT_LIMIT,
@@ -19,7 +18,6 @@ import {
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
     SIDE,
     TEMPORARY_LIMIT_DURATION,
-    TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS_MODIFICATION_TYPE,
@@ -92,18 +90,12 @@ const getAmountTemporaryLimits = (editData: LimitSetModificationMetadata) => {
 export const formatTemporaryLimitsFrontToBack = (modification: ModificationRow, amountMaxTemporaryLimits: number) => {
     const temporaryLimits = [];
     for (let i = 1; i <= amountMaxTemporaryLimits; i++) {
-        if (modification[TEMPORARY_LIMIT_NAME + i]) {
-            temporaryLimits.push({
-                name: toModificationOperation(modification[TEMPORARY_LIMIT_NAME + i]),
-                value: toModificationOperation(modification[TEMPORARY_LIMIT_VALUE + i]),
-                acceptableDuration: toModificationOperation(modification[TEMPORARY_LIMIT_DURATION + i]),
-                //If we aren't modifying an existing limit set, temporary limits modification is necessarily of ADDED type
-                modificationType:
-                    modification[MODIFICATION_TYPE] === LIMIT_SETS_MODIFICATION_TYPE.MODIFY
-                        ? modification[TEMPORARY_LIMITS_MODIFICATION_TYPE]
-                        : TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD,
-            });
-        }
+        temporaryLimits.push({
+            name: toModificationOperation(modification[TEMPORARY_LIMIT_NAME + i]),
+            value: toModificationOperation(modification[TEMPORARY_LIMIT_VALUE + i]),
+            acceptableDuration: toModificationOperation(modification[TEMPORARY_LIMIT_DURATION + i]),
+            modificationType: modification[TEMPORARY_LIMITS_MODIFICATION_TYPE],
+        });
     }
     return temporaryLimits;
 };

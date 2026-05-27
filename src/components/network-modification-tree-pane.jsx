@@ -41,9 +41,8 @@ import {
     PENDING_MODIFICATION_NOTIFICATION_TYPES,
 } from 'types/notification-types';
 import useExportSubscription from '../hooks/use-export-subscription';
-import { exportNetworkFile } from '../services/study/network.js';
+import { exportNetworkFile, fetchNetworkModificationsToExport } from '../services/study/network.js';
 import { useCopiedNodes } from 'hooks/copy-paste/use-copied-nodes';
-import { fetchNetworkModificationsToExport } from 'services/study/network-modifications';
 
 export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNetworkUuid }) => {
     const { snackError } = useSnackMessage();
@@ -312,9 +311,9 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
         copyNode(studyUuid, nodeId, CopyType.SUBTREE_COPY);
     };
 
-    const handleExportNodeInfos = async (node) => {
+    const handleExportNodeInfos = async () => {
         try {
-            const data = await fetchNetworkModificationsToExport(studyUuid, node.id);
+            const data = await fetchNetworkModificationsToExport(studyUuid);
 
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
 

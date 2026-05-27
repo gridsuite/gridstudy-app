@@ -451,3 +451,10 @@ export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentTy
         headers: { 'Content-Type': 'application/json' },
     });
 }
+
+export function fetchNetworkModificationsToExport(studyUuid: UUID | null) {
+    console.info('Fetching network modifications to export');
+    const modificationsGetUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/network-modifications/export`;
+    console.debug(modificationsGetUrl);
+    return backendFetchJson(modificationsGetUrl);
+}
