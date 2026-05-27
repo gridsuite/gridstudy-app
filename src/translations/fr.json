@@ -380,7 +380,7 @@
     "generations": "Production (MW)",
     "countryAdequacyGeneration": "Production (MW)",
     "countryAdequacyLoad": "Consommation (MW)",
-    "exchanges": "Echanges (MW)",
+    "exchanges": "Échanges (MW)",
     "losses": "Pertes (MW)",
     "netPosition": "Position nette (MW)",
     "exchange": "Position nette - Echanges (MW)",
