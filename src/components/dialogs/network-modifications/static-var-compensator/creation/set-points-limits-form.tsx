@@ -23,18 +23,19 @@ import {
     FieldConstants,
     FloatInput,
     ReactivePowerAdornment,
+    REGULATION_TYPES,
+    RegulatingTerminalForm,
     SelectInput,
     SusceptanceAdornment,
     VoltageAdornment,
 } from '@gridsuite/commons-ui';
 import { useWatch } from 'react-hook-form';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import type { UUID } from 'node:crypto';
-import { REGULATION_TYPES } from '../../../../network/constants';
-import { RegulatingTerminalForm } from '../../../regulating-terminal/regulating-terminal-form';
 import { FormattedMessage } from 'react-intl';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
+import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 
 export interface SetPointsLimitsFormProps {
     studyUuid: UUID;
@@ -49,6 +50,11 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
     voltageLevelOptions,
 }) => {
     const id = SETPOINTS_LIMITS;
+    const fetchVoltageLevelEquipmentsCallback = useCallback(
+        (voltageLevelId: string) =>
+            fetchVoltageLevelEquipments(studyUuid, currentNode.id, currentRootNetworkUuid, voltageLevelId, true),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
     const watchCharacteristicsChoice = useWatch({ name: `${id}.${CHARACTERISTICS_CHOICE}` });
     // a tricky solution to rerender voltage/reactive setpoints field with label changed between required <-> optional
     useWatch({ name: `${id}.${VOLTAGE_REGULATION_MODE}` });
@@ -97,9 +103,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             id={id}
             direction={undefined}
             disabled={false}
-            studyUuid={studyUuid}
-            currentNodeUuid={currentNode.id}
-            currentRootNetworkUuid={currentRootNetworkUuid}
+            fetchVoltageLevelEquipments={fetchVoltageLevelEquipmentsCallback}
             voltageLevelOptions={voltageLevelOptions}
             equipmentSectionTypeDefaultValue={EquipmentType.STATIC_VAR_COMPENSATOR}
             regulatingTerminalVlId={undefined}
