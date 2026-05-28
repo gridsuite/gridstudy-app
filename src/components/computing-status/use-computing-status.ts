@@ -148,6 +148,7 @@ export const useComputingStatus: UseComputingStatusProps = (
             if (
                 computingStatusParametersFetcher &&
                 computationStatus !== RunningStatus.IDLE &&
+                computationStatus !== RunningStatus.UNKNOWN &&
                 isParameterizedComputingType(computingType)
             ) {
                 nodeUuidRef.current = nodeUuid;
