@@ -1945,7 +1945,7 @@ export function moveVoltageLevelFeederBays({
     });
 }
 
-export function mergeModificationsIntoComposite(
+export function assembleModificationsIntoComposite(
     studyUuid: UUID | null,
     nodeUuid: UUID | undefined,
     modificationUuids: UUID[]

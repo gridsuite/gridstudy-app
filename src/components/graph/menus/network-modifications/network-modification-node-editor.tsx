@@ -92,7 +92,7 @@ import { copyOrMoveModifications } from '../../../../services/study';
 import {
     fetchExcludedNetworkModifications,
     fetchNetworkModifications,
-    mergeModificationsIntoComposite,
+    assembleModificationsIntoComposite,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
@@ -935,17 +935,17 @@ const NetworkModificationNodeEditor = () => {
         networkModificationsToCopy,
     ]);
 
-    const doMergeModificationsIntoComposite = useCallback(() => {
+    const doAssembleModificationsIntoComposite = useCallback(() => {
         const selectedModUuids: UUID[] = selectedNetworkModifications.map((item) => item.uuid);
         setSaveInProgress(true);
-        mergeModificationsIntoComposite(studyUuid, currentNode?.id, selectedModUuids)
+        assembleModificationsIntoComposite(studyUuid, currentNode?.id, selectedModUuids)
             .then((compositeUuid: UUID) => {
                 dispatch(setHighlightModification(compositeUuid));
                 setModificationUuidsToReset(selectedModUuids);
                 setModificationToEditLabel(compositeUuid);
             })
             .catch((error: ErrorMessage) => {
-                snackWithFallback(snackError, error, { headerId: 'MergeIntoCompositeError' });
+                snackWithFallback(snackError, error, { headerId: 'AssembleIntoCompositeError' });
             })
             .finally(() => {
                 setSaveInProgress(false);
@@ -1258,7 +1258,7 @@ const NetworkModificationNodeEditor = () => {
                                 values={{ limit: MAX_COMPOSITE_NESTING_DEPTH }}
                             />
                         ) : (
-                            <FormattedMessage id={'MergeIntoComposite'} />
+                            <FormattedMessage id={'AssembleIntoComposite'} />
                         )
                     }
                 >
@@ -1271,7 +1271,7 @@ const NetworkModificationNodeEditor = () => {
                             sx={styles.badgeStyle}
                         >
                             <IconButton
-                                onClick={doMergeModificationsIntoComposite}
+                                onClick={doAssembleModificationsIntoComposite}
                                 size={'small'}
                                 disabled={disabledCompositeCreation}
                             >
