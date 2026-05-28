@@ -8,7 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ErrorMessageDescriptor, extractErrorMessageDescriptor } from '@gridsuite/commons-ui';
+import { ErrorMessageDescriptor, extractErrorMessageDescriptor, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../../../services/study';
@@ -66,6 +66,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const workspaceId = useSelector((state: RootState) => selectActiveWorkspaceId(state));
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const [diagram, setDiagram] = useState<NetworkAreaDiagram>(() => ({
         type: DiagramType.NETWORK_AREA_DIAGRAM,
@@ -155,6 +156,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
                 nadConfigUuid: currentDiagram.currentNadConfigUuid || currentDiagram.nadConfigUuid,
                 filterUuid: currentDiagram.currentFilterUuid || currentDiagram.filterUuid,
+                language,
             };
 
             const url = getNetworkAreaDiagramUrl(studyUuid, currentNodeId, currentRootNetworkUuid);
@@ -171,10 +173,11 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         });
     }, [
         currentNode,
+        networkVisuParams?.networkAreaDiagramParameters.nadPositionsGenerationMode,
+        language,
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
-        networkVisuParams,
         processSvgData,
         handleFetchError,
     ]);
