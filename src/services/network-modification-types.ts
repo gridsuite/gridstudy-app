@@ -27,12 +27,6 @@ import {
 import { VARIATION_TYPES } from '../components/network/constants';
 import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
 
-export interface BusbarSectionVMeasurementDto {
-    busbarSectionId: string;
-    vMeasurementValue: AttributeModification<number> | null;
-    vMeasurementValidity: AttributeModification<boolean> | null;
-}
-
 export interface WithModificationId {
     uuid: UUID;
 }

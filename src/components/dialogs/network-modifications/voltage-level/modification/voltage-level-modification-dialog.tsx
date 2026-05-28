@@ -89,7 +89,7 @@ const VoltageLevelModificationDialog = ({
     const formMethods = useFormWithDirtyTracking<DeepNullable<VoltageLevelModificationWithMeasurementsFormData>>({
         defaultValues: emptyFormData as DeepNullable<VoltageLevelModificationWithMeasurementsFormData>,
         resolver: yupResolver<DeepNullable<VoltageLevelModificationWithMeasurementsFormData>>(
-            voltageLevelModificationWithMeasurementsFormSchema as any
+            voltageLevelModificationWithMeasurementsFormSchema
         ),
     });
 
@@ -138,7 +138,7 @@ const VoltageLevelModificationDialog = ({
                 .then((bbsList: Identifiable[]) => {
                     if (!bbsList || bbsList.length === 0) {
                         setBusbarSections([]);
-                        setValue('busbarSectionVMeasurements' as any, []);
+                        setValue('busbarSectionVMeasurements', []);
                         return;
                     }
                     Promise.all(
@@ -157,14 +157,14 @@ const VoltageLevelModificationDialog = ({
                         const bbsFormData = formDataList as BusbarSectionFormInfos[];
                         setBusbarSections(bbsFormData);
                         setValue(
-                            'busbarSectionVMeasurements' as any,
+                            'busbarSectionVMeasurements',
                             buildBbsMeasurementItems(bbsFormData, existingMeasurements)
                         );
                     });
                 })
                 .catch(() => {
                     setBusbarSections([]);
-                    setValue('busbarSectionVMeasurements' as any, []);
+                    setValue('busbarSectionVMeasurements', []);
                 });
         },
         [studyUuid, currentNodeUuid, currentRootNetworkUuid, setValue, buildBbsMeasurementItems]
