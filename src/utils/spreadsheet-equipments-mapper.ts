@@ -6,7 +6,6 @@
  */
 
 import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
-import { REGULATION_TYPES } from 'components/network/constants';
 import {
     getComputedRegulationTypeId,
     getComputedTapSideId,
@@ -17,7 +16,7 @@ import {
     getComputedPhaseTapChangerRegulationMode,
     getPhaseTapRegulationSideId,
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
-import { type Identifiable, SHUNT_COMPENSATOR_TYPES } from '@gridsuite/commons-ui';
+import { type Identifiable, REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from '@gridsuite/commons-ui';
 import { SpreadsheetEquipmentType } from '../components/spreadsheet-view/types/spreadsheet.type';
 
 /*

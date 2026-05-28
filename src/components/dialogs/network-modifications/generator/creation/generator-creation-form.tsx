@@ -21,6 +21,7 @@ import {
     ShortCircuitForm,
     SwitchInput,
     TextInput,
+    VoltageRegulationForm,
 } from '@gridsuite/commons-ui';
 import { ENERGY_SOURCE, EQUIPMENT_ID, EQUIPMENT_NAME, VOLTAGE_REGULATION } from 'components/utils/field-constants';
 import { ENERGY_SOURCES } from 'components/network/constants';
@@ -30,12 +31,12 @@ import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { FormattedMessage } from 'react-intl';
 import { useWatch } from 'react-hook-form';
-import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
+import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 
 export interface GeneratorCreationFormProps {
     studyUuid: UUID;
@@ -62,6 +63,12 @@ export default function GeneratorCreationForm({
                 currentRootNetworkUuid,
                 voltageLevelId
             ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
+
+    const fetchVoltageLevelEquipmentsCallback = useCallback(
+        (voltageLevelId: string) =>
+            fetchVoltageLevelEquipments(studyUuid, currentNode.id, currentRootNetworkUuid, voltageLevelId, true),
         [studyUuid, currentNode.id, currentRootNetworkUuid]
     );
 
@@ -138,9 +145,7 @@ export default function GeneratorCreationForm({
     const voltageRegulationFields = (
         <VoltageRegulationForm
             voltageLevelOptions={voltageLevelOptions}
-            currentNodeUuid={currentNodeUuid}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-            studyUuid={studyUuid}
+            fetchVoltageLevelEquipments={fetchVoltageLevelEquipmentsCallback}
         />
     );
 
