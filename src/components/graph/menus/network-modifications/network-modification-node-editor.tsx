@@ -191,7 +191,7 @@ const NetworkModificationNodeEditor = () => {
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
     const [modificationUuidsToReset, setModificationUuidsToReset] = useState<UUID[]>([]);
-    const [modificationToEditLabel, setModificationToEditLabel] = useState<UUID|null>(null);
+    const [modificationToEditLabel, setModificationToEditLabel] = useState<UUID | null>(null);
     const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
     const {
@@ -1227,6 +1227,13 @@ const NetworkModificationNodeEditor = () => {
         [selectedNetworkModifications]
     );
 
+    const disabledCompositeCreation: boolean = useMemo(() => {
+        return selectedNetworkModifications?.length === 0 ||
+            saveInProgress ||
+            isRootNode ||
+            isCompositeNestingLimitReached;
+    }, [selectedNetworkModifications, saveInProgress, isRootNode, isCompositeNestingLimitReached]);
+
     return (
         <>
             <Toolbar sx={styles.toolbar}>
@@ -1266,12 +1273,7 @@ const NetworkModificationNodeEditor = () => {
                             <IconButton
                                 onClick={doMergeModificationsIntoComposite}
                                 size={'small'}
-                                disabled={
-                                    selectedNetworkModifications?.length === 0 ||
-                                    saveInProgress ||
-                                    isRootNode ||
-                                    isCompositeNestingLimitReached
-                                }
+                                disabled={disabledCompositeCreation}
                             >
                                 <ArrowsInputIcon />
                             </IconButton>
@@ -1312,12 +1314,7 @@ const NetworkModificationNodeEditor = () => {
                             <IconButton
                                 onClick={openCreateCompositeModificationDialog}
                                 size={'small'}
-                                disabled={
-                                    selectedNetworkModifications?.length === 0 ||
-                                    saveInProgress ||
-                                    isRootNode ||
-                                    isCompositeNestingLimitReached
-                                }
+                                disabled={disabledCompositeCreation}
                             >
                                 <SaveIcon />
                             </IconButton>
