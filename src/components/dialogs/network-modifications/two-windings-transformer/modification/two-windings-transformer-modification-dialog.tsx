@@ -23,6 +23,7 @@ import {
     getCont1Cont2WithPositionEmptyFormData,
     getPropertiesFromModification,
     modificationPropertiesSchema,
+    REGULATION_TYPES,
     sanitizeString,
     snackWithFallback,
     toModificationOperation,
@@ -85,12 +86,7 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, Resolver } from 'react-hook-form';
-import {
-    FORM_LOADING_DELAY,
-    PHASE_REGULATION_MODES,
-    RATIO_REGULATION_MODES,
-    REGULATION_TYPES,
-} from 'components/network/constants';
+import { FORM_LOADING_DELAY, PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import TwoWindingsTransformerModificationDialogTabs from './two-windings-transformer-modification-dialog-tabs';

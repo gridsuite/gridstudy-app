@@ -23,14 +23,16 @@ import {
     ReactiveLimitsForm,
     SetPointsForm,
     ShortCircuitForm,
+    VoltageRegulationForm,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import GridItem from 'components/dialogs/commons/grid-item';
 import { VOLTAGE_REGULATION } from 'components/utils/field-constants';
+import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
-import { VoltageRegulationForm } from 'components/dialogs/voltage-regulation/voltage-regulation-form';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 
 export interface GeneratorDialogTabsContentProps extends ConnectivityNetworkProps {
     studyUuid: UUID;
@@ -58,6 +60,12 @@ export function GeneratorDialogTabsContent({
         name: VOLTAGE_REGULATION,
     });
 
+    const fetchVoltageLevelEquipmentsCallback = useCallback(
+        (voltageLevelId: string) =>
+            fetchVoltageLevelEquipments(studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelId, true),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
+
     const previousRegulation = () => {
         if (generatorToModify?.voltageRegulatorOn) {
             return intl.formatMessage({ id: 'On' });
@@ -81,9 +89,7 @@ export function GeneratorDialogTabsContent({
     const voltageRegulationFields = (
         <VoltageRegulationForm
             voltageLevelOptions={voltageLevelOptions}
-            currentNodeUuid={currentNodeUuid}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-            studyUuid={studyUuid}
+            fetchVoltageLevelEquipments={fetchVoltageLevelEquipmentsCallback}
             previousValues={{
                 regulatingTerminalConnectableId: generatorToModify?.regulatingTerminalConnectableId,
                 regulatingTerminalVlId: generatorToModify?.regulatingTerminalVlId,
