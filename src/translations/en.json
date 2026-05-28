@@ -441,13 +441,14 @@
     "UpdateCompositeModificationLabel": "Replace an existing composite modification",
     "importComposites.title": "Import composite modifications",
     "importComposites.organizationLabel": "Modifications organisation: ",
-    "importComposites.action.split": "Only unitary",
+    "importComposites.action.split": "Same",
     "importComposites.action.insert": "Composites",
     "importComposites.select": "Select composite modifications",
     "importComposites.selected": "Selected composite modifications: ",
     "importComposites.error": "Error during the composite modification import.",
     "importComposites.step.selection": "Selection",
     "importComposites.step.organization": "Organization & share",
+    "importComposites.shared": "Shared",
     "descriptionProperty": "Description",
     "DeleteModificationText": "{numberToDelete, plural, =0 {No modification to delete.} =1 {One modification will be permanently deleted.} other {# modifications will be permanently deleted.}}",
     "HybridDisplay": "Hybrid display",
@@ -1547,7 +1548,6 @@
     "deselectModification": "Deselect modification",
     "selectModification": "Select modification",
     "moveModification": "Move modification",
-    "button.cancel": "Cancel",
     "button.next": "Next",
     "button.previous": "Previous"
 } 

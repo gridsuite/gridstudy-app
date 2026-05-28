@@ -34,6 +34,7 @@ import {
     Divider,
     FormControl,
     FormControlLabel,
+    FormHelperText,
     Radio,
     RadioGroup,
     Step,
@@ -58,6 +59,17 @@ import { ACTION, SELECTED_MODIFICATIONS } from 'components/utils/field-constants
 import { UUID } from 'node:crypto';
 import { useParameterState } from './parameters/use-parameters-state';
 
+/**
+ * Dialog to select composite network modifications and append them to the current node.
+ * Organised as a two-step stepper:
+ *
+ * - Step 1 — Selection: inline tree view to browse and pick one or more composites.
+ * - Step 2 — Organisation: reorder selected items and choose insertion mode
+ *   (SPLIT to expand individual modifications, INSERT to keep composites as-is with a required name).
+ *
+ * @param open    Whether the dialog is open.
+ * @param onClose Callback invoked when the dialog is closed or cancelled.
+ */
 interface ImportModificationDialogProps {
     open: boolean;
     onClose: () => void;
@@ -91,10 +103,10 @@ function SharedCell({ rowIndex }: Readonly<SharedCellProps>) {
 
     return (
         <FormControlLabel
-            control={<Checkbox size="small" disabled checked={!!isShared} sx={{ p: 0, ml: 1 }} />}
+            control={<Checkbox size="small" disabled checked={isShared} sx={{ p: 0, ml: 1 }} />}
             label={
                 <Typography variant="body2" color="text.disabled" sx={{ ml: 0.5 }}>
-                    <FormattedMessage id="importComposites.shared" defaultMessage="Partagé" />
+                    <FormattedMessage id="importComposites.shared" />
                 </Typography>
             }
             sx={{ mr: 0, alignItems: 'center' }}
@@ -121,9 +133,7 @@ function InsertNameCell({ rowIndex }: Readonly<InsertNameCellProps>) {
                     <TextField {...field} size="small" fullWidth error={!!fieldState.error} />
                 )}
             />
-            <Typography variant="caption" color="text.disabled" sx={{ px: 1, mt: 0.25 }}>
-                {originalName}
-            </Typography>
+            <FormHelperText sx={{ px: 1, mt: 0.25 }}> {originalName}</FormHelperText>
         </Box>
     );
 }
@@ -169,6 +179,8 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
     const [activeStep, setActiveStep] = useState(STEP_SELECTION);
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+    // true = Next button disabled; starts disabled until TreeViewFinder signals a valid selection
+    const [isNextDisabled, setIsNextDisabled] = useState(true);
 
     const formMethods = useForm<FormSchemaType>({
         defaultValues: emptyFormData,
@@ -196,7 +208,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     }) as unknown as UseFieldArrayReturn;
 
     // Column definitions
-    // Shared column — same in both modes, shows disabled checkbox only when isShared=true
     const sharedColumn: DndColumn = useMemo(
         () => ({
             label: '',
@@ -249,6 +260,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         if (open) {
             setActiveStep(STEP_SELECTION);
             setIsSelectorOpen(true);
+            setIsNextDisabled(true); // reset on each open
         } else {
             setIsSelectorOpen(false);
             reset(emptyFormData);
@@ -260,6 +272,23 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             setValue(ACTION, CompositeModificationAction.SPLIT, { shouldValidate: true });
         }
     }, [isDeveloperMode, action, setValue]);
+
+    const handleInlineSelectionChange = useCallback(
+        (selectedElements: TreeViewFinderNodeProps[]) => {
+            const newRows: SelectedComposite[] = selectedElements.map((e) => ({
+                id: e.id as UUID,
+                name: e.name,
+                originalName: e.name,
+                isShared: false,
+            }));
+            setValue(SELECTED_MODIFICATIONS, newRows, {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+            setIsNextDisabled(selectedElements.length === 0);
+        },
+        [setValue]
+    );
 
     const handleSelectModification = useCallback(
         (selectedElements: TreeViewFinderNodeProps[]) => {
@@ -288,9 +317,9 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     );
 
     const handleNext = useCallback(() => {
-        if (!selectedModifications.length) return;
+        if (isNextDisabled) return;
         setActiveStep(STEP_ORGANIZATION);
-    }, [selectedModifications.length]);
+    }, [isNextDisabled]);
 
     const handlePrevious = useCallback(() => {
         setActiveStep(STEP_SELECTION);
@@ -339,6 +368,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                     {/* ---- Stepper ---- */}
                     <Stepper
                         activeStep={activeStep}
+                        alternativeLabel
                         sx={{
                             justifyContent: 'center',
                             '& .MuiStepConnector-root': { flex: '0 1 150px', minWidth: 0 },
@@ -370,6 +400,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                                 types={[ElementType.MODIFICATION]}
                                 multiSelect
                                 inline
+                                onSelectionChange={handleInlineSelectionChange}
                                 title={intl.formatMessage({ id: 'ModificationsSelection' })}
                             />
                         </Box>
@@ -433,10 +464,10 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                     </Box>
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <Button onClick={handleClose}>
-                            <FormattedMessage id="button.cancel" />
+                            <FormattedMessage id="cancel" />
                         </Button>
                         {activeStep === STEP_SELECTION ? (
-                            <Button variant="contained" onClick={handleNext} disabled={!selectedModifications.length}>
+                            <Button variant="contained" onClick={handleNext} disabled={isNextDisabled}>
                                 <FormattedMessage id="button.next" />
                             </Button>
                         ) : (
