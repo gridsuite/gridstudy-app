@@ -265,7 +265,19 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
 
     const filterableEquipmentTypes: EquipmentType[] = useMemo(() => {
         if (tabIndex === NMK_RESULTS_TAB_INDEX) {
-            return [EquipmentType.TWO_WINDINGS_TRANSFORMER, EquipmentType.LINE];
+            return [
+                EquipmentType.LINE,
+                EquipmentType.TWO_WINDINGS_TRANSFORMER,
+                EquipmentType.THREE_WINDINGS_TRANSFORMER,
+                EquipmentType.BATTERY,
+                EquipmentType.GENERATOR,
+                EquipmentType.LOAD,
+                EquipmentType.SHUNT_COMPENSATOR,
+                EquipmentType.STATIC_VAR_COMPENSATOR,
+                EquipmentType.BOUNDARY_LINE,
+                EquipmentType.HVDC_LINE,
+                EquipmentType.VSC_CONVERTER_STATION,
+            ];
         }
         return [];
     }, [tabIndex]);
