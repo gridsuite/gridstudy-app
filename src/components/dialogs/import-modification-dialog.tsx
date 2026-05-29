@@ -24,7 +24,7 @@ import { Button, FormControl, Grid, Radio, RadioGroup, TextField, Typography } f
 import { NoteAlt as NoteAltIcon } from '@mui/icons-material';
 import { Controller, useController, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from './commons/modificationDialog';
 import { ACTION, COMPOSITE_NAMES, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
 import GridItem from './commons/grid-item';

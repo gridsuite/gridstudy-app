@@ -18,7 +18,7 @@ import {
     NOMINAL_V,
     R,
 } from '../../../../../utils/field-constants';
-import yup from '../../../../../utils/yup-config';
+import * as yup from 'yup';
 import {
     CustomFormProvider,
     ExtendedEquipmentType,

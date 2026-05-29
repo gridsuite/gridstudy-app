@@ -15,7 +15,7 @@ import {
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../regulating-terminal/regulating-terminal-form-utils';
 import { FieldConstants } from '@gridsuite/commons-ui';

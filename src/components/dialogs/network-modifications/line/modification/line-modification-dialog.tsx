@@ -70,7 +70,7 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { FieldErrors } from 'react-hook-form';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     addModificationTypeToOpLimitsGroups,

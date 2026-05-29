@@ -11,8 +11,8 @@ import {
     ReactiveCapabilityCurvePoints,
     SHUNT_COMPENSATOR_TYPES,
     type UseStateBooleanReturn,
-    yupConfig as yup,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import {
     MAX_Q_AT_NOMINAL_V,
     REACTIVE_CAPABILITY_CURVE,

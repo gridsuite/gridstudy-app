@@ -20,7 +20,7 @@ import {
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
 import { CHARACTERISTICS_CHOICES } from '@gridsuite/commons-ui';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import { Schema } from 'yup';
 import { FieldConstants } from '@gridsuite/commons-ui';

@@ -6,10 +6,6 @@
  */
 
 import { useMemo } from 'react';
-// need to configure yup before creating any form schema as we have an issue where the form schema
-// is created before configuring the translation in yup, in that case it will take the default
-// behaviour of yup
-import './utils/yup-config';
 import App from './app';
 import {
     createTheme,
