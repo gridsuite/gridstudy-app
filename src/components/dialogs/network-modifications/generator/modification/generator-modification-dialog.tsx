@@ -43,6 +43,9 @@ import {
     getInjectionActiveReactivePowerValidationSchemaProperties,
     getInjectionActiveReactivePowerEditData,
     getInjectionActiveReactivePowerEmptyFormData,
+    getRegulatingTerminalFormData,
+    getVoltageRegulationEmptyFormData,
+    getVoltageRegulationSchema,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -66,7 +69,6 @@ import {
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
 import GeneratorModificationForm from './generator-modification-form';
-import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
@@ -77,10 +79,6 @@ import {
 } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import {
-    getVoltageRegulationEmptyFormData,
-    getVoltageRegulationSchema,
-} from '../../../voltage-regulation/voltage-regulation-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';

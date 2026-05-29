@@ -4,7 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { REGULATION_TYPES, SIDE } from '../../../../network/constants';
+import { REGULATION_TYPES } from '@gridsuite/commons-ui';
+import { SIDE } from '../../../../network/constants';
 import { IntlShape } from 'react-intl';
 
 export const getRegulationTypeLabel = (twt: any, tap: any, intl: IntlShape) => {

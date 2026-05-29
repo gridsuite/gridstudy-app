@@ -89,7 +89,7 @@ import { Provider, useSelector } from 'react-redux';
 import { store } from '../redux/store';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import messages_plugins from '../plugins/translations';
+import messages_plugins from '../plugins/translations/index.ts';
 import { grid_en } from '../translations/grid-en';
 import { grid_fr } from '../translations/grid-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
