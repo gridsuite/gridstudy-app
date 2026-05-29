@@ -275,7 +275,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 EquipmentType.SHUNT_COMPENSATOR,
                 EquipmentType.STATIC_VAR_COMPENSATOR,
                 EquipmentType.BOUNDARY_LINE,
-                EquipmentType.HVDC_LINE,
+                // TODO : temporary removed, waiting for a fix in filter library on nominal voltage filtering for hvdc line
+                //EquipmentType.HVDC_LINE,
                 EquipmentType.VSC_CONVERTER_STATION,
             ];
         }
