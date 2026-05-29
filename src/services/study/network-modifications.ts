@@ -29,6 +29,7 @@ import {
     GeneratorModificationDto,
     ShuntCompensatorCreationDto,
     BatteryCreationDto,
+    BatteryModificationDto,
 } from '@gridsuite/commons-ui';
 import { getBaseNetworkModificationUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -36,7 +37,6 @@ import type { UUID } from 'node:crypto';
 import {
     AttachLineInfo,
     BalancesAdjustmentInfos,
-    BatteryModificationInfos,
     ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
     CreateVoltageLevelSectionInfos,
@@ -355,19 +355,12 @@ export function createBattery(
     });
 }
 
-export function modifyBattery({
-    batteryModificationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    batteryModificationInfos: BatteryModificationInfos;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid: string | null;
-    isUpdate: boolean;
-}) {
+export function modifyBattery(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: BatteryModificationDto
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -376,12 +369,12 @@ export function modifyBattery({
         console.info('Creating battery modification');
     }
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(batteryModificationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
