@@ -171,16 +171,8 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 .finally(() => setLoading(false));
             return currentDiagram;
         });
-    }, [
-        currentNode,
-        networkVisuParams?.networkAreaDiagramParameters.nadPositionsGenerationMode,
-        language,
-        studyUuid,
-        currentNodeId,
-        currentRootNetworkUuid,
-        processSvgData,
-        handleFetchError,
-    ]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentNode, language, studyUuid, currentNodeId, currentRootNetworkUuid, processSvgData, handleFetchError]);
 
     const updateDiagram = useCallback(
         (updates: Partial<NetworkAreaDiagram>, shouldFetch: boolean, syncToBackend = true) => {
