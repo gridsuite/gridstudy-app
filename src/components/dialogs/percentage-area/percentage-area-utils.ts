@@ -6,7 +6,7 @@
  */
 
 import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 import { Input } from '@gridsuite/commons-ui';
 
 const percentageAreaValidationSchema = () => ({
