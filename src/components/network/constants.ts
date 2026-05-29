@@ -25,11 +25,6 @@ export const ENERGY_SOURCES = [
     { id: 'OTHER', label: 'Other' },
 ] as const;
 
-export const REGULATION_TYPES = {
-    DISTANT: { id: 'DISTANT', label: 'Distant' },
-    LOCAL: { id: 'LOCAL', label: 'Local' },
-} as const;
-
 export const PHASE_REGULATION_MODES = {
     CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
     ACTIVE_POWER_CONTROL: {
