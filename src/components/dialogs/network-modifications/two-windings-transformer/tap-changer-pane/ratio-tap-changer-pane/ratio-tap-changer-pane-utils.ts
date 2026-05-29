@@ -35,14 +35,15 @@ import {
 } from 'components/utils/field-constants';
 import { areArrayElementsUnique, areNumbersOrdered } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
-import {
-    getRegulatingTerminalEmptyFormData,
-    getRegulatingTerminalFormData,
-} from '../../../../regulating-terminal/regulating-terminal-form-utils';
-import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
+import { RATIO_REGULATION_MODES, SIDE } from 'components/network/constants';
 import { TapChangerStep, TwoWindingsTransformerMapInfos } from '../../two-windings-transformer.types';
 import { TwtEquipmentInfos } from 'components/tooltips/equipment-popover-type';
-import { FieldConstants } from '@gridsuite/commons-ui';
+import {
+    FieldConstants,
+    getRegulatingTerminalEmptyFormData,
+    getRegulatingTerminalFormData,
+    REGULATION_TYPES,
+} from '@gridsuite/commons-ui';
 
 const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup

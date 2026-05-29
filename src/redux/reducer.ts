@@ -126,7 +126,6 @@ import {
     RESET_LOGS_FILTER,
     RESET_LOGS_PAGINATION,
     RESET_MAP_EQUIPMENTS,
-    RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     RESET_PCCMIN_ANALYSIS_PAGINATION,
     RESET_SECURITY_ANALYSIS_PAGINATION,
     RESET_SENSITIVITY_ANALYSIS_PAGINATION,
@@ -137,7 +136,6 @@ import {
     type ResetLogsFilterAction,
     ResetLogsPaginationAction,
     type ResetMapEquipmentsAction,
-    type ResetOneBusShortcircuitAnalysisDiagramAction,
     ResetPccminAnalysisPaginationAction,
     ResetSecurityAnalysisPaginationAction,
     ResetSensitivityAnalysisPaginationAction,
@@ -166,7 +164,7 @@ import {
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_IN_PROGRESS,
     SET_MONO_ROOT_STUDY,
-    SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+    SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
     SET_RELOAD_MAP_NEEDED,
@@ -185,7 +183,7 @@ import {
     type SetLastCompletedComputationAction,
     type SetModificationsInProgressAction,
     type SetMonoRootStudyAction,
-    type SetOneBusShortcircuitAnalysisDiagramAction,
+    type SetOneBusShortcircuitAnalysisContextAction,
     type SetOptionalServicesAction,
     type SetParamsLoadedAction,
     type SetReloadMapNeededAction,
@@ -535,7 +533,7 @@ const initialState: AppState = {
         name: key,
         status: OptionalServicesStatus.Pending,
     })),
-    oneBusShortCircuitAnalysisDiagram: null,
+    oneBusShortCircuitAnalysisContext: null,
     rootNetworkIndexationStatus: RootNetworkIndexationStatus.NOT_INDEXED,
 
     // params
@@ -1374,21 +1372,10 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(
-        SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-        (state, action: SetOneBusShortcircuitAnalysisDiagramAction) => {
-            state.oneBusShortCircuitAnalysisDiagram = {
-                diagramId: action.diagramId,
-                studyUuid: action.studyUuid,
-                rootNetworkUuid: action.rootNetworkUuid,
-                nodeId: action.nodeId,
-            };
-        }
-    );
-
-    builder.addCase(
-        RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-        (state, _action: ResetOneBusShortcircuitAnalysisDiagramAction) => {
-            state.oneBusShortCircuitAnalysisDiagram = null;
+        SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT,
+        (state, action: SetOneBusShortcircuitAnalysisContextAction) => {
+            const { type: _, ...context } = action;
+            state.oneBusShortCircuitAnalysisContext = context;
         }
     );
 
