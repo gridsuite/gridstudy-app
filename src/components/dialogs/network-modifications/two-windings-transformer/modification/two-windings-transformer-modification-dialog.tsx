@@ -87,7 +87,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, Resolver } from 'react-hook-form';
 import { FORM_LOADING_DELAY, PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import TwoWindingsTransformerModificationDialogTabs from './two-windings-transformer-modification-dialog-tabs';
 import TwoWindingsTransformerCharacteristicsPane from '../characteristics-pane/two-windings-transformer-characteristics-pane';

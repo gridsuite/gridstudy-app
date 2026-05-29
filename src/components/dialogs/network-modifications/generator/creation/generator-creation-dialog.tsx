@@ -49,7 +49,7 @@ import {
     REGULATION_TYPES,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     ACTIVE_POWER_SET_POINT,
     CONNECTED,

@@ -6,7 +6,7 @@
  */
 
 import { ElementType } from '@gridsuite/commons-ui';
-import yup from '../../yup-config';
+import * as yup from 'yup';
 import { DIRECTORY_ITEM_FULL_PATH, DIRECTORY_ITEM_ID } from '../../field-constants';
 
 export function getAbsenceLabelKeyFromType(elementType: string) {
