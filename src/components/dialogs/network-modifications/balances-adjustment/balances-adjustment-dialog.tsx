@@ -30,7 +30,7 @@ import {
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FetchStatus } from '../../../../services/utils';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     BalancesAdjustmentInfos,
