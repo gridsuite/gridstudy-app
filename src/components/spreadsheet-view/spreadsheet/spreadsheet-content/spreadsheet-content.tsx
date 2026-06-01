@@ -102,7 +102,9 @@ export const SpreadsheetContent = memo(
         // this is needed to reset the failed fetch state when we switch tabs
         // so that we at least try to fetch again once when the user reopens the tab
         useEffect(() => {
-            resetFetchFailed();
+            if (active) {
+                resetFetchFailed();
+            }
         }, [active, resetFetchFailed]);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
