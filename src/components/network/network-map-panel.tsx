@@ -80,6 +80,7 @@ import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popov
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import { useBaseVoltages } from '../../hooks/use-base-voltages';
+import { getDefaultFilteredNominalVoltages } from './nominal-voltage-filter-utils';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -527,6 +528,12 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
         setFilteredNominalVoltages(newValues);
         setNominalVoltages(newValues);
     }, []);
+    const handleDefaultFilteredNominalVoltagesChange = useCallback(
+        (newValues: number[]) => {
+            handleFilteredNominalVoltagesChange(getDefaultFilteredNominalVoltages(newValues));
+        },
+        [handleFilteredNominalVoltagesChange]
+    );
     // loads all root node geo-data then saves them in redux
     // it will be considered as the source of truth to check whether we need to fetch geo-data for a specific equipment or not
     const loadRootNodeGeoData = useCallback(() => {
@@ -674,11 +681,11 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             });
             return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(() => {
                 if (isFullReload) {
-                    handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
+                    handleDefaultFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
                 }
             });
         },
-        [currentNode, handleFilteredNominalVoltagesChange, currentRootNetworkUuid, mapEquipments, studyUuid]
+        [currentNode, handleDefaultFilteredNominalVoltagesChange, currentRootNetworkUuid, mapEquipments, studyUuid]
     );
 
     const updateMapEquipments = useCallback(
@@ -886,7 +893,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
         if (isRootNodeGeoDataLoaded && isMapEquipmentsInitialized && !isInitialized) {
             // when root networks are changed, mapEquipments are recreated. when they are done recreating, the map is zoomed around the new network
             if (mapEquipments) {
-                handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
+                handleDefaultFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
             }
             if (currentNodeRef.current && !isReactFlowRootNodeData(currentNodeRef.current)) {
                 dispatch(setMapDataLoading(true));
@@ -897,7 +904,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             setIsInitialized(true);
         }
     }, [
-        handleFilteredNominalVoltagesChange,
+        handleDefaultFilteredNominalVoltagesChange,
         mapEquipments,
         isRootNodeGeoDataLoaded,
         isMapEquipmentsInitialized,
@@ -1168,7 +1175,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
         </>
     );
 
-    // Set up filteredNominalVoltages once at map initialization
+    // Apply the default nominal voltage filter once at map initialization
     // TODO: how do we must manage case where voltages change (like when changing node), as filters are already initialized?
     const nominalVoltagesFromMapEquipments = mapEquipments?.getNominalVoltages();
     useEffect(() => {
@@ -1177,9 +1184,9 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             nominalVoltagesFromMapEquipments.length > 0 &&
             filteredNominalVoltages === undefined
         ) {
-            handleFilteredNominalVoltagesChange(nominalVoltagesFromMapEquipments);
+            handleDefaultFilteredNominalVoltagesChange(nominalVoltagesFromMapEquipments);
         }
-    }, [filteredNominalVoltages, handleFilteredNominalVoltagesChange, nominalVoltagesFromMapEquipments]);
+    }, [filteredNominalVoltages, handleDefaultFilteredNominalVoltagesChange, nominalVoltagesFromMapEquipments]);
 
     function renderNominalVoltageFilter() {
         return (

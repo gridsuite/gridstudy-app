@@ -19,6 +19,7 @@
         "@mui/material": "^6.5.0",
         "@mui/x-charts": "^8.21.0",
         "@mui/x-tree-view": "^8.21.0",
+        "@powsybl/network-map-layers": "file:../powsybl-diagram-viewer/powsybl-network-map-layers-3.5.0.tgz",
         "@powsybl/network-viewer": "3.5.0",
         "@reduxjs/toolkit": "^2.9.0",
         "@svgdotjs/svg.js": "^3.2.4",
