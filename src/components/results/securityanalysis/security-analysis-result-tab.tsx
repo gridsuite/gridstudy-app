@@ -9,7 +9,7 @@ import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, use
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AppState } from '../../../redux/reducer.type';
-import { Box, LinearProgress, MenuItem, Select, SelectChangeEvent, Tab, Tabs } from '@mui/material';
+import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import {
     downloadSecurityAnalysisResultZippedCsv,
     fetchSecurityAnalysisResult,
@@ -50,18 +50,19 @@ const styles = {
         position: 'relative',
         justifyContent: 'space-between',
     },
-    toolboxContainer: {
-        display: 'flex',
-        gap: 2,
-    },
     tabs: {
         position: 'relative',
         top: 0,
         left: 0,
     },
-    nmkResultSelect: {
-        position: 'absolute',
-        right: '16px',
+    subTabsRow: {
+        display: 'flex',
+        gap: 2,
+    },
+    subTabsToolbox: {
+        display: 'flex',
+        ml: 'auto',
+        gap: 2,
     },
     loader: {
         height: '4px',
@@ -188,10 +189,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         setCount(0);
     }, [setResult]);
 
-    const handleChangeNmkType = (event: SelectChangeEvent<NMK_TYPE>) => {
+    const handleChangeNmkType = (_event: SyntheticEvent, newValue: NMK_TYPE) => {
         dispatchPagination({ page: 0, rowsPerPage });
         resetResultStates();
-        setNmkType(event.target.value as NMK_TYPE);
+        setNmkType(newValue);
     };
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
@@ -307,39 +308,36 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         />
                     </Tabs>
                 </Box>
-                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
-                    <Box sx={{ display: 'flex', flexGrow: 0 }}>
+            </Box>
+
+            {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
+                <Box sx={styles.subTabsRow}>
+                    {tabIndex === NMK_RESULTS_TAB_INDEX && (
+                        <Tabs value={nmkType} onChange={handleChangeNmkType}>
+                            <Tab
+                                label={<FormattedMessage id="ConstraintsFromContingencies" />}
+                                value={NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}
+                            />
+                            <Tab
+                                label={<FormattedMessage id="ContingenciesFromConstraints" />}
+                                value={NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS}
+                            />
+                            {isDeveloperMode && (
+                                <Tab
+                                    label={<FormattedMessage id="CutOffPowerFromConstraints" />}
+                                    value={NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS}
+                                />
+                            )}
+                        </Tabs>
+                    )}
+
+                    <Box sx={styles.subTabsToolbox}>
                         <GlobalFilterSelector
                             filterCategories={filterTypes}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             genericFiltersStrictMode={true}
                             tableType={TableType.SecurityAnalysis}
                         />
-                    </Box>
-                )}
-                <Box sx={styles.toolboxContainer}>
-                    {tabIndex === NMK_RESULTS_TAB_INDEX && (
-                        <Select
-                            labelId="nmk-type-label"
-                            value={nmkType}
-                            onChange={handleChangeNmkType}
-                            autoWidth={true}
-                            size="small"
-                        >
-                            <MenuItem value={NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}>
-                                <FormattedMessage id="ConstraintsFromContingencies" />
-                            </MenuItem>
-                            <MenuItem value={NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS}>
-                                <FormattedMessage id="ContingenciesFromConstraints" />
-                            </MenuItem>
-                            {isDeveloperMode && (
-                                <MenuItem value={NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS}>
-                                    <FormattedMessage id="CutOffPowerFromConstraints" />
-                                </MenuItem>
-                            )}
-                        </Select>
-                    )}
-                    {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
@@ -348,9 +346,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             downloadZipResult={downloadZipResult}
                             disabled={isExportButtonDisabled}
                         />
-                    )}
+                    </Box>
                 </Box>
-            </Box>
+            )}
             <Box sx={styles.loader}>{shouldOpenLoader && <LinearProgress />}</Box>
             <Box sx={styles.resultContainer}>
                 {tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode && (
