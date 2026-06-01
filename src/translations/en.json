@@ -718,6 +718,8 @@
     "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
     "DeleteAttachingLineError": "Error while deleting an attaching line",
     "GenerationDispatchError": "Error while creating a generation dispatch",
+    "linesAttachToSplitLinesVoltageLevel": "Voltage level with attached line to place as spliter",
+
     "PermanentCurrentLimitText": "PATL",
     "permanentCurrentLimitMustBeGreaterThanZero": "The permanent current limit value must be greater than 0",
     "permanentCurrentLimitMandatory": "A permanent limit has to be set if the limit set contains temporary current limits",

@@ -112,7 +112,7 @@ const LineSplitWithVoltageLevelForm = ({
         <>
             <GridSection title="LineToSplit" />
             <GridItem size={12}>{lineToSplitForm}</GridItem>
-            <GridSection title="VOLTAGE_LEVEL" />
+            <GridSection title="VoltageLevelToSplitAt" />
             <Grid container spacing={2}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
                 <GridItem>

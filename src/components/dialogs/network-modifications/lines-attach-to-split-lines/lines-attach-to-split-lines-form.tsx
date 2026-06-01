@@ -123,7 +123,7 @@ const LinesAttachToSplitLinesForm = ({
             <Grid container spacing={2} alignItems="center">
                 <GridItem size={5}>{attachedLineField}</GridItem>
             </Grid>
-            <GridSection title="VOLTAGE_LEVEL" />
+            <GridSection title="linesAttachToSplitLinesVoltageLevel" />
             <Grid container spacing={2}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
