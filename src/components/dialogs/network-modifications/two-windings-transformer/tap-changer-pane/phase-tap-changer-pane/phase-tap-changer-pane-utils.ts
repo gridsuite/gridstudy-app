@@ -38,18 +38,19 @@ import {
     VOLTAGE_LEVEL_ID,
 } from 'components/utils/field-constants';
 import { areArrayElementsUnique, areNumbersOrdered } from 'components/utils/utils';
-import yup from 'components/utils/yup-config';
-import {
-    getRegulatingTerminalEmptyFormData,
-    getRegulatingTerminalFormData,
-} from '../../../../regulating-terminal/regulating-terminal-form-utils';
-import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
+import * as yup from 'yup';
+import { PHASE_REGULATION_MODES, SIDE } from 'components/network/constants';
 import {
     TapChangerMapInfos,
     TapChangerStep,
     TwoWindingsTransformerMapInfos,
 } from '../../two-windings-transformer.types';
-import { FieldConstants } from '@gridsuite/commons-ui';
+import {
+    FieldConstants,
+    getRegulatingTerminalEmptyFormData,
+    getRegulatingTerminalFormData,
+    REGULATION_TYPES,
+} from '@gridsuite/commons-ui';
 
 const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup

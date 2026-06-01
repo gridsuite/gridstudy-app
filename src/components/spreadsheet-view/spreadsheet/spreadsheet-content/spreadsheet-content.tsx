@@ -83,6 +83,14 @@ export const SpreadsheetContent = memo(
         const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
         const { fetchNodesEquipmentData, fetchFailed, resetFetchFailed } = useFetchEquipment();
 
+        // Reset isGridReady when the grid is unmounted (disabled=true), so a fresh
+        // false → true transition on remount re-triggers effects depending on it.
+        useEffect(() => {
+            if (disabled) {
+                setIsGridReady(false);
+            }
+        }, [disabled]);
+
         // Initial data loading for this type when the tab is opened
         useEffect(() => {
             // fetchFailed is there because in case of failure we don't want to retry the fetch indefinitely
@@ -181,12 +189,6 @@ export const SpreadsheetContent = memo(
                 )
             );
         }, [equipments, currentNode.id, nodeAliases]);
-
-        useEffect(() => {
-            if (gridRef.current?.api) {
-                gridRef.current.api.setGridOption('rowData', transformedRowData);
-            }
-        }, [transformedRowData, gridRef, isGridReady]);
 
         const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
             getColumnFiltersFromState(state, TableType.Spreadsheet, tableDefinition?.uuid)

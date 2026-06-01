@@ -6,7 +6,7 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     convertInputValue,
     convertOutputValue,

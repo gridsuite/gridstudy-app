@@ -10,12 +10,12 @@ import {
     CURRENT_LIMITS,
     ENABLE_OLG_MODIFICATION,
     ID,
-    LIMIT_SETS_MODIFICATION_TYPE,
     LIMITS,
     LIMITS_PROPERTIES,
     NAME,
     OLG_IS_DUPLICATE,
     OPERATIONAL_LIMITS_GROUPS,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     PERMANENT_LIMIT,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
@@ -30,7 +30,7 @@ import {
     formatMapInfosToTemporaryLimitsFormSchema,
     formatTemporaryLimitsModificationToFormSchema,
 } from 'components/utils/utils';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     CurrentLimits,
     OperationalLimitsGroup,
@@ -188,7 +188,7 @@ export const formatOpLimitGroupsToFormInfos = (
     return limitGroups
         .filter(
             (opLimitGroup: OperationalLimitsGroup | OperationalLimitsGroupModificationInfos) =>
-                opLimitGroup.modificationType !== LIMIT_SETS_MODIFICATION_TYPE.DELETE
+                opLimitGroup.modificationType !== OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.DELETE
         )
         .map((opLimitGroup: OperationalLimitsGroup | OperationalLimitsGroupModificationInfos) => {
             return {
@@ -360,7 +360,7 @@ export const addModificationTypeToOpLimitsGroups = (
             applicability: limitsGroupForm.applicability,
             limitsProperties: limitsGroupForm.limitsProperties,
             currentLimits: currentLimits,
-            modificationType: LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD,
+            modificationType: OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.MODIFY_OR_ADD,
             temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
         };
     });
