@@ -6,7 +6,7 @@
  */
 
 import { filledTextField, SwitchInput, TextInput } from '@gridsuite/commons-ui';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import {
     ENABLED,
     EQUIPMENT_ID,
@@ -32,7 +32,7 @@ const TwoWindingsTransformerCreationDialogHeader = () => {
     );
 
     return (
-        <Grid container item spacing={2}>
+        <Grid container spacing={2} size={12}>
             <GridItem size={4}>{twoWindingsTransformerIdField}</GridItem>
             <GridItem size={4}>{twoWindingsTransformerNameField}</GridItem>
             <GridItem size={2}>{ratioTapChangerEnabledField}</GridItem>

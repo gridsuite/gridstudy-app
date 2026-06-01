@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid2 as Grid } from '@mui/material';
 import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import GridSection from '../../../../commons/grid-section';

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import {
     CURRENT_LIMITER_REGULATING_VALUE,
     ENABLED,
@@ -141,7 +141,7 @@ const PhaseTapChangerPane = ({
     return (
         <>
             <GridSection title="RegulationSection" heading={4} />
-            <Grid item container spacing={1}>
+            <Grid container spacing={1}>
                 <GridItem size={4}>{regulationModeField}</GridItem>
                 {regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id && (
                     <>

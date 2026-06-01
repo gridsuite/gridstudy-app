@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DialogContent, DialogTitle, Grid } from '@mui/material';
+import { DialogContent, DialogTitle, Grid2 as Grid } from '@mui/material';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';

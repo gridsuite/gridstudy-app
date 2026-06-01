@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import {
     ENABLED,
     LOAD_TAP_CHANGING_CAPABILITIES,
@@ -256,7 +256,7 @@ const RatioTapChangerPane = ({
                 <GridItem size={'auto'}></GridItem>
             </Grid>
             <GridSection title="RegulationSection" heading={4} />
-            <Grid item container spacing={1}>
+            <Grid container spacing={1}>
                 <GridItem size={4}>{regulationModeField}</GridItem>
                 <GridItem size={4}>{targetVoltage1Field}</GridItem>
                 <GridItem size={4}>{targetDeadbandField}</GridItem>

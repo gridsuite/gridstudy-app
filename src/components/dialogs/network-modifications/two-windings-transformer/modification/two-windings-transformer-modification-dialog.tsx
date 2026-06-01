@@ -31,7 +31,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import {
     B,
     BUS_OR_BUSBAR_SECTION,
