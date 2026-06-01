@@ -178,6 +178,7 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const [isDragging, setIsDragging] = useState(false);
+    const [isAssembleIntoCompositePossible, setIsAssembleIntoCompositePossible] = useState(false);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
@@ -1091,9 +1092,13 @@ const NetworkModificationNodeEditor = () => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
-    const handleRowSelected = useCallback((selectedRows: ComposedModificationMetadata[]) => {
-        setSelectedNetworkModifications(selectedRows);
-    }, []);
+    const handleRowSelected = useCallback(
+        (selectedRows: ComposedModificationMetadata[], isAssembleIntoCompositePossible: boolean) => {
+            setSelectedNetworkModifications(selectedRows);
+            setIsAssembleIntoCompositePossible(isAssembleIntoCompositePossible);
+        },
+        [setSelectedNetworkModifications, setIsAssembleIntoCompositePossible]
+    );
 
     const renderDialog = () => {
         const menuItem = subMenuItemsList.find(
@@ -1144,7 +1149,7 @@ const NetworkModificationNodeEditor = () => {
                 modifications={modifications}
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
-                onRowSelected={handleRowSelected}
+                onSelectedRowsChange={handleRowSelected}
                 isRowDragDisabled={isImpactedByNotification() || isAnyNodeBuilding || mapDataLoading}
                 isImpactedByNotification={isImpactedByNotification}
                 notificationMessageId={notificationMessageId}
@@ -1231,6 +1236,13 @@ const NetworkModificationNodeEditor = () => {
         return selectedNetworkModifications?.length === 0 ||
             saveInProgress ||
             isRootNode ||
+            isAssembleIntoCompositePossible;
+    }, [selectedNetworkModifications, saveInProgress, isRootNode, isAssembleIntoCompositePossible]);
+
+    const disabledCompositeExport: boolean = useMemo(() => {
+        return selectedNetworkModifications?.length === 0 ||
+            saveInProgress ||
+            isRootNode ||
             isCompositeNestingLimitReached;
     }, [selectedNetworkModifications, saveInProgress, isRootNode, isCompositeNestingLimitReached]);
 
@@ -1252,7 +1264,7 @@ const NetworkModificationNodeEditor = () => {
                 </Tooltip>
                 <Tooltip
                     title={
-                        isCompositeNestingLimitReached ? (
+                        isAssembleIntoCompositePossible ? (
                             <FormattedMessage
                                 id={'CompositeNestingLimitReached'}
                                 values={{ limit: MAX_COMPOSITE_NESTING_DEPTH }}
@@ -1266,7 +1278,7 @@ const NetworkModificationNodeEditor = () => {
                         <Badge
                             overlap={'circular'}
                             color="error"
-                            invisible={!isCompositeNestingLimitReached}
+                            invisible={!isAssembleIntoCompositePossible}
                             badgeContent={'×'}
                             sx={styles.badgeStyle}
                         >
@@ -1314,7 +1326,7 @@ const NetworkModificationNodeEditor = () => {
                             <IconButton
                                 onClick={openCreateCompositeModificationDialog}
                                 size={'small'}
-                                disabled={disabledCompositeCreation}
+                                disabled={disabledCompositeExport}
                             >
                                 <SaveIcon />
                             </IconButton>
