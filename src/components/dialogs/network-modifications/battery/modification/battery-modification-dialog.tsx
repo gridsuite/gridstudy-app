@@ -162,6 +162,7 @@ export default function BatteryModificationDialog({
                             reset(
                                 (formValues) => ({
                                     ...formValues,
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
                                 { keepDirty: true }
