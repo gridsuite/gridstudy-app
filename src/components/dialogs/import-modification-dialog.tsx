@@ -54,8 +54,8 @@ import {
     useWatch,
 } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
 import { ACTION, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
+import * as yup from 'yup';
 import { UUID } from 'node:crypto';
 import { useParameterState } from './parameters/use-parameters-state';
 
