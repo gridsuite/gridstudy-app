@@ -32,7 +32,7 @@ import {
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import { FetchStatus } from 'services/utils';
 import { EquipmentIdSelector } from 'components/dialogs/equipment-id/equipment-id-selector';
 import { CreateVoltageLevelSectionForm } from './create-voltage-level-section-form';
