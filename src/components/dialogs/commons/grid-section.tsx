@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Grid, Tooltip } from '@mui/material';
+import { Box, Grid2 as Grid, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { InfoOutlined } from '@mui/icons-material';
 import { mergeSx, type SxStyle } from '@gridsuite/commons-ui';
@@ -33,23 +33,21 @@ export default function GridSection({
 }: Readonly<GridSectionProps>) {
     const intl = useIntl();
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={size}>
-                <Box
-                    sx={mergeSx(customStyle, {
-                        display: 'flex',
-                        alignItems: 'center',
-                    })}
-                    component={`h${heading}`}
-                >
-                    {isLiteralText ? title : <FormattedMessage id={title} />}
-                    {tooltipEnabled && (
-                        <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: tooltipMessage })}>
-                            <InfoOutlined color="info" fontSize="medium" />
-                        </Tooltip>
-                    )}
-                </Box>
-            </Grid>
+        <Grid container spacing={2} size={size}>
+            <Box
+                sx={mergeSx(customStyle, {
+                    display: 'flex',
+                    alignItems: 'center',
+                })}
+                component={`h${heading}`}
+            >
+                {isLiteralText ? title : <FormattedMessage id={title} />}
+                {tooltipEnabled && (
+                    <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: tooltipMessage })}>
+                        <InfoOutlined color="info" fontSize="medium" />
+                    </Tooltip>
+                )}
+            </Box>
         </Grid>
     );
 }
