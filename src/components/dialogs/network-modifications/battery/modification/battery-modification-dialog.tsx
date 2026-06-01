@@ -40,7 +40,7 @@ import {
     getInjectionActiveReactivePowerEditData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
