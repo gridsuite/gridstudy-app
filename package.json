@@ -19,7 +19,7 @@
         "@mui/material": "^5.18.0",
         "@mui/x-charts": "^8.21.0",
         "@mui/x-tree-view": "^8.21.0",
-        "@powsybl/network-viewer": "3.4.0",
+        "@powsybl/network-viewer": "3.4.1",
         "@reduxjs/toolkit": "^2.9.0",
         "@svgdotjs/svg.js": "^3.2.4",
         "@tanstack/react-table": "^8.21.3",
@@ -58,7 +58,9 @@
     },
     "overrides": {
         "@powsybl/network-viewer": {
-            "react-intl": "$react-intl"
+            "react-intl": "$react-intl",
+            "@powsybl/network-viewer-core": "3.4.1",
+            "@powsybl/network-map-layers": "3.4.1"
         },
         "react-plotly.js": {
             "plotly.js": {
