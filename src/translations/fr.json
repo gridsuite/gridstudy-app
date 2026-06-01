@@ -1029,6 +1029,7 @@
     "AssembleIntoCompositeError": "Une erreur est survenue lors de la création de la modification composite",
     "DefaultCompositeName": "Modification Composite",
     "CompositeNestingLimitReached": "Enregistrement dans Gridexplore Impossible : dépasserait la limite d'imbrication ({limit})",
+    "CompositeAssemblyDepthExceeded": "Création d'une modification composite impossible : dépasserait la limite d'imbrication ({limit})",
     "diagramConfigCreationMsg": "Création de l'image nodale de zone dans {directory}",
     "diagramConfigUpdateMsg": "Mise à jour de l'image nodale de zone {item}",
     "diagramConfigCreationError": "Une erreur est survenue lors de la création de l'image nodale de zone",

@@ -1233,17 +1233,13 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const disabledCompositeCreation: boolean = useMemo(() => {
-        return selectedNetworkModifications?.length === 0 ||
-            saveInProgress ||
-            isRootNode ||
-            isAssemblyDepthExceeded;
+        return selectedNetworkModifications?.length === 0 || saveInProgress || isRootNode || isAssemblyDepthExceeded;
     }, [selectedNetworkModifications, saveInProgress, isRootNode, isAssemblyDepthExceeded]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
-        return selectedNetworkModifications?.length === 0 ||
-            saveInProgress ||
-            isRootNode ||
-            isCompositeNestingLimitReached;
+        return (
+            selectedNetworkModifications?.length === 0 || saveInProgress || isRootNode || isCompositeNestingLimitReached
+        );
     }, [selectedNetworkModifications, saveInProgress, isRootNode, isCompositeNestingLimitReached]);
 
     return (
@@ -1266,7 +1262,7 @@ const NetworkModificationNodeEditor = () => {
                     title={
                         isAssemblyDepthExceeded ? (
                             <FormattedMessage
-                                id={'CompositeNestingLimitReached'}
+                                id={'CompositeAssemblyDepthExceeded'}
                                 values={{ limit: MAX_COMPOSITE_NESTING_DEPTH }}
                             />
                         ) : (
