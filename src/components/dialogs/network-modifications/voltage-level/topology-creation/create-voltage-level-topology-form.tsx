@@ -7,7 +7,7 @@
 
 import { filledTextField, IntegerInput, SwitchesBetweenSections } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
-import { Box, Grid2, TextField, Tooltip } from '@mui/material';
+import { Box, Grid2 as Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -62,45 +62,45 @@ export default function CreateVoltageLevelTopologyForm({
 
     return (
         <>
-            <Grid2 container direction="column">
-                <Grid2>
-                    <Grid2 container direction="column" spacing={2}>
-                        <Grid2>
-                            <Grid2 container spacing={3} alignItems="center">
-                                <Grid2 size={4}>{voltageLevelIdField}</Grid2>
+            <Grid container direction="column">
+                <Grid>
+                    <Grid container direction="column" spacing={2}>
+                        <Grid>
+                            <Grid container spacing={3} alignItems="center">
+                                <Grid size={4}>{voltageLevelIdField}</Grid>
                                 {isNodeBuilt(currentNode) && (
-                                    <Grid2>
-                                        <Grid2 container spacing={1}>
-                                            <Grid2>
+                                    <Grid>
+                                        <Grid container spacing={1}>
+                                            <Grid>
                                                 <Button onClick={handleClickOpenDiagramPane} variant="outlined">
                                                     <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
                                                 </Button>
-                                            </Grid2>
-                                            <Grid2>
+                                            </Grid>
+                                            <Grid>
                                                 <Tooltip
                                                     title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}
                                                 >
                                                     <InfoOutlined color="info" fontSize="small" />
                                                 </Tooltip>
-                                            </Grid2>
-                                        </Grid2>
-                                    </Grid2>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
                                 )}
-                            </Grid2>
-                        </Grid2>
-                        <Grid2>
-                            <Grid2 container spacing={3}>
-                                <Grid2 size={4}>
+                            </Grid>
+                        </Grid>
+                        <Grid>
+                            <Grid container spacing={3}>
+                                <Grid size={4}>
                                     <IntegerInput name={`${SECTION_COUNT}`} label={'SectionCount'} />
-                                </Grid2>
-                            </Grid2>
-                        </Grid2>
-                    </Grid2>
-                </Grid2>
-                <Grid2>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid>
                     <SwitchesBetweenSections />
-                </Grid2>
-            </Grid2>
+                </Grid>
+            </Grid>
             <Box>
                 <PositionDiagramPane
                     open={isDiagramPaneOpen}
