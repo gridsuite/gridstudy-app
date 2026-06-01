@@ -28,6 +28,7 @@ import {
     GeneratorCreationDto,
     GeneratorModificationDto,
     ShuntCompensatorCreationDto,
+    ShuntCompensatorModificationDto,
     BatteryCreationDto,
     BatteryModificationDto,
 } from '@gridsuite/commons-ui';
@@ -51,7 +52,6 @@ import {
     LinesAttachToSplitLinesInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    ShuntCompensatorModificationInfos,
     StaticVarCompensatorCreationInfo,
     TopologyVoltageLevelModificationInfos,
     TwoWindingsTransformerCreationInfo,
@@ -515,13 +515,13 @@ export function createShuntCompensator({
 }
 
 export function modifyShuntCompensator({
-    shuntCompensatorModificationInfos,
+    shuntCompensatorModificationDto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    shuntCompensatorModificationInfos: ShuntCompensatorModificationInfos;
+    shuntCompensatorModificationDto: ShuntCompensatorModificationDto;
     studyUuid: UUID;
     nodeUuid?: UUID;
     modificationUuid: string | null;
@@ -542,7 +542,7 @@ export function modifyShuntCompensator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(shuntCompensatorModificationInfos),
+        body: JSON.stringify(shuntCompensatorModificationDto),
     });
 }
 
