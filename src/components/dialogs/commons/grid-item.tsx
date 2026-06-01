@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { PropsWithChildren, ReactNode } from 'react';
-import { Grid, GridProps, Tooltip } from '@mui/material';
+import { Grid2 as Grid, Grid2Props as GridProps, Tooltip } from '@mui/material';
 
 export interface GridItemProps extends PropsWithChildren {
-    size?: GridProps['xs'];
+    size?: GridProps['size'];
     alignItem?: string;
     tooltip?: ReactNode;
 }
@@ -18,7 +18,7 @@ export interface GridItemProps extends PropsWithChildren {
  */
 export default function GridItem({ children, size = 6, alignItem = 'flex-start', tooltip }: Readonly<GridItemProps>) {
     return (
-        <Grid item xs={size} alignItems={alignItem}>
+        <Grid size={size} sx={{ alignItems: alignItem }}>
             {children &&
                 (tooltip ? (
                     <Tooltip title={tooltip}>
