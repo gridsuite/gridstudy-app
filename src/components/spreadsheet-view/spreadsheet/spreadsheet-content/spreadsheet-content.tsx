@@ -81,11 +81,12 @@ export const SpreadsheetContent = memo(
         const { openSLD, clearTargetEquipment } = useWorkspacePanelActions();
         const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
         const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
-        const { fetchNodesEquipmentData } = useFetchEquipment();
+        const { fetchNodesEquipmentData, fetchFailed, resetFetchFailed } = useFetchEquipment();
 
         // Initial data loading for this type when the tab is opened
         useEffect(() => {
-            if (active && nodesIds.length > 0 && !equipments.isInitialized && !equipments.isFetching) {
+            // fetchFailed is there because in case of failure we don't want to retry the fetch indefinitely
+            if (active && nodesIds.length > 0 && !equipments.isInitialized && !equipments.isFetching && !fetchFailed) {
                 fetchNodesEquipmentData(tableDefinition?.type, new Set(nodesIds));
             }
         }, [
@@ -95,7 +96,14 @@ export const SpreadsheetContent = memo(
             fetchNodesEquipmentData,
             tableDefinition?.type,
             equipments.isFetching,
+            fetchFailed,
         ]);
+
+        // this is needed to reset the failed fetch state when we switch tabs
+        // so that we at least try to fetch again once when the user reopens the tab
+        useEffect(() => {
+            resetFetchFailed();
+        }, [active, resetFetchFailed]);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
