@@ -60,37 +60,42 @@ export default function CreateVoltageLevelTopologyForm({
         [intl, voltageLevelId]
     );
 
-    const diagramToolTip = useMemo(
-        () => (
-            <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}>
-                <InfoOutlined color="info" fontSize="medium" />
-            </Tooltip>
-        ),
-        [intl]
-    );
-
     return (
         <>
             <Grid container direction="column">
                 <Grid item>
-                    <Grid container spacing={3}>
-                        <Grid item xs={4}>
-                            {voltageLevelIdField}
-                        </Grid>
-                        {isNodeBuilt(currentNode) && (
-                            <Grid item xs={3}>
-                                <Button onClick={handleClickOpenDiagramPane} variant="outlined">
-                                    <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
-                                </Button>
-                                {diagramToolTip}
+                    <Grid container direction="column" spacing={2}>
+                        <Grid item>
+                            <Grid container spacing={3} alignItems="center">
+                                <Grid item xs={4}>
+                                    {voltageLevelIdField}
+                                </Grid>
+                                {isNodeBuilt(currentNode) && (
+                                    <Grid item>
+                                        <Grid container spacing={1}>
+                                            <Grid item>
+                                                <Button onClick={handleClickOpenDiagramPane} variant="outlined">
+                                                    <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
+                                                </Button>
+                                            </Grid>
+                                            <Grid item>
+                                                <Tooltip
+                                                    title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}
+                                                >
+                                                    <InfoOutlined color="info" fontSize="small" />
+                                                </Tooltip>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                )}
                             </Grid>
-                        )}
-                    </Grid>
-                </Grid>
-                <Grid item>
-                    <Grid container>
-                        <Grid item xs={4}>
-                            <IntegerInput name={`${SECTION_COUNT}`} label={'SectionCount'} />
+                        </Grid>
+                        <Grid item>
+                            <Grid container spacing={3}>
+                                <Grid item xs={4}>
+                                    <IntegerInput name={`${SECTION_COUNT}`} label={'SectionCount'} />
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
