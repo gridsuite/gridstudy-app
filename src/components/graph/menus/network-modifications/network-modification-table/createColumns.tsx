@@ -8,23 +8,19 @@ import {
     BASE_MODIFICATION_TABLE_COLUMNS,
     ComposedModificationMetadata,
     computeTagMinSize,
-    ExcludedNetworkModifications,
-    networkModificationTableStyles,
-} from '@gridsuite/commons-ui';
-import React, { SetStateAction } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import { RootNetworkMetadata } from '../network-modification-menu.type';
-import {
     DescriptionCellRenderer,
     DragHandleRenderer,
     NameCellRenderer,
     NameHeaderRenderer,
+    networkModificationTableStyles,
     RootNetworkCellRenderer,
     RootNetworkHeaderRenderer,
     SelectCellRenderer,
     SelectHeaderRenderer,
     SwitchCellRenderer,
-} from './renderers/cell-renderers';
+} from '@gridsuite/commons-ui';
+import { ColumnDef } from '@tanstack/react-table';
+import { RootNetworkMetadata } from '../network-modification-menu.type';
 
 /**
  * Column definition is broken up in 2 parts : base columns which are always on display and root networks columns.
@@ -33,7 +29,7 @@ import {
  */
 
 export const createBaseColumns = (
-    onEditNameCell: (modification: ComposedModificationMetadata, newName?: string) => void
+    onNameChange: (modification: ComposedModificationMetadata, newName: string) => Promise<unknown>
 ): ColumnDef<ComposedModificationMetadata>[] => [
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.DRAG_HANDLE.id,
@@ -62,7 +58,7 @@ export const createBaseColumns = (
         cell: NameCellRenderer,
         meta: {
             cellStyle: networkModificationTableStyles.columnCell.modificationName,
-            onEditNameCell,
+            onChange: onNameChange,
         },
         minSize: 160,
     },
@@ -86,14 +82,10 @@ export const createBaseColumns = (
 ];
 
 export const createRootNetworksColumns = (
-    rootNetworks: RootNetworkMetadata[],
-    currentRootNetworkUuid: string,
-    modificationsToExclude: ExcludedNetworkModifications[],
-    setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>
+    rootNetworks: RootNetworkMetadata[]
 ): ColumnDef<ComposedModificationMetadata>[] => {
     const tagMinSizes = rootNetworks.map((rootNetwork) => computeTagMinSize(rootNetwork.tag ?? ''));
     const sharedSize = Math.max(Math.min(...tagMinSizes), 56);
-    const currentRootNetworkTag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
 
     return rootNetworks.map((rootNetwork, index) => ({
         id: rootNetwork.rootNetworkUuid,
@@ -103,11 +95,6 @@ export const createRootNetworksColumns = (
         minSize: tagMinSizes[index],
         meta: {
             cellStyle: networkModificationTableStyles.columnCell.rootNetworkChip,
-            rootNetwork,
-            modificationsToExclude,
-            setModificationsToExclude,
-            isCurrentRootNetwork: rootNetwork.rootNetworkUuid === currentRootNetworkUuid,
-            currentRootNetworkTag,
         },
     }));
 };
