@@ -178,7 +178,7 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const [isDragging, setIsDragging] = useState(false);
-    const [isAssembleIntoCompositePossible, setIsAssembleIntoCompositePossible] = useState(false);
+    const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
@@ -1093,11 +1093,11 @@ const NetworkModificationNodeEditor = () => {
         setIsUpdate(false);
     };
     const handleRowSelected = useCallback(
-        (selectedRows: ComposedModificationMetadata[], isAssembleIntoCompositePossible: boolean) => {
+        (selectedRows: ComposedModificationMetadata[], isAssemblyDepthExceeded: boolean) => {
             setSelectedNetworkModifications(selectedRows);
-            setIsAssembleIntoCompositePossible(isAssembleIntoCompositePossible);
+            setIsAssemblyDepthExceeded(isAssemblyDepthExceeded);
         },
-        [setSelectedNetworkModifications, setIsAssembleIntoCompositePossible]
+        [setSelectedNetworkModifications, setIsAssemblyDepthExceeded]
     );
 
     const renderDialog = () => {
@@ -1236,8 +1236,8 @@ const NetworkModificationNodeEditor = () => {
         return selectedNetworkModifications?.length === 0 ||
             saveInProgress ||
             isRootNode ||
-            isAssembleIntoCompositePossible;
-    }, [selectedNetworkModifications, saveInProgress, isRootNode, isAssembleIntoCompositePossible]);
+            isAssemblyDepthExceeded;
+    }, [selectedNetworkModifications, saveInProgress, isRootNode, isAssemblyDepthExceeded]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
         return selectedNetworkModifications?.length === 0 ||
@@ -1264,7 +1264,7 @@ const NetworkModificationNodeEditor = () => {
                 </Tooltip>
                 <Tooltip
                     title={
-                        isAssembleIntoCompositePossible ? (
+                        isAssemblyDepthExceeded ? (
                             <FormattedMessage
                                 id={'CompositeNestingLimitReached'}
                                 values={{ limit: MAX_COMPOSITE_NESTING_DEPTH }}
@@ -1278,7 +1278,7 @@ const NetworkModificationNodeEditor = () => {
                         <Badge
                             overlap={'circular'}
                             color="error"
-                            invisible={!isAssembleIntoCompositePossible}
+                            invisible={!isAssemblyDepthExceeded}
                             badgeContent={'×'}
                             sx={styles.badgeStyle}
                         >
