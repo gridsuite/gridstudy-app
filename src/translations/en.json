@@ -552,7 +552,6 @@
     "modificationType": "Modification type",
     "temporaryLimitsModificationType": "Temporary limits modification type",
 
-    "ModifyBattery": "Modify battery",
     "CreateGenerator": "Create generator",
     "ModifyGenerator": "Modify generator",
     "NbModificationToPaste": "Paste {nb} modification{several}",
@@ -564,7 +563,6 @@
     "ResetRegulationRule": "Reset regulation rules",
     "RatioRegulationTypeText": "Ratio regulation",
     "PhaseRegulationTypeText": "Phase regulation",
-    "Limits": "Limits",
     "reactiveCapabilityCurve": "Reactive capability curve",
     "RatioRegulatingTerminal": "Ratio regulated terminal",
     "PhaseRegulatingTerminal": "Phase regulated terminal",
@@ -580,7 +578,6 @@
     "withoutunit.stepUpTransformerX": "Transformer reactance",
     "plannedActivePowerSetPoint": "Planning P (MW)",
     "withoutunit.plannedActivePowerSetPoint": "Planning P",
-    "MinActivePowerMustBeLessOrEqualToMaxActivePower": "Minimum active power value must be less than or equal to maximum active power value",
     "PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower": "Planned active power set point must be between minimum and maximum active power values",
     "RatedNominalPowerMustBeGreaterThanZero": "The rated nominal power value must be greater than 0",
     "RealPercentage": "This value must be between 0 and 1",
@@ -594,7 +591,6 @@
     "reactiveCapabilityCurvePmax": "Pmax",
     "reactiveCapabilityCurveQminPmax": "QminPmax",
     "reactiveCapabilityCurveQmaxPmax": "QmaxPmax",
-    "BatteryModificationError": "Error while modifying battery",
     "ModifyLine": "Modify line",
     "CreateLine": "Create line",
     "CreateVsc": "Create HVDC (VSC)",
@@ -1320,9 +1316,6 @@
     "nodeAliasesUpdateError": "An error occured while updating node aliases",
     "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
     "previousConnection": "Prev. connection",
-
-    "SetpointsAndLimitsTab": "Setpoints & Limits",
-    "SpecificTab": "Specific",
 
     "confirmRootNetworkCreation": "The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.",
     "RegulationSection": "Regulation",
