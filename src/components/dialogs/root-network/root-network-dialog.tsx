@@ -19,7 +19,7 @@ import { Grid } from '@mui/material';
 import { CASE_ID, CASE_NAME, DESCRIPTION, NAME, TAG } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { ModificationDialog } from '../commons/modificationDialog';

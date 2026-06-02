@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
+import * as yup from 'yup';
 import {
     ENABLED,
     HIGH_TAP_POSITION,
@@ -34,15 +34,15 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { areArrayElementsUnique, areNumbersOrdered } from 'components/utils/utils';
-import yup from 'components/utils/yup-config';
-import {
-    getRegulatingTerminalEmptyFormData,
-    getRegulatingTerminalFormData,
-} from '../../../../regulating-terminal/regulating-terminal-form-utils';
-import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
+import { RATIO_REGULATION_MODES, SIDE } from 'components/network/constants';
 import { TapChangerStep, TwoWindingsTransformerMapInfos } from '../../two-windings-transformer.types';
 import { TwtEquipmentInfos } from 'components/tooltips/equipment-popover-type';
-import { FieldConstants } from '@gridsuite/commons-ui';
+import {
+    FieldConstants,
+    getRegulatingTerminalEmptyFormData,
+    getRegulatingTerminalFormData,
+    REGULATION_TYPES,
+} from '@gridsuite/commons-ui';
 
 const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup

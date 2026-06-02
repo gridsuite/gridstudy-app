@@ -6,7 +6,7 @@
  */
 import { EventPropertyDefinition, PrimitiveTypes } from '../types/event.type';
 import { Schema } from 'yup';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 
 export const getSchema = (eventPropertyDefinition: EventPropertyDefinition) => {
     let schema: Schema;
