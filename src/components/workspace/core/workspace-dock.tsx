@@ -16,6 +16,9 @@ import { PanelType } from '../types/workspace.types';
 import type { UUID } from 'node:crypto';
 import { getPanelConfig } from '../constants/workspace.constants';
 import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
+import type { AppState } from '../../../redux/reducer.type';
+import { PARAM_USE_NAME } from '../../../utils/config-params';
+import { getPanelDisplayTitle } from '../hooks/workspace-panel-utils';
 
 const styles = {
     dock: (theme: Theme) => ({
@@ -64,6 +67,7 @@ export const WorkspaceDock = memo(() => {
     const { minimizePanel, focusPanel, deletePanel } = useWorkspacePanelActions();
     const allPanels = useSelector(selectPanels);
     const focusedPanelId = useSelector(selectFocusedPanelId);
+    const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const [hoveredTab, setHoveredTab] = useState<UUID | null>(null);
 
     const panels = useMemo(
@@ -120,7 +124,7 @@ export const WorkspaceDock = memo(() => {
                                 <Box sx={styles.tabContent}>
                                     {getPanelConfig(panel.type).icon}
                                     <OverflowableText
-                                        text={panel.title}
+                                        text={getPanelDisplayTitle(panel, useName)}
                                         sx={styles.tabText}
                                         tooltipSx={styles.tooltip}
                                     />

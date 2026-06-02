@@ -211,23 +211,51 @@ export const useWorkspacePanelActions = () => {
         [saveAndFocusPanel, minimizePanel, focusPanel]
     );
 
+    const updateSldVoltageLevelName = useCallback(
+        (panelId: UUID, equipmentName?: string) => {
+            const panel = selectPanel(store.getState(), panelId);
+            if (!panel || !isSLDVoltageLevelPanel(panel)) {
+                return;
+            }
+
+            const trimmedEquipmentName = equipmentName?.trim() ? equipmentName.trim() : undefined;
+            if (panel.equipmentName === trimmedEquipmentName) {
+                return;
+            }
+
+            savePanels([{ ...panel, equipmentName: trimmedEquipmentName }]);
+        },
+        [savePanels]
+    );
+
     // SLD operations
     const openSLD = useCallback(
         ({
             equipmentId,
             panelType,
+            equipmentName,
         }: {
             equipmentId: string;
             panelType: PanelType.SLD_VOLTAGE_LEVEL | PanelType.SLD_SUBSTATION;
+            equipmentName?: string;
         }) => {
             const existing = selectExistingSLD(store.getState(), equipmentId);
             if (existing) {
+                if (
+                    panelType === PanelType.SLD_VOLTAGE_LEVEL &&
+                    equipmentName !== undefined &&
+                    isSLDVoltageLevelPanel(existing) &&
+                    existing.equipmentName !== equipmentName
+                ) {
+                    updateSldVoltageLevelName(existing.id, equipmentName);
+                }
                 focusPanel(existing.id);
             } else {
-                saveAndFocusPanel(createSLDPanel({ panelType, equipmentId }));
+                const newPanel = createSLDPanel({ panelType, equipmentId, equipmentName });
+                saveAndFocusPanel(newPanel);
             }
         },
-        [focusPanel, saveAndFocusPanel]
+        [focusPanel, saveAndFocusPanel, updateSldVoltageLevelName]
     );
 
     const navigateSLD = useCallback(
@@ -247,7 +275,7 @@ export const useWorkspacePanelActions = () => {
                 {
                     ...panel,
                     equipmentId: voltageLevelId,
-                    title: voltageLevelId,
+                    equipmentName: undefined,
                     navigationHistory: updateNavigationHistory(panel, voltageLevelId, skipHistory),
                 },
             ]);
@@ -260,7 +288,6 @@ export const useWorkspacePanelActions = () => {
             const state = store.getState();
             const associatedPanels = selectAssociatedPanels(state, nadPanelId);
             const existingPanel = associatedPanels.find((p) => p.equipmentId === voltageLevelId);
-
             if (existingPanel) {
                 focusPanel(existingPanel.id);
             } else {
@@ -478,5 +505,6 @@ export const useWorkspacePanelActions = () => {
         focusPanel,
         showInSpreadsheet,
         clearTargetEquipment,
+        updateSldVoltageLevelName,
     };
 };

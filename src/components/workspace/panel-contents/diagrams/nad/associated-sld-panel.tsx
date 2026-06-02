@@ -19,6 +19,8 @@ import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-act
 import { VoltageLevelPanelContent } from '../sld/voltage-level-panel-content';
 import { NAD_SLD_CONSTANTS } from './constants';
 import { calculatePanelDimensions, positionToRelative, sizeToRelative } from '../../../core/utils/coordinate-utils';
+import { PARAM_USE_NAME } from '../../../../../utils/config-params';
+import { getPanelDisplayTitle } from '../../../hooks/workspace-panel-utils';
 
 const DEFAULT_POSITION = { x: 0.01, y: 0.5 };
 const DEFAULT_SIZE = { width: 0.35, height: 0.5 };
@@ -74,6 +76,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({ sldPanelId,
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeId = useSelector((state: AppState) => state.currentTreeNode?.id);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const sldPanel = useSelector((state: RootState) => selectPanel(state, sldPanelId), shallowEqual);
     const zIndex = sldPanel?.zIndex ?? 1;
 
@@ -254,7 +257,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({ sldPanelId,
                 >
                     <Box className="draggable-header" sx={styles.header}>
                         <Typography variant="body2" sx={styles.titleText}>
-                            {sldPanel.title}
+                            {getPanelDisplayTitle(sldPanel, useName)}
                         </Typography>
                         <Box sx={styles.actionsContainer}>
                             <IconButton

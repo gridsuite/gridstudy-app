@@ -74,6 +74,7 @@ export type Diagram = VoltageLevelDiagram | SubstationDiagram | NetworkAreaDiagr
 // diagram Svg & metadata
 export interface SldAdditionalMetadata {
     id: string;
+    name?: string;
     country: string;
     substationId?: string;
 }

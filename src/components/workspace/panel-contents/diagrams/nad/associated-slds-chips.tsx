@@ -20,11 +20,14 @@ import {
 import { useIntl, FormattedMessage } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../../redux/store';
+import type { AppState } from '../../../../../redux/reducer.type';
 import { selectAssociatedPanels } from '../../../../../redux/slices/workspace-selectors';
 import { type MuiStyles, PopupConfirmationDialog } from '@gridsuite/commons-ui';
 import { LayoutMode } from './hooks/use-sld-layout';
 import { NAD_SLD_CONSTANTS } from './constants';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
+import { PARAM_USE_NAME } from '../../../../../utils/config-params';
+import { getPanelDisplayTitle } from '../../../hooks/workspace-panel-utils';
 
 interface AssociatedSldsChipsProps {
     readonly nadPanelId: UUID;
@@ -119,6 +122,7 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
     const [chipLimit, setChipLimit] = useState(5);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [showRemoveAllConfirmation, setShowRemoveAllConfirmation] = useState(false);
+    const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
 
     const associatedPanels = useSelector((state: RootState) => selectAssociatedPanels(state, nadPanelId), shallowEqual);
 
@@ -126,10 +130,10 @@ export const AssociatedSldsChips = memo(function AssociatedSldsChips({
         () =>
             associatedPanels.map((p) => ({
                 id: p.id,
-                title: p.title,
+                title: getPanelDisplayTitle(p, useName),
                 isVisible: !p.minimized,
             })),
-        [associatedPanels]
+        [associatedPanels, useName]
     );
 
     const visibleSldPanels = useMemo(() => associatedPanels.filter((p) => !p.minimized), [associatedPanels]);

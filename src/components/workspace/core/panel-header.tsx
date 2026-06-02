@@ -17,9 +17,13 @@ import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { PanelType } from '../types/workspace.types';
 import { getPanelConfig } from '../constants/workspace.constants';
 import type { AppState } from '../../../redux/reducer.type';
+import type { RootState } from '../../../redux/store';
 import { SldAssociationButton } from './sld-association-button';
 import { setDirtyComputationParameters } from 'redux/actions';
 import { SelectOptionsDialog } from 'utils/dialogs';
+import { PARAM_USE_NAME } from '../../../utils/config-params';
+import { selectPanel } from '../../../redux/slices/workspace-selectors';
+import { getPanelDisplayTitle } from '../hooks/workspace-panel-utils';
 
 const getHeaderStyles = (theme: Theme, isFocused: boolean, maximized: boolean) => {
     let backgroundColor: string;
@@ -97,7 +101,10 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
     const intl = useIntl();
     const dispatch = useDispatch();
     const { deletePanel, minimizePanel, maximizePanel, pinPanel } = useWorkspacePanelActions();
-    const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
+    const panel = useSelector((state: RootState) => selectPanel(state, panelId));
+    const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
+    const resolvedTitle = panel ? getPanelDisplayTitle(panel, useName) : title || '';
+    const displayTitle = intl.messages[resolvedTitle] ? intl.formatMessage({ id: resolvedTitle }) : resolvedTitle || '';
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
     const [isConfirmCloseOpen, setIsConfirmCloseOpen] = useState(false);
 
@@ -144,7 +151,11 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
                     {pinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
                 </IconButton>
                 {panelType === PanelType.SLD_VOLTAGE_LEVEL && (
-                    <SldAssociationButton panelId={panelId} title={title} iconButtonStyles={styles.iconButton} />
+                    <SldAssociationButton
+                        panelId={panelId}
+                        title={resolvedTitle}
+                        iconButtonStyles={styles.iconButton}
+                    />
                 )}
                 {(panelType === PanelType.SLD_VOLTAGE_LEVEL ||
                     panelType === PanelType.SLD_SUBSTATION ||

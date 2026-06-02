@@ -21,6 +21,7 @@
         "@mui/x-tree-view": "^8.21.0",
         "@powsybl/network-map-layers": "file:../powsybl-diagram-viewer/powsybl-network-map-layers-3.5.0.tgz",
         "@powsybl/network-viewer": "3.5.0",
+        "@powsybl/network-viewer-core": "file:../powsybl-diagram-viewer/powsybl-network-viewer-core-3.5.0.tgz",
         "@reduxjs/toolkit": "^2.9.0",
         "@svgdotjs/svg.js": "^3.2.4",
         "@tanstack/react-table": "^8.21.3",

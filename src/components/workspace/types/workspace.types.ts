@@ -76,6 +76,7 @@ export type PersistentNADFields = Pick<NADPanel, (typeof PERSISTENT_NAD_FIELDS)[
 export interface SLDVoltageLevelPanel extends BasePanel {
     type: PanelType.SLD_VOLTAGE_LEVEL;
     equipmentId: string;
+    equipmentName?: string;
     parentNadPanelId?: UUID; // Reference to parent NAD panel if associated
     navigationHistory?: string[];
 }

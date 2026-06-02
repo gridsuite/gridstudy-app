@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Box } from '@mui/material';
 import { DiagramType } from '../../../../grid-layout/cards/diagrams/diagram.type';
@@ -19,6 +19,7 @@ import { selectSldDiagramFields } from '../../../../../redux/slices/workspace-se
 import type { RootState } from '../../../../../redux/store';
 import { SldNavigationSidebar } from '../../../diagrams/sld/sld-navigation-sidebar';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
+import type { SldAdditionalMetadata } from '../../../../grid-layout/cards/diagrams/diagram.type';
 
 interface VoltageLevelPanelContentProps {
     panelId: UUID;
@@ -37,7 +38,7 @@ export const VoltageLevelPanelContent = ({
 }: VoltageLevelPanelContentProps) => {
     const sldFields = useSelector((state: RootState) => selectSldDiagramFields(state, panelId));
 
-    const { associateVoltageLevelWithNad, navigateSLD } = useWorkspacePanelActions();
+    const { associateVoltageLevelWithNad, navigateSLD, updateSldVoltageLevelName } = useWorkspacePanelActions();
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.VOLTAGE_LEVEL,
@@ -46,6 +47,7 @@ export const VoltageLevelPanelContent = ({
         currentNodeId,
         currentRootNetworkUuid,
     });
+    const voltageLevelName = (diagram.svg?.additionalMetadata as SldAdditionalMetadata | null)?.name;
 
     const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
 
@@ -77,6 +79,10 @@ export const VoltageLevelPanelContent = ({
         },
         [panelId, navigateSLD]
     );
+
+    useEffect(() => {
+        updateSldVoltageLevelName(panelId, voltageLevelName);
+    }, [panelId, updateSldVoltageLevelName, voltageLevelName]);
 
     if (!sldFields) {
         return null;
