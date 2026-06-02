@@ -101,7 +101,7 @@ const PhaseTapChangerPaneSteps = ({
                 .formatMessage({ id: column.label })
                 .toLowerCase()
                 .replace(/^\w/, (c) => c.toUpperCase()),
-        }));
+        })) satisfies DndColumn[];
     }, [intl]);
 
     const csvColumns = useMemo(() => {
