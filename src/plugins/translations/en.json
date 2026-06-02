@@ -1,1 +1,6 @@
-{}
+{
+  "results.globalFilter.regionCvg": "Regions",
+  "iidm.die.import-shunts-with-percent-sections" : "100 section count range on MCS",
+  "iidm.die.import-shunts-with-percent-sections.desc" : "Creation of 100 section count by MCS, with current section count timing to match rated reactive power",
+  "iidm.die.ignore-trace-reports" : "Ignore TRACE reports"
+}

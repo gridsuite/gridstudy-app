@@ -1,1 +1,6 @@
-{}
+{
+  "results.globalFilter.regionCvg": "Régions",
+  "iidm.die.import-shunts-with-percent-sections" : "Plage de 100 gradins sur les MCS",
+  "iidm.die.import-shunts-with-percent-sections.desc" : "Création de 100 gradins par MCS, avec calage du gradin courant pour correspondre à la puissance réactive nominale",
+  "iidm.die.ignore-trace-reports" : "Ignorer les logs de niveau TRACE"
+}

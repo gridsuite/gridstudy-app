@@ -1,0 +1,3 @@
+{
+    "login/unauthorizedAccessMessage": "The user {userName} does not have permission to access GridSuite yet. \nPlease send a request with your NNI to our support team (rte-mco-gridsuite@rte-france.com)."
+}
