@@ -28,6 +28,7 @@ import {
     batteryCreationDtoToForm,
     BatteryCreationForm,
     batteryCreationFormToDto,
+    BatteryFormInfos,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -37,7 +38,6 @@ import { FetchStatus } from '../../../../../services/utils.type';
 import { WithModificationId } from '../../../../../services/network-modification-types';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { BatteryFormInfos } from '../battery-dialog.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
