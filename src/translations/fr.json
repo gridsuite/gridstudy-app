@@ -704,7 +704,7 @@
     "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
     "DeleteAttachingLineError": "Erreur lors de la suppression d'un piquage",
     "GenerationDispatchError": "Erreur lors de la création du démarrage de groupes",
-    "linesAttachToSplitLinesVoltageLevel" : "Poste en piquage à passer en coupure",
+    "lineAttachedToSplitLineVoltageLevel" : "Poste en piquage à passer en coupure",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
