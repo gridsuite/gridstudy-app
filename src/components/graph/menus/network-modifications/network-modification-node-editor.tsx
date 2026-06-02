@@ -35,7 +35,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Alert, Badge, Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
+import { Alert, Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -1271,21 +1271,13 @@ const NetworkModificationNodeEditor = () => {
                     }
                 >
                     <span>
-                        <Badge
-                            overlap={'circular'}
-                            color="error"
-                            invisible={!isAssemblyDepthExceeded}
-                            badgeContent={'×'}
-                            sx={styles.badgeStyle}
+                        <IconButton
+                            onClick={doAssembleModificationsIntoComposite}
+                            size={'small'}
+                            disabled={disabledCompositeCreation}
                         >
-                            <IconButton
-                                onClick={doAssembleModificationsIntoComposite}
-                                size={'small'}
-                                disabled={disabledCompositeCreation}
-                            >
-                                <ArrowsInputIcon />
-                            </IconButton>
-                        </Badge>
+                            <ArrowsInputIcon />
+                        </IconButton>
                     </span>
                 </Tooltip>
                 <Tooltip title={<FormattedMessage id={'importFromGridExplore'} />}>
@@ -1312,21 +1304,13 @@ const NetworkModificationNodeEditor = () => {
                     }
                 >
                     <span>
-                        <Badge
-                            overlap={'circular'}
-                            color="error"
-                            invisible={!isCompositeNestingLimitReached}
-                            badgeContent={'×'}
-                            sx={styles.badgeStyle}
+                        <IconButton
+                            onClick={openCreateCompositeModificationDialog}
+                            size={'small'}
+                            disabled={disabledCompositeExport}
                         >
-                            <IconButton
-                                onClick={openCreateCompositeModificationDialog}
-                                size={'small'}
-                                disabled={disabledCompositeExport}
-                            >
-                                <SaveIcon />
-                            </IconButton>
-                        </Badge>
+                            <SaveIcon />
+                        </IconButton>
                     </span>
                 </Tooltip>
                 <Tooltip title={<FormattedMessage id={'cut'} />}>
