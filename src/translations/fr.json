@@ -396,7 +396,7 @@
 
     "ConstraintsFromContingencies": "Aléas -> contraintes",
     "ContingenciesFromConstraints": "Contraintes -> aléas",
-    "CutOffPowerFromConstraints": "Puissances coupées",
+    "CutOffPowerFromConstraints": "Puissance coupée",
 
     "selectionType": "Type de sélection",
     "loadType": "Type",

@@ -604,13 +604,10 @@ export const securityAnalysisTableNmKCutOffPowerColumnsDefinition = (
             filterParams
         ),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
-                'disconnectedLoadActivePower',
-                'disconnectedLoadActivePower',
-                intl,
-                filterParams,
-                undefined
-            )
+            makeAgGridFloatColumn('disconnectedLoadActivePower', 'disconnectedLoadActivePower', intl, filterParams, {
+                ...sortParams,
+                isChildren: false,
+            })
         ),
         makeAgGridCustomHeaderColumn(
             makeAgGridFloatColumn(
@@ -618,7 +615,7 @@ export const securityAnalysisTableNmKCutOffPowerColumnsDefinition = (
                 'disconnectedGenerationActivePower',
                 intl,
                 filterParams,
-                undefined
+                { ...sortParams, isChildren: false }
             )
         ),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'

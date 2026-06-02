@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AppState } from '../../../redux/reducer.type';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
@@ -28,7 +28,7 @@ import {
     mappingColumnToField,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
-import { PaginationType, SecurityAnalysisTab, TableType } from '../../../types/custom-aggrid-types';
+import { PaginationType, SecurityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -43,6 +43,7 @@ import { useComputationGlobalFilters } from '../common/global-filter/use-computa
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import { FilterType, isCriteriaFilterType } from '../common/utils';
+import { setTableSort } from '../../../redux/actions';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -88,7 +89,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     tabIndexRef.current = tabIndex;
     const [nmkType, setNmkType] = useState(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
     const [count, setCount] = useState<number>(0);
-
+    const dispatch = useDispatch();
     useEffect(() => {
         if (!isDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
             // handle tabIndex when dev mode is disabled
@@ -192,6 +193,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const handleChangeNmkType = (_event: SyntheticEvent, newValue: NMK_TYPE) => {
         dispatchPagination({ page: 0, rowsPerPage });
         resetResultStates();
+        dispatch(
+            setTableSort(SECURITY_ANALYSIS_RESULT_SORT_STORE, getStoreFields(tabIndex), [
+                { colId: 'contingencyId', sort: SortWay.ASC },
+            ])
+        );
         setNmkType(newValue);
     };
 

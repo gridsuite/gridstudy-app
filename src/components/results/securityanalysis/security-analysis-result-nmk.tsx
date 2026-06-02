@@ -62,9 +62,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
             if (
-                ((nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES ||
-                    nmkType === NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS) &&
-                    params?.data?.contingencyId) ||
+                (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES && params?.data?.contingencyId) ||
                 (nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS && params?.data?.subjectId)
             ) {
                 return {
