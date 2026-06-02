@@ -197,7 +197,7 @@ const LineAttachToVoltageLevelForm = ({
                     />
                 </GridItem>
             </Grid>
-            <GridSection title="VOLTAGE_LEVEL" />
+            <GridSection title="AttachedVoltageLevelId" />
             <Grid container spacing={2}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
                 <GridItem>
