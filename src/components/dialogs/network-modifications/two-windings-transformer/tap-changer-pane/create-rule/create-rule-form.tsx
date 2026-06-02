@@ -9,7 +9,7 @@ import { DialogContent, DialogTitle, Grid2 as Grid } from '@mui/material';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
-import GridItem from '../../../../commons/grid-item';
+import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
 import { PHASE_TAP, RATIO_TAP, RuleType } from '../../two-windings-transformer.types';
 
 const TAP_LABELS = {

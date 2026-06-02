@@ -18,9 +18,9 @@ import {
 import { Grid2 as Grid } from '@mui/material';
 import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
-import GridItem from '../../../commons/grid-item';
+import { Grid2Item as GridItem } from '../../../commons/grid2-item';
 import { TwoWindingsTransformerMapInfos } from '../two-windings-transformer.types';
-import GridSection from '../../../commons/grid-section';
+import { Grid2Section as GridSection } from '../../../commons/grid2-section';
 
 export interface TwoWindingsTransformerCharacteristicsPaneProps {
     id?: string;

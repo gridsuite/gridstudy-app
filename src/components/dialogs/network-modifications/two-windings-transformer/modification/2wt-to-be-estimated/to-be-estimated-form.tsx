@@ -8,8 +8,8 @@
 import { Grid2 as Grid } from '@mui/material';
 import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import GridSection from '../../../../commons/grid-section';
-import GridItem from '../../../../commons/grid-item';
+import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
+import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
 import {
     RATIO_TAP_CHANGER_STATUS,
     PHASE_TAP_CHANGER_STATUS,

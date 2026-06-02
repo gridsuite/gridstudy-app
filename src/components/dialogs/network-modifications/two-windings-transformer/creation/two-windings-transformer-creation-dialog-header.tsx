@@ -14,7 +14,7 @@ import {
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
-import GridItem from '../../../commons/grid-item';
+import { Grid2Item as GridItem } from '../../../commons/grid2-item';
 
 const TwoWindingsTransformerCreationDialogHeader = () => {
     const twoWindingsTransformerIdField = <TextInput name={`${EQUIPMENT_ID}`} label="ID" formProps={filledTextField} />;
