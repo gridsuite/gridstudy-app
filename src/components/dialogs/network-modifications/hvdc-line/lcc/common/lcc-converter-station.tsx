@@ -14,10 +14,10 @@ import {
     POWER_FACTOR,
 } from '../../../../../utils/field-constants';
 import type { UUID } from 'node:crypto';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import GridSection from '../../../../commons/grid-section';
-import GridItem from '../../../../commons/grid-item';
+import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
+import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
 
 import FiltersShuntCompensatorTable from '../creation/filters-shunt-compensator-table';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
@@ -80,7 +80,7 @@ export default function LccConverterStation({
     const connectivitySection = (
         <>
             <GridSection title={'Connectivity'} />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} size={12}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
         </>
@@ -109,9 +109,9 @@ export default function LccConverterStation({
     );
 
     return (
-        <Grid container spacing={2}>
+        <Grid container>
             <GridSection title={stationLabel} />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} size={12}>
                 <GridItem size={4}>
                     <TextInput
                         name={`${id}.${CONVERTER_STATION_ID}`}
@@ -123,7 +123,7 @@ export default function LccConverterStation({
             </Grid>
             {!isModification && connectivitySection}
             <GridSection title="Characteristics" />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} size={12}>
                 <GridItem size={4}>
                     {' '}
                     <FloatInput
