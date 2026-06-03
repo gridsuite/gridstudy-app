@@ -50,35 +50,39 @@ import {
     toModificationOperation,
 } from '@gridsuite/commons-ui';
 
-const limitsGroupValidationSchema = () => ({
-    [ID]: yup.string().nonNullable().required(),
-    [NAME]: yup.string().nonNullable().required(),
-    [APPLICABILITY_FIELD]: yup.string().nonNullable().required(),
+const limitsGroupValidationSchema = (required = true) => ({
+    [ID]: required ? yup.string().nonNullable().required() : yup.string().nullable(),
+    [NAME]: required ? yup.string().nonNullable().required() : yup.string().nullable(),
+    [APPLICABILITY_FIELD]: required ? yup.string().nonNullable().required() : yup.string().nullable(),
     [OLG_IS_DUPLICATE]: yup.boolean().nullable().test('testDistincts', 'LimitSetApplicabilityError', hasDuplicate),
-    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema()),
+    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(required)),
     [LIMITS_PROPERTIES]: yup.array().of(limitsPropertyValidationSchema()),
 });
 
-const temporaryLimitsValidationSchema = () => {
+const temporaryLimitsValidationSchema = (required = true) => {
     return yup.object().shape(
         {
-            [TEMPORARY_LIMIT_DURATION]: yup
-                .number()
-                .nullable()
-                .min(0)
-                .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_NAME], {
-                    is: (value: number | null, name: string | null) => value != null || !!name,
-                    then: (schema) => schema.required(),
-                }),
-            [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-            [TEMPORARY_LIMIT_NAME]: yup
-                .string()
-                .nullable()
-                .trim()
-                .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
-                    is: (value: number | null, duration: number | null) => value != null || duration != null,
-                    then: (schema) => schema.required(),
-                }),
+            [TEMPORARY_LIMIT_DURATION]: required
+                ? yup
+                      .number()
+                      .nullable()
+                      .min(0)
+                      .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_NAME], {
+                          is: (value: number | null, name: string | null) => value != null || !!name,
+                          then: (schema) => schema.required(),
+                      })
+                : yup.number().nullable(),
+            [TEMPORARY_LIMIT_VALUE]: required ? yup.number().nullable().positive() : yup.number().nullable(),
+            [TEMPORARY_LIMIT_NAME]: required
+                ? yup
+                      .string()
+                      .nullable()
+                      .trim()
+                      .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
+                          is: (value: number | null, duration: number | null) => value != null || duration != null,
+                          then: (schema) => schema.required(),
+                      })
+                : yup.string().nullable(),
         },
         [[TEMPORARY_LIMIT_DURATION, TEMPORARY_LIMIT_NAME]]
     );
@@ -90,11 +94,13 @@ const limitsPropertyValidationSchema = () => {
     });
 };
 
-const currentLimitsValidationSchema = () => ({
-    [PERMANENT_LIMIT]: yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required(),
+const currentLimitsValidationSchema = (required = true) => ({
+    [PERMANENT_LIMIT]: required
+        ? yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required()
+        : yup.number().nullable(),
     [TEMPORARY_LIMITS]: yup
         .array()
-        .of(temporaryLimitsValidationSchema())
+        .of(temporaryLimitsValidationSchema(required))
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
             const namesArray = !array
                 ? []
@@ -147,9 +153,21 @@ function hasDuplicateOperationalLimitsGroups(context: TestContext) {
     return !isDuplicate;
 }
 
-const limitsValidationSchemaCreation = (id: string) => {
+const limitsValidationSchemaCreation = (id: string, isModification: boolean) => {
+    const operationalLimitsGroupsSchema = yup.array().of(yup.object().shape(limitsGroupValidationSchema())).required();
+
     const completeLimitsGroupSchema = {
-        [OPERATIONAL_LIMITS_GROUPS]: yup.array(yup.object().shape(limitsGroupValidationSchema())).required(),
+        [OPERATIONAL_LIMITS_GROUPS]: isModification
+            ? yup.lazy((_value, options) => {
+                  if (options.parent?.[ENABLE_OLG_MODIFICATION]) {
+                      return operationalLimitsGroupsSchema;
+                  }
+                  return yup
+                      .array()
+                      .of(yup.object().shape(limitsGroupValidationSchema(false)))
+                      .notRequired();
+              })
+            : operationalLimitsGroupsSchema,
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: yup.string().nullable(),
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: yup.string().nullable(),
         [ENABLE_OLG_MODIFICATION]: yup.boolean(),
@@ -159,8 +177,8 @@ const limitsValidationSchemaCreation = (id: string) => {
 
 export type LimitsFormSchema = yup.InferType<ReturnType<typeof limitsValidationSchemaCreation>[typeof LIMITS]>;
 
-export const getLimitsValidationSchema = (id: string = LIMITS) => {
-    return limitsValidationSchemaCreation(id);
+export const getLimitsValidationSchema = (id: string = LIMITS, isModification = false) => {
+    return limitsValidationSchemaCreation(id, isModification);
 };
 
 const limitsEmptyFormData = (isModification: boolean, id: string) => {
