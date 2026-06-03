@@ -18,6 +18,12 @@ export enum RESULT_TYPE {
     N = 'N',
     NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
     NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
+    NMK_CUT_OFF_POWER = 'NMK_CUT_OFF_POWER',
+}
+export enum NMK_TYPE {
+    CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
+    CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
+    CUT_OFF_POWER_FROM_CONSTRAINTS = 'cut-off-power-from-constraints',
 }
 
 export interface LimitViolation {
@@ -59,6 +65,8 @@ export interface SecurityAnalysisNmkTableRow {
     acceptableDuration?: number | null;
     upcomingAcceptableDuration?: number | null;
     status?: string;
+    disconnectedLoadActivePower?: number;
+    disconnectedGenerationActivePower?: number;
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
     limit?: number;
@@ -90,6 +98,16 @@ export interface ConstraintsFromContingencyItem {
     contingency?: ContingencyItem;
 }
 
+export interface CutOffPowerFromConstraintsItem {
+    status?: string;
+    contingencyId?: string;
+    connectivityResult?: ConnectivityResult;
+}
+
+export interface ConnectivityResult {
+    disconnectedLoadActivePower: number;
+    disconnectedGenerationActivePower: number;
+}
 export interface PreContingencyResult {
     subjectId?: string;
     status: string;
@@ -108,7 +126,7 @@ export type SecurityAnalysisQueryParams = {
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
 export type SecurityAnalysisNmkResult = Page<
-    ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | null
+    ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | CutOffPowerFromConstraintsItem[] | null
 >;
 
 // Components props interfaces
@@ -129,7 +147,7 @@ export interface SecurityAnalysisResultNmkProps {
     result?: SecurityAnalysisNmkResult;
     columnDefs: ColDef<any>[];
     isLoadingResult: boolean;
-    isFromContingency: boolean;
+    nmkType: NMK_TYPE;
     paginationProps: TablePaginationProps;
     computationSubType: string;
 }
