@@ -22,7 +22,7 @@ import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
 import IconButton from '@mui/material/IconButton';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
-import GridSection from '../commons/grid-section';
+import { Grid2Section as GridSection } from '../commons/grid2-section';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
 import { InputWithPopupConfirmation, SwitchInput } from '@gridsuite/commons-ui';

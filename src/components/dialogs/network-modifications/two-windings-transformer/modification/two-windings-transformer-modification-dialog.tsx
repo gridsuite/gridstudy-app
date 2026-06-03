@@ -929,7 +929,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.STATE_ESTIMATION_TAB}
                             p={1}
                         >
-                            <Grid container spacing={2}>
+                            <Grid container>
                                 <BranchActiveReactivePowerMeasurementsForm equipmentToModify={twtToModify} />
                                 <ToBeEstimatedForm toBeEstimated={twtToModify?.toBeEstimated as ToBeEstimatedInfo} />
                             </Grid>
