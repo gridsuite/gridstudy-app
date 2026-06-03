@@ -229,7 +229,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
         const totalInjection = calculateTotal(result.reactiveSlacks, false);
         const totalConsumption = calculateTotal(result.reactiveSlacks, true);
         return (
-            <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
+            <Stack direction={'row'} gap={1} marginBottom={1} marginTop={0.5} marginLeft={2}>
                 <Typography sx={styles.typography}>
                     <FormattedMessage id="TotalInjection" />
                 </Typography>
@@ -263,14 +263,16 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
         const color = status === 'SUCCEED' ? styles.succeed : styles.fail;
         const statusToShow = status === 'SUCCEED' ? 'OK' : 'KO';
         return (
-            <>
-                <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
-                    <Typography style={{ fontWeight: 'bold' }}>
-                        <FormattedMessage id="VoltageInitStatus" />
-                        <span style={{ marginLeft: '4px' }}>{statusToShow}</span>
-                    </Typography>
-                    <Lens fontSize={'medium'} sx={color} />
-                </Stack>
+            <Box sx={mergeSx(unscrollableDialogStyles.unscrollableContainer, { height: '100%' })}>
+                <Box sx={unscrollableDialogStyles.unscrollableHeader}>
+                    <Stack direction={'row'} gap={1} marginBottom={1} marginTop={0.5} marginLeft={2}>
+                        <Typography style={{ fontWeight: 'bold' }}>
+                            <FormattedMessage id="VoltageInitStatus" />
+                            <span style={{ marginLeft: '4px' }}>{statusToShow}</span>
+                        </Typography>
+                        <Lens fontSize={'medium'} sx={color} />
+                    </Stack>
+                </Box>
                 <RenderTableAndExportCsv
                     gridRef={gridRef}
                     columns={indicatorsColumnDefs}
@@ -285,7 +287,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                     computationType={TableType.VoltageInit}
                     computationSubType="Indicators"
                 />
-            </>
+            </Box>
         );
     }
 
@@ -309,24 +311,22 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
 
     function renderReactiveSlacksTable(result: VoltageInitResultType) {
         return (
-            <Box sx={unscrollableDialogStyles.unscrollableContainer}>
+            <Box sx={mergeSx(unscrollableDialogStyles.unscrollableContainer, { height: '100%' })}>
                 <Box sx={unscrollableDialogStyles.unscrollableHeader}>{renderHeaderReactiveSlacks(result)}</Box>
-                <Box sx={unscrollableDialogStyles.unscrollableHeader}>
-                    <RenderTableAndExportCsv
-                        gridRef={gridRef}
-                        columns={reactiveSlacksColumnDefs}
-                        defaultColDef={defaultColDef}
-                        tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
-                        rows={result.reactiveSlacks}
-                        skipColumnHeaders={false}
-                        getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
-                            return undefined;
-                        }}
-                        overlayNoRowsTemplate={undefined}
-                        computationType={TableType.VoltageInit}
-                        computationSubType="ReactiveSlacks"
-                    />
-                </Box>
+                <RenderTableAndExportCsv
+                    gridRef={gridRef}
+                    columns={reactiveSlacksColumnDefs}
+                    defaultColDef={defaultColDef}
+                    tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
+                    rows={result.reactiveSlacks}
+                    skipColumnHeaders={false}
+                    getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
+                        return undefined;
+                    }}
+                    overlayNoRowsTemplate={undefined}
+                    computationType={TableType.VoltageInit}
+                    computationSubType="ReactiveSlacks"
+                />
             </Box>
         );
     }
