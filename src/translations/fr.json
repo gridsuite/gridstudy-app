@@ -396,6 +396,7 @@
 
     "ConstraintsFromContingencies": "Aléas -> contraintes",
     "ContingenciesFromConstraints": "Contraintes -> aléas",
+    "CutOffPowerFromConstraints": "Puissance coupée",
 
     "selectionType": "Type de sélection",
     "loadType": "Type",
@@ -704,6 +705,7 @@
     "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
     "DeleteAttachingLineError": "Erreur lors de la suppression d'un piquage",
     "GenerationDispatchError": "Erreur lors de la création du démarrage de groupes",
+    "lineAttachedToSplitLineVoltageLevel" : "Poste en piquage à passer en coupure",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
@@ -1522,5 +1524,7 @@
     "deactivateModification": "Désactiver la modification réseau",
     "deselectModification": "Désélectionner la modification",
     "selectModification": "Sélectionner la modification",
-    "moveModification": "Déplacer la modification"
+    "moveModification": "Déplacer la modification",
+    "disconnectedLoadActivePower": "Consommation coupée (MW)",
+    "disconnectedGenerationActivePower": "Production coupée (MW)"
 }
