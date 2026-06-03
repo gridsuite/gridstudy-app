@@ -396,6 +396,7 @@
 
     "ConstraintsFromContingencies": "Contingencies -> violations",
     "ContingenciesFromConstraints": "Violations -> contingencies",
+    "CutOffPowerFromConstraints": "Cut-off power",
 
     "selectionType": "Selection type",
 
@@ -1529,5 +1530,7 @@
     "deactivateModification": "Deactivate network modification",
     "deselectModification": "Deselect modification",
     "selectModification": "Select modification",
-    "moveModification": "Move modification"
+    "moveModification": "Move modification",
+    "disconnectedLoadActivePower": "Load cut off (MW)",
+    "disconnectedGenerationActivePower": "Generation cut off (MW)"
 } 
