@@ -176,7 +176,7 @@ export const mapShuntCompensatorToFormFields = (shuntCompensator: Record<string,
 
     if (formattedCompensator.type === undefined) {
         formattedCompensator.type =
-            formattedCompensator.maxSusceptance > 0
+            formattedCompensator.bPerSection > 0
                 ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
                 : SHUNT_COMPENSATOR_TYPES.REACTOR.id;
     }

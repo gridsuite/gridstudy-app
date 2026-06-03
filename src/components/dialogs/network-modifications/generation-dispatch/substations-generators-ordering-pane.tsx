@@ -37,7 +37,7 @@ const SubstationsGeneratorsOrderingPane = ({ substations }: Readonly<Substations
                         substations: substations,
                     }),
             },
-        ];
+        ] satisfies DndColumn[];
     }, [intl, substations, id]);
 
     const useFieldArraySubstationsGeneratorsOrdering = useFieldArray({

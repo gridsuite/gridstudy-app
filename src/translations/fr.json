@@ -552,7 +552,6 @@
     "modificationType": "Type de modification",
     "temporaryLimitsModificationType": "Type de modification des limites temporaires",
 
-    "ModifyBattery": "Modifier une batterie",
     "CreateGenerator": "Créer un groupe",
     "ModifyGenerator": "Modifier un groupe",
     "NbModificationToPaste": "Coller {nb} modification{several}",
@@ -563,7 +562,6 @@
     "ReactivePowerRegulationText": "Réglage de réactif",
     "RatioRegulationTypeText": "Type de réglage régleur",
     "PhaseRegulationTypeText": "Type de réglage déphaseur",
-    "Limits": "Limites",
     "reactiveCapabilityCurve": "Limites de réactif par diagramme",
     "RatioRegulatingTerminal": "Terminal distant réglé régleur",
     "PhaseRegulatingTerminal": "Terminal distant réglé déphaseur",
@@ -579,7 +577,6 @@
     "withoutunit.stepUpTransformerX": "Réactance du transformateur",
     "plannedActivePowerSetPoint": "P imposée (MW)",
     "withoutunit.plannedActivePowerSetPoint": "P imposée",
-    "MinActivePowerMustBeLessOrEqualToMaxActivePower": "La valeur de la puissance active min doit être inférieure ou égale à la valeur de la puissance active max",
     "PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower": "La valeur de la puissance imposée doit être comprise entre la valeur de la puissance active min et la valeur de la puissance active max",
     "RatedNominalPowerMustBeGreaterThanZero": "La valeur de la puissance nominale doit être supérieure à 0",
     "RealPercentage": "Cette valeur doit être comprise entre 0 et 1",
@@ -593,7 +590,6 @@
     "reactiveCapabilityCurvePmax": "Pmax",
     "reactiveCapabilityCurveQminPmax": "QminPmax",
     "reactiveCapabilityCurveQmaxPmax": "QmaxPmax",
-    "BatteryModificationError": "Erreur lors de la modification d'une batterie ",
     "ModifyLine": "Modifier une ligne",
     "CreateLine": "Créer une ligne",
     "CreateVsc": "Création d'une HVDC (VSC)",
@@ -711,6 +707,7 @@
     "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
     "DeleteAttachingLineError": "Erreur lors de la suppression d'un piquage",
     "GenerationDispatchError": "Erreur lors de la création du démarrage de groupes",
+    "lineAttachedToSplitLineVoltageLevel" : "Poste en piquage à passer en coupure",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
@@ -1319,9 +1316,6 @@
     "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds",
     "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",
     "previousConnection": "Connexion préc.",
-
-    "SetpointsAndLimitsTab": "Consignes & Limites",
-    "SpecificTab": "Spécifique",
 
     "confirmRootNetworkCreation": "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
     "RegulationSection": "Réglage",
