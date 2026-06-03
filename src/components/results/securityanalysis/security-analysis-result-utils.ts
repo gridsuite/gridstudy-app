@@ -600,7 +600,7 @@ export const securityAnalysisTableNmKCutOffPowerColumnsDefinition = (
             filterEnums['status'] ?? [],
             getEnumLabel,
             intl,
-            undefined,
+            { ...sortParams, isChildren: false },
             filterParams
         ),
         makeAgGridCustomHeaderColumn(

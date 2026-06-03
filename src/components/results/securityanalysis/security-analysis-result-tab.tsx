@@ -58,7 +58,8 @@ const styles = {
     },
     subTabsRow: {
         display: 'flex',
-        gap: 2,
+        gap: 1,
+        mb: 2,
     },
     subTabsToolbox: {
         display: 'flex',
