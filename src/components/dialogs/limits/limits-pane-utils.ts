@@ -56,7 +56,7 @@ const limitsGroupValidationSchema = (required = true) => ({
     [APPLICABILITY_FIELD]: required ? yup.string().nonNullable().required() : yup.string().nullable(),
     [OLG_IS_DUPLICATE]: yup.boolean().nullable().test('testDistincts', 'LimitSetApplicabilityError', hasDuplicate),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(required)),
-    [LIMITS_PROPERTIES]: yup.array().of(limitsPropertyValidationSchema()),
+    [LIMITS_PROPERTIES]: yup.array().of(limitsPropertyValidationSchema(required)),
 });
 
 const temporaryLimitsValidationSchema = (required = true) => {
@@ -87,10 +87,10 @@ const temporaryLimitsValidationSchema = (required = true) => {
         [[TEMPORARY_LIMIT_DURATION, TEMPORARY_LIMIT_NAME]]
     );
 };
-const limitsPropertyValidationSchema = () => {
+const limitsPropertyValidationSchema = (required = true) => {
     return yup.object().shape({
-        [NAME]: yup.string().required(),
-        [FieldConstants.VALUE]: yup.string().required(),
+        [NAME]: required ? yup.string().required() : yup.string().nullable(),
+        [FieldConstants.VALUE]: required ? yup.string().required() : yup.string().nullable(),
     });
 };
 
@@ -102,14 +102,14 @@ const currentLimitsValidationSchema = (required = true) => ({
         .array()
         .of(temporaryLimitsValidationSchema(required))
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
-            const namesArray = !array
-                ? []
-                : array.filter((l) => !!l[TEMPORARY_LIMIT_NAME]).map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
-            return areArrayElementsUnique(namesArray);
+            const namesArray = array
+                ? array.filter((l) => !!l[TEMPORARY_LIMIT_NAME]).map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]))
+                : [];
+            return required ? areArrayElementsUnique(namesArray) : true;
         })
         .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
-            const durationsArray = !array ? [] : array.map((l) => l[TEMPORARY_LIMIT_DURATION]).filter((d) => d); // empty lines are ignored
-            return areArrayElementsUnique(durationsArray);
+            const durationsArray = array ? array.map((l) => l[TEMPORARY_LIMIT_DURATION]).filter((d) => d) : []; // empty lines are ignored
+            return required ? areArrayElementsUnique(durationsArray) : true;
         }),
 });
 
