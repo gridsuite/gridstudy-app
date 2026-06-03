@@ -17,6 +17,7 @@ import {
     mergeSx,
     type MuiStyles,
     snackWithFallback,
+    unscrollableDialogStyles,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import {
@@ -308,24 +309,25 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
 
     function renderReactiveSlacksTable(result: VoltageInitResultType) {
         return (
-            <>
-                {renderHeaderReactiveSlacks(result)}
-
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={reactiveSlacksColumnDefs}
-                    defaultColDef={defaultColDef}
-                    tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
-                    rows={result.reactiveSlacks}
-                    skipColumnHeaders={false}
-                    getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
-                        return undefined;
-                    }}
-                    overlayNoRowsTemplate={undefined}
-                    computationType={TableType.VoltageInit}
-                    computationSubType="ReactiveSlacks"
-                />
-            </>
+            <Box sx={unscrollableDialogStyles.unscrollableContainer}>
+                <Box sx={unscrollableDialogStyles.unscrollableHeader}>{renderHeaderReactiveSlacks(result)}</Box>
+                <Box sx={unscrollableDialogStyles.unscrollableHeader}>
+                    <RenderTableAndExportCsv
+                        gridRef={gridRef}
+                        columns={reactiveSlacksColumnDefs}
+                        defaultColDef={defaultColDef}
+                        tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
+                        rows={result.reactiveSlacks}
+                        skipColumnHeaders={false}
+                        getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
+                            return undefined;
+                        }}
+                        overlayNoRowsTemplate={undefined}
+                        computationType={TableType.VoltageInit}
+                        computationSubType="ReactiveSlacks"
+                    />
+                </Box>
+            </Box>
         );
     }
 
