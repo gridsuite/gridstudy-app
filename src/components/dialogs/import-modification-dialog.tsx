@@ -7,6 +7,7 @@
 
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    CheckboxInput,
     CustomFormProvider,
     DirectoryItemSelector,
     DndColumn,
@@ -26,7 +27,6 @@ import { CompositeModificationAction } from 'components/graph/menus/network-modi
 import {
     Box,
     Button,
-    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
@@ -97,21 +97,7 @@ interface SharedCellProps {
 }
 
 function SharedCell({ rowIndex }: Readonly<SharedCellProps>) {
-    const isShared: boolean = useWatch({
-        name: `${SELECTED_MODIFICATIONS}.${rowIndex}.isShared`,
-    });
-
-    return (
-        <FormControlLabel
-            control={<Checkbox size="small" disabled checked={isShared} sx={{ p: 0, ml: 1 }} />}
-            label={
-                <Typography variant="body2" color="text.disabled" sx={{ ml: 0.5 }}>
-                    <FormattedMessage id="importComposites.shared" />
-                </Typography>
-            }
-            sx={{ mr: 0, alignItems: 'center' }}
-        />
-    );
+    return <CheckboxInput name={`${SELECTED_MODIFICATIONS}.${rowIndex}.isShared`} label={'importComposites.shared'} />;
 }
 
 interface InsertNameCellProps {
