@@ -10,12 +10,15 @@ import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
+    NMK_TYPE,
+    CutOffPowerFromConstraintsItem,
     SecurityAnalysisResultNmkProps,
 } from './security-analysis.type';
 import {
     flattenNmKResultsConstraints,
     flattenNmKResultsContingencies,
     handlePostSortRows,
+    mapNmKResultsCutOffPower,
     PAGE_OPTIONS,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
@@ -36,7 +39,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
     result,
     columnDefs,
     isLoadingResult,
-    isFromContingency,
+    nmkType,
     paginationProps,
     computationSubType,
 }) => {
@@ -45,32 +48,38 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
     const theme = useTheme();
     const intl: IntlShape = useIntl();
 
-    const rows = useMemo(
-        () =>
-            isFromContingency
-                ? flattenNmKResultsContingencies(intl, content as ConstraintsFromContingencyItem[])
-                : flattenNmKResultsConstraints(intl, content as ContingenciesFromConstraintItem[]),
-        [content, intl, isFromContingency]
-    );
+    const rows = useMemo(() => {
+        switch (nmkType) {
+            case NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES:
+                return flattenNmKResultsContingencies(intl, content as ConstraintsFromContingencyItem[]);
+            case NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS:
+                return flattenNmKResultsConstraints(intl, content as ContingenciesFromConstraintItem[]);
+            case NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS:
+                return mapNmKResultsCutOffPower(content as CutOffPowerFromConstraintsItem[]);
+        }
+    }, [nmkType, intl, content]);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
-            if ((isFromContingency && params?.data?.contingencyId) || (!isFromContingency && params?.data?.subjectId)) {
+            if (
+                (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES && params?.data?.contingencyId) ||
+                (nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS && params?.data?.subjectId)
+            ) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
             }
         },
-        [isFromContingency, theme.selectedRow.background]
+        [nmkType, theme.selectedRow.background]
     );
 
     const agGridProps = useMemo(
         () => ({
-            postSortRows: handlePostSortRows(isFromContingency),
+            postSortRows: handlePostSortRows(nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES),
             getRowStyle,
             tooltipShowDelay: 0,
         }),
-        [isFromContingency, getRowStyle]
+        [getRowStyle, nmkType]
     );
 
     return (

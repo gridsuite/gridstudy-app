@@ -396,6 +396,7 @@
 
     "ConstraintsFromContingencies": "Aléas -> contraintes",
     "ContingenciesFromConstraints": "Contraintes -> aléas",
+    "CutOffPowerFromConstraints": "Puissance coupée",
 
     "selectionType": "Type de sélection",
     "loadType": "Type",
@@ -1528,5 +1529,7 @@
     "selectModification": "Sélectionner la modification",
     "moveModification": "Déplacer la modification",
     "button.next": "Suivant",
-    "button.previous": "Précédent"
+    "button.previous": "Précédent",
+    "disconnectedLoadActivePower": "Consommation coupée (MW)",
+    "disconnectedGenerationActivePower": "Production coupée (MW)"
 }

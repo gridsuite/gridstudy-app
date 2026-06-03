@@ -396,6 +396,7 @@
 
     "ConstraintsFromContingencies": "Contingencies -> violations",
     "ContingenciesFromConstraints": "Violations -> contingencies",
+    "CutOffPowerFromConstraints": "Cut-off power",
 
     "selectionType": "Selection type",
 
@@ -1534,5 +1535,7 @@
     "selectModification": "Select modification",
     "moveModification": "Move modification",
     "button.next": "Next",
-    "button.previous": "Previous"
+    "button.previous": "Previous",
+    "disconnectedLoadActivePower": "Load cut off (MW)",
+    "disconnectedGenerationActivePower": "Generation cut off (MW)"
 } 
