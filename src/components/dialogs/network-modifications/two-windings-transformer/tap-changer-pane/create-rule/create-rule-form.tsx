@@ -41,10 +41,10 @@ const CreateRuleForm = ({ ruleType }: CreateRuleFormProps) => {
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2} direction={'column'} style={DIALOG_CONTENT_STYLE}>
-                    <GridItem>
+                    <GridItem size={12}>
                         <FloatInput label={labels.low} name={LOW_TAP_POSITION} />
                     </GridItem>
-                    <GridItem>
+                    <GridItem size={12}>
                         <FloatInput label={labels.high} name={HIGH_TAP_POSITION} />
                     </GridItem>
                 </Grid>
