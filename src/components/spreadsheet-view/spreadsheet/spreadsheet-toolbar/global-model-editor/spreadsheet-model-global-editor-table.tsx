@@ -43,7 +43,7 @@ export function SpreadsheetModelGlobalEditorTable() {
         [getValues]
     );
 
-    const COLUMNS_MODEL_DEFINITIONS: DndColumn[] = useMemo(() => {
+    const COLUMNS_MODEL_DEFINITIONS = useMemo<DndColumn[]>(() => {
         return [
             {
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_name' }),
@@ -74,7 +74,6 @@ export function SpreadsheetModelGlobalEditorTable() {
                 type: DndColumnType.TEXT,
                 editable: true,
                 initialValue: '',
-                showErrorMsg: true,
                 width: '20%',
                 maxWidth: '20%',
             },
@@ -136,7 +135,7 @@ export function SpreadsheetModelGlobalEditorTable() {
                         dependencies: getAvailableDependencies(getValues(`${COLUMNS_MODEL}[${rowIndex}].${COLUMN_ID}`)),
                     }),
             },
-        ];
+        ] satisfies DndColumn[];
     }, [intl, getAvailableDependencies, getValues, setValue]);
 
     const newColumnRowData = useMemo(() => {
