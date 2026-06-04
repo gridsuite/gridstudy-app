@@ -40,8 +40,7 @@ import { FetchStatus } from '../../../../../services/utils.type';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import PositionDiagramPane
-    from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 import { WithModificationId } from 'services/network-modification-types';
@@ -144,7 +143,7 @@ export default function GeneratorCreationDialog({
                 snackWithFallback(snackError, error, { headerId: 'GeneratorCreationError' });
             });
         },
-        [currentNodeUuid, editData?.uuid, studyUuid, snackError]
+        [currentNodeUuid, editData, studyUuid, snackError]
     );
 
     const fetchBusesOrBusbarSections = useCallback(
@@ -170,7 +169,11 @@ export default function GeneratorCreationDialog({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={generatorCreationFormSchema} {...formMethods}>
+        <CustomFormProvider
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            validationSchema={generatorCreationFormSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
