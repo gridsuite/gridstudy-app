@@ -14,6 +14,7 @@ import {
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
+    YUP_REQUIRED,
 } from '@gridsuite/commons-ui';
 import { insertCompositeModifications, type ModificationPair } from '../../services/study';
 import { JSX, useCallback, useEffect, useState } from 'react';
@@ -75,14 +76,14 @@ const formSchema = yup
         [SELECTED_MODIFICATIONS]: yup.array().min(1).required(),
         [COMPOSITE_NAMES]: yup.mixed<CompositeNameOverrides>().when(ACTION, ([action], schema) => {
             if (action === CompositeModificationAction.INSERT) {
-                return schema.test('all-names-filled', 'FieldIsRequired', function (value) {
+                return schema.test('all-names-filled', YUP_REQUIRED, function (value) {
                     const selections: SelectedComposite[] = this.parent[SELECTED_MODIFICATIONS] ?? [];
                     for (const m of selections) {
                         const name = value?.[m.id] ?? '';
                         if (!name.trim()) {
                             return this.createError({
                                 path: `${COMPOSITE_NAMES}.${m.id}`,
-                                message: 'FieldIsRequired',
+                                message: YUP_REQUIRED,
                             });
                         }
                     }
@@ -251,7 +252,7 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
                                                     error={!!fieldState.error}
                                                     helperText={
                                                         fieldState.error
-                                                            ? intl.formatMessage({ id: 'FieldIsRequired' })
+                                                            ? intl.formatMessage({ id: YUP_REQUIRED })
                                                             : undefined
                                                     }
                                                 />
