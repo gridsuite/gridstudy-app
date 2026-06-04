@@ -17,6 +17,7 @@ import {
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
+    securityAnalysisTableNmKCutOffPowerColumnsDefinition,
 } from './security-analysis-result-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
@@ -145,6 +146,13 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
                     intl,
                     SubjectIdRenderer,
+                    filterEnums.nmk,
+                    getEnumLabel,
+                    tabIndex
+                );
+            case RESULT_TYPE.NMK_CUT_OFF_POWER:
+                return securityAnalysisTableNmKCutOffPowerColumnsDefinition(
+                    intl,
                     filterEnums.nmk,
                     getEnumLabel,
                     tabIndex
