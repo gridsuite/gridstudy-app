@@ -183,7 +183,7 @@ const LineModificationDialog = ({
             [EQUIPMENT_NAME]: yup.string().nullable(),
             ...getCon1andCon2WithPositionValidationSchema(true),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
-            ...getLimitsValidationSchema(LIMITS, true),
+            ...getLimitsValidationSchema(),
             ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
         })
         .concat(modificationPropertiesSchema)
