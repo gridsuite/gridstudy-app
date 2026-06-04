@@ -338,13 +338,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         </Tabs>
                     )}
 
-                    <Box sx={styles.subTabsToolbox}>
+                    <Box sx={{ display: 'flex', flexGrow: 0 }}>
                         <GlobalFilterSelector
                             filterCategories={filterTypes}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             genericFiltersStrictMode={true}
                             tableType={TableType.SecurityAnalysis}
                         />
+                    </Box>
+                    <Box sx={styles.subTabsToolbox}>
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
