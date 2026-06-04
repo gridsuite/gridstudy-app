@@ -13,7 +13,7 @@ import { useController, useFormContext, useWatch } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import type { UUID } from 'node:crypto';
-import { useCustomFormContext, useDebounce } from '@gridsuite/commons-ui';
+import { useCustomFormContext, useDebounce, YUP_REQUIRED } from '@gridsuite/commons-ui';
 
 export interface UniqueCheckNameInputProps {
     name: string;
@@ -126,7 +126,7 @@ export function UniqueCheckNameInput({
             clearErrors('root.isValidating');
             setError(name, {
                 type: 'validate',
-                message: 'FieldIsRequired',
+                message: YUP_REQUIRED,
             });
         }
     }, [debouncedHandleCheckName, setError, clearErrors, name, value, isDirty, defaultFieldValue]);
