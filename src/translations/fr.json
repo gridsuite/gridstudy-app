@@ -495,7 +495,6 @@
     "SynchronousComponent": "Composante synchrone",
     "EmptySelection": "Aucun ouvrage n'est sélectionné",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
-    "FieldIsRequired": "Ce champ doit être renseigné",
     "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du nœud\u00a0:",
     "errDuplicateModificationMsg": "Une erreur est survenue lors de la copie des modifications",
     "errCutModificationMsg": "Une erreur est survenue lors du coupage des modifications",
