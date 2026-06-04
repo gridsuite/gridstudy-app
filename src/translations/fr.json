@@ -396,6 +396,7 @@
 
     "ConstraintsFromContingencies": "Aléas -> contraintes",
     "ContingenciesFromConstraints": "Contraintes -> aléas",
+    "CutOffPowerFromConstraints": "Puissance coupée",
 
     "selectionType": "Type de sélection",
     "loadType": "Type",
@@ -1523,5 +1524,7 @@
     "deactivateModification": "Désactiver la modification réseau",
     "deselectModification": "Désélectionner la modification",
     "selectModification": "Sélectionner la modification",
-    "moveModification": "Déplacer la modification"
+    "moveModification": "Déplacer la modification",
+    "disconnectedLoadActivePower": "Consommation coupée (MW)",
+    "disconnectedGenerationActivePower": "Production coupée (MW)"
 }
