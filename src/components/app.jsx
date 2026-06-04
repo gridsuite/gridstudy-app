@@ -89,7 +89,10 @@ const App = () => {
             .catch(() => cleanupStaleStudyData());
     }, []);
 
-    const userProfile = useSelector((state) => state.user?.profile ?? null, shallowEqual);
+    const userProfile = useSelector((state) => {
+        const p = state.user?.profile;
+        return p ? { sub: p.sub, name: p.name, email: p.email, profile: p.profile } : null;
+    }, shallowEqual);
     const studyUuid = useSelector((state) => state.studyUuid);
     const signInCallbackError = useSelector((state) => state.signInCallbackError);
     const authenticationRouterError = useSelector((state) => state.authenticationRouterError);
