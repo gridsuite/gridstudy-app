@@ -76,7 +76,7 @@ import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-m
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
 import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
-import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
+import ImportModificationDialog from '../../../dialogs/import-composite/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
@@ -733,14 +733,10 @@ const NetworkModificationNodeEditor = () => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
-                    const liveModifications = res.filter(
-                        (networkModification) => networkModification.stashed === false
-                    );
+                    const liveModifications = res.filter((networkModification) => !networkModification.stashed);
                     updateSelectedItems(liveModifications);
                     setModifications(liveModifications);
-                    setModificationsToRestore(
-                        res.filter((networkModification) => networkModification.stashed === true)
-                    );
+                    setModificationsToRestore(res.filter((networkModification) => networkModification.stashed));
                 }
             })
             .catch((error) => {

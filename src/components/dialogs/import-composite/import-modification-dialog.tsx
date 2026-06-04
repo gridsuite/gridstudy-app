@@ -19,11 +19,11 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { insertCompositeModifications, type ModificationPair } from '../../services/study';
+import { insertCompositeModifications, type ModificationPair } from '../../../services/study';
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer.type';
-import { CompositeModificationAction } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { AppState } from '../../../redux/reducer.type';
+import { CompositeModificationAction } from '../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     Box,
     Button,
@@ -34,30 +34,20 @@ import {
     Divider,
     FormControl,
     FormControlLabel,
-    FormHelperText,
     Radio,
     RadioGroup,
     Step,
     StepLabel,
     Stepper,
-    TextField,
     Typography,
 } from '@mui/material';
-
-import {
-    Controller,
-    useController,
-    useFieldArray,
-    useForm,
-    UseFieldArrayReturn,
-    useFormContext,
-    useWatch,
-} from 'react-hook-form';
+import { useController, useFieldArray, useForm, UseFieldArrayReturn } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
+import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from '../../utils/field-constants';
 import * as yup from 'yup';
 import { UUID } from 'node:crypto';
-import { useParameterState } from './parameters/use-parameters-state';
+import { useParameterState } from '../parameters/use-parameters-state';
+import InsertNameCell from './insert-name-cell';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -99,30 +89,6 @@ interface SharedCellProps {
 function SharedCell({ rowIndex }: Readonly<SharedCellProps>) {
     return (
         <CheckboxInput name={`${SELECTED_MODIFICATIONS}.${rowIndex}.${IS_SHARED}`} label={'importComposites.shared'} />
-    );
-}
-
-interface InsertNameCellProps {
-    rowIndex: number;
-}
-
-function InsertNameCell({ rowIndex }: Readonly<InsertNameCellProps>) {
-    const { control } = useFormContext();
-    const originalName: string = useWatch({
-        name: `${SELECTED_MODIFICATIONS}.${rowIndex}.originalName`,
-    });
-
-    return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <Controller
-                name={`${SELECTED_MODIFICATIONS}.${rowIndex}.name`}
-                control={control}
-                render={({ field, fieldState }) => (
-                    <TextField {...field} size="small" fullWidth error={!!fieldState.error} />
-                )}
-            />
-            <FormHelperText sx={{ px: 1, mt: 0.25 }}> {originalName}</FormHelperText>
-        </Box>
     );
 }
 
@@ -306,6 +272,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         console.log('Mathieu handleSave modificationsToInsert', modificationsToInsert);
         // TODO : revoir l'envoi : l'ordre doit être préservé, donc faire un dto ? séparer les deux actions import ?
         //shared à false pour le mode INSERT
+        // name = originalName pour les partagées
         // [IS_SHARED]: selectedModifications.find((mod) => mod.id === e.id)?.isShared ?? false,
         insertCompositeModifications(
             studyUuid,
@@ -323,7 +290,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth PaperProps={{ sx: { p: 1 } }}>
+            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
                 <DialogTitle>
                     <FormattedMessage id="importComposites.title" />
                 </DialogTitle>
