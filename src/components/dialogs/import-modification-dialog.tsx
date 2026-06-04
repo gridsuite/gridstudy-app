@@ -185,7 +185,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
     const { field: actionField } = useController({ name: ACTION, control });
 
-    const action = watch(ACTION);
+    const action: CompositeModificationAction = watch(ACTION);
     const selectedModifications: SelectedComposite[] = watch(SELECTED_MODIFICATIONS);
     const isInsertMode = action === CompositeModificationAction.INSERT;
 
@@ -209,7 +209,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         []
     );
 
-    // SPLIT mode — name is read-only, drag-and-drop only
+    // SPLIT mode — name is read-only, drag-and-drop only, cannot be shared
     const splitColumnsDefinition: DndColumn[] = useMemo(
         () => [
             {
@@ -220,9 +220,8 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 width: '75%',
                 type: DndColumnType.TEXT,
             },
-            sharedColumn,
         ],
-        [sharedColumn]
+        []
     );
 
     // INSERT mode — name is editable with original name shown below
@@ -298,12 +297,15 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const handleSave = useCallback(() => {
         if (!studyUuid || !currentNode || !isValid) return;
 
+        console.log('Mathieu handleSave selectedModifications', selectedModifications);
         const modificationsToInsert: ModificationPair[] = selectedModifications.map((m: SelectedComposite) => ({
             first: m.id,
             second: m.name,
         }));
 
+        console.log('Mathieu handleSave modificationsToInsert', modificationsToInsert);
         // TODO : revoir l'envoi : l'ordre doit être préservé, donc faire un dto ? séparer les deux actions import ?
+        //shared à false pour le mode INSERT
         // [IS_SHARED]: selectedModifications.find((mod) => mod.id === e.id)?.isShared ?? false,
         insertCompositeModifications(
             studyUuid,
