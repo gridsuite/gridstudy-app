@@ -30,6 +30,7 @@ import {
     OHM,
     PERCENTAGE,
     SIEMENS,
+    YUP_REQUIRED,
 } from '@gridsuite/commons-ui';
 
 export type EquipmentField = {
@@ -189,7 +190,7 @@ export function getFormulaSchema() {
                     })
                 )
                 .required()
-                .min(1, 'FieldIsRequired'),
+                .min(1, YUP_REQUIRED),
             [EDITED_FIELD]: yup.string().required(),
             [OPERATOR]: yup.string().required(),
             [REFERENCE_FIELD_OR_VALUE_1]: yup
