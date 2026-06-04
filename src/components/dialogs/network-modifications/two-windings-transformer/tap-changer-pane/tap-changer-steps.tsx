@@ -9,16 +9,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
-import Papa from 'papaparse';
+import type Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import {
-    DndColumn,
-    DndTable,
-    IntegerInput,
-    LANG_FRENCH,
-    MAX_ROWS_NUMBER,
-    roundToDefaultPrecision,
-} from '@gridsuite/commons-ui';
+import { DndColumn, DndTable, IntegerInput, roundToDefaultPrecision } from '@gridsuite/commons-ui';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -31,7 +24,6 @@ import {
 } from 'components/utils/field-constants';
 import { compareStepsWithPreviousValues, computeHighTapPosition } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
-import { transformIfFrenchNumber } from '../../tabular/tabular-common.js';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { RuleType, TapChangerMapInfos, TapChangerStep } from '../two-windings-transformer.types';
 import { toTapChangerStepList } from '../two-windings-transformer-utils';
@@ -211,30 +203,14 @@ const TapChangerSteps = ({
         });
     }
 
-    const handleImportTapRule = (
-        selectedFile: File,
-        language: string,
-        setFileParseError: (error: string) => void
-    ): void => {
-        Papa.parse<Record<string, string>>(selectedFile, {
-            header: true,
-            skipEmptyLines: true,
-            delimiter: language === LANG_FRENCH ? ';' : ',',
-            transform: (value: string): string => transformIfFrenchNumber(value, language),
-            complete: function (results: Papa.ParseResult<Record<string, string>>): void {
-                if (results.data.length > MAX_ROWS_NUMBER) {
-                    setFileParseError(intl.formatMessage({ id: 'TapPositionValueError' }, { value: MAX_ROWS_NUMBER }));
-                    return;
-                }
-                let rows = results.data.map((val: Record<string, string>) => ({
-                    ...handleImportRow(val),
-                    [SELECTED]: false,
-                }));
-                if (rows && rows.length > 0) {
-                    replace(rows);
-                }
-            },
-        });
+    const handleImportTapRule = (results: Papa.ParseResult<Record<string, string>>): void => {
+        const rows = results.data.map((val) => ({
+            ...handleImportRow(val),
+            [SELECTED]: false,
+        }));
+        if (rows.length > 0) {
+            replace(rows);
+        }
     };
 
     const lowTapPositionField = (

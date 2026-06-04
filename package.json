@@ -36,7 +36,6 @@
         "plotly.js-basic-dist-min": "^2.35.3",
         "qs": "^6.14.0",
         "react": "^19.2.0",
-        "react-csv-downloader": "^3.3.0",
         "react-dom": "^19.2.0",
         "react-grid-layout": "^1.5.2",
         "react-hook-form": "^7.62.0",

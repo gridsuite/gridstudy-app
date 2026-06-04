@@ -10,6 +10,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { type FieldValues, type UseFieldArrayReturn, useFormContext, useWatch } from 'react-hook-form';
 import {
     AutocompleteInput,
+    type CsvProps,
+    CsvPicker,
     CustomAgGridTable,
     DefaultCellRenderer,
     DirectoryItemSelector,
@@ -17,10 +19,11 @@ import {
     EquipmentType,
     fetchStudyMetadata,
     FieldConstants,
-    getObjectId,
-    LANG_FRENCH,
+    hasNonEmptyRows,
+    InputWithPopupConfirmation,
     type MuiStyles,
     NumericEditor,
+    suppressNonNumericKeyboardEvent,
     type TreeViewFinderNodeProps,
     useSnackMessage,
     useStateBoolean,
@@ -33,11 +36,9 @@ import {
     TABULAR_PROPERTIES,
     TYPE,
 } from 'components/utils/field-constants';
-import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
 import Papa from 'papaparse';
 import GridItem from '../../commons/grid-item';
-import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
@@ -74,7 +75,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const intl = useIntl();
     const { snackWarning } = useSnackMessage();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
-    const { setValue, clearErrors, setError } = useFormContext();
+    const { setValue, clearErrors, setError, getValues } = useFormContext();
     const tableRef = useRef<UseFieldArrayReturn<FieldValues, string>>(null);
     const propertiesDialogOpen = useStateBoolean(false);
     const generateFromFilterOpen = useStateBoolean(false);
@@ -102,8 +103,27 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         return fields[equipmentType as EquipmentType] ?? [];
     }, [equipmentType, dialogMode]);
 
+    const [selectedFile, setSelectedFile] = useState<File | undefined>();
+    const [selectedFileError, setSelectedFileError] = useState<string | undefined>();
+
+    const parseConfig = useMemo<Partial<Papa.ParseConfig<Record<string, unknown>>>>(
+        () => ({
+            dynamicTyping: (field: string | number) =>
+                // "property_*" (user added property) columns should remain as strings
+                typeof field !== 'string' || !field.startsWith(PROPERTY_CSV_COLUMN_PREFIX),
+            transform: (value: string, field: string | number) => {
+                if (typeof field === 'string' && field.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
+                    // don't transform property_* columns (user added property), keep them string
+                    return value;
+                }
+                return transformIfFrenchNumber(value, language);
+            },
+        }),
+        [language]
+    );
+
     const handleTabularCreationParsingError = useCallback(
-        (results: Papa.ParseResult<any>) => {
+        (results: Papa.ParseResult<Record<string, unknown>>) => {
             let requiredFieldNameInError: string = '';
             let requiredDependantFieldNameInError: string = '';
             let dependantFieldNameInError: string = '';
@@ -196,7 +216,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     );
 
     const handleTabularModificationParsingError = useCallback(
-        (results: Papa.ParseResult<any>) => {
+        (results: Papa.ParseResult<Record<string, unknown>>) => {
             let fieldTypeInError: string = '';
             let expectedTypeForFieldInError: string = '';
             let expectedValues: string[] | undefined;
@@ -266,14 +286,35 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         });
     }, [csvFields, selectedProperties, intl, equipmentType, language, dialogMode, predefinedEquipmentProperties]);
 
-    const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
-    const [selectedFile, FileField, selectedFileError, setAcceptedFile, resetFile] = useCSVPicker({
-        label: dialogMode === TabularModificationType.CREATION ? 'ImportCreations' : 'ImportModifications',
-        header: csvColumns,
-        disabled: !csvColumns?.length,
-        resetTrigger: typeChangedTrigger,
-        language: language,
-    });
+    const getTemplateData = useCallback(() => [csvColumns, ...commentLines], [csvColumns, commentLines]);
+
+    const getTableData = useCallback(() => {
+        const rows = (getValues(MODIFICATIONS_TABLE) ?? []) as Record<string, unknown>[];
+        return [csvColumns, ...rows.map((row) => csvColumns.map((col) => row[col] ?? ''))];
+    }, [csvColumns, getValues]);
+
+    const csvProps = useMemo<CsvProps>(
+        () => ({
+            fileName:
+                equipmentType +
+                (dialogMode === TabularModificationType.CREATION ? '_creation' : '_modification') +
+                '_template',
+            language,
+            getTemplateData,
+            getTableData,
+            extraButtons:
+                dialogMode === TabularModificationType.MODIFICATION ? (
+                    <Button
+                        variant="outlined"
+                        onClick={() => prefilledModelDialogOpen.setTrue()}
+                        disabled={!equipmentType}
+                    >
+                        <FormattedMessage id="GeneratePrefilledModel" />
+                    </Button>
+                ) : undefined,
+        }),
+        [equipmentType, dialogMode, language, getTemplateData, getTableData, prefilledModelDialogOpen]
+    );
 
     const { handleGeneratePrefilledModel } = usePrefilledModelGenerator({
         equipmentType,
@@ -290,36 +331,22 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     );
 
     const handleComplete = useCallback(
-        (results: Papa.ParseResult<any>) => {
-            // Only update modifications table if a valid file upload exists
-            if (selectedFile !== undefined) {
-                clearErrors(MODIFICATIONS_TABLE);
-                if (dialogMode === TabularModificationType.CREATION) {
-                    handleTabularCreationParsingError(results);
-                } else {
-                    handleTabularModificationParsingError(results);
-                }
-                const rowsWithUuid = results.data.map((row) => ({
-                    ...row,
-                    [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
-                }));
-                tableRef.current?.replace(rowsWithUuid);
-                setValue(CSV_FILENAME, selectedFile?.name);
+        (results: Papa.ParseResult<Record<string, unknown>>, file: File) => {
+            clearErrors(MODIFICATIONS_TABLE);
+            if (dialogMode === TabularModificationType.CREATION) {
+                handleTabularCreationParsingError(results);
             } else {
-                // If the file is undefined we don't update the values because it's outdated
-                tableRef.current?.replace([]);
-                setValue(CSV_FILENAME, undefined);
+                handleTabularModificationParsingError(results);
             }
+            const rowsWithUuid = results.data.map((row) => ({
+                [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+                ...row,
+            }));
+            tableRef.current?.replace(rowsWithUuid);
+            setValue(CSV_FILENAME, file.name);
             setIsFetching(false);
         },
-        [
-            clearErrors,
-            dialogMode,
-            setValue,
-            handleTabularCreationParsingError,
-            handleTabularModificationParsingError,
-            selectedFile,
-        ]
+        [clearErrors, dialogMode, setValue, handleTabularCreationParsingError, handleTabularModificationParsingError]
     );
 
     useEffect(() => {
@@ -329,8 +356,8 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     }, []);
 
     useEffect(() => {
-        setAcceptedFile(watchFileName ? new File([], watchFileName) : undefined);
-    }, [setAcceptedFile, watchFileName]);
+        setSelectedFile(watchFileName ? new File([], watchFileName) : undefined);
+    }, [watchFileName]);
 
     useEffect(() => {
         setIsFetching(dataFetching);
@@ -342,29 +369,8 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             setValue(CSV_FILENAME, undefined);
             clearErrors(MODIFICATIONS_TABLE);
             setIsFetching(false);
-        } else if (selectedFile && selectedFile.size > 0) {
-            setIsFetching(true);
-            // @ts-ignore
-            Papa.parse(selectedFile as unknown as File, {
-                header: true,
-                skipEmptyLines: true,
-                dynamicTyping: (fieldName: string) => {
-                    // "property_*" (user added property) columns should remain as strings
-                    return !fieldName.startsWith(PROPERTY_CSV_COLUMN_PREFIX);
-                },
-                comments: '#',
-                delimiter: language === LANG_FRENCH ? ';' : ',',
-                complete: handleComplete,
-                transform: (value: string, field: string | number) => {
-                    if (typeof field === 'string' && field.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
-                        // don't transform property_* columns (user added property), keep them string
-                        return value;
-                    }
-                    return transformIfFrenchNumber(value, language);
-                },
-            });
         }
-    }, [clearErrors, handleComplete, intl, selectedFile, selectedFileError, setValue, language, csvFields]);
+    }, [clearErrors, selectedFileError, setValue]);
 
     const typesOptions = useMemo(() => {
         return Object.keys(
@@ -372,24 +378,28 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         );
     }, [dialogMode]);
 
-    const handleTypeChange = useCallback(() => {
-        setTypeChangedTrigger(!typeChangedTrigger);
+    const handleChangeType = useCallback(() => {
         clearErrors(MODIFICATIONS_TABLE);
         tableRef.current?.replace([]);
         setValue(CSV_FILENAME, undefined);
         setValue(TABULAR_PROPERTIES, []);
-        resetFile();
-    }, [clearErrors, setValue, typeChangedTrigger, resetFile]);
+        setSelectedFile(undefined);
+        setSelectedFileError(undefined);
+    }, [clearErrors, setValue]);
 
     const equipmentTypeField = (
-        <AutocompleteInput
+        <InputWithPopupConfirmation
+            Input={AutocompleteInput}
             name={TYPE}
             label="Type"
             options={typesOptions}
-            onChangeCallback={handleTypeChange}
-            getOptionLabel={(option) => getTypeLabel(getObjectId(option))}
+            getOptionLabel={(option: string) => getTypeLabel(option)}
             size={'small'}
-            formProps={{ variant: 'filled' }}
+            formProps={{ variant: 'outlined' }}
+            shouldOpenPopup={() => hasNonEmptyRows(getValues(MODIFICATIONS_TABLE))}
+            resetOnConfirmation={handleChangeType}
+            message="changeTypeMessage"
+            validateButtonLabel="button.changeType"
         />
     );
 
@@ -416,11 +426,11 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 };
                 if (field.id === EQUIPMENT_ID) {
                     columnDef.pinned = true;
-                    columnDef.rowDrag = true;
                 }
                 switch (field.type) {
                     case NUMBER:
                         columnDef.cellEditor = NumericEditor;
+                        columnDef.suppressKeyboardEvent = suppressNonNumericKeyboardEvent;
                         break;
                     case ENUM:
                         columnDef.cellEditor = 'agSelectCellEditor';
@@ -484,12 +494,9 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     );
 
     return (
-        <Grid container spacing={2} direction={'row'}>
-            <Grid container item spacing={2} alignItems={'center'}>
-                <GridItem size={4}>{equipmentTypeField}</GridItem>
-                <Grid item>{FileField}</Grid>
-            </Grid>
-            <Grid container item spacing={2} alignItems={'center'}>
+        <Grid container spacing={2} paddingTop={1} direction={'row'}>
+            <GridItem size={4}>{equipmentTypeField}</GridItem>
+            <Grid container item spacing={2} justifyContent="space-between" alignItems={'center'}>
                 <Grid item>
                     <Button
                         variant="contained"
@@ -502,62 +509,43 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     </Button>
                 </Grid>
                 <Grid item>
-                    <CsvDownloader
-                        columns={csvColumns}
-                        datas={commentLines}
-                        filename={
-                            equipmentType +
-                            (dialogMode === TabularModificationType.CREATION ? '_creation' : '_modification') +
-                            '_template'
-                        }
-                        disabled={!csvColumns?.length}
-                        separator={language === LANG_FRENCH ? ';' : ','}
-                    >
-                        <Button variant="contained" disabled={!csvColumns?.length}>
-                            <FormattedMessage
-                                id={
-                                    dialogMode === TabularModificationType.CREATION
-                                        ? 'GenerateSkeleton'
-                                        : 'GenerateEmptyModel'
-                                }
-                            />
-                        </Button>
-                    </CsvDownloader>
+                    <CsvPicker<Record<string, unknown>>
+                        label="UploadCSV"
+                        header={csvColumns}
+                        disabled={!equipmentType}
+                        language={language}
+                        parseConfig={parseConfig}
+                        selectedFile={selectedFile}
+                        onFileChange={setSelectedFile}
+                        onFileError={setSelectedFileError}
+                        onComplete={handleComplete}
+                    />
                 </Grid>
-                {dialogMode === TabularModificationType.MODIFICATION && (
-                    <Grid item>
-                        <Button
-                            variant="contained"
-                            disabled={!equipmentType}
-                            onClick={() => prefilledModelDialogOpen.setTrue()}
-                        >
-                            <FormattedMessage id="GeneratePrefilledModel" />
-                        </Button>
-                    </Grid>
-                )}
-                {selectedFileError && (
-                    <Grid item>
-                        <Alert severity="error">{selectedFileError}</Alert>
-                    </Grid>
-                )}
             </Grid>
-            <Grid item xs={12} sx={dialogStyles.grid}>
-                <CustomAgGridTable
-                    ref={tableRef}
-                    name={MODIFICATIONS_TABLE}
-                    columnDefs={columnDefs}
-                    defaultColDef={defaultColDef}
-                    makeDefaultRowData={makeDefaultRowData}
-                    loading={isFetching}
-                    pagination
-                    rowSelection={{
-                        mode: 'multiRow',
-                    }}
-                    overrideLocales={AGGRID_LOCALES}
-                    csvProps={undefined}
-                    cssProps={{ height: 535 }}
-                />
-            </Grid>
+            {selectedFileError && (
+                <Grid item xs={12}>
+                    <Alert severity="error">{selectedFileError}</Alert>
+                </Grid>
+            )}
+            {equipmentType && (
+                <Grid item xs={12} sx={dialogStyles.grid}>
+                    <CustomAgGridTable
+                        ref={tableRef}
+                        name={MODIFICATIONS_TABLE}
+                        columnDefs={columnDefs}
+                        defaultColDef={defaultColDef}
+                        makeDefaultRowData={makeDefaultRowData}
+                        loading={isFetching}
+                        pagination
+                        rowSelection={{
+                            mode: 'multiRow',
+                        }}
+                        overrideLocales={AGGRID_LOCALES}
+                        csvProps={csvProps}
+                        cssProps={{ height: 535 }}
+                    />
+                </Grid>
+            )}
             <DefinePropertiesDialog
                 open={propertiesDialogOpen}
                 equipmentType={equipmentType}

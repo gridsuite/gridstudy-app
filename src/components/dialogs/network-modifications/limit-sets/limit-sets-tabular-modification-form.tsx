@@ -5,20 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useIntl } from 'react-intl';
+import { type FieldValues, useFormContext, type UseFieldArrayReturn, useWatch } from 'react-hook-form';
 import {
     AutocompleteInput,
     BooleanNullableCellRenderer,
-    CustomAGGrid,
+    type CsvProps,
+    CsvPicker,
+    CustomAgGridTable,
     DefaultCellRenderer,
     EquipmentType,
-    ErrorInput,
-    FieldErrorAlert,
+    FieldConstants,
+    hasNonEmptyRows,
+    InputWithPopupConfirmation,
     IntegerInput,
     LANG_FRENCH,
     type MuiStyles,
+    unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
 import {
     AMOUNT_TEMPORARY_LIMITS,
@@ -27,12 +31,11 @@ import {
     MODIFICATIONS_TABLE,
     TYPE,
 } from 'components/utils/field-constants';
-import CsvDownloader from 'react-csv-downloader';
-import { Alert, Button, Grid } from '@mui/material';
-import Papa from 'papaparse';
+import { v4 as uuid4 } from 'uuid';
+import { Alert, Grid } from '@mui/material';
+import type Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
-import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
@@ -57,6 +60,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     const intl = useIntl();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const [repeatableColumns, setRepeatableColumns] = useState<TabularField[]>([]);
+    const tableRef = useRef<UseFieldArrayReturn<FieldValues, string>>(null);
 
     const { setValue, clearErrors, getValues, setError, trigger } = useFormContext();
 
@@ -68,28 +72,33 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         return [...LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS, ...repeatableColumns];
     }, [repeatableColumns]);
 
-    const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
-
     const amountTemporaryLimits = useWatch({
         name: AMOUNT_TEMPORARY_LIMITS,
     });
     const equipmentType = useWatch({
         name: TYPE,
     });
-    const watchTable = useWatch({
-        name: MODIFICATIONS_TABLE,
-    });
 
-    const [selectedFile, FileField, selectedFileError, setAcceptedFile] = useCSVPicker({
-        label: 'ImportModifications',
-        header: csvColumns.map((column) => column.id),
-        disabled: !equipmentType,
-        resetTrigger: typeChangedTrigger,
-        language: language,
-    });
+    const [selectedFile, setSelectedFile] = useState<File | undefined>();
+    const [selectedFileError, setSelectedFileError] = useState<string | undefined>();
+
+    const parseConfig = useMemo<Partial<Papa.ParseConfig<Record<string, unknown>>>>(
+        () => ({
+            dynamicTyping: true,
+            transformHeader: (header) => {
+                // transform header to modification field
+                const transformedHeader = LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS.find(
+                    (field) => intl.formatMessage({ id: field.id }) === header
+                )?.id;
+                return transformedHeader ?? header;
+            },
+            transform: (value) => transformIfFrenchNumber(value, language),
+        }),
+        [intl, language]
+    );
 
     const handleComplete = useCallback(
-        (results: Papa.ParseResult<any>) => {
+        (results: Papa.ParseResult<Record<string, unknown>>, file: File) => {
             clearErrors(MODIFICATIONS_TABLE);
             let requiredFieldNameInError: string = '';
             let fieldTypeInError: string = '';
@@ -145,13 +154,15 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                 );
             }
 
-            setValue(MODIFICATIONS_TABLE, results.data, {
-                shouldDirty: true,
-            });
-            setValue(CSV_FILENAME, selectedFile?.name);
+            const rowsWithUuid = results.data.map((row) => ({
+                [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+                ...row,
+            }));
+            tableRef.current?.replace(rowsWithUuid);
+            setValue(CSV_FILENAME, file.name);
             setIsFetching(false);
         },
-        [clearErrors, csvColumns, intl, setError, setValue, selectedFile]
+        [clearErrors, csvColumns, intl, setError, setValue]
     );
 
     const computeRepeatableColumns = useCallback(() => {
@@ -195,12 +206,13 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         return commentData;
     }, [intl, csvTranslatedColumns, language]);
 
-    const handleChange = useCallback(() => {
-        setTypeChangedTrigger(!typeChangedTrigger);
+    const handleChangeType = useCallback(() => {
         clearErrors(MODIFICATIONS_TABLE);
-        setValue(MODIFICATIONS_TABLE, []);
+        tableRef.current?.replace([]);
         setValue(CSV_FILENAME, undefined);
-    }, [clearErrors, setValue, typeChangedTrigger]);
+        setSelectedFile(undefined);
+        setSelectedFileError(undefined);
+    }, [clearErrors, setValue]);
 
     const csvFilename = getValues(CSV_FILENAME);
 
@@ -209,8 +221,8 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     }, [computeRepeatableColumns]);
 
     useEffect(() => {
-        setAcceptedFile(csvFilename ? new File([], csvFilename) : undefined);
-    }, [setAcceptedFile, csvFilename]);
+        setSelectedFile(csvFilename ? new File([], csvFilename) : undefined);
+    }, [csvFilename]);
 
     useEffect(() => {
         setIsFetching(dataFetching);
@@ -218,40 +230,26 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
 
     useEffect(() => {
         if (selectedFileError) {
-            setValue(MODIFICATIONS_TABLE, []);
+            tableRef.current?.replace([]);
             setValue(CSV_FILENAME, undefined);
             clearErrors(MODIFICATIONS_TABLE);
             setIsFetching(false);
-        } else if (selectedFile && selectedFile.size > 0) {
-            setIsFetching(true);
-            Papa.parse(selectedFile, {
-                header: true,
-                skipEmptyLines: true,
-                dynamicTyping: true,
-                comments: '#',
-                delimiter: language === LANG_FRENCH ? ';' : ',',
-                complete: handleComplete,
-                transformHeader: (header: string) => {
-                    // transform header to modification field
-                    const transformedHeader = LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS.find(
-                        (field) => intl.formatMessage({ id: field.id }) === header
-                    )?.id;
-                    return transformedHeader ?? header;
-                },
-                transform: (value) => transformIfFrenchNumber(value, language),
-            });
         }
-    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
+    }, [clearErrors, selectedFileError, setValue]);
 
     const equipmentTypeField = (
-        <AutocompleteInput
+        <InputWithPopupConfirmation
+            Input={AutocompleteInput}
             name={TYPE}
             label="Type"
             options={equipmentTypesOptions}
-            onChangeCallback={handleChange}
             getOptionLabel={(option: any) => getTypeLabel(option as string)}
             size={'small'}
-            formProps={{ variant: 'filled' }}
+            formProps={{ variant: 'outlined' }}
+            shouldOpenPopup={() => hasNonEmptyRows(getValues(MODIFICATIONS_TABLE))}
+            resetOnConfirmation={handleChangeType}
+            message="changeTypeMessage"
+            validateButtonLabel="button.changeType"
         />
     );
 
@@ -278,46 +276,84 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         []
     );
 
+    const makeDefaultRowData = useCallback(
+        () => ({
+            [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+            ...Object.fromEntries(csvColumns.map((column) => [column.id, null])),
+        }),
+        [csvColumns]
+    );
+
+    const getTemplateData = useCallback(
+        () => [csvColumns.map((column) => column.id), ...commentLines],
+        [csvColumns, commentLines]
+    );
+
+    const getTableData = useCallback(() => {
+        const headers = csvColumns.map((column) => column.id);
+        const rows = (getValues(MODIFICATIONS_TABLE) ?? []) as Record<string, unknown>[];
+        return [headers, ...rows.map((row) => headers.map((id) => row[id] ?? ''))];
+    }, [csvColumns, getValues]);
+
+    const csvProps = useMemo<CsvProps>(
+        () => ({
+            fileName: 'limitset_modification_template',
+            language,
+            getTemplateData,
+            getTableData,
+        }),
+        [language, getTemplateData, getTableData]
+    );
+
     return (
-        <Grid container spacing={2} direction={'row'}>
-            <Grid container item spacing={2} alignItems={'center'}>
-                <GridItem size={4}>{equipmentTypeField}</GridItem>
-                <Grid item>{FileField}</Grid>
-            </Grid>
-            <Grid container item spacing={2} alignItems={'center'}>
+        <Grid
+            container
+            spacing={2}
+            paddingTop={1}
+            direction={'row'}
+            sx={unscrollableDialogStyles.unscrollableContainer}
+        >
+            <GridItem size={4}>{equipmentTypeField}</GridItem>
+            <Grid container item spacing={2} justifyContent="space-between" alignItems={'center'}>
                 <Grid item>
                     <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
                 </Grid>
                 <Grid item>
-                    <CsvDownloader
-                        columns={csvColumns}
-                        datas={commentLines}
-                        filename={'limitset_modification_template'}
-                        disabled={!csvColumns}
-                        separator={language === LANG_FRENCH ? ';' : ','}
-                    >
-                        <Button variant="contained" disabled={!csvColumns}>
-                            <FormattedMessage id="GenerateSkeleton" />
-                        </Button>
-                    </CsvDownloader>
+                    <CsvPicker<Record<string, unknown>>
+                        label="UploadCSV"
+                        header={csvColumns.map((column) => column.id)}
+                        disabled={!equipmentType}
+                        language={language}
+                        parseConfig={parseConfig}
+                        selectedFile={selectedFile}
+                        onFileChange={setSelectedFile}
+                        onFileError={setSelectedFileError}
+                        onComplete={handleComplete}
+                    />
                 </Grid>
-                <Grid item>
-                    <ErrorInput name={MODIFICATIONS_TABLE} InputField={FieldErrorAlert} />
-                    {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
+                {selectedFileError && (
+                    <Grid item xs={12}>
+                        <Alert severity="error">{selectedFileError}</Alert>
+                    </Grid>
+                )}
+            </Grid>
+            {equipmentType && (
+                <Grid item xs={12} sx={styles.grid}>
+                    <CustomAgGridTable
+                        ref={tableRef}
+                        name={MODIFICATIONS_TABLE}
+                        columnDefs={columnDefs}
+                        defaultColDef={limitSetModificationsDefaultColDef}
+                        makeDefaultRowData={makeDefaultRowData}
+                        loading={isFetching}
+                        pagination
+                        rowSelection={{ mode: 'multiRow' }}
+                        overrideLocales={AGGRID_LOCALES}
+                        csvProps={csvProps}
+                        cssProps={{ height: 535 }}
+                    />
                 </Grid>
-            </Grid>
-            <Grid item xs={12} sx={styles.grid}>
-                <CustomAGGrid
-                    rowData={watchTable}
-                    loading={isFetching}
-                    defaultColDef={limitSetModificationsDefaultColDef}
-                    columnDefs={columnDefs}
-                    pagination
-                    paginationPageSize={100}
-                    suppressDragLeaveHidesColumns
-                    overrideLocales={AGGRID_LOCALES}
-                />
-            </Grid>
+            )}
         </Grid>
     );
 }
