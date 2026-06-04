@@ -19,7 +19,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { insertCompositeModifications, type ModificationPair } from '../../../services/study';
+import { type CompositesToBeInserted, insertCompositeModifications } from '../../../services/study';
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
@@ -41,7 +41,7 @@ import {
     Stepper,
     Typography,
 } from '@mui/material';
-import { useController, useFieldArray, useForm, UseFieldArrayReturn } from 'react-hook-form';
+import { useController, useFieldArray, UseFieldArrayReturn, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from '../../utils/field-constants';
 import * as yup from 'yup';
@@ -263,26 +263,20 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const handleSave = useCallback(() => {
         if (!studyUuid || !currentNode || !isValid) return;
 
-        console.log('Mathieu handleSave selectedModifications', selectedModifications);
-        const modificationsToInsert: ModificationPair[] = selectedModifications.map((m: SelectedComposite) => ({
-            first: m.id,
-            second: m.name,
+        const modificationsToInsert: CompositesToBeInserted[] = selectedModifications.map((m: SelectedComposite) => ({
+            id: m.id,
+            // only INSERTed non shared composites may be renamed
+            name: action === CompositeModificationAction.SPLIT || m.isShared ? m.originalName : m.name,
+            // SPLIT modifications are never shared
+            isShared: action === CompositeModificationAction.INSERT ? m.isShared : false,
         }));
 
-        console.log('Mathieu handleSave modificationsToInsert', modificationsToInsert);
-        // TODO : revoir l'envoi : l'ordre doit être préservé, donc faire un dto ? séparer les deux actions import ?
-        //shared à false pour le mode INSERT
-        // name = originalName pour les partagées
-        // [IS_SHARED]: selectedModifications.find((mod) => mod.id === e.id)?.isShared ?? false,
-        insertCompositeModifications(
-            studyUuid,
-            currentNode.id,
-            modificationsToInsert,
-            formMethods.getValues(ACTION)
-        ).catch((error) => snackWithFallback(snackError, error, { headerId: 'importComposites.error' }));
+        insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, action).catch((error) =>
+            snackWithFallback(snackError, error, { headerId: 'importComposites.error' })
+        );
 
         handleClose();
-    }, [studyUuid, currentNode, isValid, formMethods, snackError, handleClose, selectedModifications]);
+    }, [studyUuid, currentNode, isValid, formMethods, snackError, handleClose, selectedModifications, action]);
 
     // -----------------------------------------------------------------------
     // Render
