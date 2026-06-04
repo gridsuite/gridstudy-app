@@ -453,19 +453,12 @@ export function modifyGenerator({
     });
 }
 
-export function createGenerator({
-    dto,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    dto: GeneratorCreationDto;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: string | null;
-    isUpdate: boolean;
-}) {
+export function createGenerator(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: GeneratorCreationDto
+) {
     let createGeneratorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         createGeneratorUrl += '/' + encodeURIComponent(modificationUuid);
@@ -474,7 +467,7 @@ export function createGenerator({
         console.info('Creating generator creation');
     }
     return backendFetchText(createGeneratorUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
