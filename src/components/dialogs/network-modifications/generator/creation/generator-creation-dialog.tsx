@@ -43,9 +43,13 @@ import {
     GeneratorFormInfos,
     getReactiveLimitsFormData,
     toReactiveCapabilityCurveChoiceForGeneratorCreation,
+    getRegulatingTerminalFormData,
+    getVoltageRegulationEmptyFormData,
+    getVoltageRegulationSchema,
+    REGULATION_TYPES,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     ACTIVE_POWER_SET_POINT,
     CONNECTED,
@@ -61,15 +65,10 @@ import {
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
 import GeneratorCreationForm from './generator-creation-form';
-import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import { FORM_LOADING_DELAY, REGULATION_TYPES } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createGenerator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils.type';
-import {
-    getVoltageRegulationEmptyFormData,
-    getVoltageRegulationSchema,
-} from '../../../voltage-regulation/voltage-regulation-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 

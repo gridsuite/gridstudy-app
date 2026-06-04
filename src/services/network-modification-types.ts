@@ -62,53 +62,6 @@ export interface VscModificationInfo {
     terminalConnected?: boolean | null;
 }
 
-export interface BatteryModificationInfos {
-    type: string;
-    uuid: string | null;
-    equipmentId: string;
-    equipmentName: AttributeModification<string> | null;
-    maxP: AttributeModification<number> | null;
-    minP: AttributeModification<number> | null;
-    targetP: AttributeModification<number> | null;
-    targetQ: AttributeModification<number> | null;
-    participate: AttributeModification<boolean> | null;
-    droop: AttributeModification<number> | null;
-    reactiveCapabilityCurve: AttributeModification<boolean> | null;
-    minQ: AttributeModification<number> | null;
-    maxQ: AttributeModification<number> | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
-    voltageLevelId: AttributeModification<string> | null;
-    busOrBusbarSectionId: AttributeModification<string> | null;
-    connectionDirection: AttributeModification<string> | null;
-    connectionName: AttributeModification<string> | null;
-    connectionPosition: AttributeModification<number> | null;
-    terminalConnected: AttributeModification<boolean> | null;
-    properties: Property[] | null;
-    directTransX: AttributeModification<number> | null;
-    stepUpTransformerX: AttributeModification<number> | null;
-}
-
-export interface ShuntCompensatorModificationInfos {
-    type: string;
-    uuid: string | null;
-    equipmentId: string;
-    equipmentName: AttributeModification<string> | null;
-    maxSusceptance: AttributeModification<number> | null;
-    maxQAtNominalV: AttributeModification<number> | null;
-    shuntCompensatorType: AttributeModification<string> | null;
-    sectionCount: AttributeModification<number> | null;
-    maximumSectionCount: AttributeModification<number> | null;
-    voltageLevelId: AttributeModification<string> | null;
-    busOrBusbarSectionId: AttributeModification<string> | null;
-    connectionDirection: AttributeModification<string> | null;
-    connectionName?: AttributeModification<string> | null;
-    connectionPosition?: AttributeModification<number> | null;
-    terminalConnected?: AttributeModification<boolean> | null;
-    qMeasurementValue: AttributeModification<number> | null;
-    qMeasurementValidity: AttributeModification<boolean> | null;
-    properties: Property[] | null;
-}
-
 export interface StaticVarCompensatorCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;

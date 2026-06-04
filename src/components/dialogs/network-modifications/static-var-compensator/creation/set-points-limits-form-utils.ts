@@ -19,11 +19,9 @@ import {
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
-import { CHARACTERISTICS_CHOICES } from '@gridsuite/commons-ui';
-import yup from '../../../../utils/yup-config';
-import { REGULATION_TYPES } from '../../../../network/constants';
+import { CHARACTERISTICS_CHOICES, FieldConstants, REGULATION_TYPES } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { Schema } from 'yup';
-import { FieldConstants } from '@gridsuite/commons-ui';
 
 export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
     [id]: {

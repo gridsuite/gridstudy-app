@@ -375,8 +375,8 @@
     "iterationCount": "Iteration count",
     "slackBusId": "Slack bus ids",
     "slackBusActivePowerMismatch": "Slack bus active power mismatch (MW)",
-    "consumptions": "Consumptions (MW)",
-    "generations": "Generations (MW)",
+    "consumptions": "Load (MW)",
+    "generations": "Generation (MW)",
     "countryAdequacyGeneration": "Generation (MW)",
     "countryAdequacyLoad": "Load (MW)",
     "exchanges": "Exchanges (MW)",
@@ -396,8 +396,8 @@
 
     "ConstraintsFromContingencies": "Contingencies -> violations",
     "ContingenciesFromConstraints": "Violations -> contingencies",
+    "CutOffPowerFromConstraints": "Cut-off power",
 
-    "Equipment": "Equipment",
     "selectionType": "Selection type",
 
     "loadType": "Type",
@@ -533,8 +533,6 @@
     "LoadModificationError": "Error while modifying load",
     "LineCreationError": "Error while creating line",
     "LineModificationError": "Error while modifying line",
-    "ShuntCompensatorModificationError": "Error while modifying shunt compensator",
-    "ShuntCompensatorNonlinearError": "It is currently not possible to modify non-linear shunt compensator",
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
     "StaticVarCompensatorCreationError": "Error while creating static var compensator",
     "LccCreationError": "Error while creating HVDC (LCC)",
@@ -555,7 +553,6 @@
     "modificationType": "Modification type",
     "temporaryLimitsModificationType": "Temporary limits modification type",
 
-    "ModifyBattery": "Modify battery",
     "CreateGenerator": "Create generator",
     "ModifyGenerator": "Modify generator",
     "NbModificationToPaste": "Paste {nb} modification{several}",
@@ -565,16 +562,9 @@
     "VoltageRegulationText": "Voltage regulation",
     "ReactivePowerRegulationText": "Reactive regulation",
     "ResetRegulationRule": "Reset regulation rules",
-    "RegulationTypeText": "Regulation type",
     "RatioRegulationTypeText": "Ratio regulation",
     "PhaseRegulationTypeText": "Phase regulation",
-    "Local": "Local",
-    "Distant": "Remote",
-    "VoltageText": "Voltage",
-    "QPercentText": "Reactive percentage",
-    "Limits": "Limits",
     "reactiveCapabilityCurve": "Reactive capability curve",
-    "RegulatingTerminalGenerator": "Regulated terminal",
     "RatioRegulatingTerminal": "Ratio regulated terminal",
     "PhaseRegulatingTerminal": "Phase regulated terminal",
     "EditVoltageRegulation": "Edit Regulating terminal",
@@ -589,7 +579,6 @@
     "withoutunit.stepUpTransformerX": "Transformer reactance",
     "plannedActivePowerSetPoint": "Planning P (MW)",
     "withoutunit.plannedActivePowerSetPoint": "Planning P",
-    "MinActivePowerMustBeLessOrEqualToMaxActivePower": "Minimum active power value must be less than or equal to maximum active power value",
     "PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower": "Planned active power set point must be between minimum and maximum active power values",
     "RatedNominalPowerMustBeGreaterThanZero": "The rated nominal power value must be greater than 0",
     "RealPercentage": "This value must be between 0 and 1",
@@ -603,7 +592,6 @@
     "reactiveCapabilityCurvePmax": "Pmax",
     "reactiveCapabilityCurveQminPmax": "QminPmax",
     "reactiveCapabilityCurveQmaxPmax": "QmaxPmax",
-    "BatteryModificationError": "Error while modifying battery",
     "ModifyLine": "Modify line",
     "CreateLine": "Create line",
     "CreateVsc": "Create HVDC (VSC)",
@@ -645,7 +633,6 @@
     "StaticVarCompensatorErrorQFixLessThanQMin": "Q Fixed value should be greater than Q minimum value",
     "StaticVarCompensatorErrorSFixGreaterThanSMax": "Susceptance Fixed value should be less than susceptance maximum value",
     "StaticVarCompensatorErrorSFixLessThanSMin": "Susceptance Fixed value should be greater than susceptance minimum value",
-    "ModifyShuntCompensator": "Modify shunt compensator (Linear)",
     "maxQAtVnominal": "Q max at nominal voltage",
     "minQAtNominalV": "Q min at nominal voltage",
     "fixQAtNominalV": "Q fixed",
@@ -725,6 +712,8 @@
     "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
     "DeleteAttachingLineError": "Error while deleting an attaching line",
     "GenerationDispatchError": "Error while creating a generation dispatch",
+    "lineAttachedToSplitLineVoltageLevel": "Voltage level with attached line to place as splittter",
+
     "PermanentCurrentLimitText": "PATL",
     "permanentCurrentLimitMustBeGreaterThanZero": "The permanent current limit value must be greater than 0",
     "permanentCurrentLimitMandatory": "A permanent limit has to be set if the limit set contains temporary current limits",
@@ -971,10 +960,6 @@
     "GeneratorsFiltersFrequencyReserveToolTip": "User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry",
     "GeneratorsOrdering": "Substations hierarchy",
     "ReplacingLine": "Replacing line",
-
-    "YupRequired": "This field is required",
-    "YupNotTypeNumber": "This field only accepts numeric values",
-    "YupNotTypeDefault": "Field value format is incorrect",
 
     "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
     "SLDOpenedInTheGrid": "The {diagramType} \"{equipmentId}\" was opened in the image grid",
@@ -1233,6 +1218,7 @@
     "guidancePopUp.action": "Close editor",
     "generateNad": "Generate",
     "networkModificationActivationError": "An error occurred while enabling / disabling modification",
+    "networkModificationRenamingError": "An error occurred while renaming the modification",
     "AddAutomaton": "Add an automaton",
     "BusBarCountMustBeGreaterThanOrEqualToOne": "Number of busbars must be greater than or equal to 1",
     "SectionCountMustBeGreaterThanOrEqualToOne": "Number of sections must be greater than or equal to 1",
@@ -1331,9 +1317,6 @@
     "nodeAliasesUpdateError": "An error occured while updating node aliases",
     "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
     "previousConnection": "Prev. connection",
-
-    "SetpointsAndLimitsTab": "Setpoints & Limits",
-    "SpecificTab": "Specific",
 
     "confirmRootNetworkCreation": "The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.",
     "RegulationSection": "Regulation",
@@ -1547,5 +1530,7 @@
     "deactivateModification": "Deactivate network modification",
     "deselectModification": "Deselect modification",
     "selectModification": "Select modification",
-    "moveModification": "Move modification"
+    "moveModification": "Move modification",
+    "disconnectedLoadActivePower": "Load cut off (MW)",
+    "disconnectedGenerationActivePower": "Generation cut off (MW)"
 } 

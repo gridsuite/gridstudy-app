@@ -30,7 +30,7 @@ import {
     formatMapInfosToTemporaryLimitsFormSchema,
     formatTemporaryLimitsModificationToFormSchema,
 } from 'components/utils/utils';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     CurrentLimits,
     OperationalLimitsGroup,
@@ -65,7 +65,7 @@ const temporaryLimitsValidationSchema = () => {
             [TEMPORARY_LIMIT_DURATION]: yup
                 .number()
                 .nullable()
-                .min(0)
+                .min(0, 'mustBeGreaterOrEqualToZero')
                 .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_NAME], {
                     is: (value: number | null, name: string | null) => value != null || !!name,
                     then: (schema) => schema.required(),
