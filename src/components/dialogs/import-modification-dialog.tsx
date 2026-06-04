@@ -54,7 +54,7 @@ import {
     useWatch,
 } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ACTION, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
+import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
 import * as yup from 'yup';
 import { UUID } from 'node:crypto';
 import { useParameterState } from './parameters/use-parameters-state';
@@ -97,7 +97,9 @@ interface SharedCellProps {
 }
 
 function SharedCell({ rowIndex }: Readonly<SharedCellProps>) {
-    return <CheckboxInput name={`${SELECTED_MODIFICATIONS}.${rowIndex}.isShared`} label={'importComposites.shared'} />;
+    return (
+        <CheckboxInput name={`${SELECTED_MODIFICATIONS}.${rowIndex}.${IS_SHARED}`} label={'importComposites.shared'} />
+    );
 }
 
 interface InsertNameCellProps {
@@ -184,7 +186,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const { field: actionField } = useController({ name: ACTION, control });
 
     const action = watch(ACTION);
-    const selectedModifications = watch(SELECTED_MODIFICATIONS);
+    const selectedModifications: SelectedComposite[] = watch(SELECTED_MODIFICATIONS);
     const isInsertMode = action === CompositeModificationAction.INSERT;
 
     // useFieldArray — consumed by DndTable
@@ -197,7 +199,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const sharedColumn: DndColumn = useMemo(
         () => ({
             label: '',
-            dataKey: 'isShared',
+            dataKey: IS_SHARED,
             initialValue: false,
             editable: true,
             width: '25%',
@@ -265,7 +267,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 id: e.id as UUID,
                 name: e.name,
                 originalName: e.name,
-                isShared: false,
+                [IS_SHARED]: false,
             }));
             setValue(SELECTED_MODIFICATIONS, newRows, {
                 shouldValidate: true,
@@ -274,32 +276,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             setIsNextDisabled(selectedElements.length === 0);
         },
         [setValue]
-    );
-
-    const handleSelectModification = useCallback(
-        (selectedElements: TreeViewFinderNodeProps[]) => {
-            setIsSelectorOpen(false);
-
-            if (!selectedElements.length) {
-                if (selectedModifications.length === 0) {
-                    onClose();
-                }
-                return;
-            }
-
-            const newRows: SelectedComposite[] = selectedElements.map((e) => ({
-                id: e.id as UUID,
-                name: e.name,
-                originalName: e.name,
-                isShared: false, // actually is false, to be computed later
-            }));
-
-            setValue(SELECTED_MODIFICATIONS, newRows, {
-                shouldValidate: true,
-                shouldDirty: true,
-            });
-        },
-        [setValue, selectedModifications.length, onClose]
     );
 
     const handleNext = useCallback(() => {
@@ -322,13 +298,13 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const handleSave = useCallback(() => {
         if (!studyUuid || !currentNode || !isValid) return;
 
-        const rows: SelectedComposite[] = formMethods.getValues(SELECTED_MODIFICATIONS);
-
-        const modificationsToInsert: ModificationPair[] = rows.map((m) => ({
+        const modificationsToInsert: ModificationPair[] = selectedModifications.map((m: SelectedComposite) => ({
             first: m.id,
             second: m.name,
         }));
 
+        // TODO : revoir l'envoi : l'ordre doit être préservé, donc faire un dto ? séparer les deux actions import ?
+        // [IS_SHARED]: selectedModifications.find((mod) => mod.id === e.id)?.isShared ?? false,
         insertCompositeModifications(
             studyUuid,
             currentNode.id,
@@ -337,7 +313,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         ).catch((error) => snackWithFallback(snackError, error, { headerId: 'importComposites.error' }));
 
         handleClose();
-    }, [studyUuid, currentNode, isValid, formMethods, snackError, handleClose]);
+    }, [studyUuid, currentNode, isValid, formMethods, snackError, handleClose, selectedModifications]);
 
     // -----------------------------------------------------------------------
     // Render
@@ -382,7 +358,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
                             <DirectoryItemSelector
                                 open={isSelectorOpen}
-                                onClose={handleSelectModification}
+                                onClose={() => setIsSelectorOpen(false)}
                                 types={[ElementType.MODIFICATION]}
                                 multiSelect
                                 inline
