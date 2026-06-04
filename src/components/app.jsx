@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { retrieveOptionalServices } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
@@ -89,10 +89,11 @@ const App = () => {
             .catch(() => cleanupStaleStudyData());
     }, []);
 
-    const userProfile = useSelector((state) => {
-        const p = state.user?.profile;
-        return p ? { sub: p.sub, name: p.name, email: p.email, profile: p.profile } : null;
-    }, shallowEqual);
+    const userProfile = useSelector(
+        (state) => state.user?.profile ?? null,
+        (a, b) =>
+            a === b || (a?.sub === b?.sub && a?.name === b?.name && a?.email === b?.email && a?.profile === b?.profile)
+    );
     const studyUuid = useSelector((state) => state.studyUuid);
     const signInCallbackError = useSelector((state) => state.signInCallbackError);
     const authenticationRouterError = useSelector((state) => state.authenticationRouterError);
