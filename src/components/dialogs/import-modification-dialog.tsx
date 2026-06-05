@@ -10,7 +10,6 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
-    PARAM_DEVELOPER_MODE,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -30,7 +29,6 @@ import { ModificationDialog } from './commons/modificationDialog';
 import { ACTION, COMPOSITE_NAMES, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
 import GridItem from './commons/grid-item';
 import { UUID } from 'node:crypto';
-import { useParameterState } from './parameters/use-parameters-state';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 /**
@@ -134,13 +132,6 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
     const selectedModifications = watch(SELECTED_MODIFICATIONS);
     const compositeNames = watch(COMPOSITE_NAMES);
     const isInsertMode = action === CompositeModificationAction.INSERT;
-    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
-    useEffect(() => {
-        if (!isDeveloperMode && action === CompositeModificationAction.INSERT) {
-            setValue(ACTION, CompositeModificationAction.SPLIT, { shouldValidate: true });
-        }
-    }, [isDeveloperMode, action, setValue]);
 
     const handleOpenSelector = useCallback(() => {
         setIsSelectorOpen(true);
@@ -227,7 +218,6 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
                                     control={<Radio />}
                                     value={CompositeModificationAction.INSERT}
                                     label={<FormattedMessage id="importComposites.action.insert" />}
-                                    disabled={!isDeveloperMode}
                                 />
                             </RadioGroup>
                         </FormControl>
