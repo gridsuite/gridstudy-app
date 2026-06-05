@@ -164,13 +164,13 @@ export default function GeneratorModificationDialog({
                                         ? {
                                               [FieldConstants.REACTIVE_LIMITS]: {
                                                   ...formValues[FieldConstants.REACTIVE_LIMITS],
-                                                  [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                                   [FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
                                                   [FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE]:
                                                       previousReactiveCapabilityCurveTable,
                                               },
                                           }
                                         : {}),
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
                                 { keepDirty: true }
