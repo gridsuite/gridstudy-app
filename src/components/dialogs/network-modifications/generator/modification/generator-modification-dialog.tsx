@@ -208,7 +208,7 @@ export default function GeneratorModificationDialog({
                 snackWithFallback(snackError, error, { headerId: 'GeneratorModificationError' });
             });
         },
-        [editData, generatorToModify, selectedId, studyUuid, currentNodeUuid, snackError]
+        [editData, generatorToModify, studyUuid, currentNodeUuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({

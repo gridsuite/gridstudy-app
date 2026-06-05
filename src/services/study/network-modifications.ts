@@ -423,11 +423,11 @@ export function modifyLoad(
 }
 
 export function modifyGenerator(
-        studyUuid: UUID,
-        nodeUuid: UUID,
-        modificationUuid: UUID | undefined,
-        dto: GeneratorModificationDto
-    ) {
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: GeneratorModificationDto
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
