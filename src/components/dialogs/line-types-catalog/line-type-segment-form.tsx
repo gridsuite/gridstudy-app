@@ -234,14 +234,16 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         if (!editData || editData[LINE_SEGMENTS]?.length === 0) {
             return;
         }
-        arrayRef.current?.replaceItems([]);
+        arrayRef?.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
             const promises = editData[LINE_SEGMENTS]?.map((segment) => getSegmentLimits(segment));
 
             try {
-                const segmentsWithLimits = await Promise.all(promises);
-                for (const segmentWithLimits of segmentsWithLimits) {
-                    arrayRef?.current?.appendItem(segmentWithLimits);
+                if (promises) {
+                    const segmentsWithLimits = await Promise.all(promises);
+                    for (const segmentWithLimits of segmentsWithLimits) {
+                        arrayRef?.current?.appendItem(segmentWithLimits);
+                    }
                 }
             } catch (error) {
                 snackWithFallback(snackError, error, {
