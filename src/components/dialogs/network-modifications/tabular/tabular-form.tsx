@@ -416,7 +416,6 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 };
                 if (field.id === EQUIPMENT_ID) {
                     columnDef.pinned = true;
-                    columnDef.rowDrag = true;
                 }
                 switch (field.type) {
                     case NUMBER:
