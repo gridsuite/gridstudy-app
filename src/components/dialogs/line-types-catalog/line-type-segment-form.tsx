@@ -231,10 +231,10 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        if (!editData || editData[LINE_SEGMENTS]?.length) {
+        if (!editData?.[LINE_SEGMENTS]?.length) {
             return;
         }
-        arrayRef?.current?.replaceItems([]);
+        arrayRef.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
             const promises = editData[LINE_SEGMENTS]?.map((segment) => getSegmentLimits(segment));
 
