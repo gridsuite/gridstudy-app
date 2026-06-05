@@ -45,7 +45,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<F
                 editable: true,
                 type: DndColumnType.NUMERIC,
             },
-        ];
+        ] satisfies DndColumn[];
     }, [intl]);
 
     const useFieldArrayOutputFrequencyReserve = useFieldArray({

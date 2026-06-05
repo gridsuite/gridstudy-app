@@ -151,6 +151,9 @@ export default function ShuntCompensatorModificationDialog({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                         if (editData?.equipmentId !== equipmentId) {
                             setShuntCompensatorInfos(null);
                         }
