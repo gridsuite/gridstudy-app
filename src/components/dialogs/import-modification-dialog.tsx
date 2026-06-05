@@ -10,10 +10,10 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
-    PARAM_DEVELOPER_MODE,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
+    YUP_REQUIRED,
 } from '@gridsuite/commons-ui';
 import { insertCompositeModifications, type ModificationPair } from '../../services/study';
 import { JSX, useCallback, useEffect, useState } from 'react';
@@ -29,7 +29,6 @@ import { ModificationDialog } from './commons/modificationDialog';
 import { ACTION, COMPOSITE_NAMES, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
 import GridItem from './commons/grid-item';
 import { UUID } from 'node:crypto';
-import { useParameterState } from './parameters/use-parameters-state';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 /**
@@ -75,14 +74,14 @@ const formSchema = yup
         [SELECTED_MODIFICATIONS]: yup.array().min(1).required(),
         [COMPOSITE_NAMES]: yup.mixed<CompositeNameOverrides>().when(ACTION, ([action], schema) => {
             if (action === CompositeModificationAction.INSERT) {
-                return schema.test('all-names-filled', 'FieldIsRequired', function (value) {
+                return schema.test('all-names-filled', YUP_REQUIRED, function (value) {
                     const selections: SelectedComposite[] = this.parent[SELECTED_MODIFICATIONS] ?? [];
                     for (const m of selections) {
                         const name = value?.[m.id] ?? '';
                         if (!name.trim()) {
                             return this.createError({
                                 path: `${COMPOSITE_NAMES}.${m.id}`,
-                                message: 'FieldIsRequired',
+                                message: YUP_REQUIRED,
                             });
                         }
                     }
@@ -133,13 +132,6 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
     const selectedModifications = watch(SELECTED_MODIFICATIONS);
     const compositeNames = watch(COMPOSITE_NAMES);
     const isInsertMode = action === CompositeModificationAction.INSERT;
-    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
-    useEffect(() => {
-        if (!isDeveloperMode && action === CompositeModificationAction.INSERT) {
-            setValue(ACTION, CompositeModificationAction.SPLIT, { shouldValidate: true });
-        }
-    }, [isDeveloperMode, action, setValue]);
 
     const handleOpenSelector = useCallback(() => {
         setIsSelectorOpen(true);
@@ -226,7 +218,6 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
                                     control={<Radio />}
                                     value={CompositeModificationAction.INSERT}
                                     label={<FormattedMessage id="importComposites.action.insert" />}
-                                    disabled={!isDeveloperMode}
                                 />
                             </RadioGroup>
                         </FormControl>
@@ -251,7 +242,7 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
                                                     error={!!fieldState.error}
                                                     helperText={
                                                         fieldState.error
-                                                            ? intl.formatMessage({ id: 'FieldIsRequired' })
+                                                            ? intl.formatMessage({ id: YUP_REQUIRED })
                                                             : undefined
                                                     }
                                                 />
