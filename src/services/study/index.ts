@@ -288,7 +288,7 @@ export function copyOrMoveModifications(
 
 export interface CompositesToBeInserted {
     id: UUID;
-    newName?: string; // may be empty if the composite is not renamed or if it is shared
+    name: string;
     isShared: boolean;
 }
 
