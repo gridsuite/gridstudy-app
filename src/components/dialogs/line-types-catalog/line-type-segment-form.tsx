@@ -231,7 +231,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        if (!editData || editData[LINE_SEGMENTS]?.length === 0) {
+        if (!editData || editData[LINE_SEGMENTS]?.length) {
             return;
         }
         arrayRef?.current?.replaceItems([]);
