@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { FloatInput, IntegerInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 
-import GridSection from '../../commons/grid-section';
-import GridItem from '../../commons/grid-item';
+import { Grid2Section as GridSection } from '../../commons/grid2-section';
+import { Grid2Item as GridItem } from '../../commons/grid2-item';
 import CountriesAutocomplete from './countries-autocomplete';
 import {
     BALANCES_ADJUSTMENT,
@@ -47,8 +47,8 @@ export default function BalancesAdjustmentAdvancedContent() {
     });
 
     return (
-        <Grid container direction="column" xs={8} minWidth={'300px'}>
-            <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <Grid container direction="column" size={12} minWidth={'300px'}>
+            <Grid container size={8} sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <Grid>
                     <GridSection title="Loadflow" />
                 </Grid>
@@ -59,8 +59,8 @@ export default function BalancesAdjustmentAdvancedContent() {
                 </Grid>
             </Grid>
 
-            <Grid container spacing={2} direction="column">
-                <GridItem>
+            <Grid container size={8} spacing={2} direction="column">
+                <GridItem size={12}>
                     <CountriesAutocomplete
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE}`}
                         limitTags={3}
@@ -68,7 +68,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         disabled={!withLoadFlow}
                     />
                 </GridItem>
-                <GridItem>
+                <GridItem size={12}>
                     <SelectInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_BALANCE_TYPE}`}
                         label={'descLfBalanceType'}
@@ -79,7 +79,11 @@ export default function BalancesAdjustmentAdvancedContent() {
                     />
                 </GridItem>
             </Grid>
-            <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center', marginLeft: 1, marginTop: 1 }}>
+            <Grid
+                container
+                size={8}
+                sx={{ justifyContent: 'space-between', alignItems: 'center', marginLeft: 1, marginTop: 1 }}
+            >
                 <Grid>
                     <FormattedMessage id="LoadFlowWithRatioTapChangers" />
                 </Grid>
@@ -93,8 +97,8 @@ export default function BalancesAdjustmentAdvancedContent() {
                 </Grid>
             </Grid>
             <GridSection title="Algorithm" />
-            <Grid container spacing={2} direction="column">
-                <GridItem>
+            <Grid container size={8} spacing={2} direction="column">
+                <GridItem size={12}>
                     <IntegerInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS}`}
                         label={'maxNumberIterations'}
@@ -103,7 +107,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         }}
                     />
                 </GridItem>
-                <GridItem>
+                <GridItem size={12}>
                     <FloatInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION}`}
                         label={'thresholdNetPosition'}
@@ -112,7 +116,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         }}
                     />
                 </GridItem>
-                <GridItem>
+                <GridItem size={12}>
                     <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                         <Grid>
                             <FormattedMessage id="subtractLoadFlowBalancing" />
