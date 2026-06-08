@@ -120,6 +120,7 @@ const LogTable = ({
     const [isGridReady, setIsGridReady] = useState(false);
     const gridRef = useRef<AgGridReact>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const pendingScrollRef = useRef<number | null>(null);
 
     const [filtersInitialized, setFiltersInitialized] = useState(false);
     const [count, setCount] = useState<number>(0);
@@ -361,20 +362,32 @@ const LogTable = ({
                 return;
             }
 
-            let newIndex;
+            const newIndex =
+                direction === 'next'
+                    ? (currentResultIndex + 1) % searchResults.length
+                    : (currentResultIndex - 1 + searchResults.length) % searchResults.length;
 
-            if (direction === 'next') {
-                newIndex = (currentResultIndex + 1) % searchResults.length;
-            } else {
-                newIndex = (currentResultIndex - 1 + searchResults.length) % searchResults.length;
-            }
-
-            setPagination({ page: searchMatches[newIndex].page, rowsPerPage });
+            const targetMatch = searchMatches[newIndex];
             setCurrentResultIndex(newIndex);
-            highlightAndScrollToMatch(newIndex, searchResults);
+
+            if (targetMatch.page !== page) {
+                pendingScrollRef.current = searchResults[newIndex];
+                setPagination({ page: targetMatch.page, rowsPerPage });
+            } else {
+                highlightAndScrollToMatch(newIndex, searchResults);
+            }
         },
-        [searchResults, setPagination, searchMatches, rowsPerPage, highlightAndScrollToMatch, currentResultIndex]
+        [searchResults, searchMatches, currentResultIndex, page, rowsPerPage, setPagination, highlightAndScrollToMatch]
     );
+
+    const handleRowDataUpdated = useCallback(() => {
+        if (pendingScrollRef.current === null || !gridRef.current) {
+            return;
+        }
+        const rowIndex = pendingScrollRef.current;
+        pendingScrollRef.current = null;
+        gridRef.current.api?.ensureIndexVisible(rowIndex, 'middle');
+    }, []);
 
     const handleChipClick = useCallback(
         (severity: string) => {
@@ -459,6 +472,7 @@ const LogTable = ({
                     onCellClicked={handleRowClick}
                     getRowStyle={rowStyleFormat}
                     onGridReady={onGridReady}
+                    onRowDataUpdated={handleRowDataUpdated}
                     defaultColDef={defaultColumnDefinition}
                     overrideLocales={AGGRID_LOCALES}
                 />
