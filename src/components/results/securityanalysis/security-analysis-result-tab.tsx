@@ -153,9 +153,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         }
 
         if (filters) {
-            const updatedFilters = convertFilterValues(intl, filters);
             const columnToFieldMapping = mappingColumnToField(resultType);
-            params['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
+            const relevantFilters = filters.filter((f) => columnToFieldMapping[f.column] != null);
+            if (relevantFilters.length) {
+                const updatedFilters = convertFilterValues(intl, relevantFilters);
+                params['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
+            }
         }
         const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
         if (globalFilters) {
