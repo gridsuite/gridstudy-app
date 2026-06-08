@@ -100,7 +100,8 @@ const ParametersTabs: FunctionComponent = () => {
         (state: AppState) => state.user?.profile ?? null,
         (a, b) =>
             a === b || (a?.sub === b?.sub && a?.name === b?.name && a?.email === b?.email && a?.profile === b?.profile)
-    );    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode ?? null);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentNodeBuildStatus = useSelector((state: AppState) => state.currentTreeNode?.data.globalBuildStatus);
