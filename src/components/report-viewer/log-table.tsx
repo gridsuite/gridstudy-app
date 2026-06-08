@@ -370,11 +370,11 @@ const LogTable = ({
             const targetMatch = searchMatches[newIndex];
             setCurrentResultIndex(newIndex);
 
-            if (targetMatch.page !== page) {
+            if (targetMatch.page === page) {
+                highlightAndScrollToMatch(newIndex, searchResults);
+            } else {
                 pendingScrollRef.current = searchResults[newIndex];
                 setPagination({ page: targetMatch.page, rowsPerPage });
-            } else {
-                highlightAndScrollToMatch(newIndex, searchResults);
             }
         },
         [searchResults, searchMatches, currentResultIndex, page, rowsPerPage, setPagination, highlightAndScrollToMatch]
