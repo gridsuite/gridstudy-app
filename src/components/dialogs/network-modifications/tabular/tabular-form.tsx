@@ -21,7 +21,6 @@ import {
     FieldConstants,
     hasNonEmptyRows,
     InputWithPopupConfirmation,
-    type MuiStyles,
     NumericEditor,
     suppressNonNumericKeyboardEvent,
     type TreeViewFinderNodeProps,
@@ -36,9 +35,8 @@ import {
     TABULAR_PROPERTIES,
     TYPE,
 } from 'components/utils/field-constants';
-import { Alert, Button, Grid } from '@mui/material';
+import { Alert, Button, Grid2 as Grid } from '@mui/material';
 import Papa from 'papaparse';
-import GridItem from '../../commons/grid-item';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
@@ -61,10 +59,6 @@ import { useFilterCsvGenerator } from './use-filter-csv-generator';
 import { usePrefilledModelGenerator } from './generation/use-prefilled-model-generator';
 import GeneratePrefilledModelDialog from './generation/generate-prefilled-model-dialog';
 import { PrefilledModelGenerationParams } from './generation/utils';
-
-const dialogStyles = {
-    grid: { height: 500, width: '100%' },
-} as const satisfies MuiStyles;
 
 export interface TabularFormProps {
     dataFetching: boolean;
@@ -494,10 +488,10 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     );
 
     return (
-        <Grid container spacing={2} paddingTop={1} direction={'row'}>
-            <GridItem size={4}>{equipmentTypeField}</GridItem>
-            <Grid container item spacing={2} justifyContent="space-between" alignItems={'center'}>
-                <Grid item>
+        <Grid container spacing={2} paddingTop={1} direction="column" wrap="nowrap" sx={{ height: '100%' }}>
+            <Grid sx={{ width: 400, maxWidth: '100%' }}>{equipmentTypeField}</Grid>
+            <Grid container justifyContent="space-between" alignItems="center">
+                <Grid>
                     <Button
                         variant="contained"
                         disabled={!equipmentType}
@@ -508,7 +502,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                         <FormattedMessage id="DefinePropertiesButton" />
                     </Button>
                 </Grid>
-                <Grid item>
+                <Grid>
                     <CsvPicker<Record<string, unknown>>
                         label="UploadCSV"
                         header={csvColumns}
@@ -523,12 +517,12 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 </Grid>
             </Grid>
             {selectedFileError && (
-                <Grid item xs={12}>
+                <Grid>
                     <Alert severity="error">{selectedFileError}</Alert>
                 </Grid>
             )}
             {equipmentType && (
-                <Grid item xs={12} sx={dialogStyles.grid}>
+                <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
                     <CustomAgGridTable
                         ref={tableRef}
                         name={MODIFICATIONS_TABLE}
@@ -542,7 +536,6 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                         }}
                         overrideLocales={AGGRID_LOCALES}
                         csvProps={csvProps}
-                        cssProps={{ height: 535 }}
                     />
                 </Grid>
             )}

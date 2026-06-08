@@ -21,8 +21,6 @@ import {
     InputWithPopupConfirmation,
     IntegerInput,
     LANG_FRENCH,
-    type MuiStyles,
-    unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
 import {
     AMOUNT_TEMPORARY_LIMITS,
@@ -32,10 +30,9 @@ import {
     TYPE,
 } from 'components/utils/field-constants';
 import { v4 as uuid4 } from 'uuid';
-import { Alert, Grid } from '@mui/material';
+import { Alert, Grid2 as Grid } from '@mui/material';
 import type Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
-import GridItem from '../../commons/grid-item';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
@@ -45,10 +42,6 @@ import {
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
 } from '../tabular/tabular-modification-utils';
 import { BOOLEAN } from '../../../network/constants';
-
-const styles = {
-    grid: { height: 500, width: '100%' },
-} as const satisfies MuiStyles;
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;
@@ -306,19 +299,13 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     );
 
     return (
-        <Grid
-            container
-            spacing={2}
-            paddingTop={1}
-            direction={'row'}
-            sx={unscrollableDialogStyles.unscrollableContainer}
-        >
-            <GridItem size={4}>{equipmentTypeField}</GridItem>
-            <Grid container item spacing={2} justifyContent="space-between" alignItems={'center'}>
-                <Grid item>
+        <Grid container spacing={2} paddingTop={1} direction="column" wrap="nowrap" sx={[{ height: '100%' }]}>
+            <Grid sx={{ width: 400, maxWidth: '100%' }}>{equipmentTypeField}</Grid>
+            <Grid container justifyContent="space-between" alignItems="center">
+                <Grid>
                     <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
                 </Grid>
-                <Grid item>
+                <Grid>
                     <CsvPicker<Record<string, unknown>>
                         label="UploadCSV"
                         header={csvColumns.map((column) => column.id)}
@@ -331,14 +318,14 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         onComplete={handleComplete}
                     />
                 </Grid>
-                {selectedFileError && (
-                    <Grid item xs={12}>
-                        <Alert severity="error">{selectedFileError}</Alert>
-                    </Grid>
-                )}
             </Grid>
+            {selectedFileError && (
+                <Grid>
+                    <Alert severity="error">{selectedFileError}</Alert>
+                </Grid>
+            )}
             {equipmentType && (
-                <Grid item xs={12} sx={styles.grid}>
+                <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
                     <CustomAgGridTable
                         ref={tableRef}
                         name={MODIFICATIONS_TABLE}
@@ -350,7 +337,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         rowSelection={{ mode: 'multiRow' }}
                         overrideLocales={AGGRID_LOCALES}
                         csvProps={csvProps}
-                        cssProps={{ height: 535 }}
                     />
                 </Grid>
             )}
