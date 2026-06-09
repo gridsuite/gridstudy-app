@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress } from '@mui/material';
+import { Grid2 as Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress } from '@mui/material';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
@@ -74,27 +74,15 @@ export function ModificationDialogContent({
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container spacing={2} justifyContent={'space-between'}>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                         <FormattedMessage id={titleId} />
                     </Grid>
 
-                    <Grid item xs={6} container spacing={2} justifyContent={'right'}>
-                        {onOpenCatalogDialog && (
-                            <Grid item xs={1}>
-                                {catalogButton}
-                            </Grid>
-                        )}
-                        {searchCopy && (
-                            <Grid item xs={1}>
-                                {copyEquipmentButton}
-                            </Grid>
-                        )}
+                    <Grid size={6} container spacing={2} justifyContent={'right'}>
+                        {onOpenCatalogDialog && <Grid size={1}>{catalogButton}</Grid>}
+                        {searchCopy && <Grid size={1}>{copyEquipmentButton}</Grid>}
                     </Grid>
-                    {subtitle && (
-                        <Grid item xs={12}>
-                            {subtitle}
-                        </Grid>
-                    )}
+                    {subtitle && <Grid size={12}>{subtitle}</Grid>}
                 </Grid>
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>

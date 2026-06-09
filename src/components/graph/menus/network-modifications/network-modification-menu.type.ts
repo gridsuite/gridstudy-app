@@ -25,7 +25,7 @@ export interface RootNetworkInfos {
     tag: string;
     description?: string;
     caseInfos: CaseInfos;
-    importParametersRaw: Record<string, any> | null;
+    importParameters: Record<string, any> | null;
 }
 
 export interface CaseInfos {

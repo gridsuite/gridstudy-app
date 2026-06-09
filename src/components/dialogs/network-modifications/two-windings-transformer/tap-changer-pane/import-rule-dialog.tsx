@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid2 as Grid } from '@mui/material';
 import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
@@ -62,7 +62,7 @@ export const ImportRuleDialog = ({
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2} direction={'column'}>
-                    <Grid item>
+                    <Grid>
                         <CsvDownloader
                             columns={csvColumns}
                             datas={[]}
@@ -74,9 +74,9 @@ export const ImportRuleDialog = ({
                             </Button>
                         </CsvDownloader>
                     </Grid>
-                    <Grid item>{FileField}</Grid>
+                    <Grid>{FileField}</Grid>
                     {selectedFile && selectedFileError && (
-                        <Grid item>
+                        <Grid>
                             <Alert severity="error">{selectedFileError}</Alert>
                         </Grid>
                     )}
