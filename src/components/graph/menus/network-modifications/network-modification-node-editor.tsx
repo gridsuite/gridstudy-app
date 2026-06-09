@@ -90,9 +90,9 @@ import { AppState } from 'redux/reducer.type';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
+    assembleModificationsIntoComposite,
     fetchExcludedNetworkModifications,
     fetchNetworkModifications,
-    assembleModificationsIntoComposite,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
@@ -176,6 +176,12 @@ const NetworkModificationNodeEditor = () => {
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
         []
     );
+
+    const selectionContainsShared: boolean = useMemo(() => {
+        return selectedNetworkModifications.some(
+            (modification) => modification.type === ModificationType.MODIFICATION_REFERENCE
+        );
+    }, [selectedNetworkModifications]);
 
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
@@ -1307,7 +1313,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            disabled={disabledCompositeExport}
+                            disabled={disabledCompositeExport || selectionContainsShared}
                         >
                             <SaveIcon />
                         </IconButton>
@@ -1323,7 +1329,8 @@ const NetworkModificationNodeEditor = () => {
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
                                 !currentNode ||
-                                isRootNode
+                                isRootNode ||
+                                selectionContainsShared
                             }
                         >
                             <ContentCutIcon />
@@ -1339,7 +1346,8 @@ const NetworkModificationNodeEditor = () => {
                                 selectedNetworkModifications.length === 0 ||
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
-                                isRootNode
+                                isRootNode ||
+                                selectionContainsShared
                             }
                         >
                             <ContentCopyIcon />
@@ -1361,7 +1369,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            disabled={isPasteButtonDisabled || isRootNode}
+                            disabled={isPasteButtonDisabled || isRootNode || selectionContainsShared}
                         >
                             <ContentPasteIcon />
                         </IconButton>
