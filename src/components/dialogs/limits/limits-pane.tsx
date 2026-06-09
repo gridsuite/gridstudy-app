@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import {
     ENABLE_OLG_MODIFICATION,
     LIMITS,
@@ -22,7 +22,7 @@ import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
 import IconButton from '@mui/material/IconButton';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
-import GridSection from '../commons/grid-section';
+import { Grid2Section as GridSection } from '../commons/grid2-section';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
 import { InputWithPopupConfirmation, SwitchInput } from '@gridsuite/commons-ui';
@@ -130,13 +130,12 @@ export function LimitsPane({
     return (
         <>
             {/* active limit sets */}
-            <Grid container columns={6} item spacing={1} sx={{ maxWidth: '600px' }}>
-                <Grid item xs={3}>
+            <Grid container columns={6} spacing={1} sx={{ maxWidth: '600px' }}>
+                <Grid size={3}>
                     <GridSection title="SelectedOperationalLimitGroups" />
                 </Grid>
                 <Grid
-                    item
-                    xs={3}
+                    size={3}
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
@@ -155,7 +154,7 @@ export function LimitsPane({
                         />
                     )}
                 </Grid>
-                <Grid item xs={3}>
+                <Grid size={3}>
                     <SelectedOperationalLimitGroup
                         selectedFormName={`${id}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID1}`}
                         optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
@@ -165,7 +164,7 @@ export function LimitsPane({
                         isABranchModif={!!equipmentToModify}
                     />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid size={3}>
                     <SelectedOperationalLimitGroup
                         selectedFormName={`${id}.${SELECTED_OPERATIONAL_LIMITS_GROUP_ID2}`}
                         optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
@@ -178,15 +177,15 @@ export function LimitsPane({
             </Grid>
 
             {/* limits */}
-            <Grid container item xs={12} columns={10.25}>
-                <Grid item xs={4}>
+            <Grid container size={12} columns={10.25}>
+                <Grid size={4}>
                     <Box
                         sx={{
                             display: 'flex',
                             alignItems: 'center',
                         }}
                     >
-                        <GridSection title="LimitSets" />
+                        <GridSection size={12} title="LimitSets" />
                         <IconButton color="primary" onClick={addNewLimitSet} disabled={!olgEditable}>
                             <AddIcon />
                         </IconButton>
@@ -201,7 +200,7 @@ export function LimitsPane({
                         currentLimitsToModify={equipmentToModify?.currentLimits ?? []}
                     />
                 </Grid>
-                <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
+                <Grid size={6} sx={tabStyles.parametersBox} marginLeft={2}>
                     {indexSelectedLimitSet !== null &&
                         operationalLimitsGroups.map(
                             (operationalLimitsGroup: OperationalLimitsGroupFormSchema, index: number) =>

@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import TwoWindingsTransformerCharacteristicsPane from '../../characteristics-pane/two-windings-transformer-characteristics-pane';
 import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import GridSection from '../../../../commons/grid-section';
-import GridItem from '../../../../commons/grid-item';
+import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
+import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
 import { TwoWindingsTransformerCreationDialogTab } from '../../two-windings-transformer-utils';
 import { LimitsPane } from '../../../../limits/limits-pane';
 import { UUID } from 'node:crypto';
@@ -80,19 +80,11 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 <GridSection title="Connectivity" customStyle={styles.h3} />
                 <GridSection title="Side1" heading={4} size={6} />
                 <Grid container spacing={2}>
-                    <Grid item container direction="column">
-                        <Grid container direction="column" spacing={2}>
-                            <GridItem>{connectivity1Field}</GridItem>
-                        </Grid>
-                    </Grid>
+                    <GridItem size={12}>{connectivity1Field}</GridItem>
                 </Grid>
                 <GridSection title="Side2" heading={4} size={6} />
                 <Grid container spacing={2}>
-                    <Grid item container>
-                        <Grid container direction="column" spacing={2}>
-                            <GridItem size={12}>{connectivity2Field}</GridItem>
-                        </Grid>
-                    </Grid>
+                    <GridItem size={12}>{connectivity2Field}</GridItem>
                 </Grid>
                 <TwoWindingsTransformerCharacteristicsPane />
             </Box>
