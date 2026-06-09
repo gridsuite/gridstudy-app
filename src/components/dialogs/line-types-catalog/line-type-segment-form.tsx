@@ -231,7 +231,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        if (!editData || editData[LINE_SEGMENTS]?.length === 0) {
+        if (!editData?.[LINE_SEGMENTS]?.length) {
             return;
         }
         arrayRef.current?.replaceItems([]);
@@ -239,9 +239,11 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
             const promises = editData[LINE_SEGMENTS]?.map((segment) => getSegmentLimits(segment));
 
             try {
-                const segmentsWithLimits = await Promise.all(promises);
-                for (const segmentWithLimits of segmentsWithLimits) {
-                    arrayRef?.current?.appendItem(segmentWithLimits);
+                if (promises) {
+                    const segmentsWithLimits = await Promise.all(promises);
+                    for (const segmentWithLimits of segmentsWithLimits) {
+                        arrayRef?.current?.appendItem(segmentWithLimits);
+                    }
                 }
             } catch (error) {
                 snackWithFallback(snackError, error, {

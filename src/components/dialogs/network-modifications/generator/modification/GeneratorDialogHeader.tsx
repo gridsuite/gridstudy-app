@@ -8,8 +8,14 @@
 import { Grid, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { ENERGY_SOURCE, EQUIPMENT_NAME } from '../../../../utils/field-constants';
-import { filledTextField, GeneratorFormInfos, SelectInput, TextInput } from '@gridsuite/commons-ui';
-import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constants';
+import {
+    ENERGY_SOURCES,
+    filledTextField,
+    GeneratorFormInfos,
+    getEnergySourceLabel,
+    SelectInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 
 export interface GeneratorDialogHeaderProps {
     generatorToModify?: GeneratorFormInfos | null;

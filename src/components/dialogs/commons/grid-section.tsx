@@ -18,6 +18,10 @@ export interface GridSectionProps {
     tooltipMessage?: string;
     isLiteralText?: boolean;
 }
+
+/**
+ * @deprecated Use the Grid2Section component instead.
+ */
 export default function GridSection({
     title,
     heading = 3,

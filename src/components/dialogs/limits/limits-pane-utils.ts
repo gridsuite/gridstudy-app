@@ -147,9 +147,15 @@ function hasDuplicateOperationalLimitsGroups(context: TestContext) {
     return !isDuplicate;
 }
 
-const limitsValidationSchemaCreation = (id: string) => {
+const limitsValidationSchemaCreation = (id: string, isModification: boolean) => {
     const completeLimitsGroupSchema = {
-        [OPERATIONAL_LIMITS_GROUPS]: yup.array(yup.object().shape(limitsGroupValidationSchema())).required(),
+        [OPERATIONAL_LIMITS_GROUPS]: isModification
+            ? yup.array(yup.object().shape(limitsGroupValidationSchema())).when([ENABLE_OLG_MODIFICATION], {
+                  is: true,
+                  then: (schema) => schema.required(),
+                  otherwise: (schema) => schema.strip(),
+              })
+            : yup.array(yup.object().shape(limitsGroupValidationSchema())).required(),
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]: yup.string().nullable(),
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]: yup.string().nullable(),
         [ENABLE_OLG_MODIFICATION]: yup.boolean(),
@@ -159,8 +165,8 @@ const limitsValidationSchemaCreation = (id: string) => {
 
 export type LimitsFormSchema = yup.InferType<ReturnType<typeof limitsValidationSchemaCreation>[typeof LIMITS]>;
 
-export const getLimitsValidationSchema = (id: string = LIMITS) => {
-    return limitsValidationSchemaCreation(id);
+export const getLimitsValidationSchema = (id: string = LIMITS, isModification: boolean = false) => {
+    return limitsValidationSchemaCreation(id, isModification);
 };
 
 const limitsEmptyFormData = (isModification: boolean, id: string) => {
