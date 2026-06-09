@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, DeepNullable, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DeepNullable,
+    snackWithFallback,
+    useSnackMessage,
+    YUP_REQUIRED,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
@@ -72,7 +78,7 @@ const getGeneratorsFrequencyReserveSchema = () => {
                         [NAME]: yup.string().required(),
                     })
                 )
-                .min(1, 'FilterInputMinError')
+                .min(1, YUP_REQUIRED)
                 .required(),
             [FREQUENCY_RESERVE]: yup
                 .number()
@@ -87,7 +93,7 @@ const getGeneratorsFrequencyReserveSchema = () => {
 const getSubstationsGeneratorsOrderingSchema = () => {
     return yup.array().of(
         yup.object().shape({
-            [SUBSTATION_IDS]: yup.array().of(yup.string().required()).min(1, 'FilterInputMinError').required(),
+            [SUBSTATION_IDS]: yup.array().of(yup.string().required()).min(1, YUP_REQUIRED).required(),
         })
     );
 };

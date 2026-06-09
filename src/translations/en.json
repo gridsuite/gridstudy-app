@@ -501,7 +501,6 @@
     "terminalConnected": "Connected",
     "disconnected": "Disconnected",
     "FieldAcceptNumeric": "This field only accepts numeric values",
-    "FieldIsRequired": "This field is required",
     "errReorderModificationMsg": "Reorder network modification error:",
     "errDuplicateModificationMsg": "Network modifications copy error",
     "errCutModificationMsg": "Network modifications cut error",
@@ -715,7 +714,7 @@
     "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
     "DeleteAttachingLineError": "Error while deleting an attaching line",
     "GenerationDispatchError": "Error while creating a generation dispatch",
-    "lineAttachedToSplitLineVoltageLevel": "Voltage level with attached line to place as splittter",
+    "lineAttachedToSplitLineVoltageLevel": "Voltage level with attached line to place as splitter",
 
     "PermanentCurrentLimitText": "PATL",
     "permanentCurrentLimitMustBeGreaterThanZero": "The permanent current limit value must be greater than 0",
@@ -1367,7 +1366,6 @@
     "maxNumberIterations": "Maximum number of iterations",
     "subtractLoadFlowBalancing": "Take into account loadflow balancing when calculating mismatch",
     "thresholdNetPosition": "Net position mismatch threshold",
-    "balancesAdjustment.emptyCountries": "At least one country must be selected",
     "loadFlowModification": "Loadflow modification applied",
 
     "CreateVoltageLevelTopology": "Adding a busbar",

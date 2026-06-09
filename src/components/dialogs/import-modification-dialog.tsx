@@ -364,7 +364,8 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                     <FormattedMessage id="importComposites.title" />
                 </DialogTitle>
 
-                <DialogContent sx={{ display: 'flex', flexDirection: 'column', minHeight: 380 }}>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: 490 }}>
+                    {' '}
                     {/* ---- Stepper ---- */}
                     <Stepper
                         activeStep={activeStep}
@@ -386,9 +387,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                             </StepLabel>
                         </Step>
                     </Stepper>
-
                     <Divider sx={{ mt: 2 }} />
-
                     {/* ======================================================
                         STEP 1 — SELECTION
                         ====================================================== */}
@@ -405,7 +404,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                             />
                         </Box>
                     )}
-
                     {/* ======================================================
                         STEP 2 — ORGANIZATION & SHARING
                         ====================================================== */}
