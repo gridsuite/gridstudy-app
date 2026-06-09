@@ -31,7 +31,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import {
     B,
     BUS_OR_BUSBAR_SECTION,
@@ -201,7 +201,7 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         ...getCon1andCon2WithPositionValidationSchema(true),
         ...getCharacteristicsValidationSchema(true),
-        ...getLimitsValidationSchema(),
+        ...getLimitsValidationSchema(LIMITS, true),
         ...getStateEstimationValidationSchema(STATE_ESTIMATION),
         ...getRatioTapChangerValidationSchema(true),
         ...getPhaseTapChangerValidationSchema(true),
@@ -929,7 +929,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.STATE_ESTIMATION_TAB}
                             p={1}
                         >
-                            <Grid container spacing={2}>
+                            <Grid container>
                                 <BranchActiveReactivePowerMeasurementsForm equipmentToModify={twtToModify} />
                                 <ToBeEstimatedForm toBeEstimated={twtToModify?.toBeEstimated as ToBeEstimatedInfo} />
                             </Grid>

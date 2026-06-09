@@ -27,7 +27,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Breakpoint, Grid } from '@mui/material';
+import { Breakpoint, Grid2 as Grid } from '@mui/material';
 import {
     B,
     BUS_OR_BUSBAR_SECTION,
