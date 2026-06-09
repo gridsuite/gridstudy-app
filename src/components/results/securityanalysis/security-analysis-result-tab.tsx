@@ -46,25 +46,12 @@ import { FilterType, isCriteriaFilterType } from '../common/utils';
 import { setTableSort } from '../../../redux/actions';
 
 const styles = {
-    tabsAndToolboxContainer: {
-        display: 'flex',
-        position: 'relative',
-        justifyContent: 'space-between',
-    },
-    tabs: {
-        position: 'relative',
-        top: 0,
-        left: 0,
-    },
-    subTabsRow: {
-        display: 'flex',
-        gap: 1,
-        mb: 2,
-    },
-    subTabsToolbox: {
-        display: 'flex',
-        ml: 'auto',
-        gap: 2,
+    toolbarRow: {
+        display: 'grid',
+        gridTemplateColumns: '1fr auto 1fr',
+        alignItems: 'center',
+        width: '100%',
+        mb: 1,
     },
     loader: {
         height: '4px',
@@ -153,9 +140,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         }
 
         if (filters) {
-            const updatedFilters = convertFilterValues(intl, filters);
             const columnToFieldMapping = mappingColumnToField(resultType);
-            params['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
+            const relevantFilters = filters.filter((f) => columnToFieldMapping[f.column] != null);
+            if (relevantFilters.length) {
+                const updatedFilters = convertFilterValues(intl, relevantFilters);
+                params['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
+            }
         }
         const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
         if (globalFilters) {
@@ -301,8 +291,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
 
     return (
         <>
-            <Box sx={styles.tabsAndToolboxContainer}>
-                <Box sx={styles.tabs}>
+            <Box sx={styles.toolbarRow}>
+                <Box>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
                         {isDeveloperMode && (
                             <Tab label="N" value={N_RESULTS_TAB_INDEX} data-testid={'SecurityAnalysisNTab'} />
@@ -316,35 +306,41 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                     </Tabs>
                 </Box>
             </Box>
-
-            {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
-                <Box sx={styles.subTabsRow}>
-                    {tabIndex === NMK_RESULTS_TAB_INDEX && (
-                        <Tabs value={nmkType} onChange={handleChangeNmkType}>
-                            <Tab
-                                label={<FormattedMessage id="ConstraintsFromContingencies" />}
-                                value={NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}
-                            />
-                            <Tab
-                                label={<FormattedMessage id="ContingenciesFromConstraints" />}
-                                value={NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS}
-                            />
-                            {isDeveloperMode && (
+            <Box sx={styles.toolbarRow}>
+                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
+                    <Box sx={{ justifySelf: 'start' }}>
+                        {tabIndex === NMK_RESULTS_TAB_INDEX && (
+                            <Tabs value={nmkType} onChange={handleChangeNmkType}>
                                 <Tab
-                                    label={<FormattedMessage id="CutOffPowerFromConstraints" />}
-                                    value={NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS}
+                                    label={<FormattedMessage id="ConstraintsFromContingencies" />}
+                                    value={NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}
                                 />
-                            )}
-                        </Tabs>
-                    )}
-
-                    <Box sx={styles.subTabsToolbox}>
+                                <Tab
+                                    label={<FormattedMessage id="ContingenciesFromConstraints" />}
+                                    value={NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS}
+                                />
+                                {isDeveloperMode && (
+                                    <Tab
+                                        label={<FormattedMessage id="CutOffPowerFromConstraints" />}
+                                        value={NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS}
+                                    />
+                                )}
+                            </Tabs>
+                        )}
+                    </Box>
+                )}
+                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
+                    <Box sx={{ justifySelf: 'center', position: 'relative' }}>
                         <GlobalFilterSelector
                             filterCategories={filterTypes}
                             filterableEquipmentTypes={filterableEquipmentTypes}
                             genericFiltersStrictMode={true}
                             tableType={TableType.SecurityAnalysis}
                         />
+                    </Box>
+                )}
+                <Box sx={{ justifySelf: 'end' }}>
+                    {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
@@ -353,9 +349,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             downloadZipResult={downloadZipResult}
                             disabled={isExportButtonDisabled}
                         />
-                    </Box>
+                    )}
                 </Box>
-            )}
+            </Box>
             <Box sx={styles.loader}>{shouldOpenLoader && <LinearProgress />}</Box>
             <Box sx={styles.resultContainer}>
                 {tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode && (
