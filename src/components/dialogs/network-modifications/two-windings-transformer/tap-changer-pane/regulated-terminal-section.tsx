@@ -20,9 +20,9 @@ import {
 import { SIDE } from '../../../../network/constants';
 import { getRegulationTypeLabel, getTapSideLabel } from './tap-changer-pane-utils';
 import { useIntl } from 'react-intl';
-import GridSection from '../../../commons/grid-section';
-import GridItem from '../../../commons/grid-item';
-import Grid from '@mui/material/Grid';
+import { Grid2Section as GridSection } from '../../../commons/grid2-section';
+import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { Grid2 as Grid } from '@mui/material';
 import { getTapChangerEquipmentSectionTypeValue } from '../../../../utils/utils';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
@@ -99,7 +99,7 @@ export default function RegulatedTerminalSection({
     return (
         <>
             <GridSection title="RegulatedTerminal" heading={4} />
-            <Grid item container spacing={1}>
+            <Grid container spacing={1}>
                 <GridItem size={4}>{regulationTypeField}</GridItem>
                 {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
                 {regulationType === REGULATION_TYPES.DISTANT.id && (
