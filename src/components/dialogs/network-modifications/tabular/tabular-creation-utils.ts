@@ -7,6 +7,7 @@
 
 import {
     CONNECTION_DIRECTIONS,
+    ENERGY_SOURCES,
     FieldConstants,
     MODIFICATION_TYPES,
     ReactiveCapabilityCurvePoints,
@@ -56,7 +57,6 @@ import {
 } from 'components/utils/field-constants';
 import {
     BOOLEAN,
-    ENERGY_SOURCES,
     ENUM,
     LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
