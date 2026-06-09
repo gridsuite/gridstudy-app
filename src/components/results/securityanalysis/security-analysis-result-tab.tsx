@@ -319,12 +319,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                                     label={<FormattedMessage id="ContingenciesFromConstraints" />}
                                     value={NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS}
                                 />
-                                {isDeveloperMode && (
-                                    <Tab
-                                        label={<FormattedMessage id="CutOffPowerFromConstraints" />}
-                                        value={NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS}
-                                    />
-                                )}
+                                <Tab
+                                    label={<FormattedMessage id="CutOffPowerFromConstraints" />}
+                                    value={NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS}
+                                />
                             </Tabs>
                         )}
                     </Box>
