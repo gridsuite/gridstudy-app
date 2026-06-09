@@ -396,6 +396,7 @@
 
     "ConstraintsFromContingencies": "Aléas -> contraintes",
     "ContingenciesFromConstraints": "Contraintes -> aléas",
+    "CutOffPowerFromConstraints": "Puissance coupée",
 
     "selectionType": "Type de sélection",
     "loadType": "Type",
@@ -494,7 +495,6 @@
     "SynchronousComponent": "Composante synchrone",
     "EmptySelection": "Aucun ouvrage n'est sélectionné",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
-    "FieldIsRequired": "Ce champ doit être renseigné",
     "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du nœud\u00a0:",
     "errDuplicateModificationMsg": "Une erreur est survenue lors de la copie des modifications",
     "errCutModificationMsg": "Une erreur est survenue lors du coupage des modifications",
@@ -529,8 +529,6 @@
     "LoadModificationError": "Erreur lors de la modification d'une consommation",
     "LineCreationError": "Erreur lors de la création d'une ligne",
     "LineModificationError": "Erreur lors de la modification d'une ligne",
-    "ShuntCompensatorModificationError": "Erreur lors de la modification d'un moyen de compensation",
-    "ShuntCompensatorNonlinearError": "La modification d'un moyen de compensation non linéaire n'est pas possible pour le moment",
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
     "StaticVarCompensatorCreationError": "Erreur lors de la création d'un cspr",
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
@@ -551,7 +549,6 @@
     "modificationType": "Type de modification",
     "temporaryLimitsModificationType": "Type de modification des limites temporaires",
 
-    "ModifyBattery": "Modifier une batterie",
     "CreateGenerator": "Créer un groupe",
     "ModifyGenerator": "Modifier un groupe",
     "NbModificationToPaste": "Coller {nb} modification{several}",
@@ -562,7 +559,6 @@
     "ReactivePowerRegulationText": "Réglage de réactif",
     "RatioRegulationTypeText": "Type de réglage régleur",
     "PhaseRegulationTypeText": "Type de réglage déphaseur",
-    "Limits": "Limites",
     "reactiveCapabilityCurve": "Limites de réactif par diagramme",
     "RatioRegulatingTerminal": "Terminal distant réglé régleur",
     "PhaseRegulatingTerminal": "Terminal distant réglé déphaseur",
@@ -578,7 +574,6 @@
     "withoutunit.stepUpTransformerX": "Réactance du transformateur",
     "plannedActivePowerSetPoint": "P imposée (MW)",
     "withoutunit.plannedActivePowerSetPoint": "P imposée",
-    "MinActivePowerMustBeLessOrEqualToMaxActivePower": "La valeur de la puissance active min doit être inférieure ou égale à la valeur de la puissance active max",
     "PlannedActivePowerSetPointMustBeBetweenMinAndMaxActivePower": "La valeur de la puissance imposée doit être comprise entre la valeur de la puissance active min et la valeur de la puissance active max",
     "RatedNominalPowerMustBeGreaterThanZero": "La valeur de la puissance nominale doit être supérieure à 0",
     "RealPercentage": "Cette valeur doit être comprise entre 0 et 1",
@@ -592,7 +587,6 @@
     "reactiveCapabilityCurvePmax": "Pmax",
     "reactiveCapabilityCurveQminPmax": "QminPmax",
     "reactiveCapabilityCurveQmaxPmax": "QmaxPmax",
-    "BatteryModificationError": "Erreur lors de la modification d'une batterie ",
     "ModifyLine": "Modifier une ligne",
     "CreateLine": "Créer une ligne",
     "CreateVsc": "Création d'une HVDC (VSC)",
@@ -632,7 +626,6 @@
     "StaticVarCompensatorErrorQFixLessThanQMin": "La valeur de Q Fixe doit être supérieure à la valeur de Q minimum",
     "StaticVarCompensatorErrorSFixGreaterThanSMax": "La valeur de Susceptance Fixe doit être inférieure à la valeur de susceptance maximum",
     "StaticVarCompensatorErrorSFixLessThanSMin": "La valeur de Susceptance Fixe doit être supérieure à la valeur de susceptance minimum",
-    "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Linéaire)",
     "maxQAtVnominal": "Q max à tension nominale",
     "minQAtNominalV": "Q min à tension nominale",
     "fixQAtNominalV": "Q fixe",
@@ -711,6 +704,7 @@
     "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
     "DeleteAttachingLineError": "Erreur lors de la suppression d'un piquage",
     "GenerationDispatchError": "Erreur lors de la création du démarrage de groupes",
+    "lineAttachedToSplitLineVoltageLevel" : "Poste en piquage à passer en coupure",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
@@ -1324,9 +1318,6 @@
     "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",
     "previousConnection": "Connexion préc.",
 
-    "SetpointsAndLimitsTab": "Consignes & Limites",
-    "SpecificTab": "Spécifique",
-
     "confirmRootNetworkCreation": "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
     "RegulationSection": "Réglage",
     "TapsSection": "Prises",
@@ -1373,7 +1364,6 @@
     "maxNumberIterations": "Nombre maximal d'itérations",
     "subtractLoadFlowBalancing": "Prendre en compte la compensation dans le calcul des bilans",
     "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
-    "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
     "loadFlowModification": "Modification par calcul de répartition appliquée",
     "CreateVoltageLevelTopology": "Ajouter un jeu de barre",
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
@@ -1536,5 +1526,7 @@
     "deactivateModification": "Désactiver la modification réseau",
     "deselectModification": "Désélectionner la modification",
     "selectModification": "Sélectionner la modification",
-    "moveModification": "Déplacer la modification"
+    "moveModification": "Déplacer la modification",
+    "disconnectedLoadActivePower": "Consommation coupée (MW)",
+    "disconnectedGenerationActivePower": "Production coupée (MW)"
 }
