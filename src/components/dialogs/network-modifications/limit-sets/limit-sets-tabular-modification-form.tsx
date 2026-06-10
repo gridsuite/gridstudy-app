@@ -179,21 +179,18 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
 
     const csvTranslatedColumns = useMemo(() => {
         return csvColumns.map(({ id, name, index }) => {
-            return `${intl.formatMessage({ id: name ?? id })} ${index ?? ''}`;
+            return `${intl.formatMessage({ id: name ?? id })}${index ? ` ${index}` : ''}`;
         });
     }, [csvColumns, intl]);
 
     const commentLines = useMemo(() => {
         const commentKey = `TabularLimitSetsModificationSkeletonComment`;
+        const separator = language === LANG_FRENCH ? ';' : ',';
         let commentData: string[][] = [];
         if (csvTranslatedColumns) {
-            commentData.push(['#' + csvTranslatedColumns.join(language === LANG_FRENCH ? ';' : ',')]);
+            commentData.push(csvTranslatedColumns.map((column, index) => (index === 0 ? `#${column}` : column)));
             if (commentKey && intl.messages[commentKey]) {
-                commentData.push([
-                    intl.formatMessage({
-                        id: commentKey,
-                    }),
-                ]);
+                commentData.push(intl.formatMessage({ id: commentKey }).split(separator));
             }
         }
         return commentData;
@@ -220,6 +217,8 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     useEffect(() => {
         setIsFetching(dataFetching);
     }, [dataFetching]);
+
+    console.log('selectedFileError', selectedFileError);
 
     useEffect(() => {
         if (selectedFileError) {

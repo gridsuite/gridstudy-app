@@ -292,7 +292,7 @@ export const generateCommentLines = ({
     if (csvTranslatedColumns) {
         const separator = language === LANG_FRENCH ? ';' : ',';
         // First comment line contains header translation
-        commentData.push(['#' + csvTranslatedColumns.join(separator)]);
+        commentData.push(csvTranslatedColumns.map((column, index) => (index === 0 ? `#${column}` : column)));
 
         // Check for optional second comment line from the translation file
         let secondCommentLine: string = '';
@@ -321,7 +321,7 @@ export const generateCommentLines = ({
             }
         }
         if (secondCommentLine.length > 0 && secondCommentLine.replaceAll(separator, '').length > 0) {
-            commentData.push([secondCommentLine]);
+            commentData.push(secondCommentLine.split(separator));
         }
     }
     return commentData;

@@ -146,7 +146,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
             // 2. Comment lines
             commentLines.forEach((commentLineArray) => {
                 if (Array.isArray(commentLineArray)) {
-                    csvRows.push(...commentLineArray);
+                    csvRows.push(commentLineArray.join(delimiter));
                 }
             });
 

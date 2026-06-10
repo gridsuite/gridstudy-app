@@ -116,7 +116,7 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
             // 2. Add comment lines
             commentLines.forEach((commentLineArray) => {
                 if (Array.isArray(commentLineArray)) {
-                    csvRows.push(...commentLineArray);
+                    csvRows.push(commentLineArray.join(delimiter));
                 }
             });
 
