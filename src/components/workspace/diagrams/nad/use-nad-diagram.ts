@@ -117,6 +117,8 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                     (vl) => vl.id
                 ) ?? [];
 
+            console.info(`Number of voltage levels for NAD '${diagram.title}' : '${vlIdsFromSvg.length}'`);
+
             setDiagramAndSync((prev) => {
                 const filteredOmitIds = prev.voltageLevelToOmitIds.filter((id) => !vlIdsFromSvg.includes(id));
 
@@ -130,7 +132,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 };
             });
         },
-        [setDiagramAndSync]
+        [setDiagramAndSync, diagram.title]
     );
 
     const handleFetchError = useCallback((error: any) => {

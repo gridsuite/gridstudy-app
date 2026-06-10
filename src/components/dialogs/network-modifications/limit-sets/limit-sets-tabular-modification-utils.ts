@@ -23,7 +23,7 @@ import {
     TEMPORARY_LIMITS_MODIFICATION_TYPE,
     TYPE,
 } from '../../../utils/field-constants';
-import yup from '../../../utils/yup-config';
+import * as yup from 'yup';
 import type { UUID } from 'node:crypto';
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 import { APPLICABILITY } from '../../../network/constants';

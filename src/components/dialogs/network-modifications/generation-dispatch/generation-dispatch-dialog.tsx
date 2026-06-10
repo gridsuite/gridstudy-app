@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, snackWithFallback, useSnackMessage, DeepNullable } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DeepNullable,
+    snackWithFallback,
+    useSnackMessage,
+    YUP_REQUIRED,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
@@ -23,7 +29,7 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
@@ -72,9 +78,14 @@ const getGeneratorsFrequencyReserveSchema = () => {
                         [NAME]: yup.string().required(),
                     })
                 )
-                .min(1)
+                .min(1, YUP_REQUIRED)
                 .required(),
-            [FREQUENCY_RESERVE]: yup.number().nullable().min(0).max(100).required(),
+            [FREQUENCY_RESERVE]: yup
+                .number()
+                .nullable()
+                .min(0, 'NormalizedPercentage')
+                .max(100, 'NormalizedPercentage')
+                .required(),
         })
     );
 };
@@ -82,7 +93,7 @@ const getGeneratorsFrequencyReserveSchema = () => {
 const getSubstationsGeneratorsOrderingSchema = () => {
     return yup.array().of(
         yup.object().shape({
-            [SUBSTATION_IDS]: yup.array().of(yup.string().required()).min(1).required(),
+            [SUBSTATION_IDS]: yup.array().of(yup.string().required()).min(1, YUP_REQUIRED).required(),
         })
     );
 };

@@ -44,16 +44,17 @@ interface CustomTableCellProps {
 
 function EditableTableCell({ name, column, previousValue, valueModified, ...props }: Readonly<CustomTableCellProps>) {
     return (
-        <TableCell sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
+        <TableCell sx={{ padding: 0.5, maxWidth: column.maxWidth, verticalAlign: 'top' }}>
             {column.type === DndColumnType.NUMERIC ? (
                 <TableNumericalInput
                     name={name}
                     previousValue={previousValue}
                     valueModified={valueModified}
+                    hideErrorMessage={column.hideErrorMessage}
                     {...props}
                 />
             ) : (
-                <TableTextInput name={name} showErrorMsg={column.showErrorMsg} {...props} />
+                <TableTextInput name={name} hideErrorMessage={column.hideErrorMessage} {...props} />
             )}
         </TableCell>
     );

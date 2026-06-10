@@ -11,8 +11,9 @@ import {
     ReactiveCapabilityCurvePoints,
     SHUNT_COMPENSATOR_TYPES,
     type UseStateBooleanReturn,
-    yupConfig as yup,
+    YUP_REQUIRED,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import {
     MAX_Q_AT_NOMINAL_V,
     REACTIVE_CAPABILITY_CURVE,
@@ -80,7 +81,7 @@ export const getPrefilledModelSchema = () => {
             .default([])
             .when(RESTRICT_BY_FILTER, {
                 is: true,
-                then: (schema) => schema.min(1, 'FieldIsRequired'),
+                then: (schema) => schema.min(1, YUP_REQUIRED),
                 otherwise: (schema) => schema,
             }),
         [USE_CURRENT_GRID_STATE]: yup.boolean().required(),
@@ -176,7 +177,7 @@ export const mapShuntCompensatorToFormFields = (shuntCompensator: Record<string,
 
     if (formattedCompensator.type === undefined) {
         formattedCompensator.type =
-            formattedCompensator.maxSusceptance > 0
+            formattedCompensator.bPerSection > 0
                 ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
                 : SHUNT_COMPENSATOR_TYPES.REACTOR.id;
     }

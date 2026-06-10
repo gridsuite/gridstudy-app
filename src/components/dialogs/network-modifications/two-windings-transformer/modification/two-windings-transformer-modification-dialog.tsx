@@ -31,7 +31,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import {
     B,
     BUS_OR_BUSBAR_SECTION,
@@ -87,7 +87,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, Resolver } from 'react-hook-form';
 import { FORM_LOADING_DELAY, PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import TwoWindingsTransformerModificationDialogTabs from './two-windings-transformer-modification-dialog-tabs';
 import TwoWindingsTransformerCharacteristicsPane from '../characteristics-pane/two-windings-transformer-characteristics-pane';
@@ -201,7 +201,7 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         ...getCon1andCon2WithPositionValidationSchema(true),
         ...getCharacteristicsValidationSchema(true),
-        ...getLimitsValidationSchema(),
+        ...getLimitsValidationSchema(LIMITS, true),
         ...getStateEstimationValidationSchema(STATE_ESTIMATION),
         ...getRatioTapChangerValidationSchema(true),
         ...getPhaseTapChangerValidationSchema(true),
@@ -929,7 +929,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.STATE_ESTIMATION_TAB}
                             p={1}
                         >
-                            <Grid container spacing={2}>
+                            <Grid container>
                                 <BranchActiveReactivePowerMeasurementsForm equipmentToModify={twtToModify} />
                                 <ToBeEstimatedForm toBeEstimated={twtToModify?.toBeEstimated as ToBeEstimatedInfo} />
                             </Grid>

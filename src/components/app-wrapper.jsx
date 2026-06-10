@@ -6,10 +6,6 @@
  */
 
 import { useMemo } from 'react';
-// need to configure yup before creating any form schema as we have an issue where the form schema
-// is created before configuring the translation in yup, in that case it will take the default
-// behaviour of yup
-import './utils/yup-config';
 import App from './app';
 import {
     createTheme,
@@ -223,6 +219,9 @@ const lightTheme = createTheme({
         },
         highlightColor: '#1976D214',
     },
+    agGridBackground: {
+        color: 'white',
+    },
     networkModificationPanel: {
         backgroundColor: 'white',
         border: 'solid 1px #babfc7',
@@ -338,6 +337,9 @@ const darkTheme = createTheme({
             background: '#121212',
         },
         highlightColor: '#90CAF929',
+    },
+    agGridBackground: {
+        color: '#383838',
     },
     networkModificationPanel: {
         backgroundColor: '#252525',
