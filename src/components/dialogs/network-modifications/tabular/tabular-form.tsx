@@ -98,7 +98,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     }, [equipmentType, dialogMode]);
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>();
-    const [selectedFileError, setSelectedFileError] = useState<string | undefined>();
+    const [fileErrorMessage, setFileErrorMessage] = useState<string | undefined>();
 
     const parseConfig = useMemo<Partial<Papa.ParseConfig<Record<string, unknown>>>>(
         () => ({
@@ -369,7 +369,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         setValue(CSV_FILENAME, undefined);
         setValue(TABULAR_PROPERTIES, []);
         setSelectedFile(undefined);
-        setSelectedFileError(undefined);
+        setFileErrorMessage(undefined);
     }, [clearErrors, setValue]);
 
     const equipmentTypeField = (
@@ -502,14 +502,14 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                         parseConfig={parseConfig}
                         selectedFile={selectedFile}
                         onFileChange={setSelectedFile}
-                        onFileError={setSelectedFileError}
+                        onFileError={setFileErrorMessage}
                         onComplete={handleComplete}
                     />
                 </Grid>
             </Grid>
-            {selectedFileError && (
+            {fileErrorMessage && (
                 <Grid>
-                    <Alert severity="error">{selectedFileError}</Alert>
+                    <Alert severity="error">{fileErrorMessage}</Alert>
                 </Grid>
             )}
             {equipmentType && (

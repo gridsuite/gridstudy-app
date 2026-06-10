@@ -73,7 +73,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     });
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>();
-    const [selectedFileError, setSelectedFileError] = useState<string | undefined>();
+    const [fileErrorMessage, setFileErrorMessage] = useState<string | undefined>();
 
     const parseConfig = useMemo<Partial<Papa.ParseConfig<Record<string, unknown>>>>(
         () => ({
@@ -201,7 +201,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         tableRef.current?.replace([]);
         setValue(CSV_FILENAME, undefined);
         setSelectedFile(undefined);
-        setSelectedFileError(undefined);
+        setFileErrorMessage(undefined);
     }, [clearErrors, setValue]);
 
     const csvFilename = getValues(CSV_FILENAME);
@@ -302,14 +302,14 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         parseConfig={parseConfig}
                         selectedFile={selectedFile}
                         onFileChange={setSelectedFile}
-                        onFileError={setSelectedFileError}
+                        onFileError={setFileErrorMessage}
                         onComplete={handleComplete}
                     />
                 </Grid>
             </Grid>
-            {selectedFileError && (
+            {fileErrorMessage && (
                 <Grid>
-                    <Alert severity="error">{selectedFileError}</Alert>
+                    <Alert severity="error">{fileErrorMessage}</Alert>
                 </Grid>
             )}
             {equipmentType && (

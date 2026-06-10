@@ -35,12 +35,12 @@ export const ImportRuleDialog = ({
     const { CSVDownloader } = useCSVDownloader();
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>();
-    const [selectedFileError, setSelectedFileError] = useState<string | undefined>();
+    const [fileErrorMessage, setFileErrorMessage] = useState<string | undefined>();
     const [parsedResults, setParsedResults] = useState<Papa.ParseResult<Record<string, string>> | undefined>();
 
     useEffect(() => {
         setSelectedFile(undefined);
-        setSelectedFileError(undefined);
+        setFileErrorMessage(undefined);
         setParsedResults(undefined);
     }, [openImportRuleDialog]);
 
@@ -54,15 +54,15 @@ export const ImportRuleDialog = ({
     };
 
     const handleSave = () => {
-        if (!selectedFileError && parsedResults) {
+        if (!fileErrorMessage && parsedResults) {
             handleImportTapRule(parsedResults);
             handleCloseDialog();
         }
     };
 
     const isInvalid = useMemo(() => {
-        return typeof parsedResults === 'undefined' || typeof selectedFileError !== 'undefined';
-    }, [parsedResults, selectedFileError]);
+        return typeof parsedResults === 'undefined' || typeof fileErrorMessage !== 'undefined';
+    }, [parsedResults, fileErrorMessage]);
 
     return (
         <Dialog open={openImportRuleDialog} fullWidth={true}>
@@ -91,13 +91,13 @@ export const ImportRuleDialog = ({
                             parseConfig={parseConfig}
                             selectedFile={selectedFile}
                             onFileChange={setSelectedFile}
-                            onFileError={setSelectedFileError}
+                            onFileError={setFileErrorMessage}
                             onComplete={setParsedResults}
                         />
                     </Grid>
-                    {selectedFileError && (
+                    {fileErrorMessage && (
                         <Grid>
-                            <Alert severity="error">{selectedFileError}</Alert>
+                            <Alert severity="error">{fileErrorMessage}</Alert>
                         </Grid>
                     )}
                 </Grid>
