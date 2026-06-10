@@ -13,7 +13,6 @@ import {
     DndColumnType,
     DndTable,
     ElementType,
-    PARAM_DEVELOPER_MODE,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -57,7 +56,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { ACTION, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
 import * as yup from 'yup';
 import { UUID } from 'node:crypto';
-import { useParameterState } from './parameters/use-parameters-state';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -175,7 +173,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [activeStep, setActiveStep] = useState(STEP_SELECTION);
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -266,12 +263,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             reset(emptyFormData);
         }
     }, [open, reset]);
-
-    useEffect(() => {
-        if (!isDeveloperMode && action === CompositeModificationAction.INSERT) {
-            setValue(ACTION, CompositeModificationAction.SPLIT, { shouldValidate: true });
-        }
-    }, [isDeveloperMode, action, setValue]);
 
     const handleInlineSelectionChange = useCallback(
         (selectedElements: TreeViewFinderNodeProps[]) => {
@@ -425,7 +416,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                                             value={CompositeModificationAction.INSERT}
                                             control={<Radio />}
                                             label={<FormattedMessage id="importComposites.action.insert" />}
-                                            disabled={!isDeveloperMode}
                                         />
                                     </RadioGroup>
                                 </FormControl>
