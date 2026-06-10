@@ -82,7 +82,7 @@ export const ImportRuleDialog = ({
                             </Button>
                         </CSVDownloader>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                         <CsvPicker<Record<string, string>>
                             label={ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule'}
                             header={csvColumns}
