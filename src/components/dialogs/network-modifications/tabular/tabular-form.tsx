@@ -357,15 +357,6 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         setIsFetching(dataFetching);
     }, [dataFetching]);
 
-    useEffect(() => {
-        if (selectedFileError) {
-            tableRef.current?.replace([]);
-            setValue(CSV_FILENAME, undefined);
-            clearErrors(MODIFICATIONS_TABLE);
-            setIsFetching(false);
-        }
-    }, [clearErrors, selectedFileError, setValue]);
-
     const typesOptions = useMemo(() => {
         return Object.keys(
             dialogMode === TabularModificationType.CREATION ? TABULAR_CREATION_FIELDS : TABULAR_MODIFICATION_FIELDS

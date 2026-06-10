@@ -95,7 +95,7 @@ export const ImportRuleDialog = ({
                             onComplete={setParsedResults}
                         />
                     </Grid>
-                    {selectedFile && selectedFileError && (
+                    {selectedFileError && (
                         <Grid>
                             <Alert severity="error">{selectedFileError}</Alert>
                         </Grid>

@@ -218,17 +218,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         setIsFetching(dataFetching);
     }, [dataFetching]);
 
-    console.log('selectedFileError', selectedFileError);
-
-    useEffect(() => {
-        if (selectedFileError) {
-            tableRef.current?.replace([]);
-            setValue(CSV_FILENAME, undefined);
-            clearErrors(MODIFICATIONS_TABLE);
-            setIsFetching(false);
-        }
-    }, [clearErrors, selectedFileError, setValue]);
-
     const equipmentTypeField = (
         <InputWithPopupConfirmation
             Input={AutocompleteInput}
