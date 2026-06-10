@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { type SpreadsheetEquipmentsByNodes, type SpreadsheetEquipmentType } from '../types/spreadsheet.type';
 import type { UUID } from 'node:crypto';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +21,7 @@ export function useFetchEquipment() {
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const [fetchFailed, setFetchFailed] = useState<boolean>(false);
 
     // Track the latest fetch version per equipment type to ignore stale responses
     const fetchVersionRef = useRef<Map<SpreadsheetEquipmentType, number>>(new Map());
@@ -74,6 +75,7 @@ export function useFetchEquipment() {
                     })
                     .catch((error) => {
                         if (fetchVersionRef.current.get(type) === currentVersion) {
+                            setFetchFailed(true);
                             snackWithFallback(snackError, error, { headerId: 'SpreadsheetFetchError' });
                         }
                     })
@@ -87,5 +89,9 @@ export function useFetchEquipment() {
         [currentRootNetworkUuid, dispatch, snackError, studyUuid]
     );
 
-    return { fetchNodesEquipmentData };
+    const resetFetchFailed = useCallback(() => {
+        setFetchFailed(false);
+    }, [setFetchFailed]);
+
+    return { fetchNodesEquipmentData, fetchFailed, resetFetchFailed };
 }

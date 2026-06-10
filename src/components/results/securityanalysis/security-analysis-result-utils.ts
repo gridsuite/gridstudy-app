@@ -609,21 +609,15 @@ export const securityAnalysisTableNmKCutOffPowerColumnsDefinition = (
                 isChildren: false,
             })
         ),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
+        makeAgGridCustomHeaderColumn({
+            ...makeAgGridFloatColumn(
                 'disconnectedGenerationActivePower',
                 'disconnectedGenerationActivePower',
                 intl,
                 filterParams,
                 { ...sortParams, isChildren: false }
-            )
-        ),
-        //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
-        //it is used for sorting actions
-        makeAgGridCustomHeaderColumn({
-            colId: 'linkedElementId',
-            field: 'linkedElementId',
-            hide: true,
+            ),
+            hide: false,
         }),
     ];
 };

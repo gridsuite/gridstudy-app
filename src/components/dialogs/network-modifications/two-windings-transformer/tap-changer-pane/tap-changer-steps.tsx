@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
-import { Grid, IconButton, Tooltip } from '@mui/material';
+import { Grid2 as Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import type Papa from 'papaparse';
 import { useIntl } from 'react-intl';
@@ -286,16 +286,10 @@ const TapChangerSteps = ({
     const isTapModified = useCallback(() => areStepsModified, [areStepsModified]);
 
     return (
-        <Grid item container spacing={1}>
-            <Grid item xs={4}>
-                {lowTapPositionField}
-            </Grid>
-            <Grid item xs={4}>
-                {highTapPositionField}
-            </Grid>
-            <Grid item xs={4}>
-                {tapPositionField}
-            </Grid>
+        <Grid container spacing={1}>
+            <Grid size={4}>{lowTapPositionField}</Grid>
+            <Grid size={4}>{highTapPositionField}</Grid>
+            <Grid size={4}>{tapPositionField}</Grid>
 
             <DndTable
                 name={`${tapChanger}.${STEPS}`}
