@@ -228,7 +228,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         [dispatchPagination]
     );
 
-    const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
+    const { result: filterEnums } = useFetchFiltersEnums();
 
     useEffect(() => {
         if (result && tabIndexRef.current === NMK_RESULTS_TAB_INDEX) {

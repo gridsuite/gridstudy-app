@@ -12,7 +12,7 @@ import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { RunningStatusMessage } from '../../utils/aggrid-rows-handler';
 import RunningStatus from '../../utils/running-status';
-import { PreContingencyResult } from '@gridsuite/commons-ui/features/results/securityanalysis/security-analysis.type';
+import { PreContingencyResult } from '@gridsuite/commons-ui';
 
 export enum RESULT_TYPE {
     N = 'N',

@@ -10,9 +10,8 @@ import { SecurityAnalysisNTableRow, SecurityAnalysisResultNProps } from './secur
 import { IntlShape, useIntl } from 'react-intl';
 import { translateLimitNameBackToFront } from '../common/utils';
 import { MAX_INT32 } from 'services/utils';
-import { SecurityAnalysisTable } from '@gridsuite/commons-ui';
+import { PreContingencyResult, SecurityAnalysisTable } from '@gridsuite/commons-ui';
 import { getNoRowsMessage } from '../../utils/aggrid-rows-handler';
-import { PreContingencyResult } from '@gridsuite/commons-ui/features/results/securityanalysis/security-analysis.type';
 
 export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNProps> = ({
     result,
