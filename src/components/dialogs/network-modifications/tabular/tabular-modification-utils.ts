@@ -9,6 +9,7 @@ import {
     CONNECTION_DIRECTIONS,
     convertInputValue,
     convertOutputValue,
+    ENERGY_SOURCES,
     FieldConstants,
     FieldType,
     MODIFICATION_TYPES,
@@ -100,7 +101,6 @@ import {
 import {
     APPLICABILITY,
     BOOLEAN,
-    ENERGY_SOURCES,
     ENUM,
     LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,

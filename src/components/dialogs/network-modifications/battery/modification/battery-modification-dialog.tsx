@@ -81,7 +81,7 @@ export default function BatteryModificationDialog({
         resolver: yupResolver<DeepNullable<BatteryModificationFormData>>(batteryModificationFormSchema),
     });
 
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (editData: BatteryModificationDto) => {
@@ -145,16 +145,6 @@ export default function BatteryModificationDialog({
                     .then((value: BatteryFormInfos) => {
                         if (value) {
                             const previousReactiveCapabilityCurveTable = value?.reactiveCapabilityCurvePoints;
-                            if (previousReactiveCapabilityCurveTable) {
-                                setValue(
-                                    `${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE}` as any,
-                                    previousReactiveCapabilityCurveTable
-                                );
-                            }
-                            setValue(
-                                `${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE}` as any,
-                                value?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
-                            );
                             setBatteryToModify({
                                 ...value,
                                 reactiveCapabilityCurvePoints: previousReactiveCapabilityCurveTable,
@@ -164,7 +154,18 @@ export default function BatteryModificationDialog({
                                     ...formValues,
                                     [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
+                                    ...(!isUpdate && previousReactiveCapabilityCurveTable
+                                        ? {
+                                              [FieldConstants.REACTIVE_LIMITS]: {
+                                                  ...formValues[FieldConstants.REACTIVE_LIMITS],
+                                                  [FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
+                                                  [FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE]:
+                                                      previousReactiveCapabilityCurveTable,
+                                              },
+                                          }
+                                        : {}),
                                 }),
+
                                 { keepDirty: true }
                             );
                         }
@@ -172,6 +173,9 @@ export default function BatteryModificationDialog({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                         if (editData?.equipmentId !== equipmentId) {
                             setBatteryToModify(null);
                         }
@@ -181,7 +185,16 @@ export default function BatteryModificationDialog({
                 setBatteryToModify(null);
             }
         },
-        [studyUuid, currentNode, currentRootNetworkUuid, getValues, setValue, setValuesAndEmptyOthers, reset, editData]
+        [
+            studyUuid,
+            currentNode.id,
+            currentRootNetworkUuid,
+            reset,
+            getValues,
+            isUpdate,
+            editData?.equipmentId,
+            setValuesAndEmptyOthers,
+        ]
     );
 
     useEffect(() => {

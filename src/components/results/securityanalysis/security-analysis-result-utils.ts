@@ -11,9 +11,11 @@ import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
     LimitViolation,
+    CutOffPowerFromConstraintsItem,
     RESULT_TYPE,
     SecurityAnalysisNmkTableRow,
     SubjectIdRendererType,
+    NMK_TYPE,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
@@ -160,6 +162,23 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                 });
             });
         }
+    });
+
+    return rows;
+};
+
+export const mapNmKResultsCutOffPower = (result: CutOffPowerFromConstraintsItem[] | null) => {
+    const rows: SecurityAnalysisNmkTableRow[] = [];
+    if (!result) {
+        return undefined;
+    }
+    result?.forEach(({ contingencyId, status, connectivityResult }: CutOffPowerFromConstraintsItem) => {
+        rows.push({
+            contingencyId: contingencyId,
+            status: status,
+            disconnectedLoadActivePower: connectivityResult?.disconnectedLoadActivePower,
+            disconnectedGenerationActivePower: connectivityResult?.disconnectedGenerationActivePower,
+        });
     });
 
     return rows;
@@ -561,6 +580,49 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     ];
 };
 
+export const securityAnalysisTableNmKCutOffPowerColumnsDefinition = (
+    intl: IntlShape,
+    filterEnums: FilterEnumsType,
+    getEnumLabel: (value: string) => string,
+    tabIndex: number
+): ColDef[] => {
+    const { sortParams, filterParams } = createTableParams(tabIndex);
+
+    return [
+        makeAgGridCustomHeaderColumn({
+            ...makeAgGridStringColumn('Contingency', 'contingencyId', intl, filterParams, {
+                ...sortParams,
+                isChildren: false,
+            }),
+        }),
+        createEnumColumn(
+            'status',
+            'ComputationStatus',
+            filterEnums['status'] ?? [],
+            getEnumLabel,
+            intl,
+            { ...sortParams, isChildren: false },
+            filterParams
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('disconnectedLoadActivePower', 'disconnectedLoadActivePower', intl, filterParams, {
+                ...sortParams,
+                isChildren: false,
+            })
+        ),
+        makeAgGridCustomHeaderColumn({
+            ...makeAgGridFloatColumn(
+                'disconnectedGenerationActivePower',
+                'disconnectedGenerationActivePower',
+                intl,
+                filterParams,
+                { ...sortParams, isChildren: false }
+            ),
+            hide: false,
+        }),
+    ];
+};
+
 export const handlePostSortRows = (isFromContingency: boolean) => (params: PostSortRowsParams) => {
     const agGridRows = params.nodes;
     const idField = isFromContingency ? 'contingencyId' : 'subjectId';
@@ -732,10 +794,12 @@ export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> =
     patlLoading: 'contingencyLimitViolations.patlLoading',
 };
 
-export enum NMK_TYPE {
-    CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
-    CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
-}
+export const FROM_COLUMN_TO_FIELD_NMK_POWER_CUT_OFF: Record<string, string> = {
+    contingencyId: 'contingencyId',
+    status: 'status',
+    disconnectedLoadActivePower: 'connectivityResult.disconnectedLoadActivePower',
+    disconnectedGenerationActivePower: 'connectivityResult.disconnectedGenerationActivePower',
+};
 
 export const mappingColumnToField = (resultType: RESULT_TYPE) => {
     switch (resultType) {
@@ -745,6 +809,8 @@ export const mappingColumnToField = (resultType: RESULT_TYPE) => {
             return FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES;
         case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
             return FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS;
+        case RESULT_TYPE.NMK_CUT_OFF_POWER:
+            return FROM_COLUMN_TO_FIELD_NMK_POWER_CUT_OFF;
     }
 };
 
@@ -777,3 +843,9 @@ export const getStoreFields = (index: number): string => {
             return '';
     }
 };
+
+export const NMK_SUBTABS = [
+    { messageId: 'ConstraintsFromContingencies', value: NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES },
+    { messageId: 'ContingenciesFromConstraints', value: NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS },
+    { messageId: 'CutOffPowerFromConstraints', value: NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS },
+] as const;

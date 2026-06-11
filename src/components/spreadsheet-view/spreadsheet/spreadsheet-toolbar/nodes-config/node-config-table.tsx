@@ -30,7 +30,7 @@ const NodeConfigTable = () => {
         name: `${NODES_ALIASES}`,
     });
 
-    const NODES_ALIASES_COLUMNS_DEFINITIONS: DndColumn[] = useMemo(() => {
+    const NODES_ALIASES_COLUMNS_DEFINITIONS = useMemo<DndColumn[]>(() => {
         return [
             {
                 label: intl.formatMessage({ id: 'spreadsheet/parameter_aliases/node_alias' }),
@@ -38,7 +38,6 @@ const NodeConfigTable = () => {
                 type: DndColumnType.TEXT,
                 editable: true,
                 initialValue: '',
-                showErrorMsg: true,
                 width: '45%',
                 maxWidth: '45%',
             },
@@ -52,7 +51,7 @@ const NodeConfigTable = () => {
                 width: '45%',
                 maxWidth: '45%',
             },
-        ];
+        ] satisfies DndColumn[];
     }, [intl, nodeNames]);
 
     const newAliasRowData = useMemo(() => {
