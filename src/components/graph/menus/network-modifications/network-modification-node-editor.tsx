@@ -177,9 +177,10 @@ const NetworkModificationNodeEditor = () => {
         []
     );
 
+    // TODO : this is temporary, until copy/paste/save is done for the shared modifications :
     const selectionContainsShared: boolean = useMemo(() => {
         return selectedNetworkModifications.some(
-            (modification) => modification.type === ModificationType.MODIFICATION_REFERENCE
+            (modification: ComposedModificationMetadata) => modification.type === ModificationType.MODIFICATION_REFERENCE
         );
     }, [selectedNetworkModifications]);
 
