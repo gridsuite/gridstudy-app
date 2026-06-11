@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import RunningStatus from 'components/utils/running-status';
 import {
@@ -161,7 +161,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         setShowLabels((oldShowLabels) => !oldShowLabels);
     }, []);
 
-    const handleToggleHover: OnToggleNadHoverCallbackType = useCallback(
+    const handleToggleHover: OnToggleNadHoverCallbackType = useEffectEvent(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
             // Do not show the hover in edit mode
             if (isEditNadModeRef.current) {
@@ -185,24 +185,20 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
             } else {
                 setShouldDisplayTooltip(false);
             }
-        },
-        []
+        }
     );
 
-    const handleNodeLeftClick: OnSelectNodeCallbackType = useCallback(
-        (equipmentId, nodeId, mousePosition) => {
-            if (mousePosition && !loadingState) {
-                if (isEditNadModeRef.current) {
-                    setSelectedVoltageLevelId(equipmentId);
-                    setShouldDisplayMenu(true);
-                    setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
-                } else {
-                    onVoltageLevelClick(equipmentId);
-                }
+    const handleNodeLeftClick: OnSelectNodeCallbackType = useEffectEvent((equipmentId, nodeId, mousePosition) => {
+        if (mousePosition && !loadingState) {
+            if (isEditNadModeRef.current) {
+                setSelectedVoltageLevelId(equipmentId);
+                setShouldDisplayMenu(true);
+                setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+            } else {
+                onVoltageLevelClick(equipmentId);
             }
-        },
-        [onVoltageLevelClick, loadingState]
-    );
+        }
+    });
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
@@ -277,7 +273,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         onOpenDynamicSimulationEventDialog: handleOpenDynamicSimulationEventDialog,
     });
 
-    const showEquipmentMenu = useCallback(
+    const showEquipmentMenu = useEffectEvent(
         (svgId: string, equipmentId: string, equipmentType: string, mousePosition: Point) => {
             if (isEditNadModeRef.current || !equipmentsWithContextualMenu.includes(equipmentType)) {
                 return;
@@ -336,8 +332,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     openMenu(convertedType.equipmentType, convertedType.equipmentSubtype ?? null);
                 }
             }
-        },
-        [additionalMetadata, openEquipmentMenu, currentNode?.id, currentRootNetworkUuid, studyUuid, snackError]
+        }
     );
 
     const handleAddVoltageLevel = useCallback(
@@ -391,17 +386,14 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         [voltageLevelIds, voltageLevelToExpandIds, voltageLevelToOmitIds, onUpdateVoltageLevels]
     );
 
-    const handleMoveNode = useCallback(
-        (equipmentId: string, nodeId: string, x: number, y: number) => {
-            const updatedPositions = positionsRef.current.map((position) =>
-                position.voltageLevelId === equipmentId ? { ...position, xPosition: x, yPosition: y } : position
-            );
-            onUpdatePositions(updatedPositions);
-        },
-        [onUpdatePositions]
-    );
+    const handleMoveNode = useEffectEvent((equipmentId: string, nodeId: string, x: number, y: number) => {
+        const updatedPositions = positionsRef.current.map((position) =>
+            position.voltageLevelId === equipmentId ? { ...position, xPosition: x, yPosition: y } : position
+        );
+        onUpdatePositions(updatedPositions);
+    });
 
-    const handleMoveTextnode = useCallback(
+    const handleMoveTextnode = useEffectEvent(
         (equipmentId: string, vlNodeId: string, textNodeId: string, shiftX: number, shiftY: number) => {
             const updatedPositions = positionsRef.current.map((position) =>
                 position.voltageLevelId === equipmentId
@@ -409,8 +401,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     : position
             );
             onUpdatePositions(updatedPositions);
-        },
-        [onUpdatePositions]
+        }
     );
 
     const handleReplaceNadConfig = useCallback(
@@ -504,8 +495,13 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 onRightClickCallback: showEquipmentMenu,
                 initialViewBox:
                     diagramViewerRef.current?.getViewBox() ?? initialLocalStorageViewBox.current ?? undefined,
-                enableAdaptiveTextZoom: true,
-                adaptiveTextZoomThreshold: 9000,
+                adaptiveTextZoom: {
+                    enabled: true,
+                    threshold: 9000,
+                    edgeMiddleLabelThreshold: 3000,
+                    edgeSideLabelThreshold: 2000,
+                    edgeMiddleArrowThreshold: 8000,
+                },
             };
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
@@ -514,32 +510,29 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 nadViewerParameters
             );
 
-            // Repositioning the nodes with specified positions
+            // Repositioning the nodes with specified positions.
+            // Skip nodes already at their SVG-rendered position to avoid redundant DOM work.
             if (positionsRef.current.length > 0) {
+                const svgMetaPositionMap = new Map(
+                    svgMetadata?.nodes.map((node) => [node.equipmentId, { x: node.x, y: node.y }]) ?? []
+                );
                 for (const position of positionsRef.current) {
                     if (position.xPosition !== undefined && position.yPosition !== undefined) {
-                        diagramViewer.moveNodeToCoordinates(
-                            position.voltageLevelId,
-                            position.xPosition,
-                            position.yPosition
-                        );
+                        const metaPos = svgMetaPositionMap.get(position.voltageLevelId);
+                        if (metaPos?.x !== position.xPosition || metaPos.y !== position.yPosition) {
+                            diagramViewer.moveNodeToCoordinates(
+                                position.voltageLevelId,
+                                position.xPosition,
+                                position.yPosition
+                            );
+                        }
                     }
                 }
             }
             // We keep a reference of the diagram viewer to get its viewbox for the next render.
             diagramViewerRef.current = diagramViewer;
         }
-    }, [
-        svg,
-        svgMetadata,
-        nadPanelId,
-        loadingState,
-        handleMoveNode,
-        handleMoveTextnode,
-        handleNodeLeftClick,
-        handleToggleHover,
-        showEquipmentMenu,
-    ]);
+    }, [svg, svgMetadata, nadPanelId, loadingState]);
 
     const closeMenu = () => {
         setMenuAnchorPosition(null);

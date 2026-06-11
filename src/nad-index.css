@@ -311,16 +311,19 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 :is(.nad-zoom-3500) .nad-text-nodes {
     font-size: 45px;
 }
+:is(.nad-zoom-3000) .nad-text-nodes {
+    font-size: 45px;
+}
 :is(.nad-zoom-2500) .nad-text-nodes {
     font-size: 35px;
 }
-:is( .nad-zoom-3500, .nad-zoom-5000, .nad-zoom-6000) .nad-bus-descr {
+:is( .nad-zoom-3500, .nad-zoom-5000, .nad-zoom-6000, .nad-zoom-3000) .nad-bus-descr {
     display: none;
 }
 :is( .nad-zoom-5000) .nad-permanent-limit-percentage {
     display: none;
 }
-:is(.nad-zoom-2500, .nad-zoom-3500, .nad-zoom-5000) .nad-arrow-out.nad-permanent-limit-percentage {
+:is(.nad-zoom-2500, .nad-zoom-3000, .nad-zoom-3500, .nad-zoom-5000) .nad-arrow-out.nad-permanent-limit-percentage {
     display: inline;
 }
 /* Make arrows scale with zoom */
@@ -328,6 +331,9 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
     stroke-width: 2px;
 }
 :is(.nad-zoom-3500) .nad-edge-infos path {
+    stroke-width: 8px;
+}
+:is(.nad-zoom-3000) .nad-edge-infos path {
     stroke-width: 8px;
 }
 .nad-zoom-5000 .nad-edge-infos path {
