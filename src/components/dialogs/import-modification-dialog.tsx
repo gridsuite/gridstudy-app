@@ -176,8 +176,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
     const [activeStep, setActiveStep] = useState(STEP_SELECTION);
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-    // true = Next button disabled; starts disabled until TreeViewFinder signals a valid selection
-    const [isNextDisabled, setIsNextDisabled] = useState(true);
 
     const formMethods = useForm<FormSchemaType>({
         defaultValues: emptyFormData,
@@ -197,6 +195,9 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const action = watch(ACTION);
     const selectedModifications = watch(SELECTED_MODIFICATIONS);
     const isInsertMode = action === CompositeModificationAction.INSERT;
+    // Next is enabled as soon as at least one element is selected; derived from the
+    // form so it survives step changes and folder expansions.
+    const isNextDisabled = selectedModifications.length === 0;
 
     // useFieldArray — consumed by DndTable
     const useFieldArrayOutput = useFieldArray({
@@ -218,12 +219,12 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         []
     );
 
-    // SPLIT mode — name is read-only, drag-and-drop only
+    // SPLIT mode — read-only, always shows the original composite name (never the user input)
     const splitColumnsDefinition: DndColumn[] = useMemo(
         () => [
             {
                 label: '',
-                dataKey: 'name',
+                dataKey: 'originalName',
                 initialValue: '',
                 editable: false,
                 width: '75%',
@@ -257,7 +258,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         if (open) {
             setActiveStep(STEP_SELECTION);
             setIsSelectorOpen(true);
-            setIsNextDisabled(true); // reset on each open
         } else {
             setIsSelectorOpen(false);
             reset(emptyFormData);
@@ -276,7 +276,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 shouldValidate: true,
                 shouldDirty: true,
             });
-            setIsNextDisabled(selectedElements.length === 0);
         },
         [setValue]
     );
@@ -296,7 +295,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 id: e.id as UUID,
                 name: e.name,
                 originalName: e.name,
-                isShared: false, // actually is false, to be computed later
+                isShared: false, // currently always false, to be computed later when shared modifications are added
             }));
 
             setValue(SELECTED_MODIFICATIONS, newRows, {
@@ -331,7 +330,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
         const modificationsToInsert: ModificationPair[] = rows.map((m) => ({
             first: m.id,
-            second: m.name,
+            second: formMethods.getValues(ACTION) === CompositeModificationAction.SPLIT ? m.originalName : m.name,
         }));
 
         insertCompositeModifications(
@@ -381,20 +380,28 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                     <Divider sx={{ mt: 2 }} />
                     {/* ======================================================
                         STEP 1 — SELECTION
+                        The selector stays mounted (hidden in step 2) so its internal
+                        selection persists when navigating back and forth, keeping the
+                        checkmarks visible and the Next button consistent.
                         ====================================================== */}
-                    {activeStep === STEP_SELECTION && (
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-                            <DirectoryItemSelector
-                                open={isSelectorOpen}
-                                onClose={handleSelectModification}
-                                types={[ElementType.MODIFICATION]}
-                                multiSelect
-                                inline
-                                onSelectionChange={handleInlineSelectionChange}
-                                title={intl.formatMessage({ id: 'ModificationsSelection' })}
-                            />
-                        </Box>
-                    )}
+                    <Box
+                        sx={{
+                            display: activeStep === STEP_SELECTION ? 'flex' : 'none',
+                            flexDirection: 'column',
+                            gap: 2,
+                            mt: 2,
+                        }}
+                    >
+                        <DirectoryItemSelector
+                            open={isSelectorOpen}
+                            onClose={handleSelectModification}
+                            types={[ElementType.MODIFICATION]}
+                            multiSelect
+                            inline
+                            onSelectionChange={handleInlineSelectionChange}
+                            title={intl.formatMessage({ id: 'ModificationsSelection' })}
+                        />
+                    </Box>
                     {/* ======================================================
                         STEP 2 — ORGANIZATION & SHARING
                         ====================================================== */}
