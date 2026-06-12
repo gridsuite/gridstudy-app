@@ -324,7 +324,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         [handleGeneratePrefilledModel]
     );
 
-    const handleComplete = useCallback(
+    const getDataFromCsvFile = useCallback(
         (results: Papa.ParseResult<Record<string, unknown>>, file: File) => {
             clearErrors(MODIFICATIONS_TABLE);
             if (dialogMode === TabularModificationType.CREATION) {
@@ -332,15 +332,13 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             } else {
                 handleTabularModificationParsingError(results);
             }
-            const rowsWithUuid = results.data.map((row) => ({
+            setValue(CSV_FILENAME, file.name);
+            return results.data.map((row) => ({
                 [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
                 ...row,
             }));
-            tableRef.current?.replace(rowsWithUuid);
-            setValue(CSV_FILENAME, file.name);
-            setIsFetching(false);
         },
-        [clearErrors, dialogMode, setValue, handleTabularCreationParsingError, handleTabularModificationParsingError]
+        [clearErrors, dialogMode, handleTabularCreationParsingError, handleTabularModificationParsingError, setValue]
     );
 
     useEffect(() => {
@@ -503,7 +501,9 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                         selectedFile={selectedFile}
                         onFileChange={setSelectedFile}
                         onFileError={setFileErrorMessage}
-                        onComplete={handleComplete}
+                        getTableData={() => getValues(MODIFICATIONS_TABLE)}
+                        onReplace={(results, file) => tableRef.current?.replace(getDataFromCsvFile(results, file))}
+                        onAppend={(results, file) => tableRef.current?.append(getDataFromCsvFile(results, file))}
                     />
                 </Grid>
             </Grid>

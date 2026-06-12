@@ -90,7 +90,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         [intl, language]
     );
 
-    const handleComplete = useCallback(
+    const getDataFromCsvFile = useCallback(
         (results: Papa.ParseResult<Record<string, unknown>>, file: File) => {
             clearErrors(MODIFICATIONS_TABLE);
             let requiredFieldNameInError: string = '';
@@ -136,7 +136,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         message: intl.formatMessage({ id: 'FieldRequired' }, { requiredFieldNameInError: keyLabel }),
                     });
                 }
-                setIsFetching(false);
                 setFieldTypeError(
                     fieldTypeInError,
                     expectedTypeForFieldInError,
@@ -147,13 +146,11 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                 );
             }
 
-            const rowsWithUuid = results.data.map((row) => ({
+            setValue(CSV_FILENAME, file.name);
+            return results.data.map((row) => ({
                 [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
                 ...row,
             }));
-            tableRef.current?.replace(rowsWithUuid);
-            setValue(CSV_FILENAME, file.name);
-            setIsFetching(false);
         },
         [clearErrors, csvColumns, intl, setError, setValue]
     );
@@ -303,7 +300,9 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         selectedFile={selectedFile}
                         onFileChange={setSelectedFile}
                         onFileError={setFileErrorMessage}
-                        onComplete={handleComplete}
+                        getTableData={() => getValues(MODIFICATIONS_TABLE)}
+                        onReplace={(results, file) => tableRef.current?.replace(getDataFromCsvFile(results, file))}
+                        onAppend={(results, file) => tableRef.current?.append(getDataFromCsvFile(results, file))}
                     />
                 </Grid>
             </Grid>
