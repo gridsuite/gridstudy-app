@@ -28,7 +28,7 @@ import {
     SHUNT_COMPENSATOR_SELECTED,
     VOLTAGE_LEVEL,
 } from '../../../../../utils/field-constants';
-import yup from '../../../../../utils/yup-config';
+import * as yup from 'yup';
 import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,

@@ -17,7 +17,7 @@ import {
     SPECIFIC_METADATA,
     TYPE,
 } from '../../../../../utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { AnyObject, TestContext, TestFunction } from 'yup';
 import {
     EquipmentType,
@@ -30,6 +30,7 @@ import {
     OHM,
     PERCENTAGE,
     SIEMENS,
+    YUP_REQUIRED,
 } from '@gridsuite/commons-ui';
 
 export type EquipmentField = {
@@ -189,7 +190,7 @@ export function getFormulaSchema() {
                     })
                 )
                 .required()
-                .min(1, 'FieldIsRequired'),
+                .min(1, YUP_REQUIRED),
             [EDITED_FIELD]: yup.string().required(),
             [OPERATOR]: yup.string().required(),
             [REFERENCE_FIELD_OR_VALUE_1]: yup

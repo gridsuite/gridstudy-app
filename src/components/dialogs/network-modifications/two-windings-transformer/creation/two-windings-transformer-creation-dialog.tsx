@@ -19,6 +19,7 @@ import {
     FieldType,
     getConnectivityFormData,
     getPropertiesFromModification,
+    REGULATION_TYPES,
     sanitizeString,
     snackWithFallback,
     toModificationProperties,
@@ -26,7 +27,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Breakpoint, Grid } from '@mui/material';
+import { Breakpoint, Grid2 as Grid } from '@mui/material';
 import {
     B,
     BUS_OR_BUSBAR_SECTION,
@@ -72,14 +73,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Resolver, useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import {
-    FORM_LOADING_DELAY,
-    PHASE_REGULATION_MODES,
-    RATIO_REGULATION_MODES,
-    REGULATION_TYPES,
-    SIDE,
-} from 'components/network/constants';
-import yup from 'components/utils/yup-config';
+import { FORM_LOADING_DELAY, PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, SIDE } from 'components/network/constants';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     getPhaseTapChangerEmptyFormData,

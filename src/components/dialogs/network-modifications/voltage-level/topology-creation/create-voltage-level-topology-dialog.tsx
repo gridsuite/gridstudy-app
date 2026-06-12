@@ -18,7 +18,7 @@ import {
     DeepNullable,
     MAX_SECTIONS_COUNT,
 } from '@gridsuite/commons-ui';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateVoltageLevelTopologyDialogSchemaForm } from './create-voltage-level-topology-dialog.type';

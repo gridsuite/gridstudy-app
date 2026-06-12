@@ -163,12 +163,11 @@ export type NadTextMovement = {
     connectionShiftY: number;
 };
 
-export interface OneBusShortCircuitAnalysisDiagram {
-    diagramId: string;
-    studyUuid: UUID;
+export type OneBusShortCircuitAnalysisContext = {
+    equipmentId: string;
     rootNetworkUuid: UUID;
     nodeId: UUID;
-}
+};
 
 // ——— Clipboard ———
 
@@ -218,7 +217,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
-    oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
+    oneBusShortCircuitAnalysisContext: OneBusShortCircuitAnalysisContext | null;
     notificationIdList: UUID[];
     globalFilterOptions: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
