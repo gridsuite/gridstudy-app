@@ -28,6 +28,7 @@ import {
     createPropertyModification,
     EquipmentType,
     equipmentTypesForPredefinedPropertiesMapper,
+    getCsvDelimiter,
     LANG_FRENCH,
     ModificationType,
     PredefinedProperties,
@@ -290,7 +291,7 @@ export const generateCommentLines = ({
         ?.concat(selectedProperties);
 
     if (csvTranslatedColumns) {
-        const separator = language === LANG_FRENCH ? ';' : ',';
+        const separator = getCsvDelimiter(language);
         // First comment line contains header translation
         commentData.push(csvTranslatedColumns.map((column, index) => (index === 0 ? `#${column}` : column)));
 

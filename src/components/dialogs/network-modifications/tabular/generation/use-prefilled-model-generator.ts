@@ -7,7 +7,13 @@
 
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { EquipmentType, Identifiable, LANG_FRENCH, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    EquipmentType,
+    getCsvDelimiter,
+    Identifiable,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
 import { EQUIPMENT_ID } from 'components/utils/field-constants';
 import { isFieldTypeOk, PredefinedEquipmentProperties, TabularField } from '../tabular-common';
@@ -36,7 +42,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const delimiter = useMemo(() => (language === LANG_FRENCH ? ';' : ','), [language]);
+    const delimiter = useMemo(() => getCsvDelimiter(language), [language]);
 
     /**
      * Fetches all equipments of the given type from the network

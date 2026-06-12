@@ -8,7 +8,7 @@
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid2 as Grid } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { CancelButton, CsvPicker, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
+import { CancelButton, CsvPicker, getCsvDelimiter, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
 import { useCSVDownloader } from 'react-papaparse';
 import type Papa from 'papaparse';
 import { useSelector } from 'react-redux';
@@ -75,7 +75,7 @@ export const ImportRuleDialog = ({
                         <CSVDownloader
                             data={[csvColumns]}
                             filename={ruleType === PHASE_TAP ? 'tap-dephasing-rule' : 'tap-regulating-rule'}
-                            config={{ delimiter: language === LANG_FRENCH ? ';' : ',' }}
+                            config={{ delimiter: getCsvDelimiter(language) }}
                         >
                             <Button variant="contained">
                                 <FormattedMessage id="GenerateSkeleton" />

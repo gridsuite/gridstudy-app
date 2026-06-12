@@ -17,10 +17,10 @@ import {
     DefaultCellRenderer,
     EquipmentType,
     FieldConstants,
+    getCsvDelimiter,
     hasNonEmptyRows,
     InputWithPopupConfirmation,
     IntegerInput,
-    LANG_FRENCH,
 } from '@gridsuite/commons-ui';
 import {
     AMOUNT_TEMPORARY_LIMITS,
@@ -185,7 +185,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
 
     const commentLines = useMemo(() => {
         const commentKey = `TabularLimitSetsModificationSkeletonComment`;
-        const separator = language === LANG_FRENCH ? ';' : ',';
+        const separator = getCsvDelimiter(language);
         let commentData: string[][] = [];
         if (csvTranslatedColumns) {
             commentData.push(csvTranslatedColumns.map((column, index) => (index === 0 ? `#${column}` : column)));

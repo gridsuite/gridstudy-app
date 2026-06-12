@@ -10,7 +10,7 @@ import {
     fetchElementsInfos,
     FILTER_EQUIPMENTS_ATTRIBUTES,
     FilterType,
-    LANG_FRENCH,
+    getCsvDelimiter,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -47,7 +47,7 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const delimiter = useMemo(() => (language === LANG_FRENCH ? ';' : ','), [language]);
+    const delimiter = useMemo(() => getCsvDelimiter(language), [language]);
 
     /**
      * Extracts equipment IDs from explicit naming filter
