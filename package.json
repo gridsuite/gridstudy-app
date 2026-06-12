@@ -31,7 +31,7 @@
         "core-js": "^3.45.1",
         "eventemitter3": "^5.0.1",
         "localized-countries": "^2.0.0",
-        "mathjs": "^14.7.0",
+        "mathjs": "^15.2.0",
         "mui-nested-menu": "^4.0.1",
         "plotly.js-basic-dist-min": "^2.35.3",
         "qs": "^6.14.0",
