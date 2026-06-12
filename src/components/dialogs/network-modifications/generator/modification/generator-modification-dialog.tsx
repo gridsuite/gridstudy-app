@@ -9,66 +9,23 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import {
     CustomFormProvider,
-    emptyProperties,
     EquipmentType,
     getConcatenatedProperties,
-    getPropertiesFromModification,
-    MODIFICATION_TYPES,
-    modificationPropertiesSchema,
     snackWithFallback,
-    toModificationProperties,
     useSnackMessage,
     DeepNullable,
-    sanitizeString,
     FieldConstants,
-    toModificationOperation,
-    getConnectivityFormData,
-    getConnectivityWithPositionSchema,
-    getConnectivityWithPositionEmptyFormData,
-    getSetPointsSchema,
-    getSetPointsEmptyFormData,
-    getActivePowerControlEmptyFormData,
-    getActivePowerControlSchema,
-    getShortCircuitFormData,
-    getShortCircuitEmptyFormData,
-    getShortCircuitFormSchema,
-    getReactiveLimitsValidationSchema,
-    toReactiveCapabilityCurveChoiceForGeneratorModification,
     REMOVE,
-    getReactiveLimitsFormData,
-    getReactiveLimitsEmptyFormData,
     GeneratorModificationDto,
-    GeneratorModificationDialogSchemaForm,
     GeneratorFormInfos,
-    getInjectionActiveReactivePowerValidationSchemaProperties,
-    getInjectionActiveReactivePowerEditData,
-    getInjectionActiveReactivePowerEmptyFormData,
-    getRegulatingTerminalFormData,
-    getVoltageRegulationEmptyFormData,
-    getVoltageRegulationSchema,
+    GeneratorModificationFormData,
+    generatorModificationFormSchema,
+    generatorModificationEmptyFormData,
+    generatorModificationDtoToForm,
+    generatorModificationFormToDto,
+    GeneratorModificationForm,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {
-    ACTIVE_POWER_SET_POINT,
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
-    ENERGY_SOURCE,
-    EQUIPMENT_NAME,
-    ID,
-    MEASUREMENT_P,
-    MEASUREMENT_Q,
-    REACTIVE_POWER_SET_POINT,
-    STATE_ESTIMATION,
-    VALIDITY,
-    VOLTAGE_LEVEL,
-    VOLTAGE_REGULATION,
-} from 'components/utils/field-constants';
-import GeneratorModificationForm from './generator-modification-form';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
@@ -83,68 +40,18 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { WithModificationId } from '../../../../../services/network-modification-types';
+import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 
-const emptyFormData = {
-    [EQUIPMENT_NAME]: '',
-    [ENERGY_SOURCE]: null,
-    [FieldConstants.MAXIMUM_ACTIVE_POWER]: null,
-    [FieldConstants.MINIMUM_ACTIVE_POWER]: null,
-    [FieldConstants.RATED_NOMINAL_POWER]: null,
-    ...getShortCircuitEmptyFormData(),
-    [FieldConstants.PLANNED_ACTIVE_POWER_SET_POINT]: null,
-    [FieldConstants.MARGINAL_COST]: null,
-    [FieldConstants.PLANNED_OUTAGE_RATE]: null,
-    [FieldConstants.FORCED_OUTAGE_RATE]: null,
-    ...getConnectivityWithPositionEmptyFormData(true),
-    ...getSetPointsEmptyFormData(true),
-    ...getVoltageRegulationEmptyFormData(true),
-    ...getActivePowerControlEmptyFormData(true),
-    ...getReactiveLimitsEmptyFormData(),
-    ...emptyProperties,
-    ...getInjectionActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
-};
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [ENERGY_SOURCE]: yup.string().nullable(),
-        [FieldConstants.MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
-        [FieldConstants.MINIMUM_ACTIVE_POWER]: yup
-            .number()
-            .nullable()
-            .when([FieldConstants.MAXIMUM_ACTIVE_POWER], {
-                is: (maximumActivePower: number) => maximumActivePower != null,
-                then: (schema) =>
-                    schema.max(
-                        yup.ref(FieldConstants.MAXIMUM_ACTIVE_POWER),
-                        'MinActivePowerMustBeLessOrEqualToMaxActivePower'
-                    ),
-            }),
-        [FieldConstants.RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        ...getShortCircuitFormSchema(),
-        [FieldConstants.PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        [FieldConstants.MARGINAL_COST]: yup.number().nullable(),
-
-        [FieldConstants.PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
-        [FieldConstants.FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
-        [FieldConstants.REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
-        ...getSetPointsSchema(true),
-        ...getVoltageRegulationSchema(true),
-        ...getActivePowerControlSchema(true),
-        [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
-    })
-    .concat(modificationPropertiesSchema)
-    .required();
+interface GeneratorCreationDtoWithId extends GeneratorModificationDto, WithModificationId {}
 
 export type GeneratorModificationDialogProps = EquipmentModificationDialogProps & {
-    editData?: GeneratorModificationDto;
+    editData?: GeneratorCreationDtoWithId;
 };
 
 export default function GeneratorModificationDialog({
-    editData, // contains data when we try to edit an existing hypothesis from the current node's list
-    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
+    editData,
+    defaultIdValue,
     currentNode,
     currentRootNetworkUuid,
     studyUuid,
@@ -170,9 +77,15 @@ export default function GeneratorModificationDialog({
         [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
 
-    const formMethods = useFormWithDirtyTracking<DeepNullable<GeneratorModificationDialogSchemaForm>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<GeneratorModificationDialogSchemaForm>>(formSchema),
+    const getVoltageLevelEquipments = useCallback(
+        (voltageLevelId: string) =>
+            fetchVoltageLevelEquipments(studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelId, true),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
+
+    const formMethods = useFormWithDirtyTracking<DeepNullable<GeneratorModificationFormData>>({
+        defaultValues: generatorModificationEmptyFormData,
+        resolver: yupResolver<DeepNullable<GeneratorModificationFormData>>(generatorModificationFormSchema),
     });
 
     const { reset, getValues } = formMethods;
@@ -182,51 +95,7 @@ export default function GeneratorModificationDialog({
             if (editData?.equipmentId) {
                 setSelectedId(editData.equipmentId);
             }
-            reset({
-                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
-                [FieldConstants.MAXIMUM_ACTIVE_POWER]: editData?.maxP?.value ?? null,
-                [FieldConstants.MINIMUM_ACTIVE_POWER]: editData?.minP?.value ?? null,
-                [FieldConstants.RATED_NOMINAL_POWER]: editData?.ratedS?.value ?? null,
-                [ACTIVE_POWER_SET_POINT]: editData?.targetP?.value ?? null,
-                [VOLTAGE_REGULATION]: editData?.voltageRegulationOn?.value ?? null,
-                [FieldConstants.VOLTAGE_SET_POINT]: editData?.targetV?.value ?? null,
-                [REACTIVE_POWER_SET_POINT]: editData?.targetQ?.value ?? null,
-                [FieldConstants.PLANNED_ACTIVE_POWER_SET_POINT]: editData?.plannedActivePowerSetPoint?.value ?? null,
-                [FieldConstants.MARGINAL_COST]: editData?.marginalCost?.value ?? null,
-                [FieldConstants.PLANNED_OUTAGE_RATE]: editData?.plannedOutageRate?.value ?? null,
-                [FieldConstants.FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
-                [FieldConstants.FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
-                [FieldConstants.DROOP]: editData?.droop?.value ?? null,
-                ...getShortCircuitFormData({
-                    directTransX: editData?.directTransX?.value ?? null,
-                    stepUpTransformerX: editData?.stepUpTransformerX?.value ?? null,
-                }),
-                [FieldConstants.VOLTAGE_REGULATION_TYPE]: editData?.voltageRegulationType?.value ?? null,
-                [FieldConstants.Q_PERCENT]: editData?.qPercent?.value ?? null,
-                ...getConnectivityFormData({
-                    voltageLevelId: editData?.voltageLevelId?.value ?? null,
-                    busbarSectionId: editData?.busOrBusbarSectionId?.value ?? null,
-                    connectionName: editData?.connectionName?.value ?? '',
-                    connectionDirection: editData?.connectionDirection?.value ?? null,
-                    connectionPosition: editData?.connectionPosition?.value ?? null,
-                    terminalConnected: editData?.terminalConnected?.value ?? null,
-                    isEquipmentModification: true,
-                }),
-                ...getReactiveLimitsFormData({
-                    reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve?.value ? 'CURVE' : 'MINMAX',
-                    maximumReactivePower: editData?.maxQ?.value ?? null,
-                    minimumReactivePower: editData?.minQ?.value ?? null,
-                    reactiveCapabilityCurvePoints: editData?.reactiveCapabilityCurvePoints ?? null,
-                }),
-                ...getRegulatingTerminalFormData({
-                    equipmentId: editData?.regulatingTerminalId?.value,
-                    equipmentType: editData?.regulatingTerminalType?.value,
-                    voltageLevelId: editData?.regulatingTerminalVlId?.value,
-                }),
-                ...getInjectionActiveReactivePowerEditData(STATE_ESTIMATION, editData),
-                ...getPropertiesFromModification(editData?.properties ?? undefined),
-            });
+            reset(generatorModificationDtoToForm(editData));
         },
         [reset]
     );
@@ -240,7 +109,7 @@ export default function GeneratorModificationDialog({
     //this method empties the form, and let us pass custom data that we want to set
     const setValuesAndEmptyOthers = useCallback(
         (customData = {}, keepDefaultValues = false) => {
-            reset({ ...emptyFormData, ...customData }, { keepDefaultValues: keepDefaultValues });
+            reset({ ...generatorModificationEmptyFormData, ...customData }, { keepDefaultValues: keepDefaultValues });
         },
         [reset]
     );
@@ -301,6 +170,7 @@ export default function GeneratorModificationDialog({
                                               },
                                           }
                                         : {}),
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
                                 { keepDirty: true }
@@ -310,6 +180,9 @@ export default function GeneratorModificationDialog({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                         if (editData?.equipmentId !== equipmentId) {
                             setGeneratorToModify(null);
                         }
@@ -329,81 +202,13 @@ export default function GeneratorModificationDialog({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (generator: GeneratorModificationDialogSchemaForm) => {
-            const reactiveLimits = generator[FieldConstants.REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn =
-                toReactiveCapabilityCurveChoiceForGeneratorModification(
-                    reactiveLimits,
-                    editData,
-                    generatorToModify?.reactiveCapabilityCurvePoints
-                ) === 'CURVE';
-            const stateEstimationData = generator[STATE_ESTIMATION];
-            const generatorModificationInfos = {
-                type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
-                uuid: editData?.uuid ?? null,
-                equipmentId: selectedId,
-                equipmentName: toModificationOperation(sanitizeString(generator[EQUIPMENT_NAME])),
-                energySource: toModificationOperation(generator[ENERGY_SOURCE]),
-                minP: toModificationOperation(generator[FieldConstants.MINIMUM_ACTIVE_POWER]),
-                maxP: toModificationOperation(generator[FieldConstants.MAXIMUM_ACTIVE_POWER]),
-                ratedS: toModificationOperation(generator[FieldConstants.RATED_NOMINAL_POWER]),
-                targetP: toModificationOperation(generator[ACTIVE_POWER_SET_POINT]),
-                targetQ: toModificationOperation(generator[REACTIVE_POWER_SET_POINT]),
-                voltageRegulationOn: toModificationOperation(generator[VOLTAGE_REGULATION]),
-                targetV: toModificationOperation(generator[FieldConstants.VOLTAGE_SET_POINT]),
-                voltageLevelId: toModificationOperation(generator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
-                busOrBusbarSectionId: toModificationOperation(generator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
-                connectionName: toModificationOperation(sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME])),
-                connectionDirection: toModificationOperation(generator[CONNECTIVITY]?.[CONNECTION_DIRECTION]),
-                connectionPosition: toModificationOperation(generator[CONNECTIVITY]?.[CONNECTION_POSITION]),
-                terminalConnected: toModificationOperation(generator[CONNECTIVITY]?.[CONNECTED]),
-                qPercent: toModificationOperation(generator[FieldConstants.Q_PERCENT]),
-                plannedActivePowerSetPoint: toModificationOperation(
-                    generator[FieldConstants.PLANNED_ACTIVE_POWER_SET_POINT]
-                ),
-                marginalCost: toModificationOperation(generator[FieldConstants.MARGINAL_COST]),
-                plannedOutageRate: toModificationOperation(generator[FieldConstants.PLANNED_OUTAGE_RATE]),
-                forcedOutageRate: toModificationOperation(generator[FieldConstants.FORCED_OUTAGE_RATE]),
-                directTransX: toModificationOperation(generator[FieldConstants.TRANSIENT_REACTANCE]),
-                stepUpTransformerX: toModificationOperation(generator[FieldConstants.TRANSFORMER_REACTANCE]),
-                voltageRegulationType: toModificationOperation(generator[FieldConstants.VOLTAGE_REGULATION_TYPE]),
-                regulatingTerminalId: toModificationOperation(generator[FieldConstants.EQUIPMENT]?.id),
-                regulatingTerminalType: toModificationOperation(generator[FieldConstants.EQUIPMENT]?.type),
-                regulatingTerminalVlId: toModificationOperation(generator[VOLTAGE_LEVEL]?.id),
-                reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
-                participate: toModificationOperation(generator[FieldConstants.FREQUENCY_REGULATION]),
-                droop: toModificationOperation(generator[FieldConstants.DROOP]),
-                maxQ: toModificationOperation(
-                    isReactiveCapabilityCurveOn ? null : reactiveLimits?.[FieldConstants.MAXIMUM_REACTIVE_POWER]
-                ),
-                minQ: toModificationOperation(
-                    isReactiveCapabilityCurveOn ? null : reactiveLimits?.[FieldConstants.MINIMUM_REACTIVE_POWER]
-                ),
-                reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? (reactiveLimits?.[FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
-                    : null,
-                pMeasurementValue: toModificationOperation(
-                    stateEstimationData?.[MEASUREMENT_P]?.[FieldConstants.VALUE]
-                ),
-                pMeasurementValidity: toModificationOperation(stateEstimationData?.[MEASUREMENT_P]?.[VALIDITY]),
-                qMeasurementValue: toModificationOperation(
-                    stateEstimationData?.[MEASUREMENT_Q]?.[FieldConstants.VALUE]
-                ),
-                qMeasurementValidity: toModificationOperation(stateEstimationData?.[MEASUREMENT_Q]?.[VALIDITY]),
-                properties: toModificationProperties(generator) ?? null,
-            } satisfies GeneratorModificationDto;
-
-            modifyGenerator({
-                dto: generatorModificationInfos,
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid ?? null,
-                isUpdate: !!editData,
-            }).catch((error) => {
+        (form: GeneratorModificationFormData) => {
+            const dto = generatorModificationFormToDto(form, editData, generatorToModify ?? undefined);
+            modifyGenerator(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: unknown) => {
                 snackWithFallback(snackError, error, { headerId: 'GeneratorModificationError' });
             });
         },
-        [editData, generatorToModify, selectedId, studyUuid, currentNodeUuid, snackError]
+        [editData, generatorToModify, studyUuid, currentNodeUuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({
@@ -416,7 +221,7 @@ export default function GeneratorModificationDialog({
 
     return (
         <CustomFormProvider
-            validationSchema={formSchema}
+            validationSchema={generatorModificationFormSchema}
             removeOptional={true}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -446,15 +251,13 @@ export default function GeneratorModificationDialog({
                 )}
                 {selectedId != null && (
                     <GeneratorModificationForm
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={selectedId}
                         generatorToModify={generatorToModify}
                         updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
                         voltageLevelOptions={voltageLevelOptions}
                         PositionDiagramPane={PositionDiagramPane}
                         fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
+                        fetchVoltageLevelEquipments={getVoltageLevelEquipments}
                     />
                 )}
             </ModificationDialog>

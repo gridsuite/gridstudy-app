@@ -555,7 +555,6 @@
     "modificationType": "Modification type",
     "temporaryLimitsModificationType": "Temporary limits modification type",
 
-    "ModifyGenerator": "Modify generator",
     "NbModificationToPaste": "Paste {nb} modification{several}",
     "NbModificationToRestore": "Restore {nb} modification{several}",
     "energySource": "Energy source",
@@ -580,7 +579,6 @@
     "withoutunit.plannedActivePowerSetPoint": "Planning P",
     "RatedNominalPowerMustBeGreaterThanZero": "The rated nominal power value must be greater than 0",
     "RealPercentage": "This value must be between 0 and 1",
-    "GeneratorModificationError": "Error while modifying generator",
     "reactiveCapabilityCurvePmin": "Pmin",
     "reactiveCapabilityCurveQminPmin": "QminPmin",
     "reactiveCapabilityCurveQmaxPmin": "QmaxPmin",

@@ -15,6 +15,7 @@ import {
     RESULT_TYPE,
     SecurityAnalysisNmkTableRow,
     SubjectIdRendererType,
+    NMK_TYPE,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
@@ -842,3 +843,9 @@ export const getStoreFields = (index: number): string => {
             return '';
     }
 };
+
+export const NMK_SUBTABS = [
+    { messageId: 'ConstraintsFromContingencies', value: NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES },
+    { messageId: 'ContingenciesFromConstraints', value: NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS },
+    { messageId: 'CutOffPowerFromConstraints', value: NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS },
+] as const;
