@@ -128,7 +128,13 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             // check if the csv contains an error
             if (
                 results.data
-                    .flatMap((result) => Object.entries(result).map(([key, value]) => [result, key, value]))
+                    .flatMap((result) =>
+                        Object.entries(result).map(([key, value]): [Record<string, unknown>, string, unknown] => [
+                            result,
+                            key,
+                            value,
+                        ])
+                    )
                     .some(([result, key, value]) => {
                         const fieldDef = csvFields.find((field) => field.id === key);
                         // check required fields are defined
