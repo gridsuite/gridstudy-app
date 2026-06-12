@@ -14,3 +14,11 @@ export const COMPUTING_AND_NETWORK_MODIFICATION_TYPE = {
     ...ComputingType,
     NETWORK_MODIFICATION: NETWORK_MODIFICATION,
 };
+
+/**
+ * Build a unique node key for the report tree from the report UUID and the node's order.
+ * All nodes within a single report share the same UUID; order makes them unique.
+ */
+export function makeNodeKey(reportId: string, order: number): string {
+    return `${reportId}_${order}`;
+}
