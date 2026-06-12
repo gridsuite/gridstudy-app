@@ -273,8 +273,8 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     const getTableData = useCallback(() => {
         const headers = csvColumns.map((column) => column.id);
         const rows = (getValues(MODIFICATIONS_TABLE) ?? []) as Record<string, unknown>[];
-        return [headers, ...rows.map((row) => headers.map((id) => row[id] ?? ''))];
-    }, [csvColumns, getValues]);
+        return [...getTemplateData(), ...rows.map((row) => headers.map((id) => row[id] ?? ''))];
+    }, [csvColumns, getValues, getTemplateData]);
 
     const csvProps = useMemo<CsvProps>(
         () => ({

@@ -284,8 +284,8 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
 
     const getTableData = useCallback(() => {
         const rows = (getValues(MODIFICATIONS_TABLE) ?? []) as Record<string, unknown>[];
-        return [csvColumns, ...rows.map((row) => csvColumns.map((col) => row[col] ?? ''))];
-    }, [csvColumns, getValues]);
+        return [...getTemplateData(), ...rows.map((row) => csvColumns.map((col) => row[col] ?? ''))];
+    }, [csvColumns, getValues, getTemplateData]);
 
     const csvProps = useMemo<CsvProps>(
         () => ({
