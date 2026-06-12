@@ -83,16 +83,16 @@ import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-m
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
 import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
-import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
+import ImportModificationDialog from '../../../dialogs/import-composite/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
+    assembleModificationsIntoComposite,
     fetchExcludedNetworkModifications,
     fetchNetworkModifications,
-    assembleModificationsIntoComposite,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
@@ -176,6 +176,13 @@ const NetworkModificationNodeEditor = () => {
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
         []
     );
+
+    // TODO : this is temporary, until copy/paste/save is done for the shared modifications :
+    const selectionContainsShared: boolean = useMemo(() => {
+        return selectedNetworkModifications.some(
+            (modification: ComposedModificationMetadata) => modification.type === ModificationType.MODIFICATION_REFERENCE
+        );
+    }, [selectedNetworkModifications]);
 
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
@@ -1307,7 +1314,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            disabled={disabledCompositeExport}
+                            disabled={disabledCompositeExport || selectionContainsShared}
                         >
                             <SaveIcon />
                         </IconButton>
@@ -1323,7 +1330,8 @@ const NetworkModificationNodeEditor = () => {
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
                                 !currentNode ||
-                                isRootNode
+                                isRootNode ||
+                                selectionContainsShared
                             }
                         >
                             <ContentCutIcon />
@@ -1339,7 +1347,8 @@ const NetworkModificationNodeEditor = () => {
                                 selectedNetworkModifications.length === 0 ||
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
-                                isRootNode
+                                isRootNode ||
+                                selectionContainsShared
                             }
                         >
                             <ContentCopyIcon />
@@ -1361,7 +1370,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            disabled={isPasteButtonDisabled || isRootNode}
+                            disabled={isPasteButtonDisabled || isRootNode || selectionContainsShared}
                         >
                             <ContentPasteIcon />
                         </IconButton>
