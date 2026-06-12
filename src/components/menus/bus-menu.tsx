@@ -107,6 +107,8 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
 
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
+    const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    console.log('SBO dynamicSimulationAvailability', dynamicSimulationAvailability);
 
     const oneBusShortcircuitAnalysisState = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
@@ -177,14 +179,16 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     />
                 </CustomMenuItem>
             )}
-            {isDeveloperMode && getEventType(EquipmentType.BUS) && (
-                <DynamicSimulationEventMenuItem
-                    equipmentId={busId}
-                    equipmentType={EquipmentType.BUS}
-                    onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
-                    disabled={!isNodeEditable}
-                />
-            )}
+            {dynamicSimulationAvailability === OptionalServicesStatus.Up &&
+                isDeveloperMode &&
+                getEventType(EquipmentType.BUS) && (
+                    <DynamicSimulationEventMenuItem
+                        equipmentId={busId}
+                        equipmentType={EquipmentType.BUS}
+                        onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
+                        disabled={!isNodeEditable}
+                    />
+                )}
             <CustomMenuItem
                 sx={styles.menuItem}
                 onClick={handleClickTrip}
