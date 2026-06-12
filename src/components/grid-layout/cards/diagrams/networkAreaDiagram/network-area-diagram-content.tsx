@@ -126,11 +126,9 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
     const workspaceId = useSelector(selectActiveWorkspaceId);
 
-    // refs to keep useLayoutEffect and callbacks stable
+    // ref to keep useLayoutEffect and callbacks stable
     const isEditNadModeRef = useRef(isEditNadMode);
-    const positionsRef = useRef(positions);
     isEditNadModeRef.current = isEditNadMode;
-    positionsRef.current = positions;
 
     const initialLocalStorageViewBox = useRef(
         (() => {
@@ -387,7 +385,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     );
 
     const handleMoveNode = useEffectEvent((equipmentId: string, nodeId: string, x: number, y: number) => {
-        const updatedPositions = positionsRef.current.map((position) =>
+        const updatedPositions = positions.map((position) =>
             position.voltageLevelId === equipmentId ? { ...position, xPosition: x, yPosition: y } : position
         );
         onUpdatePositions(updatedPositions);
@@ -395,7 +393,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
 
     const handleMoveTextnode = useEffectEvent(
         (equipmentId: string, vlNodeId: string, textNodeId: string, shiftX: number, shiftY: number) => {
-            const updatedPositions = positionsRef.current.map((position) =>
+            const updatedPositions = positions.map((position) =>
                 position.voltageLevelId === equipmentId
                     ? { ...position, xLabelPosition: shiftX, yLabelPosition: shiftY }
                     : position
@@ -510,25 +508,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 nadViewerParameters
             );
 
-            // Repositioning the nodes with specified positions.
-            // Skip nodes already at their SVG-rendered position to avoid redundant DOM work.
-            if (positionsRef.current.length > 0) {
-                const svgMetaPositionMap = new Map(
-                    svgMetadata?.nodes.map((node) => [node.equipmentId, { x: node.x, y: node.y }]) ?? []
-                );
-                for (const position of positionsRef.current) {
-                    if (position.xPosition !== undefined && position.yPosition !== undefined) {
-                        const metaPos = svgMetaPositionMap.get(position.voltageLevelId);
-                        if (metaPos?.x !== position.xPosition || metaPos.y !== position.yPosition) {
-                            diagramViewer.moveNodeToCoordinates(
-                                position.voltageLevelId,
-                                position.xPosition,
-                                position.yPosition
-                            );
-                        }
-                    }
-                }
-            }
             // We keep a reference of the diagram viewer to get its viewbox for the next render.
             diagramViewerRef.current = diagramViewer;
         }
