@@ -28,13 +28,13 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
 import type { UUID } from 'node:crypto';
-import { Grid, TextField } from '@mui/material';
+import { Grid2 as Grid, TextField } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
 import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import GridSection from '../../../../commons/grid-section';
-import GridItem from '../../../../commons/grid-item';
+import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
+import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
 import { ConverterStationElementModificationInfos } from './converter-station-type';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 import PositionDiagramPane from '../../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
@@ -172,9 +172,9 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     );
 
     return (
-        <Grid container spacing={2}>
+        <Grid container>
             <GridSection title={stationLabel} />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} size={12}>
                 <GridItem size={4}>{generatorIdField}</GridItem>
                 <GridItem size={4}>{generatorNameField}</GridItem>
             </Grid>
@@ -189,7 +189,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             )}
 
             <GridSection title="Characteristics" />
-            <Grid container spacing={2}>
+            <Grid container size={12}>
                 <GridItem size={4}>{lossFactorField}</GridItem>
             </Grid>
 
@@ -204,10 +204,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             />
 
             <GridSection title={'Setpoints'} />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} size={12}>
                 <GridItem size={4}>{reactivePowerField}</GridItem>
             </Grid>
-            <Grid container spacing={2} paddingTop={2}>
+            <Grid container size={12} spacing={2} paddingTop={2}>
                 <GridItem size={4}>{voltageRegulation}</GridItem>
                 <GridItem size={4}>{voltageField}</GridItem>
             </Grid>

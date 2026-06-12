@@ -6,8 +6,8 @@
  */
 import { filledTextField, TextInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from '../../../../../utils/field-constants';
-import { Grid } from '@mui/material';
-import GridItem from '../../../../commons/grid-item';
+import { Grid2 as Grid } from '@mui/material';
+import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
 
 export default function LccCreationDialogHeader() {
     const LccIdField = (
@@ -15,7 +15,7 @@ export default function LccCreationDialogHeader() {
     );
     const LccNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ ...filledTextField }} />;
     return (
-        <Grid container item spacing={2}>
+        <Grid container spacing={2} size={12}>
             <GridItem size={4}>{LccIdField}</GridItem>
             <GridItem size={4}>{LccNameField}</GridItem>
         </Grid>
