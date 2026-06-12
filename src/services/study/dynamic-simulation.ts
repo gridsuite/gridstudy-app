@@ -12,7 +12,10 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    DynamicSimulationParametersEnriched,
     DynamicSimulationParametersInfos,
+    fetchElementNames,
+    mapDynamicSimulationParameters,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import {
@@ -117,11 +120,38 @@ export function fetchDynamicSimulationProvider(studyUuid: UUID) {
     return backendFetchText(url);
 }
 
-export function fetchDynamicSimulationParameters(studyUuid: UUID): Promise<DynamicSimulationParametersInfos> {
+function enrichDynamicSimulationParameters(
+    parameters: DynamicSimulationParametersInfos,
+    elementIdNames: Record<string, string>
+): DynamicSimulationParametersEnriched {
+    if (parameters.mappingId) {
+        const mappingId = parameters.mappingId;
+        delete parameters.mappingId;
+        return {
+            ...parameters,
+            mapping: {
+                id: mappingId,
+                name: mappingId ? elementIdNames?.[mappingId] : undefined,
+            },
+        };
+    }
+    delete parameters.mappingId;
+    return { ...parameters, mapping: undefined };
+}
+
+export function fetchDynamicSimulationParameters(studyUuid: UUID): Promise<DynamicSimulationParametersEnriched> {
     console.info(`Fetching dynamic simulation parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
-    return backendFetchJson(url);
+    const parametersPromise: Promise<DynamicSimulationParametersInfos> = backendFetchJson(url);
+    return parametersPromise.then((parameters) => {
+        if (parameters.mappingId) {
+            return fetchElementNames(new Set(parameters.mappingId)).then((elementIdNames) => {
+                return enrichDynamicSimulationParameters(parameters, elementIdNames);
+            });
+        }
+        return enrichDynamicSimulationParameters(parameters, {});
+    });
 }
 
 export function updateDynamicSimulationParameters(studyUuid: UUID, newParams: DynamicSimulationParametersInfos | null) {
@@ -135,7 +165,7 @@ export function updateDynamicSimulationParameters(studyUuid: UUID, newParams: Dy
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newParams),
+        body: newParams ? JSON.stringify(mapDynamicSimulationParameters(newParams)) : newParams,
     });
 }
 
