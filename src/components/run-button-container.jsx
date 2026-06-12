@@ -114,8 +114,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     // a transient state which is used only for a run with popup dialog
     const [runWithDebug, setRunWithDebug] = useState(false);
 
-    const [computationStopped, setComputationStopped] = useState(false);
-
     const { snackError } = useSnackMessage();
 
     const dispatch = useDispatch();
@@ -186,7 +184,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             if (fnBefore) {
                 fnBefore();
             }
-            setComputationStopped(false);
             dispatch(setComputationStarting(true));
             dispatch(setComputingStatus(computingType, RunningStatus.RUNNING));
             fnStart()
@@ -282,7 +279,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         function actionOnRunnables(type, fnStop) {
             fnStop().finally(() => {
                 dispatch(setComputingStatus(type, RunningStatus.IDLE));
-                setComputationStopped(true);
             });
         }
 
@@ -653,7 +649,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 runnables={runnables}
                 activeRunnables={activeRunnables}
                 getStatus={getRunningStatus}
-                computationStopped={computationStopped}
                 disabled={isModificationsInProgress || disabled}
             />
             {!disabled && showDynamicSimulationParametersSelector && (
