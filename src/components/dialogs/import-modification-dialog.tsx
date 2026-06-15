@@ -217,8 +217,8 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         []
     );
 
- // SPLIT mode — name is read-only, drag-and-drop only
-     const splitColumnsDefinition: DndColumn[] = useMemo(
+    // SPLIT mode — name is read-only, drag-and-drop only
+    const splitColumnsDefinition: DndColumn[] = useMemo(
         () => [
             {
                 label: '',
@@ -324,21 +324,8 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const handleSave = useCallback(() => {
         if (!studyUuid || !currentNode || !isValid) return;
 
-        const rows: SelectedComposite[] = formMethods.getValues(SELECTED_MODIFICATIONS);
-
-        const modificationsToInsert: ModificationPair[] = rows.map((m) => ({
+        const modificationsToInsert: ModificationPair[] = selectedModifications.map((m) => ({
             first: m.id,
-            second: formMethods.getValues(ACTION) === CompositeModificationAction.SPLIT ? m.originalName : m.name,
-        }));
-
-        insertCompositeModifications(
-            studyUuid,
-            currentNode.id,
-            modificationsToInsert,
-            formMethods.getValues(ACTION)
-        ).catch((error) => snackWithFallback(snackError, error, { headerId: 'importComposites.error' }));
-
-        handleClose();
             second: action === CompositeModificationAction.SPLIT ? m.originalName : m.name,
         }));
 
@@ -347,7 +334,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         );
 
         handleClose();
-    }, [studyUuid, currentNode, isValid, formMethods, snackError, handleClose, action]);
+    }, [studyUuid, currentNode, isValid, selectedModifications, action, handleClose, snackError]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
