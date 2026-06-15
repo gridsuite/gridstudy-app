@@ -73,6 +73,7 @@ export const tabStyles = {
         '.MuiTabScrollButton-root:nth-of-type(1)': {
             height: '30px', //40px by default
         },
+        height: '100%',
     }),
     parametersBox: (theme) => ({
         backgroundColor:
@@ -89,6 +90,8 @@ export const tabStyles = {
         paddingLeft: theme.spacing(8),
         paddingRight: theme.spacing(8),
         height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
     }),
     dividerTab: (theme) => ({
         padding: 0,

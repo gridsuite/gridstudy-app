@@ -14,7 +14,8 @@ import {
     TabPanel,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
+import { ParameterLayout } from './parameter-layout';
+import { Button, DialogActions, Grid, Tab, Tabs, useMediaQuery, useTheme } from '@mui/material';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import { FormattedMessage } from 'react-intl';
 import { useForm } from 'react-hook-form';
@@ -133,86 +134,81 @@ export const StateEstimationParameters = ({
         setHaveDirtyFields(formState.isDirty);
     }, [formState, setHaveDirtyFields]);
 
+    const theme = useTheme();
+    const isXsScreen = useMediaQuery(theme.breakpoints.only('xs'));
+
+    const header = (
+        <Tabs
+            value={tabValue}
+            variant="scrollable"
+            onChange={handleTabChange}
+            TabIndicatorProps={{
+                sx: getTabIndicatorStyle(tabIndexesWithError, tabValue),
+            }}
+            sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
+            <Tab
+                label={<FormattedMessage id="StateEstimationParametersGeneralTabLabel" />}
+                value={TabValue.GENERAL}
+                sx={getTabStyle(tabIndexesWithError, TabValue.GENERAL)}
+            />
+            <Tab
+                label={<FormattedMessage id="StateEstimationParametersWeightsTabLabel" />}
+                value={TabValue.WEIGHTS}
+                sx={getTabStyle(tabIndexesWithError, TabValue.WEIGHTS)}
+            />
+            <Tab
+                label={<FormattedMessage id="StateEstimationParametersQualityTabLabel" />}
+                value={TabValue.QUALITY}
+                sx={getTabStyle(tabIndexesWithError, TabValue.QUALITY)}
+            />
+            <Tab
+                label={<FormattedMessage id="StateEstimationParametersLoadboundsTabLabel" />}
+                value={TabValue.LOADBOUNDS}
+                sx={getTabStyle(tabIndexesWithError, TabValue.LOADBOUNDS)}
+            />
+        </Tabs>
+    );
+
+    const footer = (
+        <Grid container item xs={12}>
+            <DialogActions
+                sx={mergeSx(parametersStyles.controlParametersItem, {
+                    paddingBottom: 0,
+                })}
+            >
+                <Button onClick={handleResetClick}>
+                    <FormattedMessage id="resetToDefault" />
+                </Button>
+                <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onValidationError)} />
+            </DialogActions>
+        </Grid>
+    );
+
     return (
         <CustomFormProvider validationSchema={stateEstimationParametersFormSchema} {...formMethods}>
-            <Grid
-                xl={[TabValue.GENERAL, TabValue.LOADBOUNDS].includes(tabValue) ? 6 : 12}
-                container
-                sx={{ height: '100%' }}
-                direction="column"
-                justifyContent="space-between"
+            <ParameterLayout
+                header={header}
+                title={"State Estimation"}
+                contentSx={parametersStyles.scrollableGrid}
+                resetOnClick={handleResetClick}
+                validateOnClick={handleSubmit(onSubmit, onValidationError)}
             >
-                <Grid
-                    xs
-                    item
-                    container
-                    key="stateEstimationParameters"
-                    sx={mergeSx(parametersStyles.scrollableGrid, {
-                        paddingTop: 0,
-                        width: '100%',
-                        display: 'unset',
-                    })}
-                >
-                    <Tabs
-                        value={tabValue}
-                        variant="scrollable"
-                        onChange={handleTabChange}
-                        TabIndicatorProps={{
-                            sx: getTabIndicatorStyle(tabIndexesWithError, tabValue),
-                        }}
-                    >
-                        <Tab
-                            label={<FormattedMessage id="StateEstimationParametersGeneralTabLabel" />}
-                            value={TabValue.GENERAL}
-                            sx={getTabStyle(tabIndexesWithError, TabValue.GENERAL)}
-                        />
-                        <Tab
-                            label={<FormattedMessage id="StateEstimationParametersWeightsTabLabel" />}
-                            value={TabValue.WEIGHTS}
-                            sx={getTabStyle(tabIndexesWithError, TabValue.WEIGHTS)}
-                        />
-                        <Tab
-                            label={<FormattedMessage id="StateEstimationParametersQualityTabLabel" />}
-                            value={TabValue.QUALITY}
-                            sx={getTabStyle(tabIndexesWithError, TabValue.QUALITY)}
-                        />
-                        <Tab
-                            label={<FormattedMessage id="StateEstimationParametersLoadboundsTabLabel" />}
-                            value={TabValue.LOADBOUNDS}
-                            sx={getTabStyle(tabIndexesWithError, TabValue.LOADBOUNDS)}
-                        />
-                    </Tabs>
-                    <Grid container>
-                        <TabPanel value={tabValue} index={TabValue.GENERAL}>
-                            <StateEstimationGeneralParameters />
-                        </TabPanel>
-                        <TabPanel value={tabValue} index={TabValue.WEIGHTS}>
-                            <StateEstimationWeightsParameters />
-                        </TabPanel>
-                        <TabPanel value={tabValue} index={TabValue.QUALITY}>
-                            <StateEstimationQualityParameters />
-                        </TabPanel>
-                        <TabPanel value={tabValue} index={TabValue.LOADBOUNDS}>
-                            <StateEstimationLoadboundsParameters />
-                        </TabPanel>
-                    </Grid>
+                <Grid container>
+                    <TabPanel value={tabValue} index={TabValue.GENERAL}>
+                        <StateEstimationGeneralParameters />
+                    </TabPanel>
+                    <TabPanel value={tabValue} index={TabValue.WEIGHTS}>
+                        <StateEstimationWeightsParameters />
+                    </TabPanel>
+                    <TabPanel value={tabValue} index={TabValue.QUALITY}>
+                        <StateEstimationQualityParameters />
+                    </TabPanel>
+                    <TabPanel value={tabValue} index={TabValue.LOADBOUNDS}>
+                        <StateEstimationLoadboundsParameters />
+                    </TabPanel>
                 </Grid>
-
-                <Grid item container>
-                    <DialogActions
-                        sx={mergeSx(parametersStyles.controlParametersItem, {
-                            paddingTop: 4,
-                            paddingBottom: 2,
-                            paddingLeft: 0,
-                        })}
-                    >
-                        <Button onClick={handleResetClick}>
-                            <FormattedMessage id="resetToDefault" />
-                        </Button>
-                        <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onValidationError)} />
-                    </DialogActions>
-                </Grid>
-            </Grid>
+            </ParameterLayout>
 
             {/* Reset Confirmation Dialog */}
             {openResetConfirmation && (
