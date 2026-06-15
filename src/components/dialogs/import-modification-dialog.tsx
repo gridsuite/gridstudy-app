@@ -341,7 +341,15 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         ).catch((error) => snackWithFallback(snackError, error, { headerId: 'importComposites.error' }));
 
         handleClose();
-    }, [studyUuid, currentNode, isValid, formMethods, snackError, handleClose]);
+            second: action === CompositeModificationAction.SPLIT ? m.originalName : m.name,
+        }));
+
+        insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, action).catch((error) =>
+            snackWithFallback(snackError, error, { headerId: 'importComposites.error' })
+        );
+
+        handleClose();
+    }, [studyUuid, currentNode, isValid, formMethods, snackError, handleClose, action]);
 
     // -----------------------------------------------------------------------
     // Render
