@@ -67,12 +67,14 @@ export const getBaseVoltagesCssVars = (
 
         const higherLevels = baseVoltages
             .filter((v) => getVoltageLevel(v.name) > getVoltageLevel(interval.name))
-            .map((v) => `.nad-${v.name}.nad-winding`)
+            .map((v) => `> .nad-${v.name}.nad-winding`)
             .join(', ');
 
+        // :has(> X) only inspects direct children, not the whole subtree like :has(X) which is extremely costly on large digrams
+        // windings and the --vl-color-inheriting .nad-pst-arrow are always direct children here
         const groupWithPstSelector = higherLevels
-            ? `g:has(.nad-${interval.name}.nad-winding):not(:has(${higherLevels}))`
-            : `g:has(.nad-${interval.name}.nad-winding)`;
+            ? `g:has(> .nad-${interval.name}.nad-winding):not(:has(${higherLevels}))`
+            : `g:has(> .nad-${interval.name}.nad-winding)`;
 
         css[groupWithPstSelector] = { '--vl-color': themeColors.default };
 
