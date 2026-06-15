@@ -195,8 +195,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const action = watch(ACTION);
     const selectedModifications = watch(SELECTED_MODIFICATIONS);
     const isInsertMode = action === CompositeModificationAction.INSERT;
-    // Next is enabled as soon as at least one element is selected; derived from the
-    // form so it survives step changes and folder expansions.
     const isNextDisabled = selectedModifications.length === 0;
 
     // useFieldArray — consumed by DndTable
@@ -219,8 +217,8 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         []
     );
 
-    // SPLIT mode — read-only, always shows the original composite name (never the user input)
-    const splitColumnsDefinition: DndColumn[] = useMemo(
+ // SPLIT mode — name is read-only, drag-and-drop only
+     const splitColumnsDefinition: DndColumn[] = useMemo(
         () => [
             {
                 label: '',
@@ -351,10 +349,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         handleClose();
     }, [studyUuid, currentNode, isValid, formMethods, snackError, handleClose, action]);
 
-    // -----------------------------------------------------------------------
-    // Render
-    // -----------------------------------------------------------------------
-
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth PaperProps={{ sx: { p: 1 } }}>
@@ -363,8 +357,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 </DialogTitle>
 
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: 490 }}>
-                    {' '}
-                    {/* ---- Stepper ---- */}
                     <Stepper
                         activeStep={activeStep}
                         alternativeLabel
@@ -388,9 +380,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                     <Divider sx={{ mt: 2 }} />
                     {/* ======================================================
                         STEP 1 — SELECTION
-                        The selector stays mounted (hidden in step 2) so its internal
-                        selection persists when navigating back and forth, keeping the
-                        checkmarks visible and the Next button consistent.
                         ====================================================== */}
                     <Box
                         sx={{
@@ -440,7 +429,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                                 <FormattedMessage id="importComposites.selected" />
                             </Typography>
 
-                            {/* DnD table — thead hidden, no column headers needed */}
                             <Box sx={{ '& thead': { display: 'none' } }}>
                                 <DndTable
                                     name={SELECTED_MODIFICATIONS}
