@@ -27,14 +27,14 @@ const serverSettings: CommonServerOptions = {
 };
 
 export default defineConfig((_config) => {
-    const checkerDisabled = process.env.DISABLE_VITE_CHECKER === 'true';
+    const checkerEnabled = process.env.DISABLE_VITE_CHECKER !== 'true';
     const plugins = [
         react(),
         svgr(), // works on every import with the pattern "**/*.svg?react"
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
     ];
 
-    if (!checkerDisabled) {
+    if (checkerEnabled) {
         plugins.push(
             checker({
                 // TypeScript checking
