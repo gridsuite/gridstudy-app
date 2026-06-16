@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { catchErrorHandler, fetchStudyMetadata, StudyMetadata } from '@gridsuite/commons-ui';
+import { catchErrorHandler, fetchStudyMetadata, IdpSettings, StudyMetadata } from '@gridsuite/commons-ui';
 export const FetchStatus = {
     SUCCEED: 'SUCCEED',
     FAILED: 'FAILED',
@@ -13,7 +13,7 @@ export const FetchStatus = {
 };
 
 export const MAX_INT32: number = 2147483647;
-
+const IDP_SETTINGS_CACHE_KEY = 'gridsuite-idp-settings';
 type DefaultParameters = StudyMetadata['defaultParametersValues'];
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 
@@ -49,8 +49,29 @@ function fetchEnv() {
     return fetch('env.json').then((res) => res.json());
 }
 
-export function fetchIdpSettings() {
-    return fetch('idpSettings.json').then((res) => res.json());
+// Always hits the network: picks up config changes on each full app load
+// AND refreshes the cache read by the silent-renew iframe.
+export function fetchIdpSettings(): Promise<IdpSettings> {
+    return fetch('idpSettings.json')
+        .then((res) => res.json())
+        .then((settings: IdpSettings) => {
+            localStorage.setItem(IDP_SETTINGS_CACHE_KEY, JSON.stringify(settings));
+            return settings;
+        });
+}
+
+// Used only on the silent-renew path: reads the cache (no network),
+// falls back to a real fetch if the cache is missing/corrupted.
+export function getCachedIdpSettings(): Promise<IdpSettings> {
+    const cached = localStorage.getItem(IDP_SETTINGS_CACHE_KEY);
+    if (cached) {
+        try {
+            return Promise.resolve(JSON.parse(cached) as IdpSettings);
+        } catch {
+            // corrupted cache -> fall back to a fresh fetch
+        }
+    }
+    return fetchIdpSettings();
 }
 
 export function fetchVersion() {
