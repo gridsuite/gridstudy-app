@@ -68,6 +68,7 @@
     },
     "scripts": {
         "start": "vite",
+        "start:no-checker": "DISABLE_VITE_CHECKER=true vite",
         "start:open": "vite --open",
         "build": "vite build",
         "serve": "vite preview",
