@@ -8,6 +8,7 @@
 import { useCallback, useMemo } from 'react';
 import {
     Checkbox,
+    Divider,
     List,
     ListItem,
     ListItemButton,
@@ -190,6 +191,7 @@ export default function NominalVoltageFilter({
                         />
                     </ListItemButton>
                 </ListItem>
+                <Divider component="li" />
                 {nominalVoltagesList}
             </List>
         </Paper>
