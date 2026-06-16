@@ -111,22 +111,36 @@ export function useNodeData<T, R = T>({
     const nodeUuidRef = useRef<UUID>(undefined);
     const rootNetworkUuidRef = useRef<UUID>(undefined);
     const lastUpdateRef = useRef<LastUpdateParams<T>>(undefined);
+    // Monotonic id identifying the latest in-flight request. A response is only
+    // applied when its id is still the latest one, so an out-of-order response
+    // from a previous fetcher (e.g. another node, another root network, or
+    // another tab with a different result shape) cannot overwrite the current
+    // result and crash consumers.
+    const requestIdRef = useRef<number>(0);
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
         rootNetworkUuidRef.current = rootNetworkUuid;
+        const requestId = ++requestIdRef.current;
+        const isLatestRequest = () => requestId === requestIdRef.current;
         setIsLoading(true);
         setErrorMessage(undefined);
         fetcher?.(studyUuid, nodeUuid, rootNetworkUuid)
             .then((res) => {
-                if (nodeUuidRef.current === nodeUuid && rootNetworkUuidRef.current === rootNetworkUuid) {
+                if (isLatestRequest()) {
                     setResult(resultConverter(res) ?? undefined);
                 }
             })
             .catch((err) => {
-                setErrorMessage(err.message);
+                if (isLatestRequest()) {
+                    setErrorMessage(err.message);
+                }
             })
-            .finally(() => setIsLoading(false));
+            .finally(() => {
+                if (isLatestRequest()) {
+                    setIsLoading(false);
+                }
+            });
     }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter]);
 
     // Debounce the update to avoid excessive calls
