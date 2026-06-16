@@ -18,6 +18,7 @@ import { NadNavigationSidebar } from '../../../diagrams/nad/nad-navigation-sideb
 import { NadAssociatedPanelsContainer } from './nad-associated-panels-container';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
+import { useNadVoltageLevelFilter } from '../../../diagrams/nad/use-nad-voltage-level-filter';
 
 interface NadPanelContentProps {
     panelId: UUID;
@@ -42,6 +43,10 @@ export const NadPanelContent = memo(function NadPanelContent({
     });
 
     const { handleShowInSpreadsheet } = useDiagramNavigation();
+
+    // Voltage-level band filtering using CSS classes
+    const { presentNominalVoltages, selectedNominalVoltages, setSelectedNominalVoltages, unselectedVlNames } =
+        useNadVoltageLevelFilter(diagram.svg?.metadata as DiagramMetadata | null | undefined);
 
     // Handle voltage level click in NAD: add to history + open/associate SLD
     const handleVoltageLevelClick = useCallback(
@@ -101,6 +106,7 @@ export const NadPanelContent = memo(function NadPanelContent({
                         svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
                         additionalMetadata={diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined}
                         svgVoltageLevels={diagram.voltageLevelIds}
+                        hiddenVoltageBands={unselectedVlNames}
                         loadingState={loading}
                         isNadCreationFromFilter={!!diagram.filterUuid}
                         visible
@@ -115,7 +121,14 @@ export const NadPanelContent = memo(function NadPanelContent({
                 </DiagramWrapper>
                 <NadAssociatedPanelsContainer nadPanelId={panelId} />
             </Box>
-            {!globalError && <NadNavigationSidebar nadPanelId={panelId} />}
+            {!globalError && (
+                <NadNavigationSidebar
+                    nadPanelId={panelId}
+                    allVoltages={presentNominalVoltages}
+                    selectedVoltages={selectedNominalVoltages}
+                    onVoltagesChange={setSelectedNominalVoltages}
+                />
+            )}
         </Box>
     );
 });

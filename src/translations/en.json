@@ -1480,6 +1480,7 @@
     "windows": "windows",
     "reset": "Reset",
     "history": "History",
+    "nadVoltageFilter": "Voltage",
 
     "gridExplore": "GridExplore",
     "myComputer": "My computer",
