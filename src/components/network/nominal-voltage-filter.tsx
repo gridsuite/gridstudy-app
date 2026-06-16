@@ -191,7 +191,7 @@ export default function NominalVoltageFilter({
                         />
                     </ListItemButton>
                 </ListItem>
-                <Divider component="li" />
+                <Divider component="li" variant="middle" />
                 {nominalVoltagesList}
             </List>
         </Paper>
