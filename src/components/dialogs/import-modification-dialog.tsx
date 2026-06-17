@@ -18,11 +18,11 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { type CompositesToBeInserted, insertCompositeModifications } from '../../../services/study';
+import { type CompositesToBeInserted, insertCompositeModifications } from '../../services/study';
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer.type';
-import { CompositeModificationAction } from '../../graph/menus/network-modifications/network-modification-menu.type';
+import { AppState } from '../../redux/reducer.type';
+import { CompositeModificationAction } from '../graph/menus/network-modifications/network-modification-menu.type';
 import {
     Box,
     Button,
@@ -42,10 +42,10 @@ import {
 } from '@mui/material';
 import { useController, useFieldArray, UseFieldArrayReturn, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from '../../utils/field-constants';
+import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from '../utils/field-constants';
 import * as yup from 'yup';
 import { UUID } from 'node:crypto';
-import InsertNameCell from './insert-name-cell';
+import InsertNameCell from './import-composite/insert-name-cell';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.

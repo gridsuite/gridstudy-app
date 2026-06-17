@@ -83,7 +83,7 @@ import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-m
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
 import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
-import ImportModificationDialog from '../../../dialogs/import-composite/import-modification-dialog';
+import ImportModificationDialog from '../../../dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
@@ -180,7 +180,8 @@ const NetworkModificationNodeEditor = () => {
     // TODO : this is temporary, until copy/paste/save is done for the shared modifications :
     const selectionContainsShared: boolean = useMemo(() => {
         return selectedNetworkModifications.some(
-            (modification: ComposedModificationMetadata) => modification.type === ModificationType.MODIFICATION_REFERENCE
+            (modification: ComposedModificationMetadata) =>
+                modification.type === ModificationType.MODIFICATION_REFERENCE
         );
     }, [selectedNetworkModifications]);
 
