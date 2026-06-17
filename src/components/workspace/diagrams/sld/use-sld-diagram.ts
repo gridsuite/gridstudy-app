@@ -183,6 +183,7 @@ export const useSldDiagram = ({
         currentNodeId,
         currentNode?.id,
         currentNode?.type,
+        language,
         currentNode?.data?.globalBuildStatus,
         currentRootNetworkUuid,
         equipmentId,
