@@ -130,8 +130,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
     const [activeStep, setActiveStep] = useState(STEP_SELECTION);
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-    // true = Next button disabled; starts disabled until TreeViewFinder signals a valid selection
-    const [isNextDisabled, setIsNextDisabled] = useState(true);
 
     const formMethods = useForm<FormSchemaType>({
         defaultValues: emptyFormData,
@@ -151,6 +149,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const action: CompositeModificationAction = watch(ACTION);
     const selectedModifications: SelectedComposite[] = watch(SELECTED_MODIFICATIONS);
     const isInsertMode = action === CompositeModificationAction.INSERT;
+    const isNextDisabled = selectedModifications.length === 0;
 
     // useFieldArray — consumed by DndTable
     const useFieldArrayOutput = useFieldArray({
@@ -177,7 +176,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         () => [
             {
                 label: '',
-                dataKey: 'name',
+                dataKey: 'originalName',
                 initialValue: '',
                 editable: false,
                 width: '75%',
@@ -210,7 +209,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         if (open) {
             setActiveStep(STEP_SELECTION);
             setIsSelectorOpen(true);
-            setIsNextDisabled(true); // reset on each open
         } else {
             setIsSelectorOpen(false);
             reset(emptyFormData);
@@ -229,7 +227,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 shouldValidate: true,
                 shouldDirty: true,
             });
-            setIsNextDisabled(selectedElements.length === 0);
         },
         [setValue]
     );
@@ -267,11 +264,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
         );
 
         handleClose();
-    }, [studyUuid, currentNode, isValid, formMethods, snackError, handleClose, selectedModifications, action]);
-
-    // -----------------------------------------------------------------------
-    // Render
-    // -----------------------------------------------------------------------
+    }, [studyUuid, currentNode, isValid, selectedModifications, action, handleClose, snackError]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -279,9 +272,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 <DialogTitle>
                     <FormattedMessage id="importComposites.title" />
                 </DialogTitle>
-
-                <DialogContent sx={{ display: 'flex', flexDirection: 'column', minHeight: 380 }}>
-                    {/* ---- Stepper ---- */}
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: 490 }}>
                     <Stepper
                         activeStep={activeStep}
                         alternativeLabel
@@ -308,20 +299,24 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                     {/* ======================================================
                         STEP 1 — SELECTION
                         ====================================================== */}
-                    {activeStep === STEP_SELECTION && (
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-                            <DirectoryItemSelector
-                                open={isSelectorOpen}
-                                onClose={() => setIsSelectorOpen(false)}
-                                types={[ElementType.MODIFICATION]}
-                                multiSelect
-                                inline
-                                onSelectionChange={handleInlineSelectionChange}
-                                title={intl.formatMessage({ id: 'ModificationsSelection' })}
-                            />
-                        </Box>
-                    )}
-
+                    <Box
+                        sx={{
+                            display: activeStep === STEP_SELECTION ? 'flex' : 'none',
+                            flexDirection: 'column',
+                            gap: 2,
+                            mt: 2,
+                        }}
+                    >
+                        <DirectoryItemSelector
+                            open={isSelectorOpen}
+                            onClose={handleSelectModification}
+                            types={[ElementType.MODIFICATION]}
+                            multiSelect
+                            inline
+                            onSelectionChange={handleInlineSelectionChange}
+                            title={intl.formatMessage({ id: 'ModificationsSelection' })}
+                        />
+                    </Box>
                     {/* ======================================================
                         STEP 2 — ORGANIZATION & SHARING
                         ====================================================== */}
@@ -352,7 +347,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                                 <FormattedMessage id="importComposites.selected" />
                             </Typography>
 
-                            {/* DnD table — thead hidden, no column headers needed */}
                             <Box sx={{ '& thead': { display: 'none' } }}>
                                 <DndTable
                                     name={SELECTED_MODIFICATIONS}
