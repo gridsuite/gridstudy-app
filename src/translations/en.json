@@ -447,7 +447,7 @@
     "importComposites.selected": "Selected composite modifications: ",
     "importComposites.error": "Error during the composite modification import.",
     "importComposites.step.selection": "Selection",
-    "importComposites.step.organization": "Organization & share",
+    "importComposites.step.organization": "Organization & sharing",
     "importComposites.shared": "Shared",
     "descriptionProperty": "Description",
     "DeleteModificationText": "{numberToDelete, plural, =0 {No modification to delete.} =1 {One modification will be permanently deleted.} other {# modifications will be permanently deleted.}}",
