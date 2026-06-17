@@ -21,7 +21,7 @@ import {
     ComputingType,
     EquipmentType,
     GsLangUser,
-    type MuiStyles,
+    MuiStyles,
     NmkType,
     PARAM_DEVELOPER_MODE,
     SecurityAnalysisResultNmk,
@@ -228,7 +228,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         [dispatchPagination]
     );
 
-    const { result: filterEnums } = useFetchFiltersEnums();
+    const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 
     useEffect(() => {
         if (result && tabIndexRef.current === NMK_RESULTS_TAB_INDEX) {
@@ -287,8 +287,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 EquipmentType.SHUNT_COMPENSATOR,
                 EquipmentType.STATIC_VAR_COMPENSATOR,
                 EquipmentType.BOUNDARY_LINE,
-                // TODO : temporary removed, waiting for a fix in filter library on nominal voltage filtering for hvdc line
-                //EquipmentType.HVDC_LINE,
+                EquipmentType.HVDC_LINE,
                 EquipmentType.VSC_CONVERTER_STATION,
             ];
         }
@@ -370,7 +369,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {isNmkTab && (
                     <SecurityAnalysisResultNmk
                         result={result}
-                        isLoadingResult={isLoadingResult}
+                        isLoadingResult={isLoadingResult || filterEnumsLoading}
                         onGridReady={onGridReady}
                         nmkType={nmkType}
                         resultStatusMessages={resultStatusMessages}

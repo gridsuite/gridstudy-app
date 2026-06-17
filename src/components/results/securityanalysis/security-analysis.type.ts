@@ -6,13 +6,19 @@
  */
 
 import * as React from 'react';
-import { ColDef, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
+import {ColDef, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { RunningStatusMessage } from '../../utils/aggrid-rows-handler';
 import RunningStatus from '../../utils/running-status';
-import { PreContingencyResult } from '@gridsuite/commons-ui';
+import { LimitViolation } from '@gridsuite/commons-ui';
+
+export interface PreContingencyResult {
+    subjectId?: string;
+    status: string;
+    limitViolation?: LimitViolation;
+}
 
 export enum RESULT_TYPE {
     N = 'N',
@@ -42,7 +48,7 @@ export interface SecurityAnalysisTabProps {
 export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult[];
     isLoadingResult: boolean;
-    columnDefs: ColDef<any>[];
+    columnDefs: ColDef[];
     resultStatusMessages: RunningStatusMessage;
     securityAnalysisStatus: RunningStatus;
     onGridReady: (params: GridReadyEvent) => void;

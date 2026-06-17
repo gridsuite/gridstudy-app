@@ -6,11 +6,15 @@
  */
 
 import { FunctionComponent, useMemo } from 'react';
-import { SecurityAnalysisNTableRow, SecurityAnalysisResultNProps } from './security-analysis.type';
+import {
+    PreContingencyResult,
+    SecurityAnalysisNTableRow,
+    SecurityAnalysisResultNProps,
+} from './security-analysis.type';
 import { IntlShape, useIntl } from 'react-intl';
 import { translateLimitNameBackToFront } from '../common/utils';
 import { MAX_INT32 } from 'services/utils';
-import { PreContingencyResult, SecurityAnalysisTable } from '@gridsuite/commons-ui';
+import { SecurityAnalysisTable } from '@gridsuite/commons-ui';
 import { getNoRowsMessage } from '../../utils/aggrid-rows-handler';
 
 export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNProps> = ({
