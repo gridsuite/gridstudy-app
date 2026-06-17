@@ -25,7 +25,9 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
     const intl: IntlShape = useIntl();
 
     const rows = useMemo(() => {
-        return result
+        // Defensive guard: the N tab expects an array; a stale paginated result
+        // ({ content, totalElements }) from the N-K tab must not reach result.map.
+        return Array.isArray(result)
             ? result.map((preContingencyResult: PreContingencyResult) => {
                   const { limitViolation, subjectId } = preContingencyResult;
                   return {
