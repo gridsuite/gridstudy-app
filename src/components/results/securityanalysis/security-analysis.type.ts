@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react';
-import {ColDef, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
