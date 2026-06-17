@@ -129,9 +129,11 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             if (
                 results.data
                     .flatMap((result) =>
-                        Object.entries(result).map(
-                            ([key, value]): [Record<string, unknown>, string, unknown] => [result, key, value]
-                        )
+                        Object.entries(result).map(([key, value]): [Record<string, unknown>, string, unknown] => [
+                            result,
+                            key,
+                            value,
+                        ])
                     )
                     .some(([result, key, value]) => {
                         const fieldDef = csvFields.find((field) => field.id === key);
