@@ -26,6 +26,7 @@ import {
     convertFilterValues,
     getStoreFields,
     mappingColumnToField,
+    NMK_SUBTABS,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import { PaginationType, SecurityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
@@ -77,6 +78,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     tabIndexRef.current = tabIndex;
     const [nmkType, setNmkType] = useState(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
     const [count, setCount] = useState<number>(0);
+    const isNmkTab = tabIndex === NMK_RESULTS_TAB_INDEX;
+    const isNTabDev = tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode;
+    const showResultsToolbar = isNmkTab || isNTabDev;
     const dispatch = useDispatch();
     useEffect(() => {
         if (!isDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
@@ -306,30 +310,17 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                     </Tabs>
                 </Box>
             </Box>
-            <Box sx={styles.toolbarRow}>
-                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
+            {showResultsToolbar && (
+                <Box sx={styles.toolbarRow}>
                     <Box sx={{ justifySelf: 'start' }}>
-                        {tabIndex === NMK_RESULTS_TAB_INDEX && (
+                        {isNmkTab && (
                             <Tabs value={nmkType} onChange={handleChangeNmkType}>
-                                <Tab
-                                    label={<FormattedMessage id="ConstraintsFromContingencies" />}
-                                    value={NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}
-                                />
-                                <Tab
-                                    label={<FormattedMessage id="ContingenciesFromConstraints" />}
-                                    value={NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS}
-                                />
-                                {isDeveloperMode && (
-                                    <Tab
-                                        label={<FormattedMessage id="CutOffPowerFromConstraints" />}
-                                        value={NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS}
-                                    />
-                                )}
+                                {NMK_SUBTABS.map(({ messageId, value }) => (
+                                    <Tab key={value} label={<FormattedMessage id={messageId} />} value={value} />
+                                ))}
                             </Tabs>
                         )}
                     </Box>
-                )}
-                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
                     <Box sx={{ justifySelf: 'center', position: 'relative' }}>
                         <GlobalFilterSelector
                             filterCategories={filterTypes}
@@ -338,9 +329,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             tableType={TableType.SecurityAnalysis}
                         />
                     </Box>
-                )}
-                <Box sx={{ justifySelf: 'end' }}>
-                    {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
+                    <Box sx={{ justifySelf: 'end' }}>
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
@@ -349,12 +338,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             downloadZipResult={downloadZipResult}
                             disabled={isExportButtonDisabled}
                         />
-                    )}
+                    </Box>
                 </Box>
-            </Box>
+            )}
             <Box sx={styles.loader}>{shouldOpenLoader && <LinearProgress />}</Box>
             <Box sx={styles.resultContainer}>
-                {tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode && (
+                {isNTabDev && (
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
@@ -362,7 +351,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         computationSubType={getStoreFields(tabIndex)}
                     />
                 )}
-                {tabIndex === NMK_RESULTS_TAB_INDEX && (
+                {isNmkTab && (
                     <SecurityAnalysisResultNmk
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}

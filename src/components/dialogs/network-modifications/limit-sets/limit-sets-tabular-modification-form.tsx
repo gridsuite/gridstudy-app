@@ -17,10 +17,10 @@ import {
     DefaultCellRenderer,
     EquipmentType,
     FieldConstants,
+    getCsvDelimiter,
     hasNonEmptyRows,
     InputWithPopupConfirmation,
     IntegerInput,
-    LANG_FRENCH,
 } from '@gridsuite/commons-ui';
 import {
     AMOUNT_TEMPORARY_LIMITS,
@@ -73,7 +73,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     });
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>();
-    const [selectedFileError, setSelectedFileError] = useState<string | undefined>();
+    const [fileErrorMessage, setFileErrorMessage] = useState<string | undefined>();
 
     const parseConfig = useMemo<Partial<Papa.ParseConfig<Record<string, unknown>>>>(
         () => ({
@@ -90,7 +90,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         [intl, language]
     );
 
-    const handleComplete = useCallback(
+    const getDataFromCsvFile = useCallback(
         (results: Papa.ParseResult<Record<string, unknown>>, file: File) => {
             clearErrors(MODIFICATIONS_TABLE);
             let requiredFieldNameInError: string = '';
@@ -136,7 +136,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         message: intl.formatMessage({ id: 'FieldRequired' }, { requiredFieldNameInError: keyLabel }),
                     });
                 }
-                setIsFetching(false);
                 setFieldTypeError(
                     fieldTypeInError,
                     expectedTypeForFieldInError,
@@ -147,13 +146,11 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                 );
             }
 
-            const rowsWithUuid = results.data.map((row) => ({
+            setValue(CSV_FILENAME, file.name);
+            return results.data.map((row) => ({
                 [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
                 ...row,
             }));
-            tableRef.current?.replace(rowsWithUuid);
-            setValue(CSV_FILENAME, file.name);
-            setIsFetching(false);
         },
         [clearErrors, csvColumns, intl, setError, setValue]
     );
@@ -185,7 +182,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
 
     const commentLines = useMemo(() => {
         const commentKey = `TabularLimitSetsModificationSkeletonComment`;
-        const separator = language === LANG_FRENCH ? ';' : ',';
+        const separator = getCsvDelimiter(language);
         let commentData: string[][] = [];
         if (csvTranslatedColumns) {
             commentData.push(csvTranslatedColumns.map((column, index) => (index === 0 ? `#${column}` : column)));
@@ -201,7 +198,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         tableRef.current?.replace([]);
         setValue(CSV_FILENAME, undefined);
         setSelectedFile(undefined);
-        setSelectedFileError(undefined);
+        setFileErrorMessage(undefined);
     }, [clearErrors, setValue]);
 
     const csvFilename = getValues(CSV_FILENAME);
@@ -273,8 +270,8 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     const getTableData = useCallback(() => {
         const headers = csvColumns.map((column) => column.id);
         const rows = (getValues(MODIFICATIONS_TABLE) ?? []) as Record<string, unknown>[];
-        return [headers, ...rows.map((row) => headers.map((id) => row[id] ?? ''))];
-    }, [csvColumns, getValues]);
+        return [...getTemplateData(), ...rows.map((row) => headers.map((id) => row[id] ?? ''))];
+    }, [csvColumns, getValues, getTemplateData]);
 
     const csvProps = useMemo<CsvProps>(
         () => ({
@@ -302,14 +299,16 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         parseConfig={parseConfig}
                         selectedFile={selectedFile}
                         onFileChange={setSelectedFile}
-                        onFileError={setSelectedFileError}
-                        onComplete={handleComplete}
+                        onFileError={setFileErrorMessage}
+                        getTableData={() => getValues(MODIFICATIONS_TABLE)}
+                        onReplace={(results, file) => tableRef.current?.replace(getDataFromCsvFile(results, file))}
+                        onAppend={(results, file) => tableRef.current?.append(getDataFromCsvFile(results, file))}
                     />
                 </Grid>
             </Grid>
-            {selectedFileError && (
+            {fileErrorMessage && (
                 <Grid>
-                    <Alert severity="error">{selectedFileError}</Alert>
+                    <Alert severity="error">{fileErrorMessage}</Alert>
                 </Grid>
             )}
             {equipmentType && (

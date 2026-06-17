@@ -98,7 +98,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     }, [equipmentType, dialogMode]);
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>();
-    const [selectedFileError, setSelectedFileError] = useState<string | undefined>();
+    const [fileErrorMessage, setFileErrorMessage] = useState<string | undefined>();
 
     const parseConfig = useMemo<Partial<Papa.ParseConfig<Record<string, unknown>>>>(
         () => ({
@@ -290,8 +290,8 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
 
     const getTableData = useCallback(() => {
         const rows = (getValues(MODIFICATIONS_TABLE) ?? []) as Record<string, unknown>[];
-        return [csvColumns, ...rows.map((row) => csvColumns.map((col) => row[col] ?? ''))];
-    }, [csvColumns, getValues]);
+        return [...getTemplateData(), ...rows.map((row) => csvColumns.map((col) => row[col] ?? ''))];
+    }, [csvColumns, getValues, getTemplateData]);
 
     const csvProps = useMemo<CsvProps>(
         () => ({
@@ -330,7 +330,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         [handleGeneratePrefilledModel]
     );
 
-    const handleComplete = useCallback(
+    const getDataFromCsvFile = useCallback(
         (results: Papa.ParseResult<Record<string, unknown>>, file: File) => {
             clearErrors(MODIFICATIONS_TABLE);
             if (dialogMode === TabularModificationType.CREATION) {
@@ -338,15 +338,13 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             } else {
                 handleTabularModificationParsingError(results);
             }
-            const rowsWithUuid = results.data.map((row) => ({
+            setValue(CSV_FILENAME, file.name);
+            return results.data.map((row) => ({
                 [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
                 ...row,
             }));
-            tableRef.current?.replace(rowsWithUuid);
-            setValue(CSV_FILENAME, file.name);
-            setIsFetching(false);
         },
-        [clearErrors, dialogMode, setValue, handleTabularCreationParsingError, handleTabularModificationParsingError]
+        [clearErrors, dialogMode, handleTabularCreationParsingError, handleTabularModificationParsingError, setValue]
     );
 
     useEffect(() => {
@@ -375,7 +373,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         setValue(CSV_FILENAME, undefined);
         setValue(TABULAR_PROPERTIES, []);
         setSelectedFile(undefined);
-        setSelectedFileError(undefined);
+        setFileErrorMessage(undefined);
     }, [clearErrors, setValue]);
 
     const equipmentTypeField = (
@@ -508,14 +506,16 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                         parseConfig={parseConfig}
                         selectedFile={selectedFile}
                         onFileChange={setSelectedFile}
-                        onFileError={setSelectedFileError}
-                        onComplete={handleComplete}
+                        onFileError={setFileErrorMessage}
+                        getTableData={() => getValues(MODIFICATIONS_TABLE)}
+                        onReplace={(results, file) => tableRef.current?.replace(getDataFromCsvFile(results, file))}
+                        onAppend={(results, file) => tableRef.current?.append(getDataFromCsvFile(results, file))}
                     />
                 </Grid>
             </Grid>
-            {selectedFileError && (
+            {fileErrorMessage && (
                 <Grid>
-                    <Alert severity="error">{selectedFileError}</Alert>
+                    <Alert severity="error">{fileErrorMessage}</Alert>
                 </Grid>
             )}
             {equipmentType && (
