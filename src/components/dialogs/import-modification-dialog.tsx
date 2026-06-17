@@ -309,7 +309,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                     >
                         <DirectoryItemSelector
                             open={isSelectorOpen}
-                            onClose={handleSelectModification}
+                            onClose={() => setIsSelectorOpen(false)}
                             types={[ElementType.MODIFICATION]}
                             multiSelect
                             inline
