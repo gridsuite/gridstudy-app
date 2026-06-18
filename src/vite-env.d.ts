@@ -7,3 +7,5 @@
 
 /// <reference types="vite-plugin-svgr/client" />
 /// <reference types="vite/client" />
+declare module 'typeface-roboto';
+declare module 'core-js/es/array/flat-map';

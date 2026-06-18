@@ -5,24 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import 'core-js/es/array/flat-map';
-
-import 'typeface-roboto';
-
 import { createRoot } from 'react-dom/client';
-
-import '@xyflow/react/dist/base.css';
-import './index.css';
-import './configure-yup-init';
-
-import AppWrapper from './components/app-wrapper';
 import SilentRenewApp from './components/silent-renew-app';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
 
-if (window.location.pathname.endsWith('/silent-renew-callback')) {
-    root.render(<SilentRenewApp />);
-} else {
+async function renderApp() {
+    if (window.location.pathname.endsWith('/silent-renew-callback')) {
+        root.render(<SilentRenewApp />);
+        return;
+    }
+    await import('core-js/es/array/flat-map');
+    await import('typeface-roboto');
+    await import('@xyflow/react/dist/base.css');
+    await import('./index.css');
+    await import('./configure-yup-init');
+    const { default: AppWrapper } = await import('./components/app-wrapper');
     root.render(<AppWrapper />);
 }
+renderApp().catch((error) => console.error(error));
