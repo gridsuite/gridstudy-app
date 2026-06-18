@@ -29,7 +29,7 @@ const serverSettings: CommonServerOptions = {
 export default defineConfig((_config) => ({
     plugins: [
         react(),
-        process.env.ENABLE_VITE_CHECKER === 'true' &&
+        process.env.VITE_CHECKER_ENABLED === 'true' &&
             checker({
                 // TypeScript checking
                 typescript: true,
