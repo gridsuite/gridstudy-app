@@ -28,7 +28,7 @@ export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
             () => [
                 {
                     id: 'history',
-                    icon: <HistoryIcon fontSize="small" />,
+                    icon: <HistoryIcon fontSize="medium" />,
                     titleId: 'history',
                     isDisabled: !hasHistory,
                     content: (

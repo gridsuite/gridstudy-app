@@ -23,7 +23,7 @@ import NominalVoltageFilter, { type NominalVoltageFilterStyles } from '../../../
 // Flatten NominalVoltageFilter so it blends into the sidebar instead of floating like the map overlay.
 const voltageFilterStyles: NominalVoltageFilterStyles = {
     root: { boxShadow: 'none', backgroundColor: 'transparent', borderRadius: 0 },
-    nominalVoltageZone: { maxHeight: 'none', minWidth: 0, width: '100%' },
+    nominalVoltageZone: { maxHeight: 'none', minWidth: 0, width: '100%', py: 0 },
 };
 
 interface NadNavigationSidebarProps {
@@ -70,7 +70,7 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
         () => [
             {
                 id: 'history',
-                icon: <HistoryIcon fontSize="small" />,
+                icon: <HistoryIcon fontSize="medium" />,
                 titleId: 'history',
                 isDisabled: !hasHistory,
                 content: (
@@ -84,7 +84,7 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
             },
             {
                 id: 'voltage',
-                icon: <BoltIcon fontSize="small" />,
+                icon: <BoltIcon fontSize="medium" />,
                 titleId: 'nadVoltageFilter',
                 isDisabled: !hasVoltages,
                 content: (

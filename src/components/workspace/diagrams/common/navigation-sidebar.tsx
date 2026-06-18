@@ -76,7 +76,6 @@ const styles = {
             }),
     }),
     headerContainer: {
-        p: 0.5,
         pointerEvents: 'auto',
     },
     iconButton: {
