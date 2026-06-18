@@ -26,16 +26,10 @@ const serverSettings: CommonServerOptions = {
     },
 };
 
-export default defineConfig((_config) => {
-    const checkerEnabled = process.env.DISABLE_VITE_CHECKER !== 'true';
-    const plugins = [
+export default defineConfig((_config) => ({
+    plugins: [
         react(),
-        svgr(), // works on every import with the pattern "**/*.svg?react"
-        tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
-    ];
-
-    if (checkerEnabled) {
-        plugins.push(
+        process.env.ENABLE_VITE_CHECKER === 'true' &&
             checker({
                 // TypeScript checking
                 typescript: true,
@@ -59,17 +53,14 @@ export default defineConfig((_config) => {
                 // which doesn't block the build if linting or type checking fails. To ensure build
                 // failure on errors, we use the 'prebuild' script instead (runs before 'npm run build').
                 enableBuild: false,
-            })
-        );
-    }
-
-    return {
-        plugins,
-        base: './',
-        server: serverSettings, // for npm run start
-        preview: serverSettings, // for npm run serve (use local build)
-        build: {
-            outDir: 'build',
-        },
-    };
-});
+            }),
+        svgr(), // works on every import with the pattern "**/*.svg?react"
+        tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
+    ],
+    base: './',
+    server: serverSettings, // for npm run start
+    preview: serverSettings, // for npm run serve (use local build)
+    build: {
+        outDir: 'build',
+    },
+}));
