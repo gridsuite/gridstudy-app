@@ -24,6 +24,7 @@ import {
 import {
     ConnectablePositionInfos,
     FieldConstants,
+    MeasurementInfo,
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurvePoints,
 } from '@gridsuite/commons-ui';
@@ -47,6 +48,8 @@ export interface VscConverterStationFormInfos {
     reactivePower?: number;
     voltageRegulationOn?: boolean;
     voltage?: number;
+    measurementP: MeasurementInfo | undefined;
+    measurementQ: MeasurementInfo | undefined;
 }
 
 // the backend return a converterStationElementInfo.reactiveCapabilityCurvePoints
@@ -77,5 +80,9 @@ export type VscConverterStation = {
         [FieldConstants.MAXIMUM_REACTIVE_POWER]?: number;
         [FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE]: string;
         [FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
+    };
+    [FieldConstants.STATE_ESTIMATION]?: {
+        [FieldConstants.MEASUREMENT_P]?: MeasurementInfo;
+        [FieldConstants.MEASUREMENT_Q]?: MeasurementInfo;
     };
 };
