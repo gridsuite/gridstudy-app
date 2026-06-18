@@ -13,6 +13,7 @@ import {
     P_MAX,
     P_MIN,
     PRINCIPAL_OBSERVABLE_ZONE,
+    UNIQUE_PHASE,
     Q_MAX,
     Q_MIN,
     QUALITY_PER_REGION,
@@ -165,6 +166,7 @@ interface ThresholdsPerVoltageLevelForm
 export interface StateEstimationParameters {
     estimParameters: {
         principalObservableZone: boolean;
+        uniquePhase: boolean;
         estimAlgoType: string;
         estimLogLevel: string;
         weights: {
@@ -281,6 +283,7 @@ export const fromStateEstimationParametersParamToFormValues = (
 ): StateEstimationParametersForm => ({
     [TabValue.GENERAL]: {
         [PRINCIPAL_OBSERVABLE_ZONE]: values.principalObservableZone,
+        [UNIQUE_PHASE]: values.uniquePhase,
         [ESTIM_LOG_LEVEL]: values.estimLogLevel,
         [ESTIM_ALGO_TYPE]: values.estimAlgoType,
     },
@@ -308,6 +311,7 @@ export const fromStateEstimationParametersParamToFormValues = (
 export const stateEstimationParametersFormSchema = yup.object().shape({
     [TabValue.GENERAL]: yup.object().shape({
         [PRINCIPAL_OBSERVABLE_ZONE]: yup.boolean().required(),
+        [UNIQUE_PHASE]: yup.boolean().required(),
         [ESTIM_ALGO_TYPE]: yup.string().required(),
         [ESTIM_LOG_LEVEL]: yup.string().required(),
     }),

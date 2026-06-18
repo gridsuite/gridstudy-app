@@ -1268,6 +1268,7 @@
     "StateEstimationParametersQualityTabLabel": "Thresholds",
     "StateEstimationParametersLoadboundsTabLabel": "Loadbounds",
     "StateEstimationParametersPrincipalObservableZoneLabel": "Estimation on main observable zone",
+    "StateEstimationParametersUniquePaseLabel": "Unique phase",
     "StateEstimationParametersAlgoTypeLabel": "Algorithm",
     "StateEstimationParametersLogLevelLabel": "Log level",
     "PAS": "Minimal",

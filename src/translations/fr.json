@@ -1265,6 +1265,7 @@
     "StateEstimationParametersQualityTabLabel": "Seuils",
     "StateEstimationParametersLoadboundsTabLabel": "Bornes des consos",
     "StateEstimationParametersPrincipalObservableZoneLabel": "Estimation sur la zone principale observable",
+    "StateEstimationParametersUniquePaseLabel": "Frontières d'observabilité : minimisation des injections",
     "StateEstimationParametersAlgoTypeLabel": "Algorithme",
     "StateEstimationParametersLogLevelLabel": "Niveau de trace",
     "PAS": "Minimal",

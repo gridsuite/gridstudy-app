@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Grid } from '@mui/material';
-import { ESTIM_ALGO_TYPE, ESTIM_LOG_LEVEL, PRINCIPAL_OBSERVABLE_ZONE } from 'components/utils/field-constants';
+import {
+    ESTIM_ALGO_TYPE,
+    ESTIM_LOG_LEVEL,
+    PRINCIPAL_OBSERVABLE_ZONE,
+    UNIQUE_PHASE,
+} from 'components/utils/field-constants';
 import { estimAlgoTypeValues, estimLogLevelValues, TabValue } from './state-estimation-parameters-utils';
 import { FieldLabel, MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import { parametersStyles } from '../util/styles';
@@ -19,6 +24,15 @@ export const StateEstimationGeneralParameters = () => {
                 </Grid>
                 <Grid item xs={2}>
                     <SwitchInput name={`${TabValue.GENERAL}.${PRINCIPAL_OBSERVABLE_ZONE}`} />
+                </Grid>
+            </Grid>
+
+            <Grid container item alignItems="center" spacing={2} direction={'row'}>
+                <Grid item xs={10} sx={parametersStyles.parameterName}>
+                    <FieldLabel label={'StateEstimationParametersUniquePaseLabel'} />
+                </Grid>
+                <Grid item xs={2}>
+                    <SwitchInput name={`${TabValue.GENERAL}.${UNIQUE_PHASE}`} />
                 </Grid>
             </Grid>
 
