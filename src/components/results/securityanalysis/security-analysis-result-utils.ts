@@ -15,6 +15,7 @@ import {
     RESULT_TYPE,
     SecurityAnalysisNmkTableRow,
     SubjectIdRendererType,
+    NMK_TYPE,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
@@ -609,21 +610,15 @@ export const securityAnalysisTableNmKCutOffPowerColumnsDefinition = (
                 isChildren: false,
             })
         ),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn(
+        makeAgGridCustomHeaderColumn({
+            ...makeAgGridFloatColumn(
                 'disconnectedGenerationActivePower',
                 'disconnectedGenerationActivePower',
                 intl,
                 filterParams,
                 { ...sortParams, isChildren: false }
-            )
-        ),
-        //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
-        //it is used for sorting actions
-        makeAgGridCustomHeaderColumn({
-            colId: 'linkedElementId',
-            field: 'linkedElementId',
-            hide: true,
+            ),
+            hide: false,
         }),
     ];
 };
@@ -848,3 +843,9 @@ export const getStoreFields = (index: number): string => {
             return '';
     }
 };
+
+export const NMK_SUBTABS = [
+    { messageId: 'ConstraintsFromContingencies', value: NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES },
+    { messageId: 'ContingenciesFromConstraints', value: NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS },
+    { messageId: 'CutOffPowerFromConstraints', value: NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS },
+] as const;
