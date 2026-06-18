@@ -16,7 +16,7 @@ import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import type { UUID } from 'node:crypto';
 import { VscModificationInfo } from 'services/network-modification-types';
-import { TextInput } from '@gridsuite/commons-ui';
+import { PowerMeasurementsForm, TextInput } from '@gridsuite/commons-ui';
 import { Box, Grid2 as Grid, TextField } from '@mui/material';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
