@@ -77,6 +77,7 @@ import { useGlobalFilterOptions } from './results/common/global-filter/use-globa
 import { updateComputationColumnFilters, updateComputationGlobalFilters } from './results/common/utils.ts';
 import { isEditingGlobalFilter } from '../utils/editing-global-filter-sync.ts';
 import { cleanupStaleStudyData } from '../redux/session-storage/local-storage';
+import { Button } from '@mui/material';
 
 const noUserManager = { instance: null, error: null };
 
@@ -399,6 +400,19 @@ const App = () => {
         updateNetworkVisualizationsParams,
         resetTableDefinitions,
     ]);
+    const CTX = window === window.parent ? 'PARENT' : 'IFRAME';
+    const triggerSilentRenew = useCallback(async () => {
+        if (userManager.instance) {
+            console.log(`====[${CTX}][signinSilent] start/done`);
+            console.log('====[debug] signinSilent start');
+            try {
+                await userManager.instance.signinSilent();
+                console.log('====[debug] signinSilent done');
+            } catch (e) {
+                console.error('====[debug] signinSilent error', e);
+            }
+        }
+    }, [CTX, userManager.instance]);
     return (
         <div
             className="singlestretch-child"
@@ -408,6 +422,11 @@ const App = () => {
             }}
         >
             <AppTopBar userProfile={userProfile} userManager={userManager} />
+            {import.meta.env.DEV && (
+                <Button onClick={triggerSilentRenew} style={{ position: 'fixed', bottom: 10, right: 10, zIndex: 9999 }}>
+                    Regénérer token
+                </Button>
+            )}
             <AnnouncementNotification userProfile={userProfile} />
             <CardErrorBoundary>
                 <div

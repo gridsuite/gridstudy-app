@@ -10,6 +10,27 @@ import { CommonServerOptions, defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { resolve } from 'node:path';
+import fs from 'node:fs';
+import type { ViteDevServer } from 'vite';
+
+const silentRenewPlugin = {
+    name: 'silent-renew-route',
+    configureServer(server: ViteDevServer) {
+        server.middlewares.use(async (req, res, next) => {
+            if (req.url?.split('?')[0] !== '/silent-renew-callback') {
+                return next();
+            }
+            const html = await server.transformIndexHtml(
+                req.url,
+                fs.readFileSync(resolve(__dirname, 'silent-renew-callback.html'), 'utf-8')
+            );
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/html');
+            res.end(html);
+        });
+    },
+};
 
 const serverSettings: CommonServerOptions = {
     port: 3004,
@@ -55,11 +76,18 @@ export default defineConfig((_config) => ({
         }),
         svgr(), // works on every import with the pattern "**/*.svg?react"
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
+        silentRenewPlugin,
     ],
     base: './',
     server: serverSettings, // for npm run start
     preview: serverSettings, // for npm run serve (use local build)
     build: {
         outDir: 'build',
+        rollupOptions: {
+            input: {
+                main: resolve(__dirname, 'index.html'),
+                silentRenew: resolve(__dirname, 'silent-renew-callback.html'),
+            },
+        },
     },
 }));
