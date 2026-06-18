@@ -52,7 +52,7 @@ import {
     transformIfFrenchNumber,
 } from './tabular-common';
 import { ColDef } from 'ag-grid-community';
-import { ENUM, NUMBER } from '../../../network/constants';
+import { BOOLEAN, ENUM, NUMBER } from '../../../network/constants';
 import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
 import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
 import { useFilterCsvGenerator } from './use-filter-csv-generator';
@@ -416,12 +416,21 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 if (field.id === EQUIPMENT_ID) {
                     columnDef.pinned = true;
                 }
+                // Force the cell data type from the field definition instead of relying on AG Grid's
+                // type inference from the data: inference is per-column and based on the cell values,
+                // so a CSV providing unexpected values (e.g. 0/1 in a boolean column) would mistype the
+                // whole column (numbers/text instead of checkboxes, and vice versa).
                 switch (field.type) {
+                    case BOOLEAN:
+                        columnDef.cellDataType = BOOLEAN;
+                        break;
                     case NUMBER:
+                        columnDef.cellDataType = NUMBER;
                         columnDef.cellEditor = NumericEditor;
                         columnDef.suppressKeyboardEvent = suppressNonNumericKeyboardEvent;
                         break;
                     case ENUM:
+                        columnDef.cellDataType = 'text';
                         columnDef.cellEditor = 'agSelectCellEditor';
                         columnDef.cellEditorParams = { values: [null, ...(field.options ?? [])] };
                         break;
@@ -434,6 +443,8 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 selectedProperties.map((propertyName: string) => ({
                     field: PROPERTY_CSV_COLUMN_PREFIX + propertyName,
                     headerName: propertyName,
+                    // property values are always kept as strings (see parseConfig)
+                    cellDataType: 'text',
                     editable: true,
                     singleClickEdit: true,
                 }))
