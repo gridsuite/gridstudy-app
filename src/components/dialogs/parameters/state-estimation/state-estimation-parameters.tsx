@@ -7,15 +7,14 @@
 import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CustomFormProvider,
-    mergeSx,
     PopupConfirmationDialog,
     snackWithFallback,
-    SubmitButton,
     TabPanel,
     useSnackMessage,
+    ParameterLayout,
+    ParameterActions,
 } from '@gridsuite/commons-ui';
-import { ParameterLayout } from './parameter-layout';
-import { Button, DialogActions, Grid, Tab, Tabs, useMediaQuery, useTheme } from '@mui/material';
+import { Grid, Tab, Tabs } from '@mui/material';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import { FormattedMessage } from 'react-intl';
 import { useForm } from 'react-hook-form';
@@ -134,9 +133,6 @@ export const StateEstimationParameters = ({
         setHaveDirtyFields(formState.isDirty);
     }, [formState, setHaveDirtyFields]);
 
-    const theme = useTheme();
-    const isXsScreen = useMediaQuery(theme.breakpoints.only('xs'));
-
     const header = (
         <Tabs
             value={tabValue}
@@ -170,29 +166,18 @@ export const StateEstimationParameters = ({
         </Tabs>
     );
 
-    const footer = (
-        <Grid container item xs={12}>
-            <DialogActions
-                sx={mergeSx(parametersStyles.controlParametersItem, {
-                    paddingBottom: 0,
-                })}
-            >
-                <Button onClick={handleResetClick}>
-                    <FormattedMessage id="resetToDefault" />
-                </Button>
-                <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onValidationError)} />
-            </DialogActions>
-        </Grid>
-    );
+    const actions: ParameterActions = {
+        resetOnClick: handleResetClick,
+        validateOnClick: handleSubmit(onSubmit, onValidationError),
+    };
 
     return (
         <CustomFormProvider validationSchema={stateEstimationParametersFormSchema} {...formMethods}>
             <ParameterLayout
                 header={header}
-                title={"State Estimation"}
+                title={'StateEstimation'}
                 contentSx={parametersStyles.scrollableGrid}
-                resetOnClick={handleResetClick}
-                validateOnClick={handleSubmit(onSubmit, onValidationError)}
+                actions={actions}
             >
                 <Grid container>
                     <TabPanel value={tabValue} index={TabValue.GENERAL}>

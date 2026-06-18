@@ -52,6 +52,7 @@ import {
     ShortCircuitParametersInLine,
     useParametersBackend,
     VoltageInitParametersInLine,
+    ParameterLayoutProvider,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -534,10 +535,11 @@ const ParametersTabs: FunctionComponent = () => {
                       {
                           value: TAB_VALUES.stateEstimationTabValue,
                           labelId: 'StateEstimation',
-                          disabled: stateEstimationAvailability === OptionalServicesStatus.Up,
+                          disabled: stateEstimationAvailability !== OptionalServicesStatus.Up,
                       },
                   ]
                 : []),
+            { value: 'divider', labelId: '' }, // visual separator — rendered as Divider in Tabs, hidden in Select
             {
                 value: TAB_VALUES.networkVisualizationsParams,
                 labelId: 'NetworkVisualizations',
@@ -577,11 +579,13 @@ const ParametersTabs: FunctionComponent = () => {
                                 size="small"
                                 sx={{ backgroundColor: 'white' }}
                             >
-                                {tabOptions.map((opt) => (
-                                    <MenuItem key={opt.value} value={opt.value} disabled={opt.disabled}>
-                                        <FormattedMessage id={opt.labelId} />
-                                    </MenuItem>
-                                ))}
+                                {tabOptions
+                                    .filter((opt) => opt.value !== 'divider')
+                                    .map((opt) => (
+                                        <MenuItem key={opt.value} value={opt.value} disabled={opt.disabled}>
+                                            <FormattedMessage id={opt.labelId} />
+                                        </MenuItem>
+                                    ))}
                             </Select>
                         </Grid>
                     </Grid>
@@ -601,78 +605,24 @@ const ParametersTabs: FunctionComponent = () => {
                                 orientation={isXsScreen ? 'horizontal' : 'vertical'}
                                 sx={tabStyles.listDisplay}
                             >
-                                <Tab
-                                    label={<FormattedMessage id="LoadFlow" />}
-                                    disabled={
-                                        computationStatus === RunningStatus.RUNNING &&
-                                        tabValue === TAB_VALUES.lfParamsTabValue
-                                    }
-                                    value={TAB_VALUES.lfParamsTabValue}
-                                />
-                                <Tab
-                                    disabled={securityAnalysisAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="SecurityAnalysis" />}
-                                    value={TAB_VALUES.securityAnalysisParamsTabValue}
-                                />
-                                <Tab
-                                    disabled={sensitivityAnalysisAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="SensitivityAnalysis" />}
-                                    value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
-                                />
-                                <Tab
-                                    disabled={shortCircuitAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="ShortCircuit" />}
-                                    value={TAB_VALUES.shortCircuitParamsTabValue}
-                                />
-                                <Tab
-                                    disabled={pccMinAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="PccMin" />}
-                                    value={TAB_VALUES.pccMinTabValue}
-                                />
-                                {isDeveloperMode ? (
-                                    <Tab
-                                        disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}
-                                        label={<FormattedMessage id="DynamicSimulation" />}
-                                        value={TAB_VALUES.dynamicSimulationParamsTabValue}
-                                    />
-                                ) : null}
-                                {isDeveloperMode ? (
-                                    <Tab
-                                        disabled={dynamicSecurityAnalysisAvailability !== OptionalServicesStatus.Up}
-                                        label={<FormattedMessage id="DynamicSecurityAnalysis" />}
-                                        value={TAB_VALUES.dynamicSecurityAnalysisParamsTabValue}
-                                    />
-                                ) : null}
-                                {isDeveloperMode ? (
-                                    <Tab
-                                        disabled={dynamicMarginCalculationAvailability !== OptionalServicesStatus.Up}
-                                        label={<FormattedMessage id="DynamicMarginCalculation" />}
-                                        value={TAB_VALUES.dynamicMarginCalculationParamsTabValue}
-                                    />
-                                ) : null}
-                                <Tab
-                                    disabled={voltageInitAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="VoltageInit" />}
-                                    value={TAB_VALUES.voltageInitParamsTabValue}
-                                />
-                                {isDeveloperMode ? (
-                                    <Tab
-                                        disabled={stateEstimationAvailability !== OptionalServicesStatus.Up}
-                                        label={<FormattedMessage id="StateEstimation" />}
-                                        value={TAB_VALUES.stateEstimationTabValue}
-                                    />
-                                ) : null}
-                                {/*In order to insert a Divider under a Tabs collection it need to be nested in a dedicated Tab to prevent console warnings*/}
-                                <Tab
-                                    sx={tabStyles.dividerTab}
-                                    label=""
-                                    icon={<Divider sx={{ flexGrow: 1 }} />}
-                                    disabled
-                                />
-                                <Tab
-                                    label={<FormattedMessage id="NetworkVisualizations" />}
-                                    value={TAB_VALUES.networkVisualizationsParams}
-                                />
+                                {tabOptions.map((opt) =>
+                                    opt.value === 'divider' ? (
+                                        <Tab
+                                            key="divider"
+                                            sx={tabStyles.dividerTab}
+                                            label=""
+                                            icon={<Divider sx={{ flexGrow: 1 }} />}
+                                            disabled
+                                        />
+                                    ) : (
+                                        <Tab
+                                            key={opt.value}
+                                            label={<FormattedMessage id={opt.labelId} />}
+                                            value={opt.value}
+                                            disabled={opt.disabled}
+                                        />
+                                    )
+                                )}
                             </Tabs>
                         </Grid>
                     </Grid>
@@ -687,8 +637,8 @@ const ParametersTabs: FunctionComponent = () => {
                         loadingMessageText="computationInProgress"
                         sx={{ height: '100%', position: 'relative' }}
                     >
-                        <Box sx={[tabStyles.contentBox, isXsScreen && { paddingLeft: 2, paddingRight: 2, height: '100%' }]}>
-                            {displayTab()}
+                        <Box sx={[tabStyles.contentBox]}>
+                            <ParameterLayoutProvider isXsScreen={isXsScreen}>{displayTab()}</ParameterLayoutProvider>
                         </Box>
                     </GlassPane>
                 </Grid>

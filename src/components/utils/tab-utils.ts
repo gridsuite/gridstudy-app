@@ -87,8 +87,8 @@ export const tabStyles = {
     contentBox: (theme) => ({
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
-        paddingLeft: theme.spacing(8),
-        paddingRight: theme.spacing(8),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
