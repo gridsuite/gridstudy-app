@@ -577,7 +577,7 @@ const ParametersTabs: FunctionComponent = () => {
                                 onChange={(e) => handleChangeTab(e.target.value)}
                                 fullWidth
                                 size="small"
-                                sx={{ backgroundColor: 'white' }}
+                                sx={tabStyles.menuSelect}
                             >
                                 {tabOptions
                                     .filter((opt) => opt.value !== 'divider')

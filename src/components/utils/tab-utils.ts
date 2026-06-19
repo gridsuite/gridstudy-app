@@ -45,6 +45,9 @@ export const stylesLayout = {
 } as const satisfies MuiStyles;
 
 export const tabStyles = {
+    menuSelect: (theme) => ({
+        backgroundColor: theme.palette.mode === 'light' ? 'white' : 'none',
+    }),
     listTitleDisplay: (theme) => ({
         paddingTop: 1,
         paddingBottom: 1,
