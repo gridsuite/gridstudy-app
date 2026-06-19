@@ -44,7 +44,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import DiagramControls from './diagram-controls';
-import { createDiagramConfig, type DiagramConfigPosition, updateDiagramConfig } from 'services/explore';
+import { createDiagramConfig, updateDiagramConfig } from 'services/explore';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
@@ -65,7 +65,6 @@ type NetworkAreaDiagramContentProps = {
     readonly voltageLevelIds: string[];
     readonly voltageLevelToExpandIds: string[];
     readonly voltageLevelToOmitIds: string[];
-    readonly positions: DiagramConfigPosition[];
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly svg?: string;
     readonly svgMetadata?: DiagramMetadata;
@@ -82,7 +81,8 @@ type NetworkAreaDiagramContentProps = {
         voltageLevelToOmitIds: string[];
     }) => void;
     readonly onUpdateVoltageLevelsFromFilter: (filterUuid: UUID) => void;
-    readonly onUpdatePositions: (positions: DiagramConfigPosition[]) => void;
+    readonly onMoveNode: (voltageLevelId: string, x: number, y: number) => void;
+    readonly onMoveTextNode: (voltageLevelId: string, shiftX: number, shiftY: number) => void;
     readonly onReplaceNad: (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => void;
     readonly onSaveNad?: () => void;
 };
@@ -93,11 +93,11 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         voltageLevelIds,
         voltageLevelToExpandIds,
         voltageLevelToOmitIds,
-        positions,
         onVoltageLevelClick,
         onUpdateVoltageLevels,
         onUpdateVoltageLevelsFromFilter,
-        onUpdatePositions,
+        onMoveNode,
+        onMoveTextNode,
         onReplaceNad,
         nadPanelId,
         svg,
@@ -387,20 +387,12 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     );
 
     const handleMoveNode = useEffectEvent((equipmentId: string, nodeId: string, x: number, y: number) => {
-        const updatedPositions = positions.map((position) =>
-            position.voltageLevelId === equipmentId ? { ...position, xPosition: x, yPosition: y } : position
-        );
-        onUpdatePositions(updatedPositions);
+        onMoveNode(equipmentId, x, y);
     });
 
     const handleMoveTextnode = useEffectEvent(
         (equipmentId: string, vlNodeId: string, textNodeId: string, shiftX: number, shiftY: number) => {
-            const updatedPositions = positions.map((position) =>
-                position.voltageLevelId === equipmentId
-                    ? { ...position, xLabelPosition: shiftX, yLabelPosition: shiftY }
-                    : position
-            );
-            onUpdatePositions(updatedPositions);
+            onMoveTextNode(equipmentId, shiftX, shiftY);
         }
     );
 
