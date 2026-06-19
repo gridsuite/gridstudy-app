@@ -24,8 +24,7 @@ import {
     mappingTabs,
     PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
-import CustomTablePagination from '../../utils/custom-table-pagination';
-import { ComputingType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, CustomTablePagination, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
