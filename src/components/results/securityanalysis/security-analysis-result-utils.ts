@@ -6,22 +6,12 @@
  */
 
 import { useEffect, useState } from 'react';
-import {
-    Constraint,
-    ConstraintsFromContingencyItem,
-    ContingenciesFromConstraintItem,
-    LimitViolation,
-    CutOffPowerFromConstraintsItem,
-    RESULT_TYPE,
-    SecurityAnalysisNmkTableRow,
-    SubjectIdRendererType,
-    NMK_TYPE,
-} from './security-analysis.type';
+import { RESULT_TYPE, SubjectIdRendererType } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
-import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
-import { ComputingType, ContingencyCellRenderer } from '@gridsuite/commons-ui';
+import { ColDef, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import { ComputingType, ContingencyCellRenderer, NmkType } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
+import { translateLimitNameFrontToBack } from '../common/utils';
 import {
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
@@ -46,7 +36,6 @@ import {
     TableType,
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
-import { MAX_INT32 } from 'services/utils';
 import { createEnumColumn } from '../common/column-filter/utilis';
 
 interface TableParams {
@@ -78,110 +67,6 @@ const contingencyGetterValues = (params: ValueGetterParams) => {
             tooltipValue: params.data?.contingencyEquipmentsIds.join('\n'),
         };
     }
-};
-
-export const flattenNmKResultsContingencies = (intl: IntlShape, result: ConstraintsFromContingencyItem[] | null) => {
-    const rows: SecurityAnalysisNmkTableRow[] = [];
-    if (!result) {
-        return undefined;
-    }
-
-    result?.forEach(({ subjectLimitViolations = [], contingency }: ConstraintsFromContingencyItem, index: number) => {
-        const { contingencyId, status, elements = [] } = contingency || {};
-        rows.push({
-            contingencyId,
-            contingencyEquipmentsIds: elements.map((element) => element.id),
-            status: status,
-            violationCount: subjectLimitViolations.length,
-            elementId: index,
-        });
-        subjectLimitViolations?.forEach((constraint: Constraint) => {
-            const { limitViolation = {} as LimitViolation, subjectId } = constraint || {};
-
-            rows.push({
-                subjectId: subjectId,
-                locationId: limitViolation.locationId,
-                limitType: limitViolation.limitType,
-                limit: limitViolation.limit,
-                patlLimit: limitViolation.patlLimit,
-                value: limitViolation.value,
-                loading: limitViolation.loading,
-                patlLoading: limitViolation.patlLoading,
-                limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
-                nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
-                side: limitViolation.side,
-                linkedElementId: index,
-                // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
-                acceptableDuration:
-                    limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
-                upcomingAcceptableDuration:
-                    limitViolation?.upcomingAcceptableDuration === MAX_INT32
-                        ? null
-                        : limitViolation?.upcomingAcceptableDuration,
-            });
-        });
-    });
-
-    return rows;
-};
-
-export const flattenNmKResultsConstraints = (intl: IntlShape, result: ContingenciesFromConstraintItem[] | null) => {
-    const rows: SecurityAnalysisNmkTableRow[] = [];
-
-    if (!result) {
-        return undefined;
-    }
-
-    result?.forEach(({ contingencies = [], subjectId }, index) => {
-        if (!rows.find((row) => row.subjectId === subjectId)) {
-            rows.push({ subjectId, elementId: index });
-
-            contingencies.forEach(({ contingency = {}, limitViolation = {} }) => {
-                rows.push({
-                    contingencyId: contingency.contingencyId,
-                    contingencyEquipmentsIds: contingency.elements?.map((element) => element.id),
-                    status: contingency.status,
-                    limitType: limitViolation.limitType,
-                    limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
-                    nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
-                    side: limitViolation.side,
-                    // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
-                    acceptableDuration:
-                        limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
-                    upcomingAcceptableDuration:
-                        limitViolation?.upcomingAcceptableDuration === MAX_INT32
-                            ? null
-                            : limitViolation?.upcomingAcceptableDuration,
-                    limit: limitViolation.limit,
-                    patlLimit: limitViolation.patlLimit,
-                    value: limitViolation.value,
-                    loading: limitViolation.loading,
-                    patlLoading: limitViolation.patlLoading,
-                    locationId: limitViolation.locationId,
-                    linkedElementId: index,
-                });
-            });
-        }
-    });
-
-    return rows;
-};
-
-export const mapNmKResultsCutOffPower = (result: CutOffPowerFromConstraintsItem[] | null) => {
-    const rows: SecurityAnalysisNmkTableRow[] = [];
-    if (!result) {
-        return undefined;
-    }
-    result?.forEach(({ contingencyId, status, connectivityResult }: CutOffPowerFromConstraintsItem) => {
-        rows.push({
-            contingencyId: contingencyId,
-            status: status,
-            disconnectedLoadActivePower: connectivityResult?.disconnectedLoadActivePower,
-            disconnectedGenerationActivePower: connectivityResult?.disconnectedGenerationActivePower,
-        });
-    });
-
-    return rows;
 };
 
 interface AgGridFilterParams {
@@ -623,40 +508,6 @@ export const securityAnalysisTableNmKCutOffPowerColumnsDefinition = (
     ];
 };
 
-export const handlePostSortRows = (isFromContingency: boolean) => (params: PostSortRowsParams) => {
-    const agGridRows = params.nodes;
-    const idField = isFromContingency ? 'contingencyId' : 'subjectId';
-    const isContingency = !isFromContingency;
-
-    // Because Map remembers the original insertion order of the keys.
-    const mappedRows = new Map();
-
-    if (isContingency) {
-        mappedRows.set('contingencies', []);
-    }
-
-    // index parents by their unique elementId
-    agGridRows.forEach((row) => {
-        if (row.data[idField] != null) {
-            mappedRows.set(row.data.elementId, [row]);
-        }
-    });
-
-    // attach children to their parent group via linkedElementId
-    agGridRows.forEach((row) => {
-        if (isContingency && !row.data.linkedElementId && !row.data[idField]) {
-            mappedRows.get('contingencies').push(row); // orphans
-        } else if (row.data[idField] == null) {
-            const group = mappedRows.get(row.data.linkedElementId);
-            if (group) {
-                group.push(row);
-            }
-        }
-    });
-
-    return Object.assign(agGridRows, [...mappedRows.values()].flat());
-};
-
 // We can use this custom hook for fetching enums for AutoComplete filter
 export const useFetchFiltersEnums = () => {
     const [loading, setLoading] = useState(true);
@@ -831,8 +682,6 @@ export const convertFilterValues = (intl: IntlShape, filterSelector: FilterConfi
 
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
-export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
-
 export const getStoreFields = (index: number): string => {
     switch (index) {
         case 0:
@@ -845,7 +694,7 @@ export const getStoreFields = (index: number): string => {
 };
 
 export const NMK_SUBTABS = [
-    { messageId: 'ConstraintsFromContingencies', value: NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES },
-    { messageId: 'ContingenciesFromConstraints', value: NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS },
-    { messageId: 'CutOffPowerFromConstraints', value: NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS },
+    { messageId: 'ConstraintsFromContingencies', value: NmkType.CONSTRAINTS_FROM_CONTINGENCIES },
+    { messageId: 'ContingenciesFromConstraints', value: NmkType.CONTINGENCIES_FROM_CONSTRAINTS },
+    { messageId: 'CutOffPowerFromConstraints', value: NmkType.CUT_OFF_POWER_FROM_CONSTRAINTS },
 ] as const;
