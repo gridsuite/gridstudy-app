@@ -7,11 +7,11 @@
 
 import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { RESULT_TYPE, SecurityAnalysisNmkTableRow } from './security-analysis.type';
+import { RESULT_TYPE } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
-import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
+import { OverflowableText, SecurityAnalysisNmkTableRow, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button } from '@mui/material';
 import {
     securityAnalysisTableNColumnsDefinition,
