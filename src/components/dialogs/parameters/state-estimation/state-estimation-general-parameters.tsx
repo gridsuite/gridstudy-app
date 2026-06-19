@@ -17,8 +17,8 @@ import { parametersStyles } from '../util/styles';
 
 export const StateEstimationGeneralParameters = () => {
     return (
-        <Grid container>
-            <Grid container size={12} alignItems="center" spacing={2} direction={'row'}>
+        <Grid container direction={'column'}>
+            <Grid container alignItems="center" spacing={2}>
                 <Grid size={10} sx={parametersStyles.parameterName}>
                     <FieldLabel label={'StateEstimationParametersPrincipalObservableZoneLabel'} />
                 </Grid>
@@ -27,7 +27,7 @@ export const StateEstimationGeneralParameters = () => {
                 </Grid>
             </Grid>
 
-            <Grid container size={12} alignItems="center" spacing={2} direction={'row'}>
+            <Grid container alignItems="center" spacing={2}>
                 <Grid size={10} sx={parametersStyles.parameterName}>
                     <FieldLabel label={'StateEstimationParametersUniquePhaseLabel'} />
                 </Grid>
@@ -36,7 +36,7 @@ export const StateEstimationGeneralParameters = () => {
                 </Grid>
             </Grid>
 
-            <Grid container size={12} spacing={1} paddingTop={3}>
+            <Grid container spacing={1} paddingTop={3}>
                 <Grid size={8} sx={parametersStyles.parameterName}>
                     <FieldLabel label={'StateEstimationParametersLogLevelLabel'} />
                 </Grid>
@@ -48,7 +48,7 @@ export const StateEstimationGeneralParameters = () => {
                     />
                 </Grid>
             </Grid>
-            <Grid container size={12} spacing={1} paddingTop={3}>
+            <Grid container spacing={1} paddingTop={3}>
                 <Grid size={8} sx={parametersStyles.parameterName}>
                     <FieldLabel label={'StateEstimationParametersAlgoTypeLabel'} />
                 </Grid>
