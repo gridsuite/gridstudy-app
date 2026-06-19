@@ -18,7 +18,7 @@ export interface LccCreationDialogTabsProps {
 
 export default function LccTabs({ tabIndex, tabIndexesWithError, setTabIndex }: Readonly<LccCreationDialogTabsProps>) {
     return (
-        <Grid container size={12}>
+        <Grid container sx={{ width: '100%' }}>
             <Tabs value={tabIndex} onChange={(event, newValue) => setTabIndex(newValue)}>
                 <Tab
                     label={<FormattedMessage id="HVDC_LINE" />}

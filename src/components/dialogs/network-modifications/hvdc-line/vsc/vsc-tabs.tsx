@@ -26,7 +26,7 @@ export default function VscTabs({
 }: Readonly<VscTabsProps>) {
     return (
         <>
-            <Grid container size={12}>
+            <Grid container sx={{ width: '100%' }}>
                 <Tabs
                     value={tabIndex}
                     variant="scrollable"

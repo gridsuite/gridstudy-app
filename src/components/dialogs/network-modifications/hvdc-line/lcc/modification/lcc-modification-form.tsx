@@ -76,7 +76,7 @@ export function LccModificationForm({
     lccToModify,
 }: Readonly<LccModificationFormProps>) {
     const headerAndTabs = (
-        <Grid container size={12}>
+        <Grid container spacing={2}>
             <LccModificationDialogHeader lccToModify={lccToModify} />
             <LccTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Grid>

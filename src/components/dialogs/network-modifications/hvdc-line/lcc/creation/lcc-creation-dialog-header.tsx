@@ -15,7 +15,7 @@ export default function LccCreationDialogHeader() {
     );
     const LccNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ ...filledTextField }} />;
     return (
-        <Grid container spacing={2} size={12}>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
             <GridItem size={4}>{LccIdField}</GridItem>
             <GridItem size={4}>{LccNameField}</GridItem>
         </Grid>

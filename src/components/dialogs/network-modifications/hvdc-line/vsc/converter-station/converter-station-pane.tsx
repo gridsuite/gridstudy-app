@@ -174,7 +174,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     return (
         <Grid container>
             <GridSection title={stationLabel} />
-            <Grid container spacing={2} size={12}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{generatorIdField}</GridItem>
                 <GridItem size={4}>{generatorNameField}</GridItem>
             </Grid>
@@ -189,7 +189,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             )}
 
             <GridSection title="Characteristics" />
-            <Grid container size={12}>
+            <Grid container sx={{ width: '100%' }}>
                 <GridItem size={4}>{lossFactorField}</GridItem>
             </Grid>
 
@@ -204,10 +204,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             />
 
             <GridSection title={'Setpoints'} />
-            <Grid container spacing={2} size={12}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{reactivePowerField}</GridItem>
             </Grid>
-            <Grid container size={12} spacing={2} paddingTop={2}>
+            <Grid container spacing={2} paddingTop={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{voltageRegulation}</GridItem>
                 <GridItem size={4}>{voltageField}</GridItem>
             </Grid>

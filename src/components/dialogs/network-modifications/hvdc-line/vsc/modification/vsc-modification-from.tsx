@@ -80,7 +80,7 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2} size={12}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{vscIdField}</GridItem>
                 <GridItem size={4}>{vscNameField}</GridItem>
             </Grid>

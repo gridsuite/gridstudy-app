@@ -151,7 +151,7 @@ export default function VscCreationDialog({
                 gap: '15px',
             }}
         >
-            <Grid container size={12} spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{generatorIdField}</GridItem>
                 <GridItem size={4}>{generatorNameField}</GridItem>
             </Grid>

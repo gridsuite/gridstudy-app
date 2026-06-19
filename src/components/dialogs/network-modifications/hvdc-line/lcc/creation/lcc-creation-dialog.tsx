@@ -225,7 +225,7 @@ export function LccCreationDialog({
 
     const clear = useCallback(() => reset(emptyFormData), [reset]);
     const headerAndTabs = (
-        <Grid container spacing={2} size={12}>
+        <Grid container spacing={2}>
             <LccCreationDialogHeader />
             <LccTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Grid>

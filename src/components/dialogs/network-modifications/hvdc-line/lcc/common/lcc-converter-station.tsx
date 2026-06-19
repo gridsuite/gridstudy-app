@@ -80,7 +80,7 @@ export default function LccConverterStation({
     const connectivitySection = (
         <>
             <GridSection title={'Connectivity'} />
-            <Grid container spacing={2} size={12}>
+            <Grid container spacing={2}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
         </>
@@ -111,7 +111,7 @@ export default function LccConverterStation({
     return (
         <Grid container>
             <GridSection title={stationLabel} />
-            <Grid container spacing={2} size={12}>
+            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <GridItem size={4}>
                     <TextInput
                         name={`${id}.${CONVERTER_STATION_ID}`}
@@ -123,7 +123,7 @@ export default function LccConverterStation({
             </Grid>
             {!isModification && connectivitySection}
             <GridSection title="Characteristics" />
-            <Grid container spacing={2} size={12}>
+            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <GridItem size={4}>
                     {' '}
                     <FloatInput

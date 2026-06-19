@@ -87,15 +87,15 @@ export default function LccHvdcLine({ id, previousValues, isModification }: Read
     );
 
     return (
-        <Grid container size={12}>
+        <Grid container>
             <GridSection title="Characteristics" />
-            <Grid container spacing={2} size={12}>
+            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <GridItem>{dcNominalVoltageField}</GridItem>
                 <GridItem>{dcResistanceField}</GridItem>
                 <GridItem>{maximumActivePowerField}</GridItem>
             </Grid>
             <GridSection title={'Setpoints'} />
-            <Grid container spacing={2} size={12}>
+            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <GridItem>{converterModeField}</GridItem>
                 <GridItem>{activePowerField}</GridItem>
             </Grid>
