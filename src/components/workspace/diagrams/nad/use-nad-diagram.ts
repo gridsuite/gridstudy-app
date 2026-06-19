@@ -193,6 +193,26 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         [setDiagramAndSync, fetchDiagram]
     );
 
+    // Update position in local state only - no Redux dispatch, no fetch
+    const moveNode = useCallback((voltageLevelId: string, x: number, y: number) => {
+        setDiagram((prev) => ({
+            ...prev,
+            positions: prev.positions.map((p) =>
+                p.voltageLevelId === voltageLevelId ? { ...p, xPosition: x, yPosition: y } : p
+            ),
+        }));
+    }, []);
+
+    // Update position in local state only - no Redux dispatch, no fetch
+    const moveTextNode = useCallback((voltageLevelId: string, shiftX: number, shiftY: number) => {
+        setDiagram((prev) => ({
+            ...prev,
+            positions: prev.positions.map((p) =>
+                p.voltageLevelId === voltageLevelId ? { ...p, xLabelPosition: shiftX, yLabelPosition: shiftY } : p
+            ),
+        }));
+    }, []);
+
     const handleSaveNad = useCallback(async () => {
         if (diagram.voltageLevelIds.length === 0 || !workspaceId) {
             return;
@@ -325,5 +345,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         updateDiagram,
         handleSaveNad,
         replaceNadConfig,
+        moveNode,
+        moveTextNode,
     };
 };
