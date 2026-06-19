@@ -6,7 +6,6 @@
  */
 
 import { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { ReportViewer } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
 import { ComputingType, BuildStatus } from '@gridsuite/commons-ui';
@@ -15,6 +14,7 @@ import { useReportFetcher } from '../../../hooks/use-report-fetcher';
 import { Report, SeverityLevel } from '../../../utils/report/report.type';
 import { sortSeverityList } from 'utils/report/report-severity';
 import { ReportViewerProvider } from '../../report-viewer/report-viewer-provider';
+import { ReportViewer } from '@gridsuite/commons-ui';
 
 interface ComputationReportViewerProps {
     reportType: ComputingType;
