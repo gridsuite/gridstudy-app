@@ -6,21 +6,22 @@
  */
 
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid2 as Grid } from '@mui/material';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useCSVPicker } from 'components/utils/inputs/input-hooks';
-import CsvDownloader from 'react-csv-downloader';
-import { CancelButton, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
+import { CancelButton, CsvPicker, getCsvDelimiter, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
+import { useCSVDownloader } from 'react-papaparse';
+import type Papa from 'papaparse';
 import { useSelector } from 'react-redux';
 import { PHASE_TAP, RuleType } from '../two-windings-transformer.types';
 import { AppState } from 'redux/reducer.type';
+import { transformIfFrenchNumber } from '../../tabular/tabular-common';
 
 export interface ImportRuleDialogProps {
     ruleType: RuleType;
     openImportRuleDialog: boolean;
     setOpenImportRuleDialog: (open: boolean) => void;
     csvColumns: string[];
-    handleImportTapRule: (selectedFile: File, language: string, setFileParseError: (error: string) => void) => void;
+    handleImportTapRule: (results: Papa.ParseResult<Record<string, string>>) => void;
 }
 
 export const ImportRuleDialog = ({
@@ -31,29 +32,37 @@ export const ImportRuleDialog = ({
     handleImportTapRule,
 }: ImportRuleDialogProps) => {
     const language = useSelector((state: AppState) => state.computedLanguage);
+    const { CSVDownloader } = useCSVDownloader();
+
+    const [selectedFile, setSelectedFile] = useState<File | undefined>();
+    const [fileErrorMessage, setFileErrorMessage] = useState<string | undefined>();
+    const [parsedResults, setParsedResults] = useState<Papa.ParseResult<Record<string, string>> | undefined>();
+
+    useEffect(() => {
+        setSelectedFile(undefined);
+        setFileErrorMessage(undefined);
+        setParsedResults(undefined);
+    }, [openImportRuleDialog]);
+
+    const parseConfig = useMemo<Partial<Papa.ParseConfig<Record<string, string>>>>(
+        () => ({ transform: (value: string) => transformIfFrenchNumber(value, language) }),
+        [language]
+    );
 
     const handleCloseDialog = () => {
         setOpenImportRuleDialog(false);
     };
 
-    const [selectedFile, FileField, selectedFileError] = useCSVPicker({
-        label: ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule',
-        header: csvColumns,
-        resetTrigger: openImportRuleDialog,
-        maxTapNumber: MAX_ROWS_NUMBER,
-        language: language,
-    });
-
     const handleSave = () => {
-        if (!selectedFileError) {
-            handleImportTapRule(selectedFile!, language, () => {});
+        if (!fileErrorMessage && parsedResults) {
+            handleImportTapRule(parsedResults);
             handleCloseDialog();
         }
     };
 
     const isInvalid = useMemo(() => {
-        return typeof selectedFile === 'undefined' || typeof selectedFileError !== 'undefined';
-    }, [selectedFile, selectedFileError]);
+        return typeof parsedResults === 'undefined' || typeof fileErrorMessage !== 'undefined';
+    }, [parsedResults, fileErrorMessage]);
 
     return (
         <Dialog open={openImportRuleDialog} fullWidth={true}>
@@ -63,21 +72,32 @@ export const ImportRuleDialog = ({
             <DialogContent>
                 <Grid container spacing={2} direction={'column'}>
                     <Grid>
-                        <CsvDownloader
-                            columns={csvColumns}
-                            datas={[]}
-                            separator={language === LANG_FRENCH ? ';' : ','}
+                        <CSVDownloader
+                            data={[csvColumns]}
                             filename={ruleType === PHASE_TAP ? 'tap-dephasing-rule' : 'tap-regulating-rule'}
+                            config={{ delimiter: getCsvDelimiter(language) }}
                         >
                             <Button variant="contained">
                                 <FormattedMessage id="GenerateSkeleton" />
                             </Button>
-                        </CsvDownloader>
+                        </CSVDownloader>
                     </Grid>
-                    <Grid>{FileField}</Grid>
-                    {selectedFile && selectedFileError && (
+                    <Grid>
+                        <CsvPicker<Record<string, string>>
+                            label={ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule'}
+                            header={csvColumns}
+                            maxLineNumber={MAX_ROWS_NUMBER}
+                            language={language}
+                            parseConfig={parseConfig}
+                            selectedFile={selectedFile}
+                            onFileChange={setSelectedFile}
+                            onFileError={setFileErrorMessage}
+                            onComplete={setParsedResults}
+                        />
+                    </Grid>
+                    {fileErrorMessage && (
                         <Grid>
-                            <Alert severity="error">{selectedFileError}</Alert>
+                            <Alert severity="error">{fileErrorMessage}</Alert>
                         </Grid>
                     )}
                 </Grid>

@@ -64,6 +64,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import { VSC_TABS } from '../vsc-utils';
 
 const formSchema = yup
     .object()
@@ -85,12 +86,6 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-const VSC_MODIFICATION_TABS = {
-    HVDC_LINE_TAB: 0,
-    CONVERTER_STATION_1: 1,
-    CONVERTER_STATION_2: 2,
-};
-
 const VscModificationDialog: React.FC<any> = ({
     editData,
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map or spreadsheet
@@ -101,7 +96,7 @@ const VscModificationDialog: React.FC<any> = ({
     editDataFetchStatus,
     ...dialogProps
 }) => {
-    const [tabIndex, setTabIndex] = useState(VSC_MODIFICATION_TABS.HVDC_LINE_TAB);
+    const [tabIndex, setTabIndex] = useState(VSC_TABS.HVDC_LINE_TAB);
 
     const [equipmentId, setEquipmentId] = useState<string | null>(defaultIdValue ?? null);
     const [vscToModify, setVscToModify] = useState<VscModificationInfo | null>(null);

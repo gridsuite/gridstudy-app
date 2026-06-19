@@ -422,19 +422,12 @@ export function modifyLoad(
     });
 }
 
-export function modifyGenerator({
-    dto,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    dto: GeneratorModificationDto;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid: string | null;
-    isUpdate: boolean;
-}) {
+export function modifyGenerator(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: GeneratorModificationDto
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
@@ -444,7 +437,7 @@ export function modifyGenerator({
         console.info('Creating generator modification');
     }
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -453,19 +446,12 @@ export function modifyGenerator({
     });
 }
 
-export function createGenerator({
-    dto,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    dto: GeneratorCreationDto;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: string | null;
-    isUpdate: boolean;
-}) {
+export function createGenerator(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: GeneratorCreationDto
+) {
     let createGeneratorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         createGeneratorUrl += '/' + encodeURIComponent(modificationUuid);
@@ -474,7 +460,7 @@ export function createGenerator({
         console.info('Creating generator creation');
     }
     return backendFetchText(createGeneratorUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1935,6 +1921,22 @@ export function moveVoltageLevelFeederBays({
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(moveVoltageLevelFeederBaysInfos),
+    });
+}
+
+export function assembleModificationsIntoComposite(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuids: UUID[]
+): Promise<UUID> {
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modification`;
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(modificationUuids),
     });
 }
 
