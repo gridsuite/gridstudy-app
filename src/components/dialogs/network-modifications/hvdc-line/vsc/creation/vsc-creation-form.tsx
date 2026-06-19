@@ -10,7 +10,7 @@ import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import type { UUID } from 'node:crypto';
 import { Box } from '@mui/material';
-import { VSC_CREATION_TABS } from '../vsc-utils';
+import { VSC_TABS } from '../vsc-utils';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 
 interface VscCreationFormProps {
@@ -27,10 +27,10 @@ export default function VscCreationForm({
 }: Readonly<VscCreationFormProps>) {
     return (
         <>
-            <Box hidden={tabIndex !== VSC_CREATION_TABS.HVDC_LINE_TAB} p={1}>
+            <Box hidden={tabIndex !== VSC_TABS.HVDC_LINE_TAB} p={1}>
                 <VscHvdcLinePane id={HVDC_LINE_TAB} />
             </Box>
-            <Box hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_1} p={1}>
+            <Box hidden={tabIndex !== VSC_TABS.CONVERTER_STATION_1} p={1}>
                 <ConverterStationPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
@@ -39,7 +39,7 @@ export default function VscCreationForm({
                     stationLabel={'converterStation1'}
                 />
             </Box>
-            <Box hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_2} p={1}>
+            <Box hidden={tabIndex !== VSC_TABS.CONVERTER_STATION_2} p={1}>
                 <ConverterStationPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}

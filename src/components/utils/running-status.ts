@@ -157,6 +157,8 @@ export function getPccMinRunningStatus(pccMinStatus: string | null): RunningStat
             return RunningStatus.RUNNING;
         case 'NOT_DONE':
             return RunningStatus.IDLE;
+        case 'FAILED':
+            return RunningStatus.FAILED;
         default:
             return RunningStatus.IDLE;
     }
