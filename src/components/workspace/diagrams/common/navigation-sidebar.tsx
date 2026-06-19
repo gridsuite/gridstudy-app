@@ -19,6 +19,7 @@ import {
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { memo, useCallback, useState, type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 export interface SidebarSection {
     /** Stable identifier of the section. */
@@ -81,6 +82,10 @@ const styles = {
     iconButton: {
         p: 0.5,
     },
+    headerCollapsed: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
     headerExpanded: (theme: Theme, enabled: boolean) => ({
         display: 'flex',
         alignItems: 'center',
@@ -136,7 +141,7 @@ export const NavigationSidebar = memo(function NavigationSidebar({
                   sections.map((section) => {
                       const enabled = !section.isDisabled;
                       return (
-                          <Box key={section.id} sx={styles.headerContainer}>
+                          <Box key={section.id} sx={mergeSx(styles.headerContainer, styles.headerCollapsed)}>
                               <IconButton
                                   onClick={enabled ? () => toggleExpand(section.id) : undefined}
                                   disabled={!enabled}
