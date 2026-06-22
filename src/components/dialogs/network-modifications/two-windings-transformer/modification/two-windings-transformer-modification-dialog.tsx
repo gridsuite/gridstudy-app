@@ -30,7 +30,6 @@ import {
     getCont1Cont2WithPositionEmptyFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    getOpLimitsGroupInfosFromBranchModification,
     getPropertiesFromModification,
     LimitsPane,
     LimitsSchemaType,
@@ -749,10 +748,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                                   [ENABLE_OLG_MODIFICATION]: (formValues.limits as any)[
                                                       ENABLE_OLG_MODIFICATION
                                                   ],
-                                                  [OPERATIONAL_LIMITS_GROUPS]:
-                                                      getOpLimitsGroupInfosFromBranchModification(
-                                                          formValues as LineModificationFormSchema
-                                                      ),
+                                                  [OPERATIONAL_LIMITS_GROUPS]: formValues.limits?.operationalLimitsGroups ?? [],
                                               }
                                             : {
                                                   [ENABLE_OLG_MODIFICATION]: false,

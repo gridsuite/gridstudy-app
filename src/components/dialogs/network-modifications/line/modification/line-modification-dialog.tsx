@@ -39,7 +39,6 @@ import {
     getLineCharacteristicsValidationSchemaProps,
     getLimitsValidationSchema,
     formatOpLimitGroupsToFormInfos,
-    getOpLimitsGroupInfosFromBranchModification,
     convertToOperationalLimitsGroupFormSchema,
     OperationalLimitsGroupFormSchema,
     getAllLimitsFormData,
@@ -337,8 +336,7 @@ const LineModificationDialog = ({
                                         [LIMITS]: formValues?.limits[ENABLE_OLG_MODIFICATION]
                                             ? {
                                                   [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
-                                                  [OPERATIONAL_LIMITS_GROUPS]:
-                                                      getOpLimitsGroupInfosFromBranchModification(formValues),
+                                                  [OPERATIONAL_LIMITS_GROUPS]: formValues.limits?.operationalLimitsGroups ?? [],
                                               }
                                             : {
                                                   [ENABLE_OLG_MODIFICATION]: false,
