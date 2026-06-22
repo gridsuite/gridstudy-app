@@ -373,6 +373,7 @@ export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
 /* State estimation parameters fields */
 /* General */
 export const PRINCIPAL_OBSERVABLE_ZONE = 'principalObservableZone';
+export const UNIQUE_PHASE = 'uniquePhase';
 export const ESTIM_ALGO_TYPE = 'estimAlgoType';
 export const ESTIM_LOG_LEVEL = 'estimLogLevel';
 /* Weights */
