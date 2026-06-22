@@ -223,10 +223,8 @@ export interface ValidationError {
 }
 export type CustomAggridValue = boolean | string | number | CustomCellType | ValidationError;
 
-export interface CustomColDef<
-    TData = any,
-    F extends CustomAggridFilterParams = CustomAggridFilterParams,
-> extends ColDef<TData, CustomAggridValue> {
+export interface CustomColDef<TData = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
+    extends ColDef<TData, CustomAggridValue> {
     colId: string;
     context?: ColumnContext<F>;
 }
