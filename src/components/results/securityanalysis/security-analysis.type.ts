@@ -6,112 +6,25 @@
  */
 
 import * as React from 'react';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
-import { AgGridReactProps } from 'ag-grid-react';
+import { ColDef, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
-import { TablePaginationProps } from '@mui/material';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
-import { Page } from '../common/utils';
+import { RunningStatusMessage } from '../../utils/aggrid-rows-handler';
+import RunningStatus from '../../utils/running-status';
+import { LimitViolation } from '@gridsuite/commons-ui';
+
+export interface PreContingencyResult {
+    subjectId?: string;
+    status: string;
+    limitViolation?: LimitViolation;
+}
 
 export enum RESULT_TYPE {
     N = 'N',
     NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
     NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
     NMK_CUT_OFF_POWER = 'NMK_CUT_OFF_POWER',
-}
-export enum NMK_TYPE {
-    CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
-    CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
-    CUT_OFF_POWER_FROM_CONSTRAINTS = 'cut-off-power-from-constraints',
-}
-
-export interface LimitViolation {
-    subjectId?: string;
-    acceptableDuration?: number;
-    upcomingAcceptableDuration?: number;
-    limit?: number;
-    patlLimit?: number;
-    limitName?: string;
-    nextLimitName?: string;
-    limitReduction?: number;
-    limitType?: string;
-    loading?: number;
-    patlLoading?: number;
-    side?: string;
-    value?: number;
-    locationId?: string;
-}
-
-interface Element {
-    elementType?: string;
-    id?: string;
-}
-
-export interface ContingencyItem {
-    status?: string;
-    contingencyId?: string;
-    elements?: Element[];
-}
-
-export interface Contingency {
-    contingency?: ContingencyItem;
-    limitViolation?: LimitViolation;
-}
-
-export interface SecurityAnalysisNmkTableRow {
-    subjectId?: string;
-    locationId?: string;
-    acceptableDuration?: number | null;
-    upcomingAcceptableDuration?: number | null;
-    status?: string;
-    disconnectedLoadActivePower?: number;
-    disconnectedGenerationActivePower?: number;
-    contingencyEquipmentsIds?: (string | undefined)[];
-    contingencyId?: string;
-    limit?: number;
-    patlLimit?: number;
-    limitName?: string | null;
-    nextLimitName?: string | null;
-    limitType?: string;
-    elementId?: number;
-    linkedElementId?: number;
-    loading?: number;
-    patlLoading?: number;
-    side?: string;
-    value?: number;
-    violationCount?: number;
-}
-
-export interface Constraint {
-    limitViolation?: LimitViolation;
-    subjectId?: string;
-}
-
-export interface ContingenciesFromConstraintItem {
-    subjectId?: string;
-    contingencies?: Contingency[];
-}
-
-export interface ConstraintsFromContingencyItem {
-    subjectLimitViolations?: Constraint[];
-    contingency?: ContingencyItem;
-}
-
-export interface CutOffPowerFromConstraintsItem {
-    status?: string;
-    contingencyId?: string;
-    connectivityResult?: ConnectivityResult;
-}
-
-export interface ConnectivityResult {
-    disconnectedLoadActivePower: number;
-    disconnectedGenerationActivePower: number;
-}
-export interface PreContingencyResult {
-    subjectId?: string;
-    status: string;
-    limitViolation?: LimitViolation;
 }
 
 export type SecurityAnalysisQueryParams = {
@@ -125,10 +38,6 @@ export type SecurityAnalysisQueryParams = {
 
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
-export type SecurityAnalysisNmkResult = Page<
-    ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | CutOffPowerFromConstraintsItem[] | null
->;
-
 // Components props interfaces
 export interface SecurityAnalysisTabProps {
     studyUuid: UUID;
@@ -139,17 +48,11 @@ export interface SecurityAnalysisTabProps {
 export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult[];
     isLoadingResult: boolean;
-    columnDefs: ColDef<any>[];
-    computationSubType: string;
-}
-
-export interface SecurityAnalysisResultNmkProps {
-    result?: SecurityAnalysisNmkResult;
-    columnDefs: ColDef<any>[];
-    isLoadingResult: boolean;
-    nmkType: NMK_TYPE;
-    paginationProps: TablePaginationProps;
-    computationSubType: string;
+    columnDefs: ColDef[];
+    resultStatusMessages: RunningStatusMessage;
+    securityAnalysisStatus: RunningStatus;
+    onGridReady: (params: GridReadyEvent) => void;
+    hasError: boolean;
 }
 
 export interface SecurityAnalysisNTableRow {
@@ -166,12 +69,4 @@ export interface SecurityAnalysisNTableRow {
     acceptableDuration?: number | null;
     upcomingAcceptableDuration?: number | null;
     side?: string;
-}
-
-export interface SecurityAnalysisResultProps {
-    rows: SecurityAnalysisNTableRow[] | SecurityAnalysisNmkTableRow[] | undefined;
-    columnDefs: ColDef[];
-    isLoadingResult: boolean;
-    agGridProps?: AgGridReactProps;
-    computationSubType: string;
 }

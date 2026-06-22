@@ -17,8 +17,13 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { ComputingType, snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
-import CustomTablePagination from '../../utils/custom-table-pagination';
+import {
+    ComputingType,
+    CustomTablePagination,
+    snackWithFallback,
+    useDebounce,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     fetchSensitivityAnalysisFilterOptions,
     fetchSensitivityAnalysisResult,
