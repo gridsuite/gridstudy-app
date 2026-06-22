@@ -7,10 +7,6 @@
 
         /* Modules and Resolution */
         "baseUrl": "src",
-        "paths": {
-            "@gridsuite/commons-ui": ["../../commons-ui/src"],
-            "@gridsuite/commons-ui/*": ["../../commons-ui/src/*"]
-        },
         "module": "esnext",
         "moduleResolution": "bundler",
         "resolveJsonModule": true,

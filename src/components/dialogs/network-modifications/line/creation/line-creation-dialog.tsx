@@ -30,25 +30,18 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LINE_SEGMENTS } from 'components/utils/field-constants';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
-import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createLine } from '../../../../../services/study/network-modifications';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
-import { ComputedLineCharacteristics } from '../../../line-types-catalog/line-catalog.type';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import {
-    convertLimitsToOperationalLimitsGroupFormSchema,
-    convertToLineSegmentInfos,
-    SegmentFormData,
-} from '../../../line-types-catalog/segment-utils';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
@@ -56,7 +49,6 @@ import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../servic
 type LineCreationDialogProps = NetworkModificationDialogProps & {
     editData?: LineCreationDto; // contains data when we try to edit an existing hypothesis
     onCreateLine: typeof createLine;
-    displayConnectivity?: boolean;
 };
 
 /**
@@ -66,7 +58,6 @@ type LineCreationDialogProps = NetworkModificationDialogProps & {
  * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param onCreateLine callback to customize line creation process
- * @param displayConnectivity to display connectivity section or not
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
@@ -77,7 +68,6 @@ const LineCreationDialog = ({
     currentNode,
     currentRootNetworkUuid,
     onCreateLine = createLine,
-    displayConnectivity = true,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -86,18 +76,12 @@ const LineCreationDialog = ({
     const { snackError } = useSnackMessage();
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
-    const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
-
-    const handleCloseLineTypesCatalogDialog = () => {
-        setIsOpenLineTypesCatalogDialog(false);
-    };
-
     const formMethods = useForm<DeepNullable<LineCreationFormData>>({
         defaultValues: lineCreationEmptyFormData,
-        resolver: yupResolver<DeepNullable<LineCreationFormData>>(lineCreationFormSchema),
+        resolver: yupResolver<DeepNullable<LineCreationFormData>>(lineCreationFormSchema as any),
     });
 
-    const { reset, setValue, watch } = formMethods;
+    const { reset } = formMethods;
 
     // TODO DBR
     //const editSegmentValue = watch(LINE_SEGMENTS);
@@ -230,6 +214,8 @@ const LineCreationDialog = ({
                     onSave={handleLineSegmentsBuildSubmit}
                     editData={editSegmentValue}
                 />
+                
+      onOpenCatalogDialog={() => setIsOpenLineTypesCatalogDialog(true)}          
      */
 
     return (
@@ -244,11 +230,12 @@ const LineCreationDialog = ({
                 onSave={onSubmit}
                 maxWidth={'xl'}
                 titleId="CreateLine"
-                onOpenCatalogDialog={() => setIsOpenLineTypesCatalogDialog(true)}
                 searchCopy={searchCopy}
-                PaperProps={{
-                    sx: {
-                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                        },
                     },
                 }}
                 open={open}

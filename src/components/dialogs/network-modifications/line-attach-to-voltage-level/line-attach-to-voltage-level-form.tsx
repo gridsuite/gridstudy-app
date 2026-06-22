@@ -264,7 +264,6 @@ const LineAttachToVoltageLevelForm = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    displayConnectivity={false}
                     onCreateLine={onLineCreationDo}
                     editData={lineToEdit}
                     isUpdate={isUpdate}
