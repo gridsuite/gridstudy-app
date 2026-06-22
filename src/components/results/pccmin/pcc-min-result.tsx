@@ -8,7 +8,13 @@
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ComputingType, MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    CustomTablePagination,
+    MuiStyles,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
@@ -16,7 +22,6 @@ import RunningStatus from 'components/utils/running-status';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { Box } from '@mui/material';
 import { PAGE_OPTIONS } from '../securityanalysis/security-analysis-result-utils';
-import CustomTablePagination from 'components/utils/custom-table-pagination';
 import PccMinResultTable from './pcc-min-result-table';
 import { PaginationType, TableType } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
