@@ -157,14 +157,14 @@ const LineModificationDialog = ({
     const [tabIndex, setTabIndex] = useState<number>(LineModificationDialogTab.CONNECTIVITY_TAB);
     const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
 
-    const emptyFormData: any = {
+    const emptyFormData: any = useMemo(() => ({
         [EQUIPMENT_NAME]: '',
         ...getCont1Cont2WithPositionEmptyFormData(true),
         ...getLineCharacteristicsEmptyFormData(),
         ...getLimitsEmptyFormData(),
         ...getBranchActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
         ...emptyProperties,
-    };
+    }), []);
 
     const formSchema = yup
         .object()

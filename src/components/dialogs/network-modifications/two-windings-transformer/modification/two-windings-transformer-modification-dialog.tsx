@@ -746,7 +746,9 @@ const TwoWindingsTransformerModificationDialog = ({
                                     ...{
                                         [LIMITS]: ((formValues?.limits as any)?.[ENABLE_OLG_MODIFICATION]
                                             ? {
-                                                  [ENABLE_OLG_MODIFICATION]: (formValues.limits as any)[ENABLE_OLG_MODIFICATION],
+                                                  [ENABLE_OLG_MODIFICATION]: (formValues.limits as any)[
+                                                      ENABLE_OLG_MODIFICATION
+                                                  ],
                                                   [OPERATIONAL_LIMITS_GROUPS]:
                                                       getOpLimitsGroupInfosFromBranchModification(
                                                           formValues as LineModificationFormSchema

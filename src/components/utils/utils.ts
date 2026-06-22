@@ -15,14 +15,7 @@ import {
     OperationType,
     VoltageLevelOption,
 } from '@gridsuite/commons-ui';
-import {
-    APPLICABILITY_FIELD,
-    CURRENT_LIMITS,
-    ID,
-    LIMITS_PROPERTIES,
-    NAME,
-    SELECTED,
-} from './field-constants';
+import { APPLICABILITY_FIELD, CURRENT_LIMITS, ID, LIMITS_PROPERTIES, NAME, SELECTED } from './field-constants';
 import {
     TapChangerStep,
     TapChangerStepMapInfos,

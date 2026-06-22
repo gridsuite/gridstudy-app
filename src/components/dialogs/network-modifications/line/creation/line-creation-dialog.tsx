@@ -28,9 +28,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    LINE_SEGMENTS,
-} from 'components/utils/field-constants';
+import { LINE_SEGMENTS } from 'components/utils/field-constants';
 
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -51,8 +49,7 @@ import {
     convertToLineSegmentInfos,
     SegmentFormData,
 } from '../../../line-types-catalog/segment-utils';
-import PositionDiagramPane
-    from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
