@@ -644,7 +644,7 @@ export const handlePostSortRows = (isFromContingency: boolean) => (params: PostS
 
     // attach children to their parent group via linkedElementId
     agGridRows.forEach((row) => {
-        if (isContingency && !row.data.linkedElementId && !row.data[idField]) {
+        if (isContingency && row.data.linkedElementId == null && !row.data[idField]) {
             mappedRows.get('contingencies').push(row); // orphans
         } else if (row.data[idField] == null) {
             const group = mappedRows.get(row.data.linkedElementId);
