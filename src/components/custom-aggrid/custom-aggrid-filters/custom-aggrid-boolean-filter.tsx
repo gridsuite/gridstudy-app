@@ -10,7 +10,7 @@ import { IconButton, MenuItem, Select } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { useCustomAggridColumnFilter } from './hooks/use-custom-aggrid-column-filter';
+import { useCustomAggridColumnFilter } from '@gridsuite/commons-ui';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { BooleanFilterValue } from './utils/aggrid-filters-utils';

@@ -10,7 +10,7 @@ import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
+import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from '@gridsuite/commons-ui';
 import { COL_STATUS, StatusCellRender } from '../common/result-cell-renderers';
 import type { UUID } from 'node:crypto';

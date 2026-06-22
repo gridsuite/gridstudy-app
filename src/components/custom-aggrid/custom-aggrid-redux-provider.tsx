@@ -22,8 +22,6 @@ import { FilterConfig, FilterParams, SortConfig, SortParams, TableType } from '.
 import { persistSpreadsheetColumnFilter } from '../spreadsheet-view/columns/utils/persist-spreadsheet-column-filter';
 import { persistComputationColumnFilter } from '../results/common/column-filter/persist-computation-column-filter';
 
-// ─── Sort provider ────────────────────────────────────────────────────────────
-
 const CustomAggridSortReduxProvider = ({ children }: PropsWithChildren) => {
     const dispatch = useDispatch();
     const tableSort = useSelector((state: AppState) => state.tableSort);
@@ -52,8 +50,6 @@ const CustomAggridSortReduxProvider = ({ children }: PropsWithChildren) => {
 
     return <CustomAggridSortContext.Provider value={value}>{children}</CustomAggridSortContext.Provider>;
 };
-
-// ─── Filter provider ──────────────────────────────────────────────────────────
 
 const CustomAggridFilterReduxProvider = ({ children }: PropsWithChildren) => {
     const dispatch = useDispatch();
@@ -101,8 +97,6 @@ const CustomAggridFilterReduxProvider = ({ children }: PropsWithChildren) => {
 
     return <CustomAggridFilterContext.Provider value={value}>{children}</CustomAggridFilterContext.Provider>;
 };
-
-// ─── Combined convenience provider ───────────────────────────────────────────
 
 export const CustomAggridReduxProvider = ({ children }: PropsWithChildren) => (
     <CustomAggridSortReduxProvider>
