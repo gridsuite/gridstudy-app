@@ -32,8 +32,8 @@ import {
     getLimitsValidationSchema,
     getOpLimitsGroupInfosFromBranchModification,
     getPropertiesFromModification,
-    LimitsFormSchema,
     LimitsPane,
+    LimitsSchemaType,
     modificationPropertiesSchema,
     OperationalLimitsGroupFormSchema,
     OperationalLimitsGroupModificationInfos,
@@ -216,7 +216,7 @@ export type TwoWindingsTransformerModificationFormValues = BaseFormValues & {
         [CONNECTIVITY_2]: ConnectivityFormSchema;
     };
     [CHARACTERISTICS]: CharacteristicsFormSchema;
-    [LIMITS]: LimitsFormSchema;
+    [LIMITS]: LimitsSchemaType;
     [RATIO_TAP_CHANGER]: RatioTapChangerFormSchema;
     [PHASE_TAP_CHANGER]: PhaseTapChangerFormSchema;
     [STATE_ESTIMATION]: StateEstimationFormSchema;
@@ -570,9 +570,9 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedS: toModificationOperation(characteristics?.[RATED_S]),
                 ratedU1: toModificationOperation(characteristics?.[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics?.[RATED_U2]),
-                operationalLimitsGroups: (limits as any)?.[ENABLE_OLG_MODIFICATION]
+                operationalLimitsGroups: limits?.[ENABLE_OLG_MODIFICATION]
                     ? (addModificationTypeToOpLimitsGroups(
-                          limits[OPERATIONAL_LIMITS_GROUPS] as OperationalLimitsGroupFormSchema[]
+                          (limits[OPERATIONAL_LIMITS_GROUPS] as OperationalLimitsGroupFormSchema[]) ?? []
                       ) as OperationalLimitsGroupModificationInfos[])
                     : [],
                 selectedOperationalLimitsGroupId1: addOperationTypeToSelectedOpLG(
@@ -760,7 +760,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                                       convertToOperationalLimitsGroupFormSchema(
                                                           (twt?.currentLimits ?? []) as CurrentLimitsData[]
                                                       ),
-                                              }) as LimitsFormSchema,
+                                              }) as LimitsSchemaType,
                                     },
                                     ...getRatioTapChangerFormData({
                                         enabled: isRatioTapChangerEnabled(twt),

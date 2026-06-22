@@ -23,7 +23,7 @@ import {
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
     getPropertiesFromModification,
-    LimitsFormSchema,
+    LimitsSchemaType,
     LimitsGroupFormData,
     REGULATION_TYPES,
     sanitizeLimitsGroups,
@@ -163,7 +163,7 @@ type BaseFormValues = yup.InferType<typeof formSchema>;
 
 export type TwoWindingsTransformerCreationFormValues = BaseFormValues & {
     [CHARACTERISTICS]: CharacteristicsCreationFormSchema;
-    [LIMITS]: LimitsFormSchema & {
+    [LIMITS]: LimitsSchemaType & {
         [OPERATIONAL_LIMITS_GROUPS]?: LimitsGroupFormData[] | null;
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
         [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
