@@ -108,6 +108,7 @@ export function useNodeData<T, R = T>({
     const [result, setResult] = useState<R | undefined>(defaultValue);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
+    const [hasError, setHasError] = useState<boolean>(false);
     const nodeUuidRef = useRef<UUID>(undefined);
     const rootNetworkUuidRef = useRef<UUID>(undefined);
     const lastUpdateRef = useRef<LastUpdateParams<T>>(undefined);
@@ -125,6 +126,7 @@ export function useNodeData<T, R = T>({
         const isLatestRequest = () => requestId === requestIdRef.current;
         setIsLoading(true);
         setErrorMessage(undefined);
+        setHasError(false);
         fetcher?.(studyUuid, nodeUuid, rootNetworkUuid)
             .then((res) => {
                 if (isLatestRequest()) {
@@ -132,9 +134,10 @@ export function useNodeData<T, R = T>({
                 }
             })
             .catch((err) => {
-                if (isLatestRequest()) {
-                    setErrorMessage(err.message);
-                }
+                if (!isLatestRequest()) return;
+                setResult(undefined);
+                setHasError(true);
+                setErrorMessage(err.message);
             })
             .finally(() => {
                 if (isLatestRequest()) {
@@ -179,5 +182,5 @@ export function useNodeData<T, R = T>({
         evaluateUpdate();
     }, [evaluateUpdate]);
 
-    return { result, isLoading, setResult, errorMessage, update };
+    return { result, isLoading, setResult, hasError, errorMessage, update };
 }

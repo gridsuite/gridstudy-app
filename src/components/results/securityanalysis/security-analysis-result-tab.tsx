@@ -25,6 +25,7 @@ import {
     NmkType,
     PARAM_DEVELOPER_MODE,
     SecurityAnalysisResultNmk,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -93,6 +94,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const isNTabDev = tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode;
     const showResultsToolbar = isNmkTab || isNTabDev;
     const dispatch = useDispatch();
+    const { snackError } = useSnackMessage();
     useEffect(() => {
         if (!isDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
             // handle tabIndex when dev mode is disabled
@@ -183,6 +185,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         result,
         isLoading: isLoadingResult,
         setResult,
+        hasError,
     } = useNodeData({
         studyUuid,
         nodeUuid,
@@ -195,6 +198,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         setResult(null);
         setCount(0);
     }, [setResult]);
+
+    useEffect(() => {
+        if (hasError) {
+            snackError({
+                messageId: 'securityAnalysisResultsError',
+            });
+        }
+    }, [hasError, snackError]);
 
     const handleChangeNmkType = (_event: SyntheticEvent, newValue: NmkType) => {
         dispatchPagination({ page: 0, rowsPerPage });
@@ -364,6 +375,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         columnDefs={columnDefs}
                         resultStatusMessages={resultStatusMessages}
                         securityAnalysisStatus={securityAnalysisStatus}
+                        hasError={hasError}
                     />
                 )}
                 {isNmkTab && (
