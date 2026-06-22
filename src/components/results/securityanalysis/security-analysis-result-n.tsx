@@ -12,19 +12,24 @@ import {
     SecurityAnalysisResultNProps,
 } from './security-analysis.type';
 import { IntlShape, useIntl } from 'react-intl';
-import { SecurityAnalysisTable } from './security-analysis-table';
 import { translateLimitNameBackToFront } from '../common/utils';
 import { MAX_INT32 } from 'services/utils';
+import { SecurityAnalysisTable } from '@gridsuite/commons-ui';
+import { getNoRowsMessage } from '../../utils/aggrid-rows-handler';
 
 export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNProps> = ({
     result,
     isLoadingResult,
     columnDefs,
-    computationSubType,
+    resultStatusMessages,
+    securityAnalysisStatus,
+    onGridReady,
+    hasError,
 }) => {
     const intl: IntlShape = useIntl();
 
     const rows = useMemo(() => {
+        if (hasError) return [];
         // Defensive guard: the N tab expects an array; a stale paginated result
         // ({ content, totalElements }) from the N-K tab must not reach result.map.
         return Array.isArray(result)
@@ -52,14 +57,21 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                   } as SecurityAnalysisNTableRow;
               })
             : undefined;
-    }, [intl, result]);
+    }, [intl, result, hasError]);
+
+    const overlayNoRowsTemplate = getNoRowsMessage(
+        resultStatusMessages,
+        rows,
+        securityAnalysisStatus,
+        !isLoadingResult
+    );
 
     return (
         <SecurityAnalysisTable
-            rows={rows}
+            rowData={rows}
             columnDefs={columnDefs}
-            isLoadingResult={isLoadingResult}
-            computationSubType={computationSubType}
+            onGridReady={onGridReady}
+            overlayNoRowsTemplate={overlayNoRowsTemplate}
         />
     );
 };

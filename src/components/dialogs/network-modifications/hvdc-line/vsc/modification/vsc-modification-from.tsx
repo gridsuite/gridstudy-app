@@ -16,13 +16,14 @@ import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import type { UUID } from 'node:crypto';
 import { VscModificationInfo } from 'services/network-modification-types';
-import { TextInput } from '@gridsuite/commons-ui';
+import { PowerMeasurementsForm, TextInput } from '@gridsuite/commons-ui';
 import { Box, Grid, TextField } from '@mui/material';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
 import GridItem from '../../../../commons/grid-item';
-import { VSC_CREATION_TABS } from '../vsc-utils';
+import { VSC_TABS } from '../vsc-utils';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
+import { Grid2Section } from '../../../../commons/grid2-section';
 
 interface VscModificationFormProps {
     tabIndex: number;
@@ -83,17 +84,22 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
                 <GridItem size={4}>{vscIdField}</GridItem>
                 <GridItem size={4}>{vscNameField}</GridItem>
             </Grid>
-            <VscTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
+            <VscTabs
+                tabIndex={tabIndex}
+                tabIndexesWithError={tabIndexesWithError}
+                setTabIndex={setTabIndex}
+                isModification={true}
+            />
         </Box>
     );
 
     return (
         <>
             <Box>{headersAndTabs}</Box>
-            <Box hidden={tabIndex !== VSC_CREATION_TABS.HVDC_LINE_TAB} p={1}>
+            <Box hidden={tabIndex !== VSC_TABS.HVDC_LINE_TAB} p={1}>
                 <VscHvdcLinePane id={HVDC_LINE_TAB} previousValues={vscToModify} isEquipementModification={true} />
             </Box>
-            <Box hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_1} p={1}>
+            <Box hidden={tabIndex !== VSC_TABS.CONVERTER_STATION_1} p={1}>
                 <ConverterStationPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
@@ -107,7 +113,7 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
                     }}
                 />
             </Box>
-            <Box hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_2} p={1}>
+            <Box hidden={tabIndex !== VSC_TABS.CONVERTER_STATION_2} p={1}>
                 <ConverterStationPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
@@ -119,6 +125,21 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
                     updatePreviousReactiveCapabilityCurveTableConverterStation={(action, index) => {
                         updatePreviousReactiveCapabilityCurveTableConverterStation(action, index, 'converterStation2');
                     }}
+                />
+            </Box>
+            <Box hidden={tabIndex !== VSC_TABS.STATE_ESTIMATION} p={1}>
+                <Grid2Section title="MeasurementsSection" />
+                <Grid2Section title={CONVERTER_STATION_1} />
+                <PowerMeasurementsForm
+                    activePowerMeasurement={vscToModify?.converterStation1?.measurementP}
+                    reactivePowerMeasurement={vscToModify?.converterStation1?.measurementQ}
+                    idPrefix={CONVERTER_STATION_1}
+                />
+                <Grid2Section title={CONVERTER_STATION_2} />
+                <PowerMeasurementsForm
+                    activePowerMeasurement={vscToModify?.converterStation2?.measurementP}
+                    reactivePowerMeasurement={vscToModify?.converterStation2?.measurementQ}
+                    idPrefix={CONVERTER_STATION_2}
                 />
             </Box>
         </>
