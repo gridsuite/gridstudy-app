@@ -118,6 +118,24 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         [language]
     );
 
+    // Boolean values never raise a blocking error: an invalid one is silently replaced by false
+    // (see sanitizeRowValue). When the field is a boolean we only warn the user it was replaced and
+    // return true to tell the caller to skip the regular error checks for this cell.
+    const handleBooleanValue = useCallback(
+        (key: string, value: unknown, fieldDef: TabularField | undefined): boolean => {
+            if (fieldDef?.type !== BOOLEAN) {
+                return false;
+            }
+            if (!isFieldTypeOk(value, fieldDef)) {
+                setFileWarningMessage(
+                    intl.formatMessage({ id: 'WrongBooleanValueWarning' }, { field: intl.formatMessage({ id: key }) })
+                );
+            }
+            return true;
+        },
+        [intl]
+    );
+
     const handleTabularCreationParsingError = useCallback(
         (results: Papa.ParseResult<Record<string, unknown>>) => {
             let requiredFieldNameInError: string = '';
@@ -139,18 +157,9 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     )
                     .some(([result, key, value]) => {
                         const fieldDef = csvFields.find((field) => field.id === key);
-                        // boolean values are never blocking: an invalid one is silently replaced by
-                        // false (see sanitizeRowValue), we only warn the user it was replaced.
-                        if (fieldDef?.type === BOOLEAN) {
-                            if (!isFieldTypeOk(value, fieldDef)) {
-                                setFileWarningMessage(
-                                    intl.formatMessage(
-                                        { id: 'WrongBooleanValueWarning' },
-                                        { field: intl.formatMessage({ id: key }) }
-                                    )
-                                );
-                            }
-                            return false; // keep looking, a boolean never raises an error
+                        // boolean fields never raise a blocking error (see handleBooleanValue)
+                        if (handleBooleanValue(key, value, fieldDef)) {
+                            return false; // keep looking
                         }
                         // check required fields are defined
                         if (fieldDef !== undefined && fieldDef.required && (value === undefined || value === null)) {
@@ -227,7 +236,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 });
             }
         },
-        [csvFields, equipmentType, intl, setError, setFileWarningMessage, snackWarning]
+        [csvFields, equipmentType, handleBooleanValue, intl, setError, snackWarning]
     );
 
     const handleTabularModificationParsingError = useCallback(
@@ -240,18 +249,9 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             if (
                 results.data.flatMap(Object.entries).some(([key, value]) => {
                     const fieldDef = csvFields.find((field) => field.id === key);
-                    // boolean values are never blocking: an invalid one is silently replaced by
-                    // false (see sanitizeRowValue), we only warn the user it was replaced.
-                    if (fieldDef?.type === BOOLEAN) {
-                        if (!isFieldTypeOk(value, fieldDef)) {
-                            setFileWarningMessage(
-                                intl.formatMessage(
-                                    { id: 'WrongBooleanValueWarning' },
-                                    { field: intl.formatMessage({ id: key }) }
-                                )
-                            );
-                        }
-                        return false; // keep looking, a boolean never raises an error
+                    // boolean fields never raise a blocking error (see handleBooleanValue)
+                    if (handleBooleanValue(key, value, fieldDef)) {
+                        return false; // keep looking
                     }
                     // check the field types
                     if (!isFieldTypeOk(value, fieldDef)) {
@@ -285,7 +285,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 snackWarning({ messageId: 'TabularModificationShuntWarning' });
             }
         },
-        [equipmentType, csvFields, setError, intl, setFileWarningMessage, snackWarning]
+        [equipmentType, csvFields, handleBooleanValue, setError, intl, snackWarning]
     );
 
     const selectedProperties = useMemo((): string[] => {
