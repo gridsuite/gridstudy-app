@@ -19,17 +19,31 @@ import {
     getBranchActiveReactivePowerEditData,
     getBranchActiveReactivePowerEmptyFormData,
     getBranchActiveReactivePowerValidationSchema,
+    getLineCharacteristicsFormData,
     getCon1andCon2WithPositionValidationSchema,
     getConcatenatedProperties,
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
     getPropertiesFromModification,
     modificationPropertiesSchema,
+    OperationalLimitsGroupsFormSchema,
     sanitizeString,
     snackWithFallback,
     toModificationOperation,
     toModificationProperties,
     useSnackMessage,
+    addModificationTypeToOpLimitsGroups,
+    addOperationTypeToSelectedOpLG,
+    getLimitsEmptyFormData,
+    getLineCharacteristicsEmptyFormData,
+    getLineCharacteristicsValidationSchemaProps,
+    getLimitsValidationSchema,
+    formatOpLimitGroupsToFormInfos,
+    getOpLimitsGroupInfosFromBranchModification,
+    convertToOperationalLimitsGroupFormSchema,
+    OperationalLimitsGroupFormSchema,
+    getAllLimitsFormData,
+    BranchInfos,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -72,21 +86,6 @@ import {
 import { FieldErrors } from 'react-hook-form';
 import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import {
-    addModificationTypeToOpLimitsGroups,
-    addOperationTypeToSelectedOpLG,
-    convertToOperationalLimitsGroupFormSchema,
-    formatOpLimitGroupsToFormInfos,
-    getAllLimitsFormData,
-    getLimitsEmptyFormData,
-    getLimitsValidationSchema,
-    getOpLimitsGroupInfosFromBranchModification,
-} from '../../../limits/limits-pane-utils';
-import {
-    getCharacteristicsEmptyFormData,
-    getCharacteristicsValidationSchema,
-    getCharacteristicsWithOutConnectivityFormData,
-} from '../characteristics-pane/line-characteristics-pane-utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -97,19 +96,14 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import { LineModificationDialogTab } from '../line-utils';
+import { LineModificationDialogTab } from './line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
 import { LineModificationFormSchema } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import {
-    OperationalLimitsGroupFormSchema,
-    OperationalLimitsGroupsFormSchema,
-} from '../../../limits/operational-limits-groups-types';
 import { ComputedLineCharacteristics } from '../../../line-types-catalog/line-catalog.type';
 import {
     convertLimitsToOperationalLimitsGroupFormSchema,
@@ -125,7 +119,6 @@ export interface LineModificationDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    displayConnectivity?: boolean;
     isUpdate: boolean;
     editDataFetchStatus?: string;
     open?: boolean;
@@ -140,7 +133,6 @@ export interface LineModificationDialogProps {
  * @param currentNode
  * @param currentRootNetworkUuid
  * @param editData the data to edit, contains data when we try to edit an existing hypothesis from the current node's list
- * @param displayConnectivity to display connectivity section or not
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param isUpdate check if edition form
  * @param editDataFetchStatus indicates the status of fetching EditData
@@ -151,7 +143,6 @@ const LineModificationDialog = ({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
-    displayConnectivity = false,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -165,24 +156,22 @@ const LineModificationDialog = ({
     const [lineToModify, setLineToModify] = useState<BranchInfos | null>(null);
     const [tabIndex, setTabIndex] = useState<number>(LineModificationDialogTab.CONNECTIVITY_TAB);
     const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
-    const emptyFormData: any = useMemo(
-        () => ({
-            [EQUIPMENT_NAME]: '',
-            ...getCont1Cont2WithPositionEmptyFormData(true),
-            ...getCharacteristicsEmptyFormData(CHARACTERISTICS, displayConnectivity),
-            ...getLimitsEmptyFormData(),
-            ...getBranchActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
-            ...emptyProperties,
-        }),
-        [displayConnectivity]
-    );
+
+    const emptyFormData: any = {
+        [EQUIPMENT_NAME]: '',
+        ...getCont1Cont2WithPositionEmptyFormData(true),
+        ...getLineCharacteristicsEmptyFormData(),
+        ...getLimitsEmptyFormData(),
+        ...getBranchActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
+        ...emptyProperties,
+    };
 
     const formSchema = yup
         .object()
         .shape({
             [EQUIPMENT_NAME]: yup.string().nullable(),
             ...getCon1andCon2WithPositionValidationSchema(true),
-            ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
+            [CHARACTERISTICS]: getLineCharacteristicsValidationSchemaProps(true),
             ...getLimitsValidationSchema(LIMITS, true),
             ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
         })
@@ -225,7 +214,7 @@ const LineModificationDialog = ({
                     ),
                 },
                 ...getBranchActiveReactivePowerEditData(STATE_ESTIMATION, lineModification),
-                ...getCharacteristicsWithOutConnectivityFormData({
+                ...getLineCharacteristicsFormData({
                     r: lineModification.r?.value ?? null,
                     x: lineModification.x?.value ?? null,
                     g1: convertInputValue(FieldType.G1, lineModification.g1?.value ?? null),
@@ -318,9 +307,9 @@ const LineModificationDialog = ({
         [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError]
     );
 
-    const clear = useCallback(() => {
+    const clear = () => {
         reset(emptyFormData);
-    }, [emptyFormData, reset]);
+    };
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: string) => {

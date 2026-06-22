@@ -6,23 +6,37 @@
  */
 
 import {
+    addModificationTypeToOpLimitsGroups,
+    addOperationTypeToSelectedOpLG,
     BranchActiveReactivePowerMeasurementsForm,
     BranchConnectivityForm,
+    BranchInfos,
     convertInputValue,
     convertOutputValue,
+    convertToOperationalLimitsGroupFormSchema,
     createConnectivityData,
+    CurrentLimitsData,
     CustomFormProvider,
     emptyProperties,
     EquipmentType,
     EquipmentWithProperties,
     FieldConstants,
     FieldType,
+    formatOpLimitGroupsToFormInfos,
+    getAllLimitsFormData,
     getCon1andCon2WithPositionValidationSchema,
     getConcatenatedProperties,
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
+    getLimitsEmptyFormData,
+    getLimitsValidationSchema,
+    getOpLimitsGroupInfosFromBranchModification,
     getPropertiesFromModification,
+    LimitsFormSchema,
+    LimitsPane,
     modificationPropertiesSchema,
+    OperationalLimitsGroupFormSchema,
+    OperationalLimitsGroupModificationInfos,
     REGULATION_TYPES,
     sanitizeString,
     snackWithFallback,
@@ -96,17 +110,6 @@ import {
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
-import {
-    addModificationTypeToOpLimitsGroups,
-    addOperationTypeToSelectedOpLG,
-    convertToOperationalLimitsGroupFormSchema,
-    formatOpLimitGroupsToFormInfos,
-    getAllLimitsFormData,
-    getLimitsEmptyFormData,
-    getLimitsValidationSchema,
-    getOpLimitsGroupInfosFromBranchModification,
-    LimitsFormSchema,
-} from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
 import {
@@ -142,12 +145,6 @@ import {
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { toTapChangerStepList, TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
 import { ToBeEstimatedForm } from './2wt-to-be-estimated/to-be-estimated-form';
-import {
-    getStateEstimationEditData,
-    getStateEstimationEmptyFormData,
-    getStateEstimationValidationSchema,
-} from './state-estimation-form-utils';
-import { LimitsPane } from '../../../limits/limits-pane';
 import { useIntl } from 'react-intl';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { UUID } from 'node:crypto';
@@ -159,18 +156,20 @@ import {
     TapChangerStep,
     TwoWindingsTransformerMapInfos,
 } from '../two-windings-transformer.types';
-import { BranchInfos, CurrentLimitsData } from 'services/study/network-map.type';
 import { ToBeEstimatedInfo } from './2wt-to-be-estimated/to-be-estimated.type';
 import {
-    OperationalLimitsGroupModificationInfos,
     PhaseTapChangerModificationInfos,
     RatioTapChangerModificationInfos,
     TwoWindingsTransformerModificationInfo,
 } from 'services/network-modification-types';
-import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
 import { LineModificationFormSchema } from '../../line/modification/line-modification-type';
 import { FetchStatus } from 'services/utils.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import {
+    getStateEstimationEditData,
+    getStateEstimationEmptyFormData,
+    getStateEstimationValidationSchema,
+} from './state-estimation-form-utils';
 
 export interface TwoWindingsTransformerModificationDialogProps {
     studyUuid: UUID;
@@ -571,7 +570,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedS: toModificationOperation(characteristics?.[RATED_S]),
                 ratedU1: toModificationOperation(characteristics?.[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics?.[RATED_U2]),
-                operationalLimitsGroups: limits?.[ENABLE_OLG_MODIFICATION]
+                operationalLimitsGroups: (limits as any)?.[ENABLE_OLG_MODIFICATION]
                     ? (addModificationTypeToOpLimitsGroups(
                           limits[OPERATIONAL_LIMITS_GROUPS] as OperationalLimitsGroupFormSchema[]
                       ) as OperationalLimitsGroupModificationInfos[])
@@ -588,7 +587,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         id: 'None',
                     })
                 ),
-                [ENABLE_OLG_MODIFICATION]: Boolean(limits?.[ENABLE_OLG_MODIFICATION]),
+                [ENABLE_OLG_MODIFICATION]: Boolean((limits as any)?.[ENABLE_OLG_MODIFICATION]),
                 ratioTapChanger: computeRatioTapForSubmit(twt) as unknown as RatioTapChangerModificationInfos,
                 phaseTapChanger: computePhaseTapForSubmit(twt) as unknown as PhaseTapChangerModificationInfos,
                 voltageLevelId1: connectivity1?.[VOLTAGE_LEVEL]?.id,
@@ -745,9 +744,9 @@ const TwoWindingsTransformerModificationDialog = ({
                                 (formValues) => ({
                                     ...formValues,
                                     ...{
-                                        [LIMITS]: (formValues?.limits?.[ENABLE_OLG_MODIFICATION]
+                                        [LIMITS]: ((formValues?.limits as any)?.[ENABLE_OLG_MODIFICATION]
                                             ? {
-                                                  [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
+                                                  [ENABLE_OLG_MODIFICATION]: (formValues.limits as any)[ENABLE_OLG_MODIFICATION],
                                                   [OPERATIONAL_LIMITS_GROUPS]:
                                                       getOpLimitsGroupInfosFromBranchModification(
                                                           formValues as LineModificationFormSchema
@@ -919,11 +918,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             <TwoWindingsTransformerCharacteristicsPane twtToModify={twtToModify} isModification />
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.LIMITS_TAB} p={1}>
-                            <LimitsPane
-                                currentNode={currentNode}
-                                equipmentToModify={twtToModify as BranchInfos}
-                                clearableFields
-                            />
+                            <LimitsPane equipmentToModify={twtToModify as BranchInfos} clearableFields />
                         </Box>
                         <Box
                             hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.STATE_ESTIMATION_TAB}

@@ -7,10 +7,9 @@
 
 import { EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { Box, Grid, TextField } from '@mui/material';
-import LineDialogTabs from '../line-dialog-tabs';
-import { filledTextField, TextInput } from '@gridsuite/commons-ui';
+import LineDialogTabs from './line-dialog-tabs';
+import { BranchInfos, filledTextField, TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
-import { BranchInfos } from '../../../../../services/study/network-map.type';
 
 export interface LineModificationDialogHeaderProps {
     lineToModify: BranchInfos | null;
@@ -63,12 +62,7 @@ const LineModificationDialogHeader = ({
                 <GridItem size={4}>{lineIdField}</GridItem>
                 <GridItem size={4}>{lineNameField}</GridItem>
             </Grid>
-            <LineDialogTabs
-                tabIndex={tabIndex}
-                tabIndexesWithError={tabIndexesWithError}
-                setTabIndex={setTabIndex}
-                isModification={true}
-            />
+            <LineDialogTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>
     );
 };

@@ -27,11 +27,14 @@ import {
 } from 'components/utils/field-constants';
 import * as yup from 'yup';
 import { InferType } from 'yup';
-import { LineSegmentInfos } from '../../../services/network-modification-types';
-import { DeepNullable } from '@gridsuite/commons-ui';
+import {
+    APPLICABILITY,
+    DeepNullable,
+    LineSegmentInfos,
+    OperationalLimitsGroupFormSchema,
+    TemporaryLimitFormSchema,
+} from '@gridsuite/commons-ui';
 import { CurrentLimitsInfo } from './line-catalog.type';
-import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from '../limits/operational-limits-groups-types';
-import { APPLICABILITY } from '../../network/constants';
 
 export const SegmentTemporaryLimitSchema = yup.object().shape({
     [LIMIT_VALUE]: yup.number().required(),
