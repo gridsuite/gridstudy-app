@@ -1189,6 +1189,7 @@
     "DependantFieldMissing": "\"{requiredField}\" is required if the following field is set : \"{dependantField}\"",
     "WrongFieldType": "\"{field}\" should be of type {type}",
     "WrongEnumValue": "At least one value is unexpected for field : \"{field}\", expected values : {expectedValues}",
+    "WrongBooleanValueWarning": "At least one invalid value for boolean field : \"{field}\" was automatically replaced by false.",
     "fieldType.boolean": "boolean (true/false)",
     "fieldType.number": "numerical",
     "TieLines": "Tie lines",
