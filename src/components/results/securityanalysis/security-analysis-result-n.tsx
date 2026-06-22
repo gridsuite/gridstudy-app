@@ -24,10 +24,12 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
     resultStatusMessages,
     securityAnalysisStatus,
     onGridReady,
+    hasError,
 }) => {
     const intl: IntlShape = useIntl();
 
     const rows = useMemo(() => {
+        if (hasError) return [];
         // Defensive guard: the N tab expects an array; a stale paginated result
         // ({ content, totalElements }) from the N-K tab must not reach result.map.
         return Array.isArray(result)
@@ -55,7 +57,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                   } as SecurityAnalysisNTableRow;
               })
             : undefined;
-    }, [intl, result]);
+    }, [intl, result, hasError]);
 
     const overlayNoRowsTemplate = getNoRowsMessage(
         resultStatusMessages,
