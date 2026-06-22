@@ -11,11 +11,12 @@ export interface Grid2ItemProps extends PropsWithChildren {
     size?: GridProps['size'];
     alignItem?: string;
     tooltip?: ReactNode;
+    sx?: GridProps['sx'];
 }
 
-export function Grid2Item({ children, size = 6, alignItem = 'flex-start', tooltip }: Readonly<Grid2ItemProps>) {
+export function Grid2Item({ children, size = 6, alignItem = 'flex-start', tooltip, sx }: Readonly<Grid2ItemProps>) {
     return (
-        <Grid size={size} sx={{ alignItems: alignItem }}>
+        <Grid size={size} sx={{ alignItems: alignItem, ...sx }}>
             {children &&
                 (tooltip ? (
                     <Tooltip title={tooltip}>
