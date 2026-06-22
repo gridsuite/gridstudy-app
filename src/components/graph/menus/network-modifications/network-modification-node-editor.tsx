@@ -177,7 +177,7 @@ const NetworkModificationNodeEditor = () => {
         []
     );
 
-    // TODO : this is temporary, until copy/paste/save is done for the shared modifications :
+    // TODO : this is temporary, until copy/paste/save is done for the shared modifications in GRD-4785 :
     const selectionContainsShared: boolean = useMemo(() => {
         return selectedNetworkModifications.some(
             (modification: ComposedModificationMetadata) =>

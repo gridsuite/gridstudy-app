@@ -253,7 +253,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
         const modificationsToInsert: CompositesToBeInserted[] = selectedModifications.map((m: SelectedComposite) => ({
             id: m.id,
-            // only INSERTed non shared composites may be renamed
+            // only inserted non shared composites may be renamed
             name: action === CompositeModificationAction.SPLIT || m.isShared ? m.originalName : m.name,
             // SPLIT modifications are never shared
             isShared: action === CompositeModificationAction.INSERT ? m.isShared : false,
@@ -293,9 +293,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                             </StepLabel>
                         </Step>
                     </Stepper>
-
                     <Divider sx={{ mt: 2 }} />
-
                     {/* ======================================================
                         STEP 1 — SELECTION
                         ====================================================== */}
