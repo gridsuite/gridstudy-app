@@ -112,7 +112,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             if (fieldDef?.type !== BOOLEAN) {
                 return false;
             }
-            if (!isFieldTypeOk(value, fieldDef)) {
+            if (fieldDef.required && !isFieldTypeOk(value, fieldDef)) {
                 setFileWarningMessage(
                     intl.formatMessage({ id: 'WrongBooleanValueWarning' }, { field: intl.formatMessage({ id: key }) })
                 );
