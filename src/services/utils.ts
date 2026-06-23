@@ -74,7 +74,7 @@ export function getCachedIdpSettings(): Promise<IdpSettings> {
         }
     } catch (e) {
         // localStorage unavailable, or cache corrupted -> fall back to fresh fetch
-        +console.warn('Failed to read cached IdP settings:', e);
+        console.warn('Failed to read cached IdP settings:', e);
     }
     return fetchIdpSettings();
 }
