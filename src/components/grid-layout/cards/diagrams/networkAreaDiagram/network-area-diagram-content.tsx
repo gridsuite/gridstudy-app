@@ -71,6 +71,7 @@ type NetworkAreaDiagramContentProps = {
     readonly additionalMetadata?: DiagramAdditionalMetadata;
     readonly svgVoltageLevels?: string[];
     readonly hiddenVoltageBands?: string[];
+    readonly hiddenInfoSelectors?: string[];
     readonly loadingState: boolean;
     readonly isNadCreationFromFilter: boolean;
     readonly visible: boolean;
@@ -105,6 +106,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         additionalMetadata,
         svgVoltageLevels,
         hiddenVoltageBands,
+        hiddenInfoSelectors,
         loadingState,
         isNadCreationFromFilter,
         showInSpreadsheet,
@@ -522,6 +524,16 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         [hiddenVoltageBands]
     );
 
+    // Visually hide the information layers turned off in the "Information" sidebar section
+    const hiddenInfosSx = useMemo(
+        () =>
+            (hiddenInfoSelectors ?? []).reduce<Record<string, { display: 'none' }>>((acc, selector) => {
+                acc[`& ${selector}`] = { display: 'none' };
+                return acc;
+            }, {}),
+        [hiddenInfoSelectors]
+    );
+
     /**
      * RENDER
      */
@@ -568,7 +580,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramLoadflowInvalid : undefined,
                     isEditNadMode && !showLabels ? styles.hideLabels : undefined,
                     isEditNadMode ? styles.nadEditModeCursors : undefined,
-                    hiddenVoltagesSx
+                    hiddenVoltagesSx,
+                    hiddenInfosSx
                 )}
             />
             <DiagramControls

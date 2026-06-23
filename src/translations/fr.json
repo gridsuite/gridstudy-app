@@ -1471,6 +1471,13 @@
     "reset": "Réinitialiser",
     "history": "Historique",
     "nadVoltageFilter": "Tension",
+    "nadInfoFilter": "Informations",
+    "nadInfoActivePowerValue": "Valeurs P",
+    "nadInfoReactivePowerValue": "Valeurs Q",
+    "nadInfoPermanentLimitPercentage": "% IST",
+    "nadInfoActivePowerArrow": "Flèches P",
+    "nadInfoReactivePowerArrow": "Flèches Q",
+    "nadInfoVoltageLevelName": "Noms postes",
 
     "gridExplore": "GridExplore",
     "myComputer": "Mon ordinateur",

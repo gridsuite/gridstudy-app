@@ -7,7 +7,7 @@
 
 import { memo, useCallback, useMemo } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import { History as HistoryIcon } from '@mui/icons-material';
+import { History as HistoryIcon, Info as InfoIcon } from '@mui/icons-material';
 import { VoltageLevelIcon } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
@@ -20,6 +20,8 @@ import type { RootState } from '../../../../redux/store';
 import { HistorySectionContent, NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
 import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
 import NominalVoltageFilter, { type NominalVoltageFilterStyles } from '../../../network/nominal-voltage-filter';
+import NadInfoFilter from './nad-info-filter';
+import type { NadSelectedInfoKey, NadSelectedInfos } from './use-nad-info-filter';
 
 // Flatten NominalVoltageFilter so it blends into the sidebar instead of floating like the map overlay.
 const voltageFilterStyles: NominalVoltageFilterStyles = {
@@ -32,6 +34,8 @@ interface NadNavigationSidebarProps {
     readonly allVoltages: number[];
     readonly selectedVoltages: number[];
     readonly onVoltagesChange: (checkedVoltages: number[]) => void;
+    readonly selectedInfos: NadSelectedInfos;
+    readonly onSelectedInfoToggle: (key: NadSelectedInfoKey) => void;
 }
 
 export const NadNavigationSidebar = memo(function NadNavigationSidebar({
@@ -39,6 +43,8 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
     allVoltages,
     selectedVoltages,
     onVoltagesChange,
+    selectedInfos,
+    onSelectedInfoToggle,
 }: NadNavigationSidebarProps) {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isBuilt = isNodeBuilt(currentNode);
@@ -98,6 +104,19 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
                     />
                 ),
             },
+            {
+                id: 'informations',
+                icon: <InfoIcon fontSize="medium" />,
+                titleId: 'nadInfoFilter',
+                isDisabled: !isBuilt,
+                content: (
+                    <NadInfoFilter
+                        selectedInfos={selectedInfos}
+                        onToggle={onSelectedInfoToggle}
+                        isDisabled={!isBuilt}
+                    />
+                ),
+            },
         ],
         [
             hasHistory,
@@ -109,6 +128,8 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
             allVoltages,
             selectedVoltages,
             onVoltagesChange,
+            selectedInfos,
+            onSelectedInfoToggle,
         ]
     );
 
