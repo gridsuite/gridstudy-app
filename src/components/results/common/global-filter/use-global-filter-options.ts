@@ -17,6 +17,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
 import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 import { addToGlobalFilterOptions } from '../../../../redux/actions';
+import { fetchNetworkExistence } from '../../../../services/study/network';
+import { HttpStatusCode } from '../../../../utils/http-status-code';
 
 /**
  * Custom hook that manages global filter options for tables.
@@ -52,19 +54,23 @@ export const useGlobalFilterOptions = () => {
 
     useEffect(() => {
         if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
-                .then((countryCodes) => {
-                    const newCountriesFilter = countryCodes
-                        .map((countryCode: string) => ({
-                            label: countryCode,
-                            filterType: FilterType.COUNTRY,
-                        }))
-                        .map(addGlobalFilterId);
-                    dispatch(addToGlobalFilterOptions(newCountriesFilter));
-                })
-                .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'FetchCountryError' });
-                });
+            fetchNetworkExistence(studyUuid, currentRootNetworkUuid).then((response) => {
+                if (response.status === HttpStatusCode.OK) {
+                    fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
+                        .then((countryCodes) => {
+                            const newCountriesFilter = countryCodes
+                                .map((countryCode: string) => ({
+                                    label: countryCode,
+                                    filterType: FilterType.COUNTRY,
+                                }))
+                                .map(addGlobalFilterId);
+                            dispatch(addToGlobalFilterOptions(newCountriesFilter));
+                        })
+                        .catch((error) => {
+                            snackWithFallback(snackError, error, { headerId: 'FetchCountryError' });
+                        });
+                }
+            });
 
             fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
                 const propertiesGlobalFilters: GlobalFilterWithoutId[] = [];
