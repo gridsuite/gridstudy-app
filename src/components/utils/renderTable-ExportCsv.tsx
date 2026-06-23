@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, RefObject, useCallback } from 'react';
+import { FunctionComponent, RefObject, useCallback, useEffect } from 'react';
 import { ColDef, RowClassParams, RowStyle } from 'ag-grid-community';
 import { CsvExport, CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer.type';
 import { TableType } from '../../types/custom-aggrid-types';
 import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
+import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 const styles = {
     gridContainer: {
@@ -67,6 +68,12 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
         }
     }, []);
     const onGridReady = useAgGridInitialColumnFilters(computationType, computationSubType);
+    const columnFilters = useSelector(
+        (state: AppState) => state.tableFilters.columnsFilters?.[computationType]?.[computationSubType]
+    );
+    useEffect(() => {
+        updateAgGridFilters(gridRef.current?.api, columnFilters);
+    }, [columnFilters, gridRef]);
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>
