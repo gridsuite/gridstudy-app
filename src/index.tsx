@@ -6,7 +6,22 @@
  */
 
 import { createRoot } from 'react-dom/client';
-import AppWrapper from './components/app-wrapper';
+import SilentRenewApp from './components/silent-renew-app';
 
 const container = document.getElementById('root');
-createRoot(container!).render(<AppWrapper />);
+const root = createRoot(container!);
+
+async function renderApp() {
+    if (window.location.pathname.endsWith('/silent-renew-callback')) {
+        root.render(<SilentRenewApp />);
+        return;
+    }
+    await import('core-js/es/array/flat-map');
+    await import('typeface-roboto');
+    await import('@xyflow/react/dist/base.css');
+    await import('./index.css');
+    await import('./configure-yup-init');
+    const { default: AppWrapper } = await import('./components/app-wrapper');
+    root.render(<AppWrapper />);
+}
+renderApp().catch((error) => console.error(error));
