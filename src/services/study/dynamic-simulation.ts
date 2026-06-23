@@ -146,7 +146,7 @@ export function fetchDynamicSimulationParameters(studyUuid: UUID): Promise<Dynam
     const parametersPromise: Promise<DynamicSimulationParametersInfos> = backendFetchJson(url);
     return parametersPromise.then((parameters) => {
         if (parameters.mappingId) {
-            return fetchElementNames(new Set(parameters.mappingId)).then((elementIdNames) => {
+            return fetchElementNames(new Set([parameters.mappingId])).then((elementIdNames) => {
                 return enrichDynamicSimulationParameters(parameters, elementIdNames);
             });
         }
