@@ -43,6 +43,11 @@ import {
     OperationalLimitsGroupFormSchema,
     getAllLimitsFormData,
     BranchInfos,
+    ComputedLineCharacteristics,
+    convertToLineSegmentInfos,
+    convertLimitsToOperationalLimitsGroupFormSchema,
+    SegmentFormData,
+    LineSegmentsFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -103,12 +108,6 @@ import { useIntl } from 'react-intl';
 import { LineModificationFormSchema } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import { ComputedLineCharacteristics } from '../../../line-types-catalog/line-catalog.type';
-import {
-    convertLimitsToOperationalLimitsGroupFormSchema,
-    convertToLineSegmentInfos,
-    SegmentFormData,
-} from '../../../line-types-catalog/segment-utils';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -336,7 +335,8 @@ const LineModificationDialog = ({
                                         [LIMITS]: formValues?.limits[ENABLE_OLG_MODIFICATION]
                                             ? {
                                                   [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
-                                                  [OPERATIONAL_LIMITS_GROUPS]: formValues.limits?.operationalLimitsGroups ?? [],
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      formValues.limits?.operationalLimitsGroups ?? [],
                                               }
                                             : {
                                                   [ENABLE_OLG_MODIFICATION]: false,
@@ -427,7 +427,7 @@ const LineModificationDialog = ({
         setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
-        setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
+        setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments as LineSegmentsFormData));
 
         const shouldApplyLimits = applyLimits ?? true;
         setValue(APPLY_SEGMENTS_LIMITS, shouldApplyLimits);

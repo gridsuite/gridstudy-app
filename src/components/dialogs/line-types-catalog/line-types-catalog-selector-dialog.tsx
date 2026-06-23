@@ -6,9 +6,18 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { CustomFormProvider, DeepNullable, Option, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    AreaTemperatureShapeFactorInfo,
+    CATEGORIES_TABS,
+    CurrentLimitsInfo,
+    CustomFormProvider,
+    DeepNullable,
+    LineTypeInfo,
+    Option,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { AreaTemperatureShapeFactorInfo, CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import {
     AERIAL_AREAS,
     AERIAL_TEMPERATURES,
@@ -214,8 +223,8 @@ export default function LineTypesCatalogSelectorDialog({
                 onClose={onClose}
                 onSave={onSubmit}
                 open={true}
-                PaperProps={{
-                    sx: { height: '95vh' },
+                slotProps={{
+                    paper: { sx: { height: '95vh' } },
                 }}
                 titleId="SelectType"
                 {...dialogProps}

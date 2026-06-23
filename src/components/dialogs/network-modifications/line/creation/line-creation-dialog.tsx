@@ -6,7 +6,10 @@
  */
 
 import {
+    ComputedLineCharacteristics,
     convertInputValue,
+    convertLimitsToOperationalLimitsGroupFormSchema,
+    convertToLineSegmentInfos,
     copyEquipmentPropertiesForCreation,
     CustomFormProvider,
     DeepNullable,
@@ -24,13 +27,13 @@ import {
     lineCreationFormToDto,
     LineForm,
     LineFormInfos,
+    LineSegmentsFormData,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LINE_SEGMENTS } from 'components/utils/field-constants';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -45,9 +48,10 @@ import { NetworkModificationDialogProps } from '../../../../graph/menus/network-
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
+import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 
 type LineCreationDialogProps = NetworkModificationDialogProps & {
-    editData?: LineCreationDto; // contains data when we try to edit an existing hypothesis
+    editData?: LineCreationDto;
     onCreateLine: typeof createLine;
 };
 
@@ -76,15 +80,20 @@ const LineCreationDialog = ({
     const { snackError } = useSnackMessage();
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
+    const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
+
+    const handleCloseLineTypesCatalogDialog = () => {
+        setIsOpenLineTypesCatalogDialog(false);
+    };
+
     const formMethods = useForm<DeepNullable<LineCreationFormData>>({
         defaultValues: lineCreationEmptyFormData,
-        resolver: yupResolver<DeepNullable<LineCreationFormData>>(lineCreationFormSchema as any),
+        resolver: yupResolver<DeepNullable<LineCreationFormData>>(lineCreationFormSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, setValue, watch } = formMethods;
 
-    // TODO DBR
-    //const editSegmentValue = watch(LINE_SEGMENTS);
+    const watchSegments = watch(FieldConstants.LINE_SEGMENTS) as LineSegmentsFormData;
 
     const fromSearchCopyToFormValues = (line: LineFormInfos) => {
         const formData = {
@@ -128,7 +137,7 @@ const LineCreationDialog = ({
                 line.selectedOperationalLimitsGroupId2 ?? null
             ),
             ...copyEquipmentPropertiesForCreation(line),
-            [LINE_SEGMENTS]: [],
+            [FieldConstants.LINE_SEGMENTS]: [],
         };
         reset(formData, { keepDefaultValues: true });
     };
@@ -148,30 +157,25 @@ const LineCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    /* TODO DBR
-    const handleLineSegmentsBuildSubmit = (
-        data: ComputedLineCharacteristics,
-        lineSegments: DeepNullable<SegmentFormData | null>[]
-    ) => {
-        setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
+    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics, lineSegments: LineSegmentsFormData) => {
+        setValue(`${FieldConstants.CHARACTERISTICS}.${FieldConstants.R}` as any, data[FieldConstants.TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
-        setValue(`${CHARACTERISTICS}.${X}`, data[TOTAL_REACTANCE], {
+        setValue(`${FieldConstants.CHARACTERISTICS}.${FieldConstants.X}` as any, data[FieldConstants.TOTAL_REACTANCE], {
             shouldDirty: true,
         });
-        setValue(`${CHARACTERISTICS}.${B1}`, data[TOTAL_SUSCEPTANCE] / 2, {
+        setValue(`${FieldConstants.CHARACTERISTICS}.${FieldConstants.B1}` as any, data[FieldConstants.TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
-        setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
+        setValue(`${FieldConstants.CHARACTERISTICS}.${FieldConstants.B2}` as any, data[FieldConstants.TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
         setValue(
-            `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`,
-            convertLimitsToOperationalLimitsGroupFormSchema(data[FINAL_CURRENT_LIMITS])
+            `${FieldConstants.LIMITS}.${FieldConstants.OPERATIONAL_LIMITS_GROUPS}` as any,
+            convertLimitsToOperationalLimitsGroupFormSchema(data[FieldConstants.FINAL_CURRENT_LIMITS])
         );
-        setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
+        setValue(FieldConstants.LINE_SEGMENTS as any, convertToLineSegmentInfos(lineSegments));
     };
-    */
 
     const onSubmit = useCallback(
         (lineForm: LineCreationFormData) => {
@@ -207,17 +211,6 @@ const LineCreationDialog = ({
         [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
 
-    /* TODO DBR restore
-    <LineTypeSegmentDialog
-                    open={isOpenLineTypesCatalogDialog}
-                    onClose={handleCloseLineTypesCatalogDialog}
-                    onSave={handleLineSegmentsBuildSubmit}
-                    editData={editSegmentValue}
-                />
-                
-      onOpenCatalogDialog={() => setIsOpenLineTypesCatalogDialog(true)}          
-     */
-
     return (
         <CustomFormProvider
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -231,6 +224,7 @@ const LineCreationDialog = ({
                 maxWidth={'xl'}
                 titleId="CreateLine"
                 searchCopy={searchCopy}
+                onOpenCatalogDialog={() => setIsOpenLineTypesCatalogDialog(true)}
                 slotProps={{
                     paper: {
                         sx: {
@@ -254,6 +248,12 @@ const LineCreationDialog = ({
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
+                />
+                <LineTypeSegmentDialog
+                    open={isOpenLineTypesCatalogDialog}
+                    onClose={handleCloseLineTypesCatalogDialog}
+                    onSave={handleLineSegmentsBuildSubmit}
+                    editData={watchSegments}
                 />
             </ModificationDialog>
         </CustomFormProvider>

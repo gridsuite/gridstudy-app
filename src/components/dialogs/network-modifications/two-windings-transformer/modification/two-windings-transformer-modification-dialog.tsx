@@ -161,7 +161,6 @@ import {
     RatioTapChangerModificationInfos,
     TwoWindingsTransformerModificationInfo,
 } from 'services/network-modification-types';
-import { LineModificationFormSchema } from '../../line/modification/line-modification-type';
 import { FetchStatus } from 'services/utils.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import {
@@ -748,7 +747,8 @@ const TwoWindingsTransformerModificationDialog = ({
                                                   [ENABLE_OLG_MODIFICATION]: (formValues.limits as any)[
                                                       ENABLE_OLG_MODIFICATION
                                                   ],
-                                                  [OPERATIONAL_LIMITS_GROUPS]: formValues.limits?.operationalLimitsGroups ?? [],
+                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                      formValues.limits?.operationalLimitsGroups ?? [],
                                               }
                                             : {
                                                   [ENABLE_OLG_MODIFICATION]: false,
