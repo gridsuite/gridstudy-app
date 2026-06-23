@@ -53,41 +53,45 @@ export const useGlobalFilterOptions = () => {
     }, [baseVoltages, dispatch]);
 
     useEffect(() => {
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchNetworkExistence(studyUuid, currentRootNetworkUuid).then((response) => {
-                if (response.status === HttpStatusCode.OK) {
-                    fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
-                        .then((countryCodes) => {
-                            const newCountriesFilter = countryCodes
-                                .map((countryCode: string) => ({
-                                    label: countryCode,
-                                    filterType: FilterType.COUNTRY,
-                                }))
-                                .map(addGlobalFilterId);
-                            dispatch(addToGlobalFilterOptions(newCountriesFilter));
-                        })
-                        .catch((error) => {
-                            snackWithFallback(snackError, error, { headerId: 'FetchCountryError' });
-                        });
-                }
-            });
+        const run = async () => {
+            if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid) return;
 
-            fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
-                const propertiesGlobalFilters: GlobalFilterWithoutId[] = [];
-                if (substationPropertiesGlobalFilters) {
-                    for (let [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
-                        propertyValues.forEach((propertyValue) => {
-                            propertiesGlobalFilters.push({
-                                label: propertyValue,
-                                filterType: FilterType.SUBSTATION_PROPERTY,
-                                filterSubtype: propertyName,
-                            });
-                        });
-                    }
+            const response = await fetchNetworkExistence(studyUuid, currentRootNetworkUuid);
+
+            if (response.status === HttpStatusCode.OK) {
+                try {
+                    const countryCodes = await fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid);
+
+                    const newCountriesFilter = countryCodes
+                        .map((countryCode: string) => ({
+                            label: countryCode,
+                            filterType: FilterType.COUNTRY,
+                        }))
+                        .map(addGlobalFilterId);
+
+                    dispatch(addToGlobalFilterOptions(newCountriesFilter));
+                } catch (error) {
+                    snackWithFallback(snackError, error, { headerId: 'FetchCountryError' });
                 }
-                // propertiesFilter may be empty or contain several subtypes, depending on the user configuration
-                dispatch(addToGlobalFilterOptions(propertiesGlobalFilters.map(addGlobalFilterId)));
-            });
-        }
+            }
+
+            const { substationPropertiesGlobalFilters } = await fetchSubstationPropertiesGlobalFilters();
+
+            const propertiesGlobalFilters: GlobalFilterWithoutId[] = [];
+            if (substationPropertiesGlobalFilters) {
+                for (const [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
+                    propertyValues.forEach((propertyValue) => {
+                        propertiesGlobalFilters.push({
+                            label: propertyValue,
+                            filterType: FilterType.SUBSTATION_PROPERTY,
+                            filterSubtype: propertyName,
+                        });
+                    });
+                }
+            }
+            // propertiesFilter may be empty or contain several subtypes, depending on the user configuration
+            dispatch(addToGlobalFilterOptions(propertiesGlobalFilters.map(addGlobalFilterId)));
+        };
+        run();
     }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id, dispatch]);
 };
