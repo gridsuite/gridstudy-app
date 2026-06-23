@@ -30,6 +30,7 @@ const styles = {
     },
     text: {
         fontSize: 12,
+        ml: 0.5,
     },
 } as const satisfies MuiStyles;
 
