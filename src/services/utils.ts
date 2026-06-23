@@ -55,7 +55,11 @@ export function fetchIdpSettings(): Promise<IdpSettings> {
     return fetch('idpSettings.json')
         .then((res) => res.json())
         .then((settings: IdpSettings) => {
-            localStorage.setItem(IDP_SETTINGS_CACHE_KEY, JSON.stringify(settings));
+            try {
+                localStorage.setItem(IDP_SETTINGS_CACHE_KEY, JSON.stringify(settings));
+            } catch (e) {
+                console.warn('Failed to cache IdP settings:', e);
+            }
             return settings;
         });
 }
@@ -63,13 +67,14 @@ export function fetchIdpSettings(): Promise<IdpSettings> {
 // Used only on the silent-renew path: reads the cache (no network),
 // falls back to a real fetch if the cache is missing/corrupted.
 export function getCachedIdpSettings(): Promise<IdpSettings> {
-    const cached = localStorage.getItem(IDP_SETTINGS_CACHE_KEY);
-    if (cached) {
-        try {
+    try {
+        const cached = localStorage.getItem(IDP_SETTINGS_CACHE_KEY);
+        if (cached) {
             return Promise.resolve(JSON.parse(cached) as IdpSettings);
-        } catch {
-            // corrupted cache -> fall back to a fresh fetch
         }
+    } catch (e) {
+        // localStorage unavailable, or cache corrupted -> fall back to fresh fetch
+        +console.warn('Failed to read cached IdP settings:', e);
     }
     return fetchIdpSettings();
 }
