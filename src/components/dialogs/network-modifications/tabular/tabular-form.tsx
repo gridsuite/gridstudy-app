@@ -46,13 +46,14 @@ import {
     generateCommentLines,
     isFieldTypeOk,
     PredefinedEquipmentProperties,
+    sanitizeRowValue,
     setFieldTypeError,
     TabularField,
     TabularModificationType,
     transformIfFrenchNumber,
 } from './tabular-common';
 import { ColDef } from 'ag-grid-community';
-import { ENUM, NUMBER } from '../../../network/constants';
+import { BOOLEAN, ENUM, NUMBER } from '../../../network/constants';
 import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
 import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
 import { useFilterCsvGenerator } from './use-filter-csv-generator';
@@ -99,6 +100,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>();
     const [fileErrorMessage, setFileErrorMessage] = useState<string | undefined>();
+    const [fileWarningMessage, setFileWarningMessage] = useState<string | undefined>();
 
     const parseConfig = useMemo<Partial<Papa.ParseConfig<Record<string, unknown>>>>(
         () => ({
@@ -114,6 +116,24 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             },
         }),
         [language]
+    );
+
+    // Boolean values never raise a blocking error: an invalid one is silently replaced by false
+    // (see sanitizeRowValue). When the field is a boolean we only warn the user it was replaced and
+    // return true to tell the caller to skip the regular error checks for this cell.
+    const handleBooleanValue = useCallback(
+        (key: string, value: unknown, fieldDef: TabularField | undefined): boolean => {
+            if (fieldDef?.type !== BOOLEAN) {
+                return false;
+            }
+            if (!isFieldTypeOk(value, fieldDef)) {
+                setFileWarningMessage(
+                    intl.formatMessage({ id: 'WrongBooleanValueWarning' }, { field: intl.formatMessage({ id: key }) })
+                );
+            }
+            return true;
+        },
+        [intl]
     );
 
     const handleTabularCreationParsingError = useCallback(
@@ -137,6 +157,10 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     )
                     .some(([result, key, value]) => {
                         const fieldDef = csvFields.find((field) => field.id === key);
+                        // boolean fields never raise a blocking error (see handleBooleanValue)
+                        if (handleBooleanValue(key, value, fieldDef)) {
+                            return false; // keep looking
+                        }
                         // check required fields are defined
                         if (fieldDef !== undefined && fieldDef.required && (value === undefined || value === null)) {
                             requiredFieldNameInError = key;
@@ -212,7 +236,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 });
             }
         },
-        [csvFields, equipmentType, intl, setError, snackWarning]
+        [csvFields, equipmentType, handleBooleanValue, intl, setError, snackWarning]
     );
 
     const handleTabularModificationParsingError = useCallback(
@@ -225,6 +249,10 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             if (
                 results.data.flatMap(Object.entries).some(([key, value]) => {
                     const fieldDef = csvFields.find((field) => field.id === key);
+                    // boolean fields never raise a blocking error (see handleBooleanValue)
+                    if (handleBooleanValue(key, value, fieldDef)) {
+                        return false; // keep looking
+                    }
                     // check the field types
                     if (!isFieldTypeOk(value, fieldDef)) {
                         fieldTypeInError = key;
@@ -257,7 +285,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 snackWarning({ messageId: 'TabularModificationShuntWarning' });
             }
         },
-        [equipmentType, csvFields, setError, intl, snackWarning]
+        [equipmentType, csvFields, handleBooleanValue, setError, intl, snackWarning]
     );
 
     const selectedProperties = useMemo((): string[] => {
@@ -333,18 +361,36 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const getDataFromCsvFile = useCallback(
         (results: Papa.ParseResult<Record<string, unknown>>, file: File) => {
             clearErrors(MODIFICATIONS_TABLE);
+            setFileWarningMessage(undefined);
             if (dialogMode === TabularModificationType.CREATION) {
                 handleTabularCreationParsingError(results);
             } else {
                 handleTabularModificationParsingError(results);
             }
             setValue(CSV_FILENAME, file.name);
-            return results.data.map((row) => ({
-                [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
-                ...row,
-            }));
+            // sanitize each cell: drop wrong-format values (kept out of the table) and default
+            // mandatory boolean checkboxes to false, so invalid data is never injected.
+            return results.data.map((row) => {
+                const sanitizedRow: Record<string, unknown> = {
+                    [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+                };
+                Object.entries(row).forEach(([key, value]) => {
+                    sanitizedRow[key] = sanitizeRowValue(
+                        value,
+                        csvFields.find((field) => field.id === key)
+                    );
+                });
+                return sanitizedRow;
+            });
         },
-        [clearErrors, dialogMode, handleTabularCreationParsingError, handleTabularModificationParsingError, setValue]
+        [
+            clearErrors,
+            csvFields,
+            dialogMode,
+            handleTabularCreationParsingError,
+            handleTabularModificationParsingError,
+            setValue,
+        ]
     );
 
     useEffect(() => {
@@ -374,6 +420,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         setValue(TABULAR_PROPERTIES, []);
         setSelectedFile(undefined);
         setFileErrorMessage(undefined);
+        setFileWarningMessage(undefined);
     }, [clearErrors, setValue]);
 
     const equipmentTypeField = (
@@ -416,12 +463,21 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 if (field.id === EQUIPMENT_ID) {
                     columnDef.pinned = true;
                 }
+                // Force the cell data type from the field definition instead of relying on AG Grid's
+                // type inference from the data: inference is per-column and based on the cell values,
+                // so a CSV providing unexpected values (e.g. 0/1 in a boolean column) would mistype the
+                // whole column (numbers/text instead of checkboxes, and vice versa).
                 switch (field.type) {
+                    case BOOLEAN:
+                        columnDef.cellDataType = BOOLEAN;
+                        break;
                     case NUMBER:
+                        columnDef.cellDataType = NUMBER;
                         columnDef.cellEditor = NumericEditor;
                         columnDef.suppressKeyboardEvent = suppressNonNumericKeyboardEvent;
                         break;
                     case ENUM:
+                        columnDef.cellDataType = 'text';
                         columnDef.cellEditor = 'agSelectCellEditor';
                         columnDef.cellEditorParams = { values: [null, ...(field.options ?? [])] };
                         break;
@@ -434,6 +490,8 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 selectedProperties.map((propertyName: string) => ({
                     field: PROPERTY_CSV_COLUMN_PREFIX + propertyName,
                     headerName: propertyName,
+                    // property values are always kept as strings (see parseConfig)
+                    cellDataType: 'text',
                     editable: true,
                     singleClickEdit: true,
                 }))
@@ -516,6 +574,11 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             {fileErrorMessage && (
                 <Grid>
                     <Alert severity="error">{fileErrorMessage}</Alert>
+                </Grid>
+            )}
+            {fileWarningMessage && (
+                <Grid>
+                    <Alert severity="warning">{fileWarningMessage}</Alert>
                 </Grid>
             )}
             {equipmentType && (
