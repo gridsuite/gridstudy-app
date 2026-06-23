@@ -145,6 +145,8 @@ export function getStateEstimationRunningStatus(stateEstimationStatus: string | 
             return RunningStatus.RUNNING;
         case 'NOT_DONE':
             return RunningStatus.IDLE;
+        case 'DIVERGED':
+            return RunningStatus.FAILED;
         default:
             return RunningStatus.IDLE;
     }
