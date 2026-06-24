@@ -13,7 +13,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { getCachedIdpSettings } from 'services/utils';
 
-export default function SilentRenewApp() {
+export default function SilentRenew() {
     const [userManager, setUserManager] = useState<UserManager | null>(null);
 
     useEffect(() => {

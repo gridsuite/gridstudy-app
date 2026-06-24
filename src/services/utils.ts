@@ -14,6 +14,7 @@ export const FetchStatus = {
 
 export const MAX_INT32: number = 2147483647;
 const IDP_SETTINGS_CACHE_KEY = 'gridsuite-idp-settings';
+export const SILENT_RENEW_CALLBACK_PATH = '/silent-renew-callback';
 type DefaultParameters = StudyMetadata['defaultParametersValues'];
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 

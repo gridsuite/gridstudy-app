@@ -6,14 +6,15 @@
  */
 
 import { createRoot } from 'react-dom/client';
-import SilentRenewApp from './components/silent-renew-app';
+import SilentRenew from './components/silent-renew';
+import { SILENT_RENEW_CALLBACK_PATH } from './services/utils';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
 
 async function renderApp() {
-    if (window.location.pathname.endsWith('/silent-renew-callback')) {
-        root.render(<SilentRenewApp />);
+    if (window.location.pathname.endsWith(SILENT_RENEW_CALLBACK_PATH)) {
+        root.render(<SilentRenew />);
         return;
     }
     await import('core-js/es/array/flat-map');
