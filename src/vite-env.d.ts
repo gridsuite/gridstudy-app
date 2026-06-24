@@ -7,3 +7,4 @@
 
 /// <reference types="vite-plugin-svgr/client" />
 /// <reference types="vite/client" />
+declare module 'core-js/es/array/flat-map';
