@@ -9,7 +9,7 @@ import { Box, Button, Grid, ListItemButton, Paper, Typography } from '@mui/mater
 import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { PropsWithChildren, RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { PropsWithChildren, RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType, isCriteriaFilterType } from '../utils';
@@ -25,16 +25,8 @@ import {
     mergeSx,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
-import { GlobalFilterContext } from './global-filter-context';
 import SelectedGlobalFilters from './selected-global-filters';
 import { TextWithInfoIcon } from './text-with-info-icon';
-import {
-    addToSelectedGlobalFilters,
-    addToGlobalFilterOptions,
-    clearSelectedGlobalFilters,
-} from '../../../../redux/actions';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../../redux/store';
 
 const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;
@@ -42,24 +34,39 @@ const XS_COLUMN3: number = 5;
 
 type GlobalFilterPaperProps = PropsWithChildren<{
     autocompleteRef?: RefObject<HTMLElement | null>;
+    setOpenedDropdown: (open: boolean) => void;
+    directoryItemSelectorOpen: boolean;
+    setDirectoryItemSelectorOpen: (open: boolean) => void;
+    filterGroupSelected: string;
+    setFilterGroupSelected: (selectedFilterGroup: string) => void;
+    selectedGlobalFilters: GlobalFilter[];
+    filterCategories: string[];
+    genericFiltersStrictMode: boolean;
+    filterableEquipmentTypes: string[];
+    selectGlobalFilter: (id: string) => void;
+    unselectGlobalFilters: (ids: string[]) => void;
+    clearSelectedGlobalFilters: () => void;
+    addGlobalFilterOptions: (newFilters: GlobalFilter[]) => void;
 }>;
 
-function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterPaperProps>) {
-    const {
-        setOpenedDropdown,
-        directoryItemSelectorOpen,
-        setDirectoryItemSelectorOpen,
-        filterGroupSelected,
-        setFilterGroupSelected,
-        selectedGlobalFilters,
-        filterCategories,
-        genericFiltersStrictMode,
-        filterableEquipmentTypes,
-        tableType,
-        tableUuid,
-    } = useContext(GlobalFilterContext);
+function GlobalFilterPaper({
+    children,
+    autocompleteRef,
+    setOpenedDropdown,
+    directoryItemSelectorOpen,
+    setDirectoryItemSelectorOpen,
+    filterGroupSelected,
+    setFilterGroupSelected,
+    selectedGlobalFilters,
+    filterCategories,
+    genericFiltersStrictMode,
+    filterableEquipmentTypes,
+    selectGlobalFilter,
+    unselectGlobalFilters,
+    clearSelectedGlobalFilters,
+    addGlobalFilterOptions,
+}: Readonly<GlobalFilterPaperProps>) {
     const intl = useIntl();
-    const dispatch = useDispatch<AppDispatch>();
     const [substationPropertiesFilters, setSubstationPropertiesFilters] = useState<Map<string, string[]>>();
 
     // fetches substation properties global filters from local config
@@ -161,17 +168,17 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 }
             });
 
-            dispatch(addToGlobalFilterOptions(newlySelectedFilters));
-            dispatch(
-                addToSelectedGlobalFilters(
-                    tableType,
-                    tableUuid,
-                    newlySelectedFilters.map((f) => f.id)
-                )
-            );
+            addGlobalFilterOptions(newlySelectedFilters);
+            newlySelectedFilters.forEach((filter) => selectGlobalFilter(filter.id));
             setDirectoryItemSelectorOpen(false);
         },
-        [selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown, dispatch, tableType, tableUuid]
+        [
+            selectedGlobalFilters,
+            setDirectoryItemSelectorOpen,
+            setOpenedDropdown,
+            addGlobalFilterOptions,
+            selectGlobalFilter,
+        ]
     );
 
     /**
@@ -219,7 +226,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                             <Typography variant="caption">{filtersMsg}</Typography>
                             <Button
                                 size="small"
-                                onClick={() => dispatch(clearSelectedGlobalFilters(tableType, tableUuid))}
+                                onClick={clearSelectedGlobalFilters}
                                 sx={resultsGlobalFilterStyles.miniButton}
                                 data-testid="GlobalFilterClearAllButton"
                             >
@@ -285,7 +292,10 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                             )}
                         </Grid>
                         <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
-                            <SelectedGlobalFilters />
+                            <SelectedGlobalFilters
+                                selectedGlobalFilters={selectedGlobalFilters}
+                                unselectGlobalFilters={unselectGlobalFilters}
+                            />
                         </Grid>
                     </Grid>
                 </Paper>

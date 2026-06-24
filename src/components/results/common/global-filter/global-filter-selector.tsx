@@ -6,7 +6,6 @@
  */
 
 import GlobalFilterProvider from './global-filter-provider';
-import GlobalFilterAutocomplete from './global-filter-autocomplete';
 import { FilterType } from '../utils';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
@@ -34,8 +33,6 @@ export default function GlobalFilterSelector({
             filterableEquipmentTypes={filterableEquipmentTypes}
             tableType={tableType}
             tableUuid={tableUuid ?? tableType}
-        >
-            <GlobalFilterAutocomplete />
-        </GlobalFilterProvider>
+        />
     );
 }

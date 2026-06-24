@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useContext, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteChangeDetails,
@@ -27,22 +27,13 @@ import {
 import { Delete as DeleteIcon, FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { useDispatch } from 'react-redux';
 import { FilterType } from '../utils';
 import { EquipmentType, OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
-import { GlobalFilter } from './global-filter-types';
+import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import GlobalFilterPaper from './global-filter-paper';
 import IconButton from '@mui/material/IconButton';
 import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
-import { GlobalFilterContext } from './global-filter-context';
-import {
-    addToSelectedGlobalFilters,
-    clearSelectedGlobalFilters,
-    removeFromGlobalFilterOptions,
-    removeFromSelectedGlobalFilters,
-} from '../../../../redux/actions';
-import { AppDispatch } from '../../../../redux/store';
 
 const TAG_LIMIT_NUMBER: number = 4;
 
@@ -92,14 +83,15 @@ function RenderOption({
     props,
     option,
     state,
+    removeGlobalFilterOption,
 }: {
     props: Omit<React.HTMLAttributes<HTMLLIElement>, 'key'>;
     option: GlobalFilter;
     state: { selected: boolean };
+    removeGlobalFilterOption: (id: string) => void;
 }) {
     const { children, ...otherProps } = props;
     const intl = useIntl();
-    const dispatch = useDispatch<AppDispatch>();
     const { translate } = useLocalizedCountries();
 
     const label = getOptionLabel(option, translate, intl) ?? '';
@@ -127,7 +119,7 @@ function RenderOption({
                         }}
                         onClick={(e) => {
                             e.stopPropagation();
-                            dispatch(removeFromGlobalFilterOptions(option.id));
+                            removeGlobalFilterOption(option.id);
                         }}
                     >
                         <DeleteIcon fontSize="small" />
@@ -146,6 +138,20 @@ function RenderOption({
         </ListItemButton>
     );
 }
+
+export type GlobalFilterAutocompleteProps = {
+    globalFilterOptions: GlobalFilter[];
+    selectedGlobalFilters: GlobalFilter[];
+    recentGlobalFilters: RecentGlobalFilter[];
+    filterCategories: string[];
+    genericFiltersStrictMode: boolean;
+    filterableEquipmentTypes: string[];
+    selectGlobalFilter: (id: string) => void;
+    unselectGlobalFilters: (ids: string[]) => void;
+    clearSelectedGlobalFilters: () => void;
+    addGlobalFilterOptions: (newFilters: GlobalFilter[]) => void;
+    removeGlobalFilterOption: (id: string) => void;
+};
 
 interface WarningTooltipProps {
     warningEquipmentTypeMessage: string;
@@ -175,24 +181,25 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
     );
 }
 
-function GlobalFilterAutocomplete() {
-    const {
-        openedDropdown,
-        setOpenedDropdown,
-        filterGroupSelected,
-        genericFiltersStrictMode,
-        tableType,
-        tableUuid,
-        globalFilterOptions,
-        selectedGlobalFilters,
-        recentGlobalFilters,
-        filterCategories,
-        filterableEquipmentTypes,
-    } = useContext(GlobalFilterContext);
+function GlobalFilterAutocomplete({
+    globalFilterOptions,
+    selectedGlobalFilters,
+    recentGlobalFilters,
+    filterCategories,
+    genericFiltersStrictMode,
+    filterableEquipmentTypes,
+    selectGlobalFilter,
+    unselectGlobalFilters,
+    clearSelectedGlobalFilters,
+    addGlobalFilterOptions,
+    removeGlobalFilterOption,
+}: Readonly<GlobalFilterAutocompleteProps>) {
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
-    const dispatch = useDispatch();
     const autocompleteRef = useRef<HTMLDivElement | null>(null);
+    const [openedDropdown, setOpenedDropdown] = useState(false);
+    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
+    const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
 
     // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
@@ -321,8 +328,38 @@ function GlobalFilterAutocomplete() {
     const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => option.id === value.id, []);
 
     const PaperComponentMemo = useCallback(
-        (props: PaperProps) => <GlobalFilterPaper {...props} autocompleteRef={autocompleteRef} />,
-        [autocompleteRef]
+        (props: PaperProps) => (
+            <GlobalFilterPaper
+                {...props}
+                autocompleteRef={autocompleteRef}
+                setOpenedDropdown={setOpenedDropdown}
+                directoryItemSelectorOpen={directoryItemSelectorOpen}
+                setDirectoryItemSelectorOpen={setDirectoryItemSelectorOpen}
+                filterGroupSelected={filterGroupSelected}
+                setFilterGroupSelected={setFilterGroupSelected}
+                selectedGlobalFilters={selectedGlobalFilters}
+                filterCategories={filterCategories}
+                genericFiltersStrictMode={genericFiltersStrictMode}
+                filterableEquipmentTypes={filterableEquipmentTypes}
+                selectGlobalFilter={selectGlobalFilter}
+                unselectGlobalFilters={unselectGlobalFilters}
+                clearSelectedGlobalFilters={clearSelectedGlobalFilters}
+                addGlobalFilterOptions={addGlobalFilterOptions}
+            />
+        ),
+        [
+            autocompleteRef,
+            directoryItemSelectorOpen,
+            filterGroupSelected,
+            selectedGlobalFilters,
+            filterCategories,
+            genericFiltersStrictMode,
+            filterableEquipmentTypes,
+            selectGlobalFilter,
+            unselectGlobalFilters,
+            clearSelectedGlobalFilters,
+            addGlobalFilterOptions,
+        ]
     );
 
     const handleOnChange = useCallback(
@@ -334,19 +371,19 @@ function GlobalFilterAutocomplete() {
         ) => {
             switch (reason) {
                 case 'selectOption':
-                    dispatch(addToSelectedGlobalFilters(tableType, tableUuid, [details!.option.id]));
+                    selectGlobalFilter(details!.option.id);
                     break;
                 case 'removeOption':
-                    dispatch(removeFromSelectedGlobalFilters(tableType, tableUuid, [details!.option.id]));
+                    unselectGlobalFilters([details!.option.id]);
                     break;
                 case 'clear':
-                    dispatch(clearSelectedGlobalFilters(tableType, tableUuid));
+                    clearSelectedGlobalFilters();
                     break;
                 default:
                     break;
             }
         },
-        [dispatch, tableType, tableUuid]
+        [clearSelectedGlobalFilters, selectGlobalFilter, unselectGlobalFilters]
     );
 
     return (
@@ -391,7 +428,15 @@ function GlobalFilterAutocomplete() {
                     // renderOption : the checkboxes visible when we focus on the AutoComplete
                     renderOption={(props, option, state) => {
                         const { key, ...otherProps } = props;
-                        return <RenderOption key={key} props={otherProps} option={option} state={state} />;
+                        return (
+                            <RenderOption
+                                key={key}
+                                props={otherProps}
+                                option={option}
+                                state={state}
+                                removeGlobalFilterOption={removeGlobalFilterOption}
+                            />
+                        );
                     }}
                     // Allows to find the corresponding chips without taking into account the recent status
                     isOptionEqualToValue={isOptionEqualToValue}
