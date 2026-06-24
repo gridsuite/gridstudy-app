@@ -681,7 +681,9 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                         ...line,
                         equipmentType: EQUIPMENT_TYPES.LINE,
                     }));
-                    setUpdatedLines((oldUpdatedLines) => mergeByIdKeepOrder(oldUpdatedLines, lines));
+                    setUpdatedLines((oldUpdatedLines) =>
+                        isFullReload ? [] : mergeByIdKeepOrder(oldUpdatedLines, lines)
+                    );
                 }
             });
             updatedTieLines.then((values) => {
@@ -691,7 +693,9 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                         ...tieLine,
                         equipmentType: EQUIPMENT_TYPES.TIE_LINE,
                     }));
-                    setUpdatedTieLines((oldUpdatedTieLines) => mergeByIdKeepOrder(oldUpdatedTieLines, tieLines));
+                    setUpdatedTieLines((oldUpdatedTieLines) =>
+                        isFullReload ? [] : mergeByIdKeepOrder(oldUpdatedTieLines, tieLines)
+                    );
                 }
             });
             updatedHvdcLines.then((values) => {
@@ -701,7 +705,9 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                         ...hvdcLine,
                         equipmentType: EQUIPMENT_TYPES.HVDC_LINE,
                     }));
-                    setUpdatedHvdcLines((oldUpdatedHvdcLines) => mergeByIdKeepOrder(oldUpdatedHvdcLines, hvdcLines));
+                    setUpdatedHvdcLines((oldUpdatedHvdcLines) =>
+                        isFullReload ? [] : mergeByIdKeepOrder(oldUpdatedHvdcLines, hvdcLines)
+                    );
                 }
             });
             return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(() => {
