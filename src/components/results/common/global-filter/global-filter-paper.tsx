@@ -27,7 +27,6 @@ import {
 } from '@gridsuite/commons-ui';
 import SelectedGlobalFilters from './selected-global-filters';
 import { TextWithInfoIcon } from './text-with-info-icon';
-import { useGlobalFilterAutocompleteInternalContext } from './global-filter-autocomplete-internal-context';
 import { useGlobalFilterContext } from './global-filter-context';
 
 const XS_COLUMN1: number = 3;
@@ -36,10 +35,20 @@ const XS_COLUMN3: number = 5;
 
 type GlobalFilterPaperProps = PropsWithChildren<{
     autocompleteRef?: RefObject<HTMLElement | null>;
+    setOpenedDropdown: (open: boolean) => void;
+    filterGroupSelected: string;
+    setFilterGroupSelected: (selectedFilterGroup: string) => void;
 }>;
 
-function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterPaperProps>) {
+function GlobalFilterPaper({
+    children,
+    autocompleteRef,
+    setOpenedDropdown,
+    filterGroupSelected,
+    setFilterGroupSelected,
+}: Readonly<GlobalFilterPaperProps>) {
     const intl = useIntl();
+    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
     const [substationPropertiesFilters, setSubstationPropertiesFilters] = useState<Map<string, string[]>>();
     const {
         selectedGlobalFilters,
@@ -50,13 +59,6 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         clearSelectedGlobalFilters,
         addGlobalFilterOptions,
     } = useGlobalFilterContext();
-    const {
-        setOpenedDropdown,
-        directoryItemSelectorOpen,
-        setDirectoryItemSelectorOpen,
-        filterGroupSelected,
-        setFilterGroupSelected,
-    } = useGlobalFilterAutocompleteInternalContext();
 
     // fetches substation properties global filters from local config
     useEffect(() => {

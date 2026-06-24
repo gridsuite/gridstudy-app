@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteChangeDetails,
@@ -34,10 +34,6 @@ import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './g
 import GlobalFilterPaper from './global-filter-paper';
 import IconButton from '@mui/material/IconButton';
 import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
-import {
-    GlobalFilterAutocompleteInternalProvider,
-    useGlobalFilterAutocompleteInternalContext,
-} from './global-filter-autocomplete-internal-context';
 import { useGlobalFilterContext } from './global-filter-context';
 
 const TAG_LIMIT_NUMBER: number = 4;
@@ -171,7 +167,7 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
     );
 }
 
-function GlobalFilterAutocompleteContent() {
+function GlobalFilterAutocomplete() {
     const {
         globalFilterOptions,
         selectedGlobalFilters,
@@ -186,7 +182,8 @@ function GlobalFilterAutocompleteContent() {
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const autocompleteRef = useRef<HTMLDivElement | null>(null);
-    const { openedDropdown, setOpenedDropdown, filterGroupSelected } = useGlobalFilterAutocompleteInternalContext();
+    const [openedDropdown, setOpenedDropdown] = useState(false);
+    const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
 
     // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
@@ -315,8 +312,16 @@ function GlobalFilterAutocompleteContent() {
     const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => option.id === value.id, []);
 
     const PaperComponentMemo = useCallback(
-        (props: PaperProps) => <GlobalFilterPaper {...props} autocompleteRef={autocompleteRef} />,
-        [autocompleteRef]
+        (props: PaperProps) => (
+            <GlobalFilterPaper
+                {...props}
+                autocompleteRef={autocompleteRef}
+                setOpenedDropdown={setOpenedDropdown}
+                filterGroupSelected={filterGroupSelected}
+                setFilterGroupSelected={setFilterGroupSelected}
+            />
+        ),
+        [autocompleteRef, filterGroupSelected]
     );
 
     const handleOnChange = useCallback(
@@ -412,14 +417,6 @@ function GlobalFilterAutocompleteContent() {
                 <WarningTooltip warningEquipmentTypeMessage={warningEquipmentTypeMessage} />
             )}
         </>
-    );
-}
-
-function GlobalFilterAutocomplete() {
-    return (
-        <GlobalFilterAutocompleteInternalProvider>
-            <GlobalFilterAutocompleteContent />
-        </GlobalFilterAutocompleteInternalProvider>
     );
 }
 
