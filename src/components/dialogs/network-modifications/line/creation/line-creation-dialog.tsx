@@ -30,7 +30,6 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
-    APPLY_SEGMENTS_LIMITS,
     B1,
     B2,
     BUS_OR_BUSBAR_SECTION,
