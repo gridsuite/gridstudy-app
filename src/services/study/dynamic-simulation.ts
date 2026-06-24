@@ -124,19 +124,17 @@ function enrichDynamicSimulationParameters(
     parameters: DynamicSimulationParametersInfos,
     elementIdNames: Record<string, string>
 ): DynamicSimulationParametersEnriched {
-    if (parameters.mappingId) {
-        const mappingId = parameters.mappingId;
-        delete parameters.mappingId;
+    const { mappingId, ...rest } = parameters;
+    if (mappingId) {
         return {
-            ...parameters,
+            ...rest,
             mapping: {
                 id: mappingId,
-                name: mappingId ? elementIdNames?.[mappingId] : undefined,
+                name: elementIdNames?.[mappingId],
             },
         };
     }
-    delete parameters.mappingId;
-    return { ...parameters, mapping: undefined };
+    return { ...rest, mapping: undefined };
 }
 
 export function fetchDynamicSimulationParameters(studyUuid: UUID): Promise<DynamicSimulationParametersEnriched> {
