@@ -6,7 +6,6 @@
  */
 
 import { useEffect } from 'react';
-import { Grid } from '@mui/material';
 import {
     CustomFormProvider,
     type EquipmentType,
@@ -96,9 +95,7 @@ export default function DefinePropertiesDialog({
                 PaperProps={{ sx: styles.dialogContent }}
                 {...dialogProps}
             >
-                <Grid container>
-                    <PropertiesForm />
-                </Grid>
+                <PropertiesForm />
             </ModificationDialog>
         </CustomFormProvider>
     );

@@ -6,10 +6,10 @@
  */
 
 import { EQUIPMENT_NAME } from 'components/utils/field-constants';
-import { Box, Grid, TextField } from '@mui/material';
+import { Box, Grid2 as Grid, TextField } from '@mui/material';
 import LineDialogTabs from '../line-dialog-tabs';
 import { filledTextField, TextInput } from '@gridsuite/commons-ui';
-import GridItem from '../../../commons/grid-item';
+import { Grid2Item as GridItem } from '../../../commons/grid2-item';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 
 export interface LineModificationDialogHeaderProps {
@@ -59,7 +59,7 @@ const LineModificationDialogHeader = ({
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{lineIdField}</GridItem>
                 <GridItem size={4}>{lineNameField}</GridItem>
             </Grid>

@@ -9,10 +9,10 @@ import { ExpandableInput, RadioInput } from '@gridsuite/commons-ui';
 import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import VariationForm from './variation/variation-form';
-import { Grid, Theme } from '@mui/material';
+import { Grid2 as Grid, Theme } from '@mui/material';
 import { getVariationEmptyForm } from './variation/variation-utils';
-import GridItem from '../../commons/grid-item';
-import GridSection from '../../commons/grid-section';
+import { Grid2Item as GridItem } from '../../commons/grid2-item';
+import { Grid2Section as GridSection } from '../../commons/grid2-section';
 
 const styles = {
     padding: (theme: Theme) => ({
@@ -34,7 +34,7 @@ const GeneratorScalingForm = () => {
 
     return (
         <>
-            <Grid sx={styles.padding}>
+            <Grid container sx={styles.padding}>
                 <GridItem size={8}>{variationTypeField}</GridItem>
             </Grid>
 

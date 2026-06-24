@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { TABULAR_PROPERTIES, PREDEFINED } from '../../../../utils/field-constants';
 import PropertyForm from './property-form';
 import { initializedProperty } from './property-utils';
@@ -37,7 +37,11 @@ const PropertiesForm = () => {
         />
     );
 
-    return <Grid container>{tabularProps}</Grid>;
+    return (
+        <Grid container sx={{ width: '100%' }}>
+            {tabularProps}
+        </Grid>
+    );
 };
 
 export default PropertiesForm;

@@ -7,14 +7,14 @@
 
 import { AutocompleteInput, filledTextField, getObjectId, Option } from '@gridsuite/commons-ui';
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
-import GridItem from '../../../commons/grid-item';
-import { Box, Grid, TextField, Tooltip } from '@mui/material';
+import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { Box, Grid2 as Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import GridSection from '../../../commons/grid-section';
+import { Grid2Section as GridSection } from '../../../commons/grid2-section';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
@@ -89,13 +89,11 @@ export default function CreateCouplingDeviceForm({
             <Grid container spacing={2}>
                 <GridItem size={4}>{voltageLevelIdField}</GridItem>
                 {isNodeBuilt(currentNode) && (
-                    <GridItem size={3}>
-                        <Grid sx={{ paddingTop: 1 }}>
-                            <Button onClick={handleClickOpenDiagramPane} variant="outlined">
-                                <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
-                            </Button>
-                            {diagramToolTip}
-                        </Grid>
+                    <GridItem size={3} sx={{ paddingTop: 1 }}>
+                        <Button onClick={handleClickOpenDiagramPane} variant="outlined">
+                            <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
+                        </Button>
+                        {diagramToolTip}
                     </GridItem>
                 )}
             </Grid>

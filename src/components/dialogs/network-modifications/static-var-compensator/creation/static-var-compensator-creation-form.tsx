@@ -8,12 +8,12 @@
 import { FunctionComponent, useCallback } from 'react';
 
 import { ConnectivityForm, PropertiesForm } from '@gridsuite/commons-ui';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import type { UUID } from 'node:crypto';
-import GridItem from '../../../commons/grid-item';
+import { Grid2Item as GridItem } from '../../../commons/grid2-item';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
@@ -57,7 +57,7 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
     return (
         <>
             <Box hidden={tabIndex !== StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB} p={1}>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{ width: '100%' }}>
                     <GridItem size={12}>{connectivityForm}</GridItem>
                 </Grid>
             </Box>

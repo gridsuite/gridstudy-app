@@ -70,7 +70,7 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import { createStaticVarCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import StaticVarCompensatorCreationDialogTabs from './static-var-compensator-creation-dialog-tabs';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import StaticVarCompensatorCreationForm from './static-var-compensator-creation-form';
 import StaticVarCompensatorCreationDialogHeader from './static-var-compensator-creation-dialog-header';
 import {
@@ -428,7 +428,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     );
 
     const headerAndTabs = (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
             <StaticVarCompensatorCreationDialogHeader />
             <StaticVarCompensatorCreationDialogTabs
                 tabIndex={tabIndex}

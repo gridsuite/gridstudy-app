@@ -29,9 +29,9 @@ import {
 } from '@gridsuite/commons-ui';
 import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { InputAdornment, Grid, TextField } from '@mui/material';
+import { Grid2 as Grid, InputAdornment, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import GridItem from '../../../commons/grid-item';
+import { Grid2Item as GridItem } from '../../../commons/grid2-item';
 
 export const SusceptanceArea = () => {
     const id = AUTOMATON;
