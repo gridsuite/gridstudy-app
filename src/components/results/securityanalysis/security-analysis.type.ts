@@ -52,7 +52,6 @@ export interface SecurityAnalysisResultNProps {
     resultStatusMessages: RunningStatusMessage;
     securityAnalysisStatus: RunningStatus;
     onGridReady: (params: GridReadyEvent) => void;
-    hasError: boolean;
 }
 
 export interface SecurityAnalysisNTableRow {
