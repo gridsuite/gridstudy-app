@@ -30,6 +30,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
+    APPLY_SEGMENTS_LIMITS,
     B1,
     B2,
     BUS_OR_BUSBAR_SECTION,
@@ -59,7 +60,7 @@ import {
     X,
 } from 'components/utils/field-constants';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -170,6 +171,13 @@ const LineCreationDialog = ({
     const { reset, setValue, watch } = formMethods;
 
     const editSegmentValue = watch(LINE_SEGMENTS);
+
+    const editSegmentsData = useMemo(
+        () => ({
+            [LINE_SEGMENTS]: editSegmentValue ?? [],
+        }),
+        [editSegmentValue]
+    );
 
     const fromSearchCopyToFormValues = (line: LineFormInfos) => {
         const formData = {
@@ -456,7 +464,7 @@ const LineCreationDialog = ({
                     open={isOpenLineTypesCatalogDialog}
                     onClose={handleCloseLineTypesCatalogDialog}
                     onSave={handleLineSegmentsBuildSubmit}
-                    editData={editSegmentValue}
+                    editData={editSegmentsData}
                 />
             </ModificationDialog>
         </CustomFormProvider>
