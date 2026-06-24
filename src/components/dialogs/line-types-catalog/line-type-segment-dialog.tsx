@@ -17,6 +17,8 @@ import {
     DeepNullable,
     SegmentSchema,
     LineSegmentsFormData,
+    SegmentFormData,
+    SegmentsFormData,
 } from '@gridsuite/commons-ui';
 import {
     APPLY_SEGMENTS_LIMITS,
@@ -52,23 +54,25 @@ const emptyFormData = {
 export interface LineTypeSegmentDialogProps {
     open: boolean;
     onClose: () => void;
-    onSave: (
+    onSaveCreationCase?: (data: ComputedLineCharacteristics, lineSegments: LineSegmentsFormData) => void;
+    editDataCreationCase?: LineSegmentsFormData | null;
+    onSaveModificationCase?: (
         data: ComputedLineCharacteristics,
-        lineSegments: LineSegmentsFormData,
+        lineSegments: DeepNullable<SegmentFormData | null>[],
         applyLimits: boolean | null
     ) => void;
-    editData?: LineSegmentsFormData | null;
-    isModification?: boolean;
+    editDataModificationCase?: SegmentsFormData;
 }
 
 export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
 
 export default function LineTypeSegmentDialog({
     open,
-    onSave,
+    onSaveCreationCase,
+    onSaveModificationCase,
     onClose,
-    editData,
-    isModification = false,
+    editDataCreationCase,
+    editDataModificationCase,
 }: Readonly<LineTypeSegmentDialogProps>) {
     const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
         defaultValues: emptyFormData,
@@ -83,9 +87,14 @@ export default function LineTypeSegmentDialog({
 
     const onSubmit = useCallback(
         (data: ComputedLineCharacteristics) => {
-            onSave(data, (getValues(`${SEGMENTS}`) as LineSegmentsFormData) ?? [], getValues(APPLY_SEGMENTS_LIMITS));
+            if (onSaveModificationCase) {
+                onSaveModificationCase(data, getValues(`${SEGMENTS}`) ?? [], getValues(APPLY_SEGMENTS_LIMITS));
+            }
+            if (onSaveCreationCase) {
+                onSaveCreationCase(data, (getValues(`${SEGMENTS}`) as LineSegmentsFormData) ?? []);
+            }
         },
-        [getValues, onSave]
+        [getValues, onSaveCreationCase, onSaveModificationCase]
     );
 
     return (
@@ -99,7 +108,11 @@ export default function LineTypeSegmentDialog({
                 onClose={onClose}
                 onSave={onSubmit}
             >
-                <LineTypeSegmentForm editData={editData} isModification={isModification} />
+                <LineTypeSegmentForm
+                    editDataCreationCase={editDataCreationCase}
+                    editDataModificationCase={editDataModificationCase}
+                    isModification={!!onSaveModificationCase}
+                />
             </ModificationDialog>
         </CustomFormProvider>
     );

@@ -505,9 +505,8 @@ const LineModificationDialog = ({
                         <LineTypeSegmentDialog
                             open={isOpenLineTypesCatalogDialog}
                             onClose={handleCloseLineTypesCatalogDialog}
-                            onSave={handleLineSegmentsBuildSubmit}
-                            editData={editSegmentsData}
-                            isModification
+                            onSaveModificationCase={handleLineSegmentsBuildSubmit}
+                            editDataModificationCase={editSegmentsData}
                         />
                     </>
                 )}

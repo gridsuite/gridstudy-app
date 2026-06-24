@@ -50,6 +50,8 @@ import {
     SwitchInput,
     useSnackMessage,
     SegmentInfoFormData,
+    SegmentsFormData,
+    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
@@ -72,11 +74,16 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface LineTypeSegmentFormProps {
-    editData?: LineSegmentsFormData | null;
+    editDataCreationCase?: LineSegmentsFormData | null;
+    editDataModificationCase?: SegmentsFormData;
     isModification: boolean;
 }
 
-export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData, isModification }) => {
+export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({
+    editDataCreationCase,
+    editDataModificationCase,
+    isModification,
+}) => {
     const { setValue, getValues, clearErrors, watch } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
@@ -231,12 +238,23 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        if (!editData?.length) {
+        if (isModification && !editDataModificationCase?.[FieldConstants.LINE_SEGMENTS]?.length) {
+            return;
+        }
+        if (!isModification && !editDataCreationCase?.length) {
             return;
         }
         arrayRef.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
-            const promises = editData.map((segment) => getSegmentLimits(segment));
+            let promises;
+            if (!isModification && editDataCreationCase) {
+                promises = editDataCreationCase.map((segment) => getSegmentLimits(segment));
+            }
+            if (isModification && editDataModificationCase) {
+                promises = editDataModificationCase[FieldConstants.LINE_SEGMENTS]?.map((segment) =>
+                    getSegmentLimits(segment)
+                );
+            }
 
             try {
                 if (promises) {
@@ -254,11 +272,19 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         updateSegmentsLimits().then(() => {
             updateTotals();
             keepMostConstrainingLimits();
-            // TODO DBR add applySegmentsLimits in main schema ?
-            //setValue(APPLY_SEGMENTS_LIMITS, editData?.applySegmentsLimits ?? true);
-            setValue(APPLY_SEGMENTS_LIMITS, true);
+            const applyLimits = isModification ? (editDataModificationCase?.applySegmentsLimits ?? true) : true;
+            setValue(APPLY_SEGMENTS_LIMITS, applyLimits);
         });
-    }, [editData, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits, setValue]);
+    }, [
+        editDataCreationCase,
+        editDataModificationCase,
+        isModification,
+        getSegmentLimits,
+        snackError,
+        updateTotals,
+        keepMostConstrainingLimits,
+        setValue,
+    ]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {

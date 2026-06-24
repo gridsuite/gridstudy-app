@@ -158,18 +158,30 @@ const LineCreationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics, lineSegments: LineSegmentsFormData) => {
-        setValue(`${FieldConstants.CHARACTERISTICS}.${FieldConstants.R}` as any, data[FieldConstants.TOTAL_RESISTANCE], {
-            shouldDirty: true,
-        });
+        setValue(
+            `${FieldConstants.CHARACTERISTICS}.${FieldConstants.R}` as any,
+            data[FieldConstants.TOTAL_RESISTANCE],
+            {
+                shouldDirty: true,
+            }
+        );
         setValue(`${FieldConstants.CHARACTERISTICS}.${FieldConstants.X}` as any, data[FieldConstants.TOTAL_REACTANCE], {
             shouldDirty: true,
         });
-        setValue(`${FieldConstants.CHARACTERISTICS}.${FieldConstants.B1}` as any, data[FieldConstants.TOTAL_SUSCEPTANCE] / 2, {
-            shouldDirty: true,
-        });
-        setValue(`${FieldConstants.CHARACTERISTICS}.${FieldConstants.B2}` as any, data[FieldConstants.TOTAL_SUSCEPTANCE] / 2, {
-            shouldDirty: true,
-        });
+        setValue(
+            `${FieldConstants.CHARACTERISTICS}.${FieldConstants.B1}` as any,
+            data[FieldConstants.TOTAL_SUSCEPTANCE] / 2,
+            {
+                shouldDirty: true,
+            }
+        );
+        setValue(
+            `${FieldConstants.CHARACTERISTICS}.${FieldConstants.B2}` as any,
+            data[FieldConstants.TOTAL_SUSCEPTANCE] / 2,
+            {
+                shouldDirty: true,
+            }
+        );
         setValue(
             `${FieldConstants.LIMITS}.${FieldConstants.OPERATIONAL_LIMITS_GROUPS}` as any,
             convertLimitsToOperationalLimitsGroupFormSchema(data[FieldConstants.FINAL_CURRENT_LIMITS])
@@ -252,8 +264,8 @@ const LineCreationDialog = ({
                 <LineTypeSegmentDialog
                     open={isOpenLineTypesCatalogDialog}
                     onClose={handleCloseLineTypesCatalogDialog}
-                    onSave={handleLineSegmentsBuildSubmit}
-                    editData={watchSegments}
+                    onSaveCreationCase={handleLineSegmentsBuildSubmit}
+                    editDataCreationCase={watchSegments}
                 />
             </ModificationDialog>
         </CustomFormProvider>
