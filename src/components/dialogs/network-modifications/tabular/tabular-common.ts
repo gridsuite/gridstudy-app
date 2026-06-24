@@ -252,6 +252,24 @@ export const isFieldTypeOk = (value: any, fieldDefinition: { type?: string; opti
     return true;
 };
 
+/**
+ * Sanitize a CSV cell value before injecting it into the table:
+ * - a mandatory boolean (checkbox) cell with no/invalid value defaults to `false`
+ *   (an empty checkbox cannot be distinguished from `false`),
+ * - any other value with a wrong format is dropped (replaced by `null`) so invalid data
+ *   is never injected,
+ * - otherwise the value is kept as-is (including non-typed `property_*` columns).
+ */
+export const sanitizeRowValue = (value: any, fieldDefinition: TabularField | undefined): any => {
+    if (fieldDefinition?.type === BOOLEAN && fieldDefinition.required && typeof value !== 'boolean') {
+        return false;
+    }
+    if (!isFieldTypeOk(value, fieldDefinition)) {
+        return null;
+    }
+    return value;
+};
+
 export const transformIfFrenchNumber = (value: string, language: string): string => {
     value = value.trim();
     // Only transform if we're in French mode and the value is a number that has a comma
