@@ -13,13 +13,10 @@ import { getOptionLabel } from './global-filter-utils';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { FilterType } from '../utils';
+import { useGlobalFilterContext } from './global-filter-context';
 
-export type SelectedGlobalFiltersProps = {
-    selectedGlobalFilters: GlobalFilter[];
-    unselectGlobalFilters: (ids: string[]) => void;
-};
-
-function SelectedGlobalFilters({ selectedGlobalFilters, unselectGlobalFilters }: Readonly<SelectedGlobalFiltersProps>) {
+function SelectedGlobalFilters() {
+    const { selectedGlobalFilters, unselectGlobalFilters } = useGlobalFilterContext();
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
 

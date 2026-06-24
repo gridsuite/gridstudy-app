@@ -10,6 +10,7 @@ import { FilterType } from '../utils';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
+import GlobalFilterAutocomplete from './global-filter-autocomplete';
 
 export type GlobalFilterSelectorProps = {
     filterCategories?: FilterType[];
@@ -33,6 +34,8 @@ export default function GlobalFilterSelector({
             filterableEquipmentTypes={filterableEquipmentTypes}
             tableType={tableType}
             tableUuid={tableUuid ?? tableType}
-        />
+        >
+            <GlobalFilterAutocomplete />
+        </GlobalFilterProvider>
     );
 }

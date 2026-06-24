@@ -27,6 +27,8 @@ import {
 } from '@gridsuite/commons-ui';
 import SelectedGlobalFilters from './selected-global-filters';
 import { TextWithInfoIcon } from './text-with-info-icon';
+import { useGlobalFilterAutocompleteInternalContext } from './global-filter-autocomplete-internal-context';
+import { useGlobalFilterContext } from './global-filter-context';
 
 const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;
@@ -34,40 +36,27 @@ const XS_COLUMN3: number = 5;
 
 type GlobalFilterPaperProps = PropsWithChildren<{
     autocompleteRef?: RefObject<HTMLElement | null>;
-    setOpenedDropdown: (open: boolean) => void;
-    directoryItemSelectorOpen: boolean;
-    setDirectoryItemSelectorOpen: (open: boolean) => void;
-    filterGroupSelected: string;
-    setFilterGroupSelected: (selectedFilterGroup: string) => void;
-    selectedGlobalFilters: GlobalFilter[];
-    filterCategories: string[];
-    genericFiltersStrictMode: boolean;
-    filterableEquipmentTypes: string[];
-    selectGlobalFilter: (id: string) => void;
-    unselectGlobalFilters: (ids: string[]) => void;
-    clearSelectedGlobalFilters: () => void;
-    addGlobalFilterOptions: (newFilters: GlobalFilter[]) => void;
 }>;
 
-function GlobalFilterPaper({
-    children,
-    autocompleteRef,
-    setOpenedDropdown,
-    directoryItemSelectorOpen,
-    setDirectoryItemSelectorOpen,
-    filterGroupSelected,
-    setFilterGroupSelected,
-    selectedGlobalFilters,
-    filterCategories,
-    genericFiltersStrictMode,
-    filterableEquipmentTypes,
-    selectGlobalFilter,
-    unselectGlobalFilters,
-    clearSelectedGlobalFilters,
-    addGlobalFilterOptions,
-}: Readonly<GlobalFilterPaperProps>) {
+function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterPaperProps>) {
     const intl = useIntl();
     const [substationPropertiesFilters, setSubstationPropertiesFilters] = useState<Map<string, string[]>>();
+    const {
+        selectedGlobalFilters,
+        filterCategories,
+        genericFiltersStrictMode,
+        filterableEquipmentTypes,
+        selectGlobalFilter,
+        clearSelectedGlobalFilters,
+        addGlobalFilterOptions,
+    } = useGlobalFilterContext();
+    const {
+        setOpenedDropdown,
+        directoryItemSelectorOpen,
+        setDirectoryItemSelectorOpen,
+        filterGroupSelected,
+        setFilterGroupSelected,
+    } = useGlobalFilterAutocompleteInternalContext();
 
     // fetches substation properties global filters from local config
     useEffect(() => {
@@ -292,10 +281,7 @@ function GlobalFilterPaper({
                             )}
                         </Grid>
                         <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
-                            <SelectedGlobalFilters
-                                selectedGlobalFilters={selectedGlobalFilters}
-                                unselectGlobalFilters={unselectGlobalFilters}
-                            />
+                            <SelectedGlobalFilters />
                         </Grid>
                     </Grid>
                 </Paper>

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
 import { FilterType, isCriteriaFilter } from '../utils';
 import {
@@ -29,23 +29,24 @@ import { AppDispatch } from '../../../../redux/store';
 import { HttpStatusCode } from '../../../../utils/http-status-code';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../redux/reducer.type';
-import GlobalFilterAutocomplete from './global-filter-autocomplete';
+import { GlobalFilterContext, GlobalFilterContextType } from './global-filter-context';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];
 type FilterUpdateResult = { kind: 'updated' | 'notFound'; filter: GlobalFilter } | { kind: 'unchanged' };
 export default function GlobalFilterProvider({
+    children,
     filterCategories,
     genericFiltersStrictMode = false,
     filterableEquipmentTypes = [],
     tableType,
     tableUuid,
-}: {
+}: PropsWithChildren<{
     filterCategories: FilterType[];
     genericFiltersStrictMode: boolean;
     filterableEquipmentTypes: string[];
     tableType: TableType;
     tableUuid: string;
-}) {
+}>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
@@ -152,19 +153,34 @@ export default function GlobalFilterProvider({
         [dispatch]
     );
 
-    return (
-        <GlobalFilterAutocomplete
-            globalFilterOptions={globalFilterOptions}
-            selectedGlobalFilters={selectedGlobalFilters}
-            recentGlobalFilters={recentGlobalFilters}
-            filterCategories={filterCategories}
-            genericFiltersStrictMode={genericFiltersStrictMode}
-            filterableEquipmentTypes={filterableEquipmentTypes}
-            selectGlobalFilter={selectGlobalFilter}
-            unselectGlobalFilters={unselectGlobalFilters}
-            clearSelectedGlobalFilters={clearSelectedGlobalFilters}
-            addGlobalFilterOptions={addGlobalFilterOptions}
-            removeGlobalFilterOption={removeGlobalFilterOption}
-        />
+    const value = useMemo<GlobalFilterContextType>(
+        () => ({
+            globalFilterOptions,
+            selectedGlobalFilters,
+            recentGlobalFilters,
+            filterCategories,
+            genericFiltersStrictMode,
+            filterableEquipmentTypes,
+            selectGlobalFilter,
+            unselectGlobalFilters,
+            clearSelectedGlobalFilters,
+            addGlobalFilterOptions,
+            removeGlobalFilterOption,
+        }),
+        [
+            globalFilterOptions,
+            selectedGlobalFilters,
+            recentGlobalFilters,
+            filterCategories,
+            genericFiltersStrictMode,
+            filterableEquipmentTypes,
+            selectGlobalFilter,
+            unselectGlobalFilters,
+            clearSelectedGlobalFilters,
+            addGlobalFilterOptions,
+            removeGlobalFilterOption,
+        ]
     );
+
+    return <GlobalFilterContext.Provider value={value}>{children}</GlobalFilterContext.Provider>;
 }
