@@ -231,8 +231,6 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        console.log('test1', editData);
-        console.log('test2', editData?.[LINE_SEGMENTS]);
         if (!editData?.[LINE_SEGMENTS]?.length) {
             return;
         }
