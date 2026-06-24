@@ -14,12 +14,12 @@ import {
     HVDC_LINE_TAB,
 } from '../../../../../utils/field-constants';
 import { LccDialogTab, LccFormInfos } from '../common/lcc-type';
-import { Box, Grid, TextField } from '@mui/material';
+import { Box, Grid2 as Grid, TextField } from '@mui/material';
 import LccHvdcLine from '../common/lcc-hvdc-line';
 import LccConverterStation from '../common/lcc-converter-station';
 import LccTabs from '../common/lcc-tabs';
 import { filledTextField, TextInput } from '@gridsuite/commons-ui';
-import GridItem from '../../../../commons/grid-item';
+import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
 
 interface LccModificationFormProps {
     tabIndex: number;
@@ -59,7 +59,7 @@ function LccModificationDialogHeader({ lccToModify }: Readonly<LccModificationHe
         />
     );
     return (
-        <Grid container item spacing={2}>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
             <GridItem size={4}>{LccIdField}</GridItem>
             <GridItem size={4}>{LccNameField}</GridItem>
         </Grid>
