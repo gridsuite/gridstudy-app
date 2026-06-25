@@ -14,7 +14,7 @@ import { RowClassParams } from 'ag-grid-community';
 import { ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 
-import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
+import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
@@ -24,6 +24,7 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';
 import { TableType } from 'types/custom-aggrid-types';
+import { getRows } from './state-estimation-result-utils';
 
 export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({
     result,
