@@ -16,7 +16,7 @@ import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from '../utils/dialogs';
 import { DialogContentText } from '@mui/material';
 
-const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
+const RunButton = ({ runnables, activeRunnables, getStatus, disabled }) => {
     const intl = useIntl();
     const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
     const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
@@ -29,6 +29,16 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
         [intl, runnables, activeRunnables]
     );
     const [selectedRunnable, setSelectedRunnable] = useState(activeRunnables[0]);
+
+    const runningRunnable = useMemo(
+        () => activeRunnables.find((r) => getStatus(r) === RunningStatus.RUNNING) ?? null,
+        [activeRunnables, getStatus]
+    );
+
+    const isLoaded = useMemo(
+        () => activeRunnables.every((r) => getStatus(r) !== RunningStatus.UNKNOWN),
+        [activeRunnables, getStatus]
+    );
 
     function getOptions() {
         switch (getRunningStatus()) {
@@ -44,11 +54,13 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     }
 
     useEffect(() => {
-        if (!activeRunnables.includes(selectedRunnable)) {
+        if (runningRunnable !== null) {
+            setSelectedRunnable(runningRunnable);
+        } else if (!activeRunnables.includes(selectedRunnable)) {
             // a computation may become unavailable when developer mode is disabled, then switch on first one
             setSelectedRunnable(activeRunnables[0]);
         }
-    }, [activeRunnables, selectedRunnable, setSelectedRunnable]);
+    }, [runningRunnable, activeRunnables, selectedRunnable]);
 
     const getRunningStatus = useCallback(() => {
         return getStatus(selectedRunnable);
@@ -122,11 +134,10 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                 onSelectionChange={(index) => setSelectedRunnable(activeRunnables[index])}
                 onClick={attemptStartComputation}
                 runningStatus={getRunningStatus()}
-                buttonDisabled={disabled || isButtonDisable()}
+                buttonDisabled={!isLoaded || disabled || isButtonDisable()}
                 selectionDisabled={disabled}
-                text={runnablesText[selectedRunnable] || ''}
+                text={isLoaded ? runnablesText[selectedRunnable] || '' : ''}
                 actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
-                computationStopped={computationStopped}
             />
             <SelectOptionsDialog
                 title={''}
@@ -154,7 +165,6 @@ RunButton.propTypes = {
     ).isRequired,
     activeRunnables: PropTypes.arrayOf(PropTypes.string).isRequired,
     getStatus: PropTypes.func.isRequired,
-    computationStopped: PropTypes.bool.isRequired,
     disabled: PropTypes.bool,
 };
 

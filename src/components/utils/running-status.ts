@@ -11,6 +11,7 @@ export enum RunningStatus {
     FAILED = 'FAILED',
     IDLE = 'IDLE',
     RUNNING = 'RUNNING',
+    UNKNOWN = 'UNKNOWN',
 }
 
 export default RunningStatus;

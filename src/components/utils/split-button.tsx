@@ -134,7 +134,6 @@ interface SplitButtonProps {
     runningStatus: RunningStatus;
     buttonDisabled?: boolean;
     selectionDisabled?: boolean;
-    computationStopped: boolean;
     text: string;
     options: string[];
     selectedIndex: number;
@@ -147,7 +146,6 @@ const SplitButton = ({
     runningStatus,
     buttonDisabled = false,
     selectionDisabled = false,
-    computationStopped,
     text,
     options,
     selectedIndex,
@@ -219,10 +217,6 @@ const SplitButton = ({
         return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
     };
 
-    const disabledOption =
-        computationStarting || // disable if fetch starting a computation is pending
-        (runningStatus === RunningStatus.RUNNING && computationStopped); // disable if already stopped once
-
     return (
         <>
             <ButtonGroup sx={getStyle(runningStatus)} ref={anchorRef}>
@@ -260,7 +254,7 @@ const SplitButton = ({
                                 <MenuList id="split-button-menu">
                                     {options.map((option, index) => (
                                         <MenuItem
-                                            disabled={disabledOption}
+                                            disabled={computationStarting}
                                             key={option}
                                             selected={index === selectedIndex}
                                             onClick={(event) => handleMenuItemClick(event, index)}
