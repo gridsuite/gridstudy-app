@@ -18,6 +18,7 @@ import { NadAssociatedPanelsContainer } from './nad-associated-panels-container'
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
 import { useNadVoltageLevelFilter } from '../../../diagrams/nad/use-nad-voltage-level-filter';
+import { useNadInfoFilter } from '../../../diagrams/nad/use-nad-info-filter';
 
 interface NadPanelContentProps {
     panelId: UUID;
@@ -47,6 +48,9 @@ export const NadPanelContent = memo(function NadPanelContent({
     // Voltage-level band filtering using CSS classes
     const { presentNominalVoltages, selectedNominalVoltages, setSelectedNominalVoltages, unselectedVlNames } =
         useNadVoltageLevelFilter(diagram.svg?.metadata as DiagramMetadata | null | undefined);
+
+    // Information-layer filtering (P/Q values, % IST, arrows, labels) using CSS classes
+    const { selectedInfos, toggleSelectedInfo, hiddenInfoSelectors } = useNadInfoFilter();
 
     // Handle voltage level click in NAD: add to history + open/associate SLD
     const handleVoltageLevelClick = useCallback(
@@ -98,6 +102,7 @@ export const NadPanelContent = memo(function NadPanelContent({
                         additionalMetadata={diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined}
                         svgVoltageLevels={diagram.voltageLevelIds}
                         hiddenVoltageBands={unselectedVlNames}
+                        hiddenInfoSelectors={hiddenInfoSelectors}
                         loadingState={loading}
                         isNadCreationFromFilter={!!diagram.filterUuid}
                         visible
@@ -119,6 +124,8 @@ export const NadPanelContent = memo(function NadPanelContent({
                     allVoltages={presentNominalVoltages}
                     selectedVoltages={selectedNominalVoltages}
                     onVoltagesChange={setSelectedNominalVoltages}
+                    selectedInfos={selectedInfos}
+                    onSelectedInfoToggle={toggleSelectedInfo}
                 />
             )}
         </Box>

@@ -1477,6 +1477,13 @@
     "reset": "Reset",
     "history": "History",
     "nadVoltageFilter": "Voltage",
+    "nadInfoFilter": "Information",
+    "nadInfoActivePowerValue": "P values",
+    "nadInfoReactivePowerValue": "Q values",
+    "nadInfoPermanentLimitPercentage": "% IST",
+    "nadInfoActivePowerArrow": "P arrows",
+    "nadInfoReactivePowerArrow": "Q arrows",
+    "nadInfoVoltageLevelName": "Voltage level names",
 
     "gridExplore": "GridExplore",
     "myComputer": "My computer",
