@@ -13,7 +13,7 @@ const container = document.getElementById('root');
 const root = createRoot(container!);
 
 async function renderApp() {
-    if (window.location.pathname.endsWith(SILENT_RENEW_CALLBACK_PATH)) {
+    if (globalThis.location.pathname.endsWith(SILENT_RENEW_CALLBACK_PATH)) {
         root.render(<SilentRenew />);
         return;
     }
