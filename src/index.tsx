@@ -12,19 +12,17 @@ import { SILENT_RENEW_CALLBACK_PATH } from './services/utils';
 const container = document.getElementById('root');
 const root = createRoot(container!);
 
-(async () => {
-    if (globalThis.location.pathname.endsWith(SILENT_RENEW_CALLBACK_PATH)) {
-        root.render(<SilentRenew />);
-        return;
-    }
-    const appWrapper = import('./components/app-wrapper');
-    await Promise.all([
+if (globalThis.location.pathname.endsWith(SILENT_RENEW_CALLBACK_PATH)) {
+    root.render(<SilentRenew />);
+} else {
+    Promise.all([
+        import('core-js/es/array/flat-map'),
         import('typeface-roboto'),
         import('@xyflow/react/dist/base.css'),
         import('./index.css'),
         import('./configure-yup-init'),
-        appWrapper,
-    ]);
-    const { default: AppWrapper } = await appWrapper;
-    root.render(<AppWrapper />);
-})();
+        import('./components/app-wrapper'),
+    ]).then(([, , , , , { default: AppWrapper }]) => {
+        root.render(<AppWrapper />);
+    });
+}
