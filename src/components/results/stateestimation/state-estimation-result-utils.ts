@@ -8,6 +8,7 @@
 import { IntlShape } from 'react-intl';
 import { ColDef } from 'ag-grid-community';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
+import RunningStatus from '../../utils/running-status';
 
 export const stateEstimationQualityCriterionColumnsDefinition = (intl: IntlShape): ColDef[] => {
     return [
@@ -64,3 +65,7 @@ export const stateEstimationQualityPerRegionColumnsDefinition = (intl: IntlShape
         }),
     ];
 };
+
+export function getRows(rows: any[] | undefined, status: string): any[] {
+    return (status === RunningStatus.SUCCEED || status === RunningStatus.FAILED) && rows ? rows : [];
+}
