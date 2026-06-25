@@ -535,7 +535,7 @@ const ParametersTabs: FunctionComponent = () => {
                       {
                           value: TAB_VALUES.stateEstimationTabValue,
                           labelId: 'StateEstimation',
-                          disabled: stateEstimationAvailability !== OptionalServicesStatus.Up,
+                          disabled: stateEstimationAvailability === OptionalServicesStatus.Up,
                       },
                   ]
                 : []),

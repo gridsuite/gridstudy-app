@@ -5,18 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+
 import {
     CustomFormProvider,
     PopupConfirmationDialog,
     snackWithFallback,
-    TabPanel,
     useSnackMessage,
     ParameterLayout,
     ParameterActions,
 } from '@gridsuite/commons-ui';
-import { Grid, Tab, Tabs } from '@mui/material';
-import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
-import { FormattedMessage } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
@@ -24,17 +21,13 @@ import { AppState } from '../../../../redux/reducer.type';
 import {
     fromStateEstimationParametersFormToParamValues,
     fromStateEstimationParametersParamToFormValues,
-    StateEstimationParametersForm,
+    StateEstimationParametersForm as StateEstimationFormType,
     stateEstimationParametersFormSchema,
     TabValue,
 } from './state-estimation-parameters-utils';
-import { StateEstimationGeneralParameters } from './state-estimation-general-parameters';
-import { StateEstimationWeightsParameters } from './state-estimation-weights-parameters';
-import { StateEstimationQualityParameters } from './state-estimation-quality-parameters';
-import { StateEstimationLoadboundsParameters } from './state-estimation-loadbounds-parameters';
+import { StateEstimationParametersForm } from './state-estimation-parameters-form';
 import { updateStateEstimationParameters } from '../../../../services/study/state-estimation';
 import { UseGetStateEstimationParametersProps } from './use-get-state-estimation-parameters';
-import { parametersStyles } from '../util/styles';
 
 export const StateEstimationParameters = ({
     useStateEstimationParameters,
@@ -55,7 +48,7 @@ export const StateEstimationParameters = ({
         [stateEstimationParams]
     );
 
-    const formMethods = useForm<StateEstimationParametersForm>({
+    const formMethods = useForm<StateEstimationFormType>({
         defaultValues: initialFormValues,
         resolver: yupResolver(stateEstimationParametersFormSchema),
     });
@@ -110,7 +103,7 @@ export const StateEstimationParameters = ({
     }, []);
 
     const onSubmit = useCallback(
-        (newParams: StateEstimationParametersForm) => {
+        (newParams: StateEstimationFormType) => {
             updateStateEstimationParameters(studyUuid, fromStateEstimationParametersFormToParamValues(newParams))
                 .then(() => {
                     setStateEstimationParams(fromStateEstimationParametersFormToParamValues(newParams));
@@ -133,78 +126,29 @@ export const StateEstimationParameters = ({
         setHaveDirtyFields(formState.isDirty);
     }, [formState, setHaveDirtyFields]);
 
-    const header = (
-        <Tabs
-            value={tabValue}
-            variant="scrollable"
-            onChange={handleTabChange}
-            TabIndicatorProps={{
-                sx: getTabIndicatorStyle(tabIndexesWithError, tabValue),
-            }}
-            sx={{ borderBottom: 1, borderColor: 'divider' }}
-        >
-            <Tab
-                label={<FormattedMessage id="StateEstimationParametersGeneralTabLabel" />}
-                value={TabValue.GENERAL}
-                sx={getTabStyle(tabIndexesWithError, TabValue.GENERAL)}
-            />
-            <Tab
-                label={<FormattedMessage id="StateEstimationParametersWeightsTabLabel" />}
-                value={TabValue.WEIGHTS}
-                sx={getTabStyle(tabIndexesWithError, TabValue.WEIGHTS)}
-            />
-            <Tab
-                label={<FormattedMessage id="StateEstimationParametersQualityTabLabel" />}
-                value={TabValue.QUALITY}
-                sx={getTabStyle(tabIndexesWithError, TabValue.QUALITY)}
-            />
-            <Tab
-                label={<FormattedMessage id="StateEstimationParametersLoadboundsTabLabel" />}
-                value={TabValue.LOADBOUNDS}
-                sx={getTabStyle(tabIndexesWithError, TabValue.LOADBOUNDS)}
-            />
-        </Tabs>
-    );
-
     const actions: ParameterActions = {
         resetOnClick: handleResetClick,
         validateOnClick: handleSubmit(onSubmit, onValidationError),
+        extra: openResetConfirmation && (
+            <PopupConfirmationDialog
+                message="resetParamsConfirmation"
+                validateButtonLabel="validate"
+                openConfirmationPopup={openResetConfirmation}
+                setOpenConfirmationPopup={handleCancelReset}
+                handlePopupConfirmation={clear}
+            />
+        ),
     };
 
     return (
         <CustomFormProvider validationSchema={stateEstimationParametersFormSchema} {...formMethods}>
-            <ParameterLayout
-                header={header}
-                title={'StateEstimation'}
-                contentSx={parametersStyles.scrollableGrid}
-                actions={actions}
-            >
-                <Grid container>
-                    <TabPanel value={tabValue} index={TabValue.GENERAL}>
-                        <StateEstimationGeneralParameters />
-                    </TabPanel>
-                    <TabPanel value={tabValue} index={TabValue.WEIGHTS}>
-                        <StateEstimationWeightsParameters />
-                    </TabPanel>
-                    <TabPanel value={tabValue} index={TabValue.QUALITY}>
-                        <StateEstimationQualityParameters />
-                    </TabPanel>
-                    <TabPanel value={tabValue} index={TabValue.LOADBOUNDS}>
-                        <StateEstimationLoadboundsParameters />
-                    </TabPanel>
-                </Grid>
-            </ParameterLayout>
-
-            {/* Reset Confirmation Dialog */}
-            {openResetConfirmation && (
-                <PopupConfirmationDialog
-                    message="resetParamsConfirmation"
-                    validateButtonLabel="validate"
-                    openConfirmationPopup={openResetConfirmation}
-                    setOpenConfirmationPopup={handleCancelReset}
-                    handlePopupConfirmation={clear}
+            <ParameterLayout title={'StateEstimation'} actions={actions}>
+                <StateEstimationParametersForm
+                    tabValue={tabValue}
+                    handleTabChange={handleTabChange}
+                    tabIndexesWithError={tabIndexesWithError}
                 />
-            )}
+            </ParameterLayout>
         </CustomFormProvider>
     );
 };
