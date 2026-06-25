@@ -53,6 +53,7 @@ import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment
 type LineCreationDialogProps = NetworkModificationDialogProps & {
     editData?: LineCreationDto;
     onCreateLine: typeof createLine;
+    displayConnectivity?: boolean;
 };
 
 /**
@@ -62,6 +63,7 @@ type LineCreationDialogProps = NetworkModificationDialogProps & {
  * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param onCreateLine callback to customize line creation process
+ * @param displayConnectivity to display connectivity tab or not
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
@@ -72,6 +74,7 @@ const LineCreationDialog = ({
     currentNode,
     currentRootNetworkUuid,
     onCreateLine = createLine,
+    displayConnectivity = true,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -252,6 +255,7 @@ const LineCreationDialog = ({
                     voltageLevelOptions={voltageLevelOptions}
                     PositionDiagramPane={PositionDiagramPane}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
+                    withConnectivity={displayConnectivity}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

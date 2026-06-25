@@ -493,7 +493,7 @@ const LineModificationDialog = ({
                         equipmentType={EquipmentType.LINE}
                     />
                 )}
-                {selectedId != null && (
+                {selectedId != null && ( // TODO when moving to commons-ui, use generic <LineForm>
                     <>
                         <LineModificationDialogTabs
                             studyUuid={studyUuid}
