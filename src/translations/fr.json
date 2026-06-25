@@ -689,7 +689,6 @@
     "GenerationDispatchError": "Erreur lors de la création du démarrage de groupes",
     "lineAttachedToSplitLineVoltageLevel" : "Poste en piquage à passer en coupure",
 
-    "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
     "permanentCurrentLimitMandatory": "Un IST doit être fourni si le jeu de limites contient des limites d'intensité temporaires",
 
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",

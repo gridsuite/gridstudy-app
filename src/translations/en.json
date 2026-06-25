@@ -696,7 +696,6 @@
     "GenerationDispatchError": "Error while creating a generation dispatch",
     "lineAttachedToSplitLineVoltageLevel": "Voltage level with attached line to place as splitter",
 
-    "permanentCurrentLimitMustBeGreaterThanZero": "The permanent current limit value must be greater than 0",
     "permanentCurrentLimitMandatory": "A permanent limit has to be set if the limit set contains temporary current limits",
     "qMaxAtNominalVMustBeGreaterThanZero": "The Qmax available at nominal voltage value must be greater than 0",
     "powerFactorMaxValueError": "The power factor value must be less than 1",
