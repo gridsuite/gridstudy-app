@@ -8,7 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ErrorMessageDescriptor, extractErrorMessageDescriptor } from '@gridsuite/commons-ui';
+import { ErrorMessageDescriptor, extractErrorMessageDescriptor, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { DiagramType, NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../../../services/study';
@@ -66,6 +66,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const workspaceId = useSelector((state: RootState) => selectActiveWorkspaceId(state));
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const [diagram, setDiagram] = useState<NetworkAreaDiagram>(() => ({
         type: DiagramType.NETWORK_AREA_DIAGRAM,
@@ -157,6 +158,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
                 nadConfigUuid: currentDiagram.currentNadConfigUuid || currentDiagram.nadConfigUuid,
                 filterUuid: currentDiagram.currentFilterUuid || currentDiagram.filterUuid,
+                language,
             };
 
             const url = getNetworkAreaDiagramUrl(studyUuid, currentNodeId, currentRootNetworkUuid);
@@ -173,6 +175,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         });
     }, [
         currentNode,
+        language,
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
@@ -191,6 +194,26 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         },
         [setDiagramAndSync, fetchDiagram]
     );
+
+    // Update position in local state only - no Redux dispatch, no fetch
+    const moveNode = useCallback((voltageLevelId: string, x: number, y: number) => {
+        setDiagram((prev) => ({
+            ...prev,
+            positions: prev.positions.map((p) =>
+                p.voltageLevelId === voltageLevelId ? { ...p, xPosition: x, yPosition: y } : p
+            ),
+        }));
+    }, []);
+
+    // Update position in local state only - no Redux dispatch, no fetch
+    const moveTextNode = useCallback((voltageLevelId: string, shiftX: number, shiftY: number) => {
+        setDiagram((prev) => ({
+            ...prev,
+            positions: prev.positions.map((p) =>
+                p.voltageLevelId === voltageLevelId ? { ...p, xLabelPosition: shiftX, yLabelPosition: shiftY } : p
+            ),
+        }));
+    }, []);
 
     const handleSaveNad = useCallback(async () => {
         if (diagram.voltageLevelIds.length === 0 || !workspaceId) {
@@ -324,5 +347,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         updateDiagram,
         handleSaveNad,
         replaceNadConfig,
+        moveNode,
+        moveTextNode,
     };
 };

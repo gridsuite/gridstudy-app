@@ -17,11 +17,18 @@ import {
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType, EquipmentType, GsLangUser, type MuiStyles, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentType,
+    GsLangUser,
+    MuiStyles,
+    NmkType,
+    PARAM_DEVELOPER_MODE,
+    SecurityAnalysisResultNmk,
+} from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
-import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { NMK_TYPE, RESULT_TYPE, SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
+import { RESULT_TYPE, SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
 import {
     convertFilterValues,
     getStoreFields,
@@ -45,6 +52,8 @@ import { buildValidGlobalFilters } from '../common/global-filter/build-valid-glo
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import { FilterType, isCriteriaFilterType } from '../common/utils';
 import { setTableSort } from '../../../redux/actions';
+import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handler';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 const styles = {
     toolbarRow: {
@@ -72,11 +81,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     currentRootNetworkUuid,
 }) => {
     const intl = useIntl();
+    const resultStatusMessages = useIntlResultStatusMessages(intl);
+
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [tabIndex, setTabIndex] = useState(isDeveloperMode ? N_RESULTS_TAB_INDEX : NMK_RESULTS_TAB_INDEX);
     const tabIndexRef = useRef<number>(null);
     tabIndexRef.current = tabIndex;
-    const [nmkType, setNmkType] = useState(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
+    const [nmkType, setNmkType] = useState(NmkType.CONSTRAINTS_FROM_CONTINGENCIES);
     const [count, setCount] = useState<number>(0);
     const isNmkTab = tabIndex === NMK_RESULTS_TAB_INDEX;
     const isNTabDev = tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode;
@@ -97,11 +108,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
             return RESULT_TYPE.N;
         }
         switch (nmkType) {
-            case NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES:
+            case NmkType.CONSTRAINTS_FROM_CONTINGENCIES:
                 return RESULT_TYPE.NMK_CONTINGENCIES;
-            case NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS:
+            case NmkType.CONTINGENCIES_FROM_CONSTRAINTS:
                 return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
-            case NMK_TYPE.CUT_OFF_POWER_FROM_CONSTRAINTS:
+            case NmkType.CUT_OFF_POWER_FROM_CONSTRAINTS:
                 return RESULT_TYPE.NMK_CUT_OFF_POWER;
         }
     }, [tabIndex, nmkType, isDeveloperMode]);
@@ -185,7 +196,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         setCount(0);
     }, [setResult]);
 
-    const handleChangeNmkType = (_event: SyntheticEvent, newValue: NMK_TYPE) => {
+    const handleChangeNmkType = (_event: SyntheticEvent, newValue: NmkType) => {
         dispatchPagination({ page: 0, rowsPerPage });
         resetResultStates();
         dispatch(
@@ -276,8 +287,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 EquipmentType.SHUNT_COMPENSATOR,
                 EquipmentType.STATIC_VAR_COMPENSATOR,
                 EquipmentType.BOUNDARY_LINE,
-                // TODO : temporary removed, waiting for a fix in filter library on nominal voltage filtering for hvdc line
-                //EquipmentType.HVDC_LINE,
+                EquipmentType.HVDC_LINE,
                 EquipmentType.VSC_CONVERTER_STATION,
             ];
         }
@@ -292,6 +302,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         }
         return allFilterTypes;
     }, [tabIndex]);
+
+    const computationSubType = getStoreFields(tabIndex);
+    const onGridReady = useAgGridInitialColumnFilters(TableType.SecurityAnalysis, computationSubType);
 
     return (
         <>
@@ -347,15 +360,20 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
+                        onGridReady={onGridReady}
                         columnDefs={columnDefs}
-                        computationSubType={getStoreFields(tabIndex)}
+                        resultStatusMessages={resultStatusMessages}
+                        securityAnalysisStatus={securityAnalysisStatus}
                     />
                 )}
                 {isNmkTab && (
                     <SecurityAnalysisResultNmk
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
+                        onGridReady={onGridReady}
                         nmkType={nmkType}
+                        resultStatusMessages={resultStatusMessages}
+                        securityAnalysisStatus={securityAnalysisStatus}
                         paginationProps={{
                             count,
                             rowsPerPage: rowsPerPage as number,
@@ -364,7 +382,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             onRowsPerPageChange: handleChangeRowsPerPage,
                         }}
                         columnDefs={columnDefs}
-                        computationSubType={getStoreFields(tabIndex)}
                     />
                 )}
                 {tabIndex === LOGS_TAB_INDEX &&
