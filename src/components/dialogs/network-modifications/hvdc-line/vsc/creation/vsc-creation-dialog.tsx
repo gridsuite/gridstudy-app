@@ -41,7 +41,7 @@ import {
     P0,
     R,
 } from '../../../../../utils/field-constants';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import VscTabs from '../vsc-tabs';
 import * as yup from 'yup';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
@@ -52,8 +52,8 @@ import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../../services/study/network-modifications';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
-import GridItem from '../../../../commons/grid-item';
-import { VSC_CREATION_TABS } from '../vsc-utils';
+import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
+import { VSC_TABS } from '../vsc-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { VscCreationInfos } from '../../../../../../services/network-modification-types';
@@ -107,7 +107,7 @@ export default function VscCreationDialog({
 }: Readonly<VscCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const [tabIndex, setTabIndex] = useState(VSC_CREATION_TABS.HVDC_LINE_TAB);
+    const [tabIndex, setTabIndex] = useState(VSC_TABS.HVDC_LINE_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
 
     const formMethods = useForm<DeepNullable<VscCreationDialogSchemaForm>>({
@@ -151,11 +151,16 @@ export default function VscCreationDialog({
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{generatorIdField}</GridItem>
                 <GridItem size={4}>{generatorNameField}</GridItem>
             </Grid>
-            <VscTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
+            <VscTabs
+                tabIndex={tabIndex}
+                tabIndexesWithError={tabIndexesWithError}
+                setTabIndex={setTabIndex}
+                isModification={false}
+            />
         </Box>
     );
 
@@ -181,14 +186,14 @@ export default function VscCreationDialog({
     const onValidationError = (errors: FieldErrors) => {
         let tabsInError = [];
         if (errors?.[HVDC_LINE_TAB] !== undefined) {
-            tabsInError.push(VSC_CREATION_TABS.HVDC_LINE_TAB);
+            tabsInError.push(VSC_TABS.HVDC_LINE_TAB);
         }
         if (errors?.[CONVERTER_STATION_1] !== undefined) {
-            tabsInError.push(VSC_CREATION_TABS.CONVERTER_STATION_1);
+            tabsInError.push(VSC_TABS.CONVERTER_STATION_1);
         }
 
         if (errors?.[CONVERTER_STATION_2] !== undefined) {
-            tabsInError.push(VSC_CREATION_TABS.CONVERTER_STATION_2);
+            tabsInError.push(VSC_TABS.CONVERTER_STATION_2);
         }
 
         if (tabsInError.length > 0) {
