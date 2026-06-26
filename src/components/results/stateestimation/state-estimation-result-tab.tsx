@@ -82,7 +82,10 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     };
 
     const result = useMemo(() => {
-        if (stateEstimationStatus !== RunningStatus.SUCCEED || !stateEstimationResult) {
+        if (
+            !(stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED) ||
+            !stateEstimationResult
+        ) {
             return {};
         }
         return {
