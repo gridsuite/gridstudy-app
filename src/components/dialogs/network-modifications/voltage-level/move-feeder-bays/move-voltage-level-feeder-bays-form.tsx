@@ -339,7 +339,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     </GridItem>
                 )}
             </Grid>
-            <Grid spacing={2} paddingTop={2}>
+            <Grid paddingTop={2}>
                 <FormattedMessage id={'moveFeederBaysSections'} />
             </Grid>
             <Grid size="grow" paddingTop={1}>
