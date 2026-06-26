@@ -37,7 +37,7 @@ export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterPara
         const newValue = event.target.value;
         handleChangeFilterValue({
             value: newValue,
-            type: FILTER_TEXT_COMPARATORS.EQUALS,
+            type: 'booleanMatches',
             dataType: FILTER_DATA_TYPES.BOOLEAN,
         });
     };
