@@ -116,9 +116,9 @@ export const NadPanelContent = memo(function NadPanelContent({
             {!globalError && (
                 <NadNavigationSidebar
                     nadPanelId={panelId}
-                    allVoltages={presentNominalVoltages}
-                    selectedVoltages={selectedNominalVoltages}
-                    onVoltagesChange={setSelectedNominalVoltages}
+                    allNominalVoltages={presentNominalVoltages}
+                    selectedNominalVoltages={selectedNominalVoltages}
+                    onNominalVoltagesChange={setSelectedNominalVoltages}
                 />
             )}
         </Box>
