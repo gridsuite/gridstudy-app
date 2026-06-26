@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
 import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 
@@ -51,17 +51,29 @@ export function useNadVoltageLevelFilter(
     // The voltages displayed to the user on the filtering tab
     const presentNominalVoltages = useMemo(() => presentBaseVoltages.map((bv) => bv.minValue), [presentBaseVoltages]);
 
-    // Representative voltages currently shown (checked). Initialized once to "all shown".
+    // Representative voltages currently shown (checked). `undefined` means "not initialized yet":
+    // until the effect below runs, nothing is hidden (see unselectedVlNames), which avoids a flash
+    // where every band would be hidden before the selection is populated.
     const [selectedNominalVoltages, setSelectedNominalVoltages] = useState<number[]>();
+
+    // Nominal voltages present on the previous render, to detect newly-appeared ones.
+    const previousPresentRef = useRef<number[]>([]);
     useEffect(() => {
-        if (presentNominalVoltages.length > 0) {
-            // only on initialization, need computed nominalVoltages, so can't do it at useState creation
-            setSelectedNominalVoltages((prev) => prev ?? presentNominalVoltages);
+        // Voltages that just appeared in the diagram (e.g. after expanding/adding a voltage level).
+        const newlyPresent = presentNominalVoltages.filter((v) => !previousPresentRef.current.includes(v));
+        if (newlyPresent.length === 0) {
+            return;
         }
+        setSelectedNominalVoltages((prev) => {
+            const current = prev ?? [];
+            return [...current, ...newlyPresent.filter((v) => !current.includes(v))];
+        });
+        previousPresentRef.current = presentNominalVoltages;
     }, [presentNominalVoltages]);
 
     // Bands whose representative is unchecked → hidden in the diagram.
     const unselectedVlNames = useMemo(() => {
+        // Not initialized yet: hide nothing (the diagram shows fully until the selection is set).
         if (selectedNominalVoltages === undefined) {
             return [];
         }
