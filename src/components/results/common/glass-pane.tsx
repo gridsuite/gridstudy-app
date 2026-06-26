@@ -31,11 +31,12 @@ interface GlassPaneProps {
     active: boolean;
     children: ReactNode;
     loadingMessageText?: string;
+    sx?: any;
 }
 
-const GlassPane: FunctionComponent<GlassPaneProps> = ({ active, children, loadingMessageText }) => {
+const GlassPane: FunctionComponent<GlassPaneProps> = ({ active, children, loadingMessageText, sx }) => {
     return (
-        <>
+        <Box sx={sx}>
             {active && (
                 <Box sx={styles.glassPane}>
                     <CircularProgress size={64} />
@@ -43,7 +44,7 @@ const GlassPane: FunctionComponent<GlassPaneProps> = ({ active, children, loadin
                 </Box>
             )}
             {children}
-        </>
+        </Box>
     );
 };
 
