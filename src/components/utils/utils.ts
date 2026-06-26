@@ -7,24 +7,15 @@
 
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
-import { TemporaryLimit } from 'services/network-modification-types';
-import { AttributeModification, Identifiable, OperationType, VoltageLevelOption } from '@gridsuite/commons-ui';
 import {
-    APPLICABILITY_FIELD,
-    CURRENT_LIMITS,
-    ID,
-    LIMITS_PROPERTIES,
-    NAME,
-    SELECTED,
-    TEMPORARY_LIMIT_DURATION,
-    TEMPORARY_LIMIT_NAME,
-    TEMPORARY_LIMIT_VALUE,
-} from './field-constants';
-import {
+    AttributeModification,
+    CurrentLimitsData,
+    Identifiable,
     OperationalLimitsGroupFormSchema,
-    TemporaryLimitFormSchema,
-} from '../dialogs/limits/operational-limits-groups-types';
-import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
+    OperationType,
+    VoltageLevelOption,
+} from '@gridsuite/commons-ui';
+import { APPLICABILITY_FIELD, CURRENT_LIMITS, ID, LIMITS_PROPERTIES, NAME, SELECTED } from './field-constants';
 import {
     TapChangerStep,
     TapChangerStepMapInfos,
@@ -97,28 +88,6 @@ export function toModificationUnsetOperation<T>(
         : { op: OperationType.UNSET };
 }
 
-export const formatTemporaryLimitsModificationToFormSchema = (
-    temporaryLimits: TemporaryLimit[]
-): TemporaryLimitFormSchema[] =>
-    temporaryLimits?.map((limit: TemporaryLimit) => {
-        return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME]?.value ?? '',
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE]?.value ?? null,
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION]?.value ?? null,
-        };
-    });
-
-export const formatMapInfosToTemporaryLimitsFormSchema = (
-    temporaryLimits: TemporaryLimitsData[]
-): TemporaryLimitFormSchema[] =>
-    temporaryLimits?.map((limit: TemporaryLimitsData) => {
-        return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-        };
-    });
-
 export const formatCompleteCurrentLimit = (
     completeLimitsGroups: CurrentLimitsData[]
 ): OperationalLimitsGroupFormSchema[] => {
@@ -129,10 +98,10 @@ export const formatCompleteCurrentLimit = (
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id + elt.applicability,
                     [NAME]: elt.id,
-                    [APPLICABILITY_FIELD]: elt.applicability,
+                    [APPLICABILITY_FIELD]: elt.applicability ?? '',
                     [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
-                        permanentLimit: elt.permanentLimit,
+                        permanentLimit: elt.permanentLimit ?? 0,
                         temporaryLimits: addSelectedFieldToRows(elt.temporaryLimits),
                     },
                 });
