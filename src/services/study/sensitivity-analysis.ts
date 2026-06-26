@@ -6,16 +6,18 @@
  */
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson, backendFetchText, fetchElementNames } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import {
     CsvConfig,
     SelectorFilterOptions,
+    Sensitivity,
     SensitivityResult,
     SensitivityResultFilterOptions,
 } from './sensitivity-analysis.type';
 import { FilterConfig } from '../../types/custom-aggrid-types';
 import { GlobalFilters } from 'components/results/common/global-filter/global-filter-types';
+import { extractUuidsFromVariationId, resolveForVariationId } from './sensitivity-analysis-utils';
 
 export function startSensitivityAnalysis(
     studyUuid: UUID,
@@ -58,7 +60,7 @@ export function fetchSensitivityAnalysisStatus(studyUuid: UUID, currentNodeUuid:
     return backendFetchText(url);
 }
 
-export function fetchSensitivityAnalysisResult(
+export async function fetchSensitivityAnalysisResult(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
@@ -87,7 +89,32 @@ export function fetchSensitivityAnalysisResult(
         currentRootNetworkUuid
     )}/sensitivity-analysis/result?${urlSearchParams}`;
     console.debug(url);
-    return backendFetchJson(url);
+    const fetchedDto: SensitivityResult | null = await backendFetchJson(url);
+
+    if (!fetchedDto) {
+        return null;
+    }
+
+    // Collect all unique UUIDs across all sensitivities
+    const allUuids = new Set(
+        fetchedDto.sensitivities.flatMap((sensitivity: Sensitivity) => extractUuidsFromVariationId(sensitivity.varId))
+    );
+
+    if (allUuids.size === 0) {
+        return fetchedDto;
+    }
+
+    // Fetch names for all UUIDs in a single fetch
+    const nameByUuid = await fetchElementNames(allUuids);
+
+    // Replace UUIDs with names in each sensitivity
+    return {
+        ...fetchedDto,
+        sensitivities: fetchedDto.sensitivities.map((sensitivity) => ({
+            ...sensitivity,
+            varId: resolveForVariationId(sensitivity.varId, nameByUuid),
+        })),
+    };
 }
 
 export function fetchSensitivityAnalysisFilterOptions(
