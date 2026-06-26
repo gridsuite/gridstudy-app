@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback, useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import RunningStatus from 'components/utils/running-status';
 import {
@@ -70,6 +70,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svgMetadata?: DiagramMetadata;
     readonly additionalMetadata?: DiagramAdditionalMetadata;
     readonly svgVoltageLevels?: string[];
+    readonly hiddenVoltageBands?: string[];
     readonly loadingState: boolean;
     readonly isNadCreationFromFilter: boolean;
     readonly visible: boolean;
@@ -103,6 +104,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         svgMetadata,
         additionalMetadata,
         svgVoltageLevels,
+        hiddenVoltageBands,
         loadingState,
         isNadCreationFromFilter,
         showInSpreadsheet,
@@ -510,6 +512,16 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         setShouldDisplayMenu(false);
     };
 
+    // Visually hide the voltage-level bands unchecked in the filter
+    const hiddenVoltagesSx = useMemo(
+        () =>
+            (hiddenVoltageBands ?? []).reduce<Record<string, { display: 'none' }>>((acc, band) => {
+                acc[`& .nad-${band}`] = { display: 'none' };
+                return acc;
+            }, {}),
+        [hiddenVoltageBands]
+    );
+
     /**
      * RENDER
      */
@@ -555,7 +567,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     styles.divNetworkAreaDiagram,
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramLoadflowInvalid : undefined,
                     isEditNadMode && !showLabels ? styles.hideLabels : undefined,
-                    isEditNadMode ? styles.nadEditModeCursors : undefined
+                    isEditNadMode ? styles.nadEditModeCursors : undefined,
+                    hiddenVoltagesSx
                 )}
             />
             <DiagramControls
