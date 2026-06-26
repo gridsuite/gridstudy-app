@@ -23,7 +23,10 @@ interface UseNadVoltageLevelFilterReturn {
  * Voltage-level band filtering logic for NAD.
  */
 export function useNadVoltageLevelFilter(
-    svgMetadata: DiagramMetadata | null | undefined
+    svgMetadata: DiagramMetadata | null | undefined,
+    // Identity of the loaded NAD (its config), NOT the filter, node or root network. It changes only
+    // when a different NAD is loaded, which resets the selection to "all shown".
+    contextKey: string
 ): UseNadVoltageLevelFilterReturn {
     const { baseVoltages } = useBaseVoltages();
 
@@ -56,20 +59,22 @@ export function useNadVoltageLevelFilter(
     // where every band would be hidden before the selection is populated.
     const [selectedNominalVoltages, setSelectedNominalVoltages] = useState<number[]>();
 
-    // Nominal voltages present on the previous render, to detect newly-appeared ones.
-    const previousPresentRef = useRef<number[]>([]);
+    // NAD context on the previous render, to detect when a different NAD is loaded (Load button).
+    const previousContextKeyRef = useRef(contextKey);
     useEffect(() => {
-        // Voltages that just appeared in the diagram (e.g. after expanding/adding a voltage level).
-        const newlyPresent = presentNominalVoltages.filter((v) => !previousPresentRef.current.includes(v));
-        if (newlyPresent.length === 0) {
-            return;
-        }
+        const contextChanged = previousContextKeyRef.current !== contextKey;
+        previousContextKeyRef.current = contextKey;
         setSelectedNominalVoltages((prev) => {
-            const current = prev ?? [];
-            return [...current, ...newlyPresent.filter((v) => !current.includes(v))];
+            // Initialize on first load, and reset to "all shown" only when a different NAD is loaded via
+            // the Load button (contextKey change). Otherwise keep the current selection untouched: newly
+            // present voltages (expand / add from a filter) are never auto-checked, and changing the
+            // node or root network keeps the same selection.
+            if (contextChanged || prev === undefined) {
+                return presentNominalVoltages.length > 0 ? presentNominalVoltages : undefined;
+            }
+            return prev;
         });
-        previousPresentRef.current = presentNominalVoltages;
-    }, [presentNominalVoltages]);
+    }, [contextKey, presentNominalVoltages]);
 
     // Bands whose representative is unchecked → hidden in the diagram.
     const unselectedVlNames = useMemo(() => {
