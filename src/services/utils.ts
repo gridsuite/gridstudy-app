@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { catchErrorHandler, fetchStudyMetadata, StudyMetadata } from '@gridsuite/commons-ui';
+import { catchErrorHandler, fetchStudyMetadata, IdpSettings, StudyMetadata } from '@gridsuite/commons-ui';
 export const FetchStatus = {
     SUCCEED: 'SUCCEED',
     FAILED: 'FAILED',
@@ -13,7 +13,8 @@ export const FetchStatus = {
 };
 
 export const MAX_INT32: number = 2147483647;
-
+const IDP_SETTINGS_CACHE_KEY = 'gridsuite-idp-settings';
+export const SILENT_RENEW_CALLBACK_PATH = '/silent-renew-callback';
 type DefaultParameters = StudyMetadata['defaultParametersValues'];
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 
@@ -49,8 +50,34 @@ function fetchEnv() {
     return fetch('env.json').then((res) => res.json());
 }
 
-export function fetchIdpSettings() {
-    return fetch('idpSettings.json').then((res) => res.json());
+// Always hits the network: picks up config changes on each full app load
+// AND refreshes the cache read by the silent-renew iframe.
+export function fetchIdpSettings(): Promise<IdpSettings> {
+    return fetch('idpSettings.json')
+        .then((res) => res.json())
+        .then((settings: IdpSettings) => {
+            try {
+                localStorage.setItem(IDP_SETTINGS_CACHE_KEY, JSON.stringify(settings));
+            } catch (e) {
+                console.warn('Failed to cache IdP settings:', e);
+            }
+            return settings;
+        });
+}
+
+// Used only on the silent-renew path: reads the cache (no network),
+// falls back to a real fetch if the cache is missing/corrupted.
+export function getCachedIdpSettings(): Promise<IdpSettings> {
+    try {
+        const cached = localStorage.getItem(IDP_SETTINGS_CACHE_KEY);
+        if (cached) {
+            return Promise.resolve(JSON.parse(cached) as IdpSettings);
+        }
+    } catch (e) {
+        // localStorage unavailable, or cache corrupted -> fall back to fresh fetch
+        console.warn('Failed to read cached IdP settings:', e);
+    }
+    return fetchIdpSettings();
 }
 
 export function fetchVersion() {
