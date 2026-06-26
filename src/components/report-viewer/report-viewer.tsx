@@ -18,7 +18,7 @@ import {
     SelectedReportLog,
     SeverityLevel,
 } from 'utils/report/report.type';
-import { GLOBAL_REPORT_NODE_LABEL } from '../../utils/report/report.constant';
+import { GLOBAL_REPORT_NODE_LABEL, makeNodeKey } from '../../utils/report/report.constant';
 import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Box } from '@mui/material';
@@ -48,9 +48,13 @@ export default function ReportViewer({
     const [expandedTreeReports, setExpandedTreeReports] = useState<string[]>([]);
     const [highlightedReportId, setHighlightedReportId] = useState<string>();
 
+    const isGlobal = report.message === GLOBAL_REPORT_NODE_LABEL;
+    const initialNodeKey = isGlobal ? GLOBAL_REPORT_NODE_LABEL : makeNodeKey(report.id, report.order);
+
     const [selectedReport, setSelectedReport] = useState<SelectedReportLog>({
-        id: report.id,
-        type: report.message === GLOBAL_REPORT_NODE_LABEL ? ReportType.GLOBAL : ReportType.NODE,
+        id: initialNodeKey,
+        reportId: report.id,
+        type: isGlobal ? ReportType.GLOBAL : ReportType.NODE,
     });
 
     const reportTree = useMemo(() => mapReportsTree(report), [report]);
@@ -70,7 +74,7 @@ export default function ReportViewer({
         setSelectedReport((currentSelected) => {
             if (currentSelected.id !== reportTree.id || currentSelected.type !== newType) {
                 setExpandedTreeReports([reportTree.id]);
-                return { id: reportTree.id, type: newType };
+                return { id: reportTree.id, reportId: reportTreeMap[reportTree.id]?.reportId ?? reportTree.id, type: newType };
             }
             return currentSelected;
         });
@@ -89,7 +93,7 @@ export default function ReportViewer({
                 }
                 return Array.from(treeReportsToExpand);
             });
-            setHighlightedReportId(data?.parentId);
+            setHighlightedReportId(data?.parentId ?? undefined);
         },
         [reportTreeMap]
     );
@@ -102,7 +106,8 @@ export default function ReportViewer({
         (report: ReportItem) => {
             setSelectedReport((prevSelectedReport) => {
                 if (prevSelectedReport.id !== report.id) {
-                    return { id: report.id, type: reportTreeMap[report.id].type };
+                    const treeNode = reportTreeMap[report.id];
+                    return { id: report.id, reportId: treeNode?.reportId ?? report.id, type: treeNode?.type ?? ReportType.NODE };
                 }
                 return prevSelectedReport;
             });
