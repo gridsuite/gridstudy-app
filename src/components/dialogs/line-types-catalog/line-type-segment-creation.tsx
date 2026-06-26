@@ -17,7 +17,7 @@ import {
     SEGMENT_SUSCEPTANCE,
     SEGMENT_TYPE_VALUE,
 } from '../../utils/field-constants';
-import GridItem from '../commons/grid-item';
+import { Grid2Item as GridItem } from '../commons/grid2-item';
 
 export interface LineTypeSegmentCreationProps {
     name: string;

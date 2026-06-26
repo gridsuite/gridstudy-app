@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { SelectInput, TextInput, Nullable } from '@gridsuite/commons-ui';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { NAME, SELECTION_TYPE } from 'components/utils/field-constants';
 
 import { FC } from 'react';
@@ -13,7 +13,7 @@ import { useWatch } from 'react-hook-form';
 import { ContingencyFilterCreationFields } from './contingency-filter-creation/contingency-filter-creation-fields';
 import { SELECTION_TYPES, selectionTypeToLabel } from './selection-types';
 import { SelectionCreationPaneFields } from './selection-creation-schema';
-import GridSection from '../../dialogs/commons/grid-section';
+import { Grid2Section as GridSection } from '../../dialogs/commons/grid2-section';
 
 interface SelectionCreationPanelFormProps {
     pendingState: boolean;

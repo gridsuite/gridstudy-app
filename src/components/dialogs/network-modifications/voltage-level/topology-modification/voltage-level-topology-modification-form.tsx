@@ -7,7 +7,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { Button, Grid, TextField } from '@mui/material';
+import { Button, Grid2 as Grid, TextField } from '@mui/material';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
@@ -142,8 +142,8 @@ export function VoltageLevelTopologyModificationForm({
 
     return (
         <Grid container sx={{ height: '100%' }} direction="column">
-            <Grid container item spacing={2}>
-                <Grid item xs={4}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
+                <Grid size={4}>
                     <TextField
                         fullWidth
                         label="ID"
@@ -154,7 +154,7 @@ export function VoltageLevelTopologyModificationForm({
                         {...filledTextField}
                     />
                 </Grid>
-                <Grid item xs={8} container justifyContent="flex-end">
+                <Grid size={8} container justifyContent="flex-end">
                     <Button
                         variant="outlined"
                         color="primary"
@@ -173,7 +173,7 @@ export function VoltageLevelTopologyModificationForm({
                     </Button>
                 </Grid>
             </Grid>
-            <Grid item xs paddingTop={2}>
+            <Grid size="grow" paddingTop={2}>
                 <CustomAGGrid
                     rowData={mergedRowData}
                     defaultColDef={defaultColDef}

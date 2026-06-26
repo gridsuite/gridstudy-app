@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Table, TableContainer, TableRow } from '@mui/material';
+import { Grid2 as Grid, Table, TableContainer, TableRow } from '@mui/material';
 import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
 import { CellRender } from '../cell-render';
 import { GeneratorEquipmentInfos } from '../equipment-popover-type';
@@ -20,7 +20,7 @@ interface GeneratorPopoverContentProps {
 export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = ({ equipmentInfos, loadFlowStatus }) => {
     return (
         <Grid container direction="column" rowSpacing={2} alignItems="center">
-            <Grid item sx={styles.grid}>
+            <Grid sx={styles.grid}>
                 <TableContainer sx={styles.table}>
                     <Table size="small" sx={styles.layout}>
                         <TableRow>
@@ -48,7 +48,7 @@ export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = (
 
             <GeneratorActivePowerTable equipmentInfos={equipmentInfos} />
 
-            <Grid item sx={styles.grid}>
+            <Grid sx={styles.grid}>
                 <TableContainer sx={styles.table}>
                     <Table size="small" sx={styles.layout}>
                         <TableRow>
