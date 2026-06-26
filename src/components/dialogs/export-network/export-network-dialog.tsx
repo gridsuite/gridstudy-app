@@ -10,6 +10,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CustomMuiDialog,
     DescriptionField,
+    DIRECTORY_ITEM,
+    DIRECTORY_ITEM_ID,
+    DirectoryItemInput,
+    DirectoryItemSchema,
     ElementType,
     fetchDirectoryElementPath,
     PARAM_DEVELOPER_MODE,
@@ -27,8 +31,6 @@ import { AppState } from '../../../redux/reducer.type';
 
 import {
     DESCRIPTION,
-    DIRECTORY_ITEM,
-    DIRECTORY_ITEM_ID,
     EXPORT_DESTINATION,
     EXPORT_FORMAT,
     EXPORT_PARAMETERS,
@@ -46,9 +48,7 @@ import {
     schema,
 } from './export-network-utils';
 import { useIntl } from 'react-intl';
-import { DirectoryItemInput } from '../../utils/rhf-inputs/directory-item-input/directory-item-input';
 import { NetworkExportInfos } from '../../../services/study-types';
-import { DirectoryItemSchema } from '../../utils/rhf-inputs/directory-item-input/directory-item-utils';
 
 /**
  * Dialog to export the network case
