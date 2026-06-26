@@ -7,7 +7,7 @@
 
 import React, { ComponentType, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Grid, Tooltip } from '@mui/material';
+import { Grid2 as Grid, Tooltip } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort';
@@ -89,9 +89,9 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
                         onClick={handleClickHeader}
                     >
                         <Grid container sx={styles.displayName} alignItems={'center'} wrap="nowrap">
-                            <Grid item>{displayName}</Grid>
+                            <Grid>{displayName}</Grid>
                             {isInvalid && (
-                                <Grid item sx={styles.invalidIcon}>
+                                <Grid sx={styles.invalidIcon}>
                                     <Tooltip
                                         title={<FormattedMessage id="spreadsheet/column/invalid-without-loadflow" />}
                                     >
@@ -100,7 +100,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
                                 </Grid>
                             )}
                             {sortParams && (
-                                <Grid item>
+                                <Grid>
                                     <CustomAggridSort colId={column.getId()} sortParams={sortParams} />
                                 </Grid>
                             )}

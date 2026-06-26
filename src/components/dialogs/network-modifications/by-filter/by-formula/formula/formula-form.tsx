@@ -26,8 +26,8 @@ import { EQUIPMENTS_FIELDS, EquipmentTypeOptionType } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
-import { Grid } from '@mui/material';
-import GridItem from '../../../../commons/grid-item';
+import { Grid2 as Grid } from '@mui/material';
+import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
 
 interface FormulaProps {
     name: string;
@@ -109,7 +109,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         <>
             <GridItem size={2.25}>{filtersField}</GridItem>
             <GridItem size={2.25}>{editedField}</GridItem>
-            <Grid item xs={0.25} sx={{ marginTop: 0.75 }}>
+            <Grid size={0.25} sx={{ marginTop: 0.75 }}>
                 <DragHandleIcon />
             </Grid>
             <GridItem size={2.5}>{referenceField1}</GridItem>

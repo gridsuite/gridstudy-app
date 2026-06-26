@@ -6,7 +6,7 @@
  */
 import { useCallback, useEffect } from 'react';
 import { Box, Button } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import { Grid2 as Grid } from '@mui/material';
 import {
     CustomFormProvider,
     Equipment,

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import { Grid2 as Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
 import { type MuiStyles } from '@gridsuite/commons-ui';
@@ -141,8 +141,8 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                 onChange={handleFilterComparatorChange}
                 options={comparators}
             />
-            <Grid item container columns={12} sx={styles.containerStyle}>
-                <Grid item flex={1}>
+            <Grid container columns={12} sx={styles.containerStyle}>
+                <Grid flex={1}>
                     <TextField
                         fullWidth
                         size="small"
@@ -157,10 +157,10 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                         sx={styles.noArrows}
                     />
                 </Grid>
-                <Grid item xs={1} sx={styles.flexCenter}>
+                <Grid size={1} sx={styles.flexCenter}>
                     <Typography variant="body1">:</Typography>
                 </Grid>
-                <Grid item flex={1}>
+                <Grid flex={1}>
                     <TextField
                         fullWidth
                         size="small"
@@ -176,7 +176,7 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                     />
                 </Grid>
                 {selectedFilterData !== undefined && selectedFilterData !== '' && (
-                    <Grid item xs={1} sx={styles.flexCenter} ml={0.5}>
+                    <Grid size={1} sx={styles.flexCenter} ml={0.5}>
                         <IconButton
                             onClick={clearValue}
                             sx={styles.iconStyle}

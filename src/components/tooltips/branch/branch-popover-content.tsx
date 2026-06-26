@@ -6,7 +6,7 @@
  */
 
 import { EquipmentType } from '@gridsuite/commons-ui';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { RunningStatus } from '../../utils/running-status';
 import { BranchCharacteristicsTable } from './branch-characteristics-table';
 import { TwtTapChangerCharacteristics } from './twt-tap-changer-characteristics';

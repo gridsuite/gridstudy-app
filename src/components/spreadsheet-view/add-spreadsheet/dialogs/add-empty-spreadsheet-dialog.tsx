@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useMemo } from 'react';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { CustomFormProvider, SelectInput, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -100,14 +100,14 @@ export default function AddEmptySpreadsheetDialog({ open }: Readonly<AddEmptySpr
                 PaperProps={{ sx: dialogStyles.dialogContent }}
             >
                 <Grid container spacing={2} direction="column" marginTop="auto">
-                    <Grid item xs>
+                    <Grid size="grow">
                         <TextInput
                             name={SPREADSHEET_NAME}
                             label="spreadsheet/create_new_spreadsheet/spreadsheet_name"
                             formProps={{ autoFocus: true }}
                         />
                     </Grid>
-                    <Grid item xs>
+                    <Grid size="grow">
                         <SelectInput
                             options={TABLES_OPTIONS}
                             name={EQUIPMENT_TYPE_FIELD}

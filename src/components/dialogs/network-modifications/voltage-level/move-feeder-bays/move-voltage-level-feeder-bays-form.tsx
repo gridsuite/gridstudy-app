@@ -7,7 +7,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { Box, Grid, TextField, Tooltip } from '@mui/material';
+import { Box, Grid2 as Grid, TextField, Tooltip } from '@mui/material';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import HeaderWithTooltip from '../topology-modification/header-with-tooltip';
@@ -23,7 +23,7 @@ import {
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
 } from '../../../../utils/field-constants';
 import FeederBayDirectionCellRenderer from './feeder-bay-direction-cell-render';
-import GridItem from '../../../commons/grid-item';
+import { Grid2Item as GridItem } from '../../../commons/grid2-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
 import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
@@ -328,10 +328,8 @@ export function MoveVoltageLevelFeederBaysForm({
 
     return (
         <Grid container sx={{ height: '100%', width: 'auto' }} direction="column">
-            <Grid container item spacing={2}>
-                <Grid item xs={4}>
-                    {voltageLevelIdField}
-                </Grid>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
+                <Grid size={4}>{voltageLevelIdField}</Grid>
                 {isNodeBuiltValue && (
                     <GridItem size={3}>
                         <Button onClick={handleClickOpenDiagramPane} variant="outlined">
@@ -341,10 +339,10 @@ export function MoveVoltageLevelFeederBaysForm({
                     </GridItem>
                 )}
             </Grid>
-            <Grid item spacing={2} paddingTop={2}>
+            <Grid spacing={2} paddingTop={2}>
                 <FormattedMessage id={'moveFeederBaysSections'} />
             </Grid>
-            <Grid item xs paddingTop={1}>
+            <Grid size="grow" paddingTop={1}>
                 <CustomAGGrid
                     rowData={groupedRowData}
                     defaultColDef={defaultColDef}

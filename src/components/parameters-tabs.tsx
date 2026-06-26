@@ -8,7 +8,7 @@
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
+import { Box, DialogContentText, Divider, Grid2 as Grid, Tab, Tabs, Typography } from '@mui/material';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from 'redux/reducer.type';
@@ -483,13 +483,13 @@ const ParametersTabs: FunctionComponent = () => {
     return (
         <>
             <Grid container spacing={0} sx={stylesLayout.rootContainer}>
-                <Grid container item xs={2} direction="column" sx={stylesLayout.columnContainer}>
-                    <Grid item>
+                <Grid container size={2} direction="column" sx={stylesLayout.columnContainer}>
+                    <Grid>
                         <Typography variant="subtitle1" sx={tabStyles.listTitleDisplay}>
                             <FormattedMessage id="parameters" />
                         </Typography>
                     </Grid>
-                    <Grid item xs sx={stylesLayout.listDisplayContainer}>
+                    <Grid size="grow" sx={stylesLayout.listDisplayContainer}>
                         <Tabs
                             value={tabValue}
                             variant="scrollable"
@@ -568,7 +568,7 @@ const ParametersTabs: FunctionComponent = () => {
                         </Tabs>
                     </Grid>
                 </Grid>
-                <Grid item xs={10} sx={tabStyles.parametersBox}>
+                <Grid size={10} sx={tabStyles.parametersBox}>
                     <GlassPane active={shouldDisplayGlassPane} loadingMessageText="computationInProgress">
                         <Box sx={tabStyles.contentBox}>{displayTab()}</Box>
                     </GlassPane>
