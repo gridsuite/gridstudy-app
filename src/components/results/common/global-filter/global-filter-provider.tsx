@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
 import { FilterType, isCriteriaFilter } from '../utils';
 import {
@@ -16,13 +16,20 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { addToGlobalFilterOptions, markNotFoundGlobalFiltersAsDeleted } from '../../../../redux/actions';
+import {
+    addToGlobalFilterOptions,
+    addToSelectedGlobalFilters,
+    clearSelectedGlobalFilters as clearSelectedGlobalFiltersAction,
+    markNotFoundGlobalFiltersAsDeleted,
+    removeFromGlobalFilterOptions,
+    removeFromSelectedGlobalFilters,
+} from '../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
-import { GlobalFilterContext } from './global-filter-context';
 import { HttpStatusCode } from '../../../../utils/http-status-code';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../redux/reducer.type';
+import { GlobalFilterContext, GlobalFilterContextType } from './global-filter-context';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];
 type FilterUpdateResult = { kind: 'updated' | 'notFound'; filter: GlobalFilter } | { kind: 'unchanged' };
@@ -33,13 +40,13 @@ export default function GlobalFilterProvider({
     filterableEquipmentTypes = [],
     tableType,
     tableUuid,
-}: PropsWithChildren & {
+}: PropsWithChildren<{
     filterCategories: FilterType[];
     genericFiltersStrictMode: boolean;
     filterableEquipmentTypes: string[];
     tableType: TableType;
     tableUuid: string;
-}) {
+}>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
@@ -60,11 +67,6 @@ export default function GlobalFilterProvider({
                 : [],
         [selectedFilterIds, globalFilterOptions]
     );
-
-    const [openedDropdown, setOpenedDropdown] = useState(false);
-    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
-    // maybe a filter type or a recent filter or whatever category
-    const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
 
     const updateGenericFilter = useCallback(
         async (genericFilter: GlobalFilter): Promise<FilterUpdateResult> => {
@@ -119,35 +121,64 @@ export default function GlobalFilterProvider({
         checkSelectedFilters().catch((error) => console.error(error));
     }, [dispatch, selectedGlobalFilters, tableType, tableUuid, updateGenericFilter]);
 
-    const value = useMemo(
+    const selectGlobalFilter = useCallback(
+        (id: string) => {
+            dispatch(addToSelectedGlobalFilters(tableType, tableUuid, [id]));
+        },
+        [dispatch, tableType, tableUuid]
+    );
+
+    const unselectGlobalFilters = useCallback(
+        (ids: string[]) => {
+            dispatch(removeFromSelectedGlobalFilters(tableType, tableUuid, ids));
+        },
+        [dispatch, tableType, tableUuid]
+    );
+
+    const clearSelectedGlobalFilters = useCallback(() => {
+        dispatch(clearSelectedGlobalFiltersAction(tableType, tableUuid));
+    }, [dispatch, tableType, tableUuid]);
+
+    const addGlobalFilterOptions = useCallback(
+        (newFilters: GlobalFilter[]) => {
+            dispatch(addToGlobalFilterOptions(newFilters));
+        },
+        [dispatch]
+    );
+
+    const removeGlobalFilterOption = useCallback(
+        (id: string) => {
+            dispatch(removeFromGlobalFilterOptions(id));
+        },
+        [dispatch]
+    );
+
+    const value = useMemo<GlobalFilterContextType>(
         () => ({
-            openedDropdown,
-            setOpenedDropdown,
-            directoryItemSelectorOpen,
-            setDirectoryItemSelectorOpen,
-            filterGroupSelected,
-            setFilterGroupSelected,
             globalFilterOptions,
             selectedGlobalFilters,
             recentGlobalFilters,
             filterCategories,
             genericFiltersStrictMode,
             filterableEquipmentTypes,
-            tableType,
-            tableUuid,
+            selectGlobalFilter,
+            unselectGlobalFilters,
+            clearSelectedGlobalFilters,
+            addGlobalFilterOptions,
+            removeGlobalFilterOption,
         }),
         [
-            openedDropdown,
-            directoryItemSelectorOpen,
-            filterGroupSelected,
             globalFilterOptions,
             selectedGlobalFilters,
             recentGlobalFilters,
             filterCategories,
             genericFiltersStrictMode,
             filterableEquipmentTypes,
-            tableType,
-            tableUuid,
+            selectGlobalFilter,
+            unselectGlobalFilters,
+            clearSelectedGlobalFilters,
+            addGlobalFilterOptions,
+            removeGlobalFilterOption,
         ]
     );
 
