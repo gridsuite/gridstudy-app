@@ -6,7 +6,7 @@
  */
 
 import { GridApi } from 'ag-grid-community';
-import { addToleranceToFilter } from './filter-tolerance-utils';
+import { addToleranceToFilter } from '@gridsuite/commons-ui';
 import { FILTER_DATA_TYPES, FILTER_NUMBER_COMPARATORS, FilterConfig } from '../../../../types/custom-aggrid-types';
 
 export enum BooleanFilterValue {
