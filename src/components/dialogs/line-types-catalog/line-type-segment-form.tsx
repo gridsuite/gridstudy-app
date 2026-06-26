@@ -7,7 +7,7 @@
 
 import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     APPLY_SEGMENTS_LIMITS,
@@ -45,7 +45,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
-import GridItem from '../commons/grid-item';
+import { Grid2Item as GridItem } from '../commons/grid2-item';
 import {
     AreaTemperatureShapeFactorInfo,
     CurrentLimitsInfo,
@@ -54,7 +54,7 @@ import {
 } from './line-catalog.type';
 import { emptyLineSegment, SegmentFormData, SegmentsFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
-import GridSection from '../commons/grid-section';
+import { Grid2Section as GridSection } from '../commons/grid2-section';
 
 const styles = {
     h3: {

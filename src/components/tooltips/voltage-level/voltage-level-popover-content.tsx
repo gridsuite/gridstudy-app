@@ -6,7 +6,7 @@
  */
 
 import { VoltageLevelTooltipInfos } from '../equipment-popover-type';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { VoltageLevelPopoverInfos } from './voltage-level-popover-infos';
 import { VoltageLevelPopoverBusInfos } from './voltage-level-popover-bus-infos';
 

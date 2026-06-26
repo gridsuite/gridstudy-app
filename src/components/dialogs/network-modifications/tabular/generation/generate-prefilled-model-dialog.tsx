@@ -6,7 +6,7 @@
  */
 import { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Button, Checkbox, FormControlLabel, FormGroup, Grid } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, FormGroup, Grid2 as Grid } from '@mui/material';
 import {
     CustomFormProvider,
     DirectoryItemsInput,
@@ -113,7 +113,7 @@ export default function GeneratePrefilledModelDialog({
                 PaperProps={{ sx: styles.dialogContent }}
             >
                 <Grid container direction="column" spacing={2}>
-                    <Grid item>
+                    <Grid>
                         <Box sx={styles.switchRow}>
                             <SwitchInput name={RESTRICT_BY_FILTER} label="RestrictEquipmentList" />
                         </Box>
@@ -131,7 +131,7 @@ export default function GeneratePrefilledModelDialog({
                         )}
                     </Grid>
 
-                    <Grid item>
+                    <Grid>
                         <Box sx={styles.switchRow}>
                             <SwitchInput name={USE_CURRENT_GRID_STATE} label="CurrentGridState" />
                         </Box>

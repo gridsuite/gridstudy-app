@@ -13,7 +13,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
@@ -117,7 +117,7 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
                 {...dialogProps}
             >
                 <Grid container spacing={2} direction="column">
-                    <Grid item>
+                    <Grid>
                         <UniqueCheckNameInput
                             name={NAME}
                             autoFocus
@@ -129,7 +129,7 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
                             formProps={{ fullWidth: true }}
                         />
                     </Grid>
-                    <Grid item>
+                    <Grid>
                         <DescriptionField rows={6} maxCharactersNumber={MAX_CHAR_NODE_DESCRIPTION} />
                     </Grid>
                 </Grid>

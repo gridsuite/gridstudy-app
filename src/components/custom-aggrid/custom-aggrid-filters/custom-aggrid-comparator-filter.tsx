@@ -6,7 +6,7 @@
  */
 import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
-import { Grid, IconButton } from '@mui/material';
+import { Grid2 as Grid, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useCustomAggridComparatorFilter } from './hooks/use-custom-aggrid-comparator-filter';
 

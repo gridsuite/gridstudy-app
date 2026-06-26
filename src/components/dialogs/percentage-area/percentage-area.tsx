@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Typography } from '@mui/material';
+import { Grid2 as Grid, Typography } from '@mui/material';
 import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import { useFormContext } from 'react-hook-form';
 import { formatPercentageValue, isValidPercentage, sanitizePercentageValue } from './percentage-area-utils';
@@ -85,33 +85,27 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
         <SliderInput name={SLIDER_PERCENTAGE} min={0.0} max={100.0} step={0.1} onValueChanged={onSliderChange} />
     );
     return (
-        <Grid container spacing={2}>
-            <Grid container spacing={2} item>
+        <Grid container>
+            <Grid container size={12} justifyContent={'space-between'} spacing={2}>
                 {upperLeftText && (
-                    <Grid item xs={5} sx={{ align: 'start' }}>
+                    <Grid>
                         <Typography>
-                            <FormattedMessage id={upperLeftText}></FormattedMessage>
+                            <FormattedMessage id={upperLeftText} />
                         </Typography>
                     </Grid>
                 )}
-                <Grid item xs={2}></Grid>
                 {upperRightText && (
-                    <Grid item xs={5} sx={{ align: 'end' }}>
-                        <Typography sx={{ align: 'right' }}>
-                            <FormattedMessage id={upperRightText}></FormattedMessage>
+                    <Grid sx={{ ml: 'auto' }}>
+                        <Typography>
+                            <FormattedMessage id={upperRightText} />
                         </Typography>
                     </Grid>
                 )}
             </Grid>
             {slider}
-            <Grid container spacing={2} item>
-                <Grid item xs={3} sx={{ align: 'start' }}>
-                    {leftSidePercentageField}
-                </Grid>
-                <Grid item xs={6}></Grid>
-                <Grid item xs={3} sx={{ align: 'end' }}>
-                    {rightSidePercentageField}
-                </Grid>
+            <Grid container size={12} justifyContent={'space-between'} spacing={2}>
+                <Grid size={3}>{leftSidePercentageField}</Grid>
+                <Grid size={3}>{rightSidePercentageField}</Grid>
             </Grid>
         </Grid>
     );

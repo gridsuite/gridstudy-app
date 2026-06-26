@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { CustomFormProvider, TextInput } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -87,7 +87,7 @@ export default function RenameTabDialog({
                 {...dialogProps}
             >
                 <Grid container spacing={2} direction="column" marginTop="auto">
-                    <Grid item>
+                    <Grid>
                         <TextInput
                             name="name"
                             label="spreadsheet/create_new_spreadsheet/spreadsheet_name"

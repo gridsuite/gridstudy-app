@@ -14,7 +14,7 @@ import {
     TabPanel,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
+import { Button, DialogActions, Grid2 as Grid, Tab, Tabs } from '@mui/material';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import { FormattedMessage } from 'react-intl';
 import { useForm } from 'react-hook-form';
@@ -136,15 +136,14 @@ export const StateEstimationParameters = ({
     return (
         <CustomFormProvider validationSchema={stateEstimationParametersFormSchema} {...formMethods}>
             <Grid
-                xl={[TabValue.GENERAL, TabValue.LOADBOUNDS].includes(tabValue) ? 6 : 12}
+                size={{ xl: [TabValue.GENERAL, TabValue.LOADBOUNDS].includes(tabValue) ? 6 : 12 }}
                 container
                 sx={{ height: '100%' }}
                 direction="column"
                 justifyContent="space-between"
             >
                 <Grid
-                    xs
-                    item
+                    size="grow"
                     container
                     key="stateEstimationParameters"
                     sx={mergeSx(parametersStyles.scrollableGrid, {
@@ -198,7 +197,7 @@ export const StateEstimationParameters = ({
                     </Grid>
                 </Grid>
 
-                <Grid item container>
+                <Grid container>
                     <DialogActions
                         sx={mergeSx(parametersStyles.controlParametersItem, {
                             paddingTop: 4,
