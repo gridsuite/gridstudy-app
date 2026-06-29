@@ -24,7 +24,6 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';
 import { TableType } from 'types/custom-aggrid-types';
-import { getRows } from './state-estimation-result-utils';
 
 export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({
     result,
@@ -89,10 +88,10 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
             stateEstimationStatus,
             !isLoadingResult
         );
-        const rowsToShow = getRows(
-            tableName === 'qualityCriterionResults' ? result.qualityCriterionResults : result.qualityPerRegionResults,
-            stateEstimationStatus
-        );
+        const rowsToShow =
+            (tableName === 'qualityCriterionResults'
+                ? result.qualityCriterionResults
+                : result.qualityPerRegionResults) ?? [];
 
         return (
             <>
