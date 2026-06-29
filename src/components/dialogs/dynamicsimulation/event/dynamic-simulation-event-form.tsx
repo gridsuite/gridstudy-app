@@ -43,11 +43,11 @@ export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFor
 
     return (
         <Grid container rowSpacing={2} spacing={2} paddingTop={2}>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} size={12}>
                 <GridItem size={12}>{EquipmentIdField}</GridItem>
             </Grid>
             {/* event's properties defined in the eventDefinition   */}
-            <Grid container spacing={2}>
+            <Grid container spacing={2} size={12}>
                 {propertyNames.map((propertyName) => {
                     const propertyDefinition = eventDefinition ? eventDefinition[propertyName] : undefined;
 
