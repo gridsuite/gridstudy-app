@@ -8,11 +8,10 @@ import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react
 
 import {
     CustomFormProvider,
-    PopupConfirmationDialog,
     snackWithFallback,
     useSnackMessage,
     ParameterLayout,
-    ParameterActions,
+    ElementType,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -38,7 +37,6 @@ export const StateEstimationParameters = ({
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [stateEstimationParams, setStateEstimationParams] = useStateEstimationParameters;
-    const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
 
     const initialFormValues = useMemo(
         () =>
@@ -91,16 +89,7 @@ export const StateEstimationParameters = ({
     const clear = useCallback(() => {
         resetStateEstimationParameters();
         onValidationError();
-        setOpenResetConfirmation(false);
     }, [resetStateEstimationParameters, onValidationError]);
-
-    const handleResetClick = useCallback(() => {
-        setOpenResetConfirmation(true);
-    }, []);
-
-    const handleCancelReset = useCallback(() => {
-        setOpenResetConfirmation(false);
-    }, []);
 
     const onSubmit = useCallback(
         (newParams: StateEstimationFormType) => {
@@ -126,23 +115,15 @@ export const StateEstimationParameters = ({
         setHaveDirtyFields(formState.isDirty);
     }, [formState, setHaveDirtyFields]);
 
-    const actions: ParameterActions = {
-        resetOnClick: handleResetClick,
-        validateOnClick: handleSubmit(onSubmit, onValidationError),
-        extra: openResetConfirmation && (
-            <PopupConfirmationDialog
-                message="resetParamsConfirmation"
-                validateButtonLabel="validate"
-                openConfirmationPopup={openResetConfirmation}
-                setOpenConfirmationPopup={handleCancelReset}
-                handlePopupConfirmation={clear}
-            />
-        ),
-    };
-
     return (
         <CustomFormProvider validationSchema={stateEstimationParametersFormSchema} {...formMethods}>
-            <ParameterLayout title={'StateEstimation'} actions={actions}>
+            <ParameterLayout
+                title="StateEstimation"
+                parameterType={ElementType.STATE_ETIMATION_PARAMETERS}
+                isLoading={stateEstimationParams !== null}
+                resetHandler={clear}
+                validateHandler={handleSubmit(onSubmit, onValidationError)}
+            >
                 <StateEstimationParametersForm
                     tabValue={tabValue}
                     handleTabChange={handleTabChange}

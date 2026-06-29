@@ -8,12 +8,7 @@ import { SyntheticEvent } from 'react';
 import { TabPanel } from '@gridsuite/commons-ui';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { UseFormReturn } from 'react-hook-form';
-import {
-    StateEstimationParametersForm as StateEstimationFormType,
-    stateEstimationParametersFormSchema,
-    TabValue,
-} from './state-estimation-parameters-utils';
+import { TabValue } from './state-estimation-parameters-utils';
 import { StateEstimationGeneralParameters } from './state-estimation-general-parameters';
 import { StateEstimationWeightsParameters } from './state-estimation-weights-parameters';
 import { StateEstimationQualityParameters } from './state-estimation-quality-parameters';
