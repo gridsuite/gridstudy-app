@@ -60,7 +60,7 @@ export const StateEstimationQualityParameters = () => {
         <>
             <Grid container size={8}>
                 <GridSection title="StateEstimationParametersQualitySection" heading={4} />
-                <Grid container alignItems="center" spacing={2} direction={'row'}>
+                <Grid container alignItems="center" spacing={2} direction={'row'} size={12}>
                     <Grid size={10} sx={parametersStyles.parameterName}>
                         <FieldLabel label={'qualityPerRegion'} />
                     </Grid>
