@@ -185,22 +185,22 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
     );
 
     return (
-        <Grid container>
-            <GridSection title="Characteristics" />
-            <Grid container spacing={2} sx={{ width: '100%' }}>
+        <>
+            <GridSection title="Characteristics"/>
+            <Grid container spacing={2} sx={{width: '100%'}}>
                 <GridItem>{dcNominalVoltageField}</GridItem>
                 <GridItem>{dcResistanceField}</GridItem>
                 <GridItem>{maximumActivePowerField}</GridItem>
             </Grid>
 
-            <GridSection title={'Limits'} />
-            <Grid container spacing={2} sx={{ width: '100%' }}>
+            <GridSection title={'Limits'}/>
+            <Grid container spacing={2} sx={{width: '100%'}}>
                 <GridItem>{operatorActivePowerLimitSide1Field}</GridItem>
                 <GridItem>{operatorActivePowerLimitSide2Field}</GridItem>
             </Grid>
 
-            <GridSection title={'Setpoints'} />
-            <Grid container spacing={2} sx={{ width: '100%' }}>
+            <GridSection title={'Setpoints'}/>
+            <Grid container spacing={2} sx={{width: '100%'}}>
                 <GridItem>{converterModeField}</GridItem>
                 <GridItem>{activePowerField}</GridItem>
                 <GridItem size={12}>{AngleDroopActivePowerControl}</GridItem>
@@ -208,8 +208,8 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
                 <GridItem>{p0Field}</GridItem>
             </Grid>
 
-            <PropertiesForm isModification={isEquipementModification} />
-        </Grid>
+            <PropertiesForm isModification={isEquipementModification}/>
+        </>
     );
 };
 

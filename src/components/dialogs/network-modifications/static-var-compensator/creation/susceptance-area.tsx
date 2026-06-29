@@ -105,7 +105,7 @@ export const SusceptanceArea = () => {
     );
 
     return (
-        <Grid container spacing={2} padding={2}>
+        <Grid container spacing={2}>
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                 <>
                     <GridItem size={4}>{minSusceptanceField}</GridItem>
