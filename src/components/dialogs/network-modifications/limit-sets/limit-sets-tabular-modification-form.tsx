@@ -193,13 +193,16 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         return commentData;
     }, [intl, csvTranslatedColumns, language]);
 
-    const handleChangeType = useCallback(() => {
-        clearErrors(MODIFICATIONS_TABLE);
-        tableRef.current?.replace([]);
+    const resetFileStateOnTypeChange = useCallback(() => {
         setValue(CSV_FILENAME, undefined);
         setSelectedFile(undefined);
         setFileErrorMessage(undefined);
-    }, [clearErrors, setValue]);
+    }, [setValue]);
+
+    const resetFormStateOnTypeChange = useCallback(() => {
+        clearErrors(MODIFICATIONS_TABLE);
+        tableRef.current?.replace([]);
+    }, [clearErrors]);
 
     const csvFilename = getValues(CSV_FILENAME);
 
@@ -225,7 +228,8 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
             size={'small'}
             formProps={{ variant: 'outlined' }}
             shouldOpenPopup={() => hasNonEmptyRows(getValues(MODIFICATIONS_TABLE))}
-            resetOnConfirmation={handleChangeType}
+            resetOnChange={resetFileStateOnTypeChange}
+            resetOnConfirmation={resetFormStateOnTypeChange}
             message="changeTypeMessage"
             validateButtonLabel="button.changeType"
         />
@@ -294,6 +298,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                     <CsvPicker<Record<string, unknown>>
                         label="UploadCSV"
                         header={csvColumns.map((column) => column.id)}
+                        allowMissingColumns
                         disabled={!equipmentType}
                         language={language}
                         parseConfig={parseConfig}
