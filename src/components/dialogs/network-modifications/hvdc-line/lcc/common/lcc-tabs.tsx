@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Grid2 as Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { getTabStyle } from '../../../../../utils/tab-utils';
 import { LccDialogTab } from './lcc-type';
@@ -18,7 +18,7 @@ export interface LccCreationDialogTabsProps {
 
 export default function LccTabs({ tabIndex, tabIndexesWithError, setTabIndex }: Readonly<LccCreationDialogTabsProps>) {
     return (
-        <Grid container item>
+        <Grid container sx={{ width: '100%' }}>
             <Tabs value={tabIndex} onChange={(event, newValue) => setTabIndex(newValue)}>
                 <Tab
                     label={<FormattedMessage id="HVDC_LINE" />}

@@ -46,7 +46,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { createLcc } from '../../../../../../services/study/network-modifications';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import LccCreationDialogHeader from './lcc-creation-dialog-header';
 import LccTabs from '../common/lcc-tabs';
 import LccCreationForm from './lcc-creation-form';
