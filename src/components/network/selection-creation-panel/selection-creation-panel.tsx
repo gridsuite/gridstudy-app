@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback, useEffect } from 'react';
-import { Box, Button } from '@mui/material';
-import { Grid2 as Grid } from '@mui/material';
+import { Box, Button, Grid2 as Grid } from '@mui/material';
 import {
     CustomFormProvider,
     Equipment,

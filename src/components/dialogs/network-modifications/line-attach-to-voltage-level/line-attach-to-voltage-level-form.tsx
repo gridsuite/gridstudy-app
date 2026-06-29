@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid2 as Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import {
     ATTACHMENT_LINE_ID,
     ATTACHMENT_POINT_ID,
@@ -27,7 +27,6 @@ import {
     TextInput,
     VoltageLevelOption,
 } from '@gridsuite/commons-ui';
-import { Box } from '@mui/material';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
