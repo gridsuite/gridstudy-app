@@ -59,7 +59,7 @@ const LineModificationDialogHeader = ({
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container size={12} spacing={2}>
                 <GridItem size={4}>{lineIdField}</GridItem>
                 <GridItem size={4}>{lineNameField}</GridItem>
             </Grid>
