@@ -157,7 +157,7 @@ function TemporaryLimitsTable({
 
     return (
         <Grid container spacing={1}>
-            <Grid container>
+            <Grid container size={12}>
                 <TableContainer>
                     <Table stickyHeader size="small" padding="none">
                         {renderTableHead()}
