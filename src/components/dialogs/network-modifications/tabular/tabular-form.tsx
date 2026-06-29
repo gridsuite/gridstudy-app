@@ -559,6 +559,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     <CsvPicker<Record<string, unknown>>
                         label="UploadCSV"
                         header={csvColumns}
+                        allowMissingColumns
                         disabled={!equipmentType}
                         language={language}
                         parseConfig={parseConfig}

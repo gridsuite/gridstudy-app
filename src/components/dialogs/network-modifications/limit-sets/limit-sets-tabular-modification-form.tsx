@@ -294,6 +294,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                     <CsvPicker<Record<string, unknown>>
                         label="UploadCSV"
                         header={csvColumns.map((column) => column.id)}
+                        allowMissingColumns
                         disabled={!equipmentType}
                         language={language}
                         parseConfig={parseConfig}

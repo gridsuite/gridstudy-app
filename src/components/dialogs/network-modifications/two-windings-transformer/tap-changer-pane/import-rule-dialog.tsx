@@ -86,6 +86,7 @@ export const ImportRuleDialog = ({
                         <CsvPicker<Record<string, string>>
                             label={ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule'}
                             header={csvColumns}
+                            allowMissingColumns
                             maxLineNumber={MAX_ROWS_NUMBER}
                             language={language}
                             parseConfig={parseConfig}
