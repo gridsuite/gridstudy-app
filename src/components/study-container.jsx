@@ -157,8 +157,7 @@ export function StudyContainer() {
 
     const currentNodeRef = useRef();
     const currentRootNetworkUuidRef = useRef();
-
-    useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
+    useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid, currentNode?.data.globalBuildStatus);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
