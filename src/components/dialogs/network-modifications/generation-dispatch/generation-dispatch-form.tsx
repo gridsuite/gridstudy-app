@@ -82,12 +82,12 @@ const GenerationDispatchForm = ({
 
     const defaultOutageRateField = (
         <Grid container spacing={2}>
-            <Grid size={12}>
+            <Grid>
                 <Typography variant="body1" component="h4" fontWeight="fontWeightMedium">
                     <FormattedMessage id="GeneratorAvailability" />
                 </Typography>
             </Grid>
-            <Grid size={12}>
+            <Grid>
                 <FloatInput name={DEFAULT_OUTAGE_RATE} label={'DefaultOutageRate'} adornment={PercentageAdornment} />
             </Grid>
         </Grid>
