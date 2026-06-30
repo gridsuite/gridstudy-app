@@ -403,7 +403,7 @@ const LineCreationDialog = ({
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} size={12}>
                 <GridItem size={4}>{lineIdField}</GridItem>
                 <GridItem size={4}>{lineNameField}</GridItem>
             </Grid>
