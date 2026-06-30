@@ -11,6 +11,7 @@ import { type FieldValues, useFormContext, type UseFieldArrayReturn, useWatch } 
 import {
     AutocompleteInput,
     BooleanNullableCellRenderer,
+    CsvDownloadButton,
     type CsvProps,
     CsvPicker,
     CustomAgGridTable,
@@ -277,20 +278,31 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         () => ({
             fileName: 'limitset_modification_template',
             language,
-            getTemplateData,
             getTableData,
         }),
-        [language, getTemplateData, getTableData]
+        [language, getTableData]
     );
 
     return (
         <Grid container spacing={2} paddingTop={1} direction="column" wrap="nowrap" sx={[{ height: '100%' }]}>
             <Grid sx={{ width: 400, maxWidth: '100%' }}>{equipmentTypeField}</Grid>
             <Grid container justifyContent="space-between" alignItems="center">
-                <Grid>
-                    <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
+                <Grid container alignItems="center">
+                    <Grid>
+                        <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
+                    </Grid>
+                    <Grid>
+                        <CsvDownloadButton
+                            data={getTemplateData}
+                            fileName={csvProps.fileName}
+                            language={language}
+                            labelId="GenerateCSV"
+                            variant="contained"
+                            disabled={!equipmentType}
+                        />
+                    </Grid>
                 </Grid>
-                <Grid>
+                <Grid sx={{ flex: 1, minWidth: 0 }}>
                     <CsvPicker<Record<string, unknown>>
                         label="UploadCSV"
                         header={csvColumns.map((column) => column.id)}
