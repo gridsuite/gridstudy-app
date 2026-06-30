@@ -39,7 +39,7 @@ export default function GlobalFilterContextProvider({
             unselectGlobalFilters,
             clearSelectedGlobalFilters,
             removeGlobalFilterOption,
-            addSelectedDirectoryFilters: addFiltersToGlobalFiltersOptions,
+            addFiltersToGlobalFiltersOptions,
         }),
         [
             globalFilterOptions,
