@@ -55,7 +55,10 @@ test('utils.areNumbersOrdered', () => {
 });
 
 test('utils.mergeByIdKeepOrder with empty second array returns first array', () => {
-    const first = [{ id: 'a', value: 1 }, { id: 'b', value: 2 }];
+    const first = [
+        { id: 'a', value: 1 },
+        { id: 'b', value: 2 },
+    ];
     const merged = mergeByIdKeepOrder(first, []);
 
     expect(merged).toBe(first);
@@ -63,8 +66,14 @@ test('utils.mergeByIdKeepOrder with empty second array returns first array', () 
 });
 
 test('utils.mergeByIdKeepOrder with same elements returns a new array', () => {
-    const first = [{ id: 'a', value: 1 }, { id: 'b', value: 2 }];
-    const second = [{ id: 'a', value: 1 }, { id: 'b', value: 2 }];
+    const first = [
+        { id: 'a', value: 1 },
+        { id: 'b', value: 2 },
+    ];
+    const second = [
+        { id: 'a', value: 1 },
+        { id: 'b', value: 2 },
+    ];
     const merged = mergeByIdKeepOrder(first, second);
 
     expect(merged).not.toBe(first);
@@ -74,11 +83,21 @@ test('utils.mergeByIdKeepOrder with same elements returns a new array', () => {
 });
 
 test('utils.mergeByIdKeepOrder merges and preserves order when second array has updates and new ids', () => {
-    const first = [{ id: 'a', value: 1 }, { id: 'b', value: 2 }];
-    const second = [{ id: 'b', value: 20 }, { id: 'c', value: 3 }];
+    const first = [
+        { id: 'a', value: 1 },
+        { id: 'b', value: 2 },
+    ];
+    const second = [
+        { id: 'b', value: 20 },
+        { id: 'c', value: 3 },
+    ];
     const merged = mergeByIdKeepOrder(first, second);
 
     expect(merged).not.toBe(first);
     expect(merged).not.toBe(second);
-    expect(merged).toEqual([{ id: 'a', value: 1 }, { id: 'b', value: 20 }, { id: 'c', value: 3 }]);
+    expect(merged).toEqual([
+        { id: 'a', value: 1 },
+        { id: 'b', value: 20 },
+        { id: 'c', value: 3 },
+    ]);
 });
