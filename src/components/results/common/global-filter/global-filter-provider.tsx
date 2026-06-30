@@ -29,10 +29,20 @@ import { AppDispatch } from '../../../../redux/store';
 import { HttpStatusCode } from '../../../../utils/http-status-code';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../redux/reducer.type';
-import { GlobalFilterContext, GlobalFilterContextType } from './global-filter-context';
+import GlobalFilterContextProvider from './global-filter-context-provider';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];
+
 type FilterUpdateResult = { kind: 'updated' | 'notFound'; filter: GlobalFilter } | { kind: 'unchanged' };
+
+type GlobalFilterProviderProps = PropsWithChildren<{
+    filterCategories: FilterType[];
+    genericFiltersStrictMode: boolean;
+    filterableEquipmentTypes: string[];
+    tableType: TableType;
+    tableUuid: string;
+}>;
+
 export default function GlobalFilterProvider({
     children,
     filterCategories,
@@ -40,13 +50,7 @@ export default function GlobalFilterProvider({
     filterableEquipmentTypes = [],
     tableType,
     tableUuid,
-}: PropsWithChildren<{
-    filterCategories: FilterType[];
-    genericFiltersStrictMode: boolean;
-    filterableEquipmentTypes: string[];
-    tableType: TableType;
-    tableUuid: string;
-}>) {
+}: Readonly<GlobalFilterProviderProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
@@ -153,34 +157,21 @@ export default function GlobalFilterProvider({
         [dispatch]
     );
 
-    const value = useMemo<GlobalFilterContextType>(
-        () => ({
-            globalFilterOptions,
-            selectedGlobalFilters,
-            recentGlobalFilters,
-            filterCategories,
-            genericFiltersStrictMode,
-            filterableEquipmentTypes,
-            selectGlobalFilter,
-            unselectGlobalFilters,
-            clearSelectedGlobalFilters,
-            addGlobalFilterOptions,
-            removeGlobalFilterOption,
-        }),
-        [
-            globalFilterOptions,
-            selectedGlobalFilters,
-            recentGlobalFilters,
-            filterCategories,
-            genericFiltersStrictMode,
-            filterableEquipmentTypes,
-            selectGlobalFilter,
-            unselectGlobalFilters,
-            clearSelectedGlobalFilters,
-            addGlobalFilterOptions,
-            removeGlobalFilterOption,
-        ]
+    return (
+        <GlobalFilterContextProvider
+            globalFilterOptions={globalFilterOptions}
+            selectedGlobalFilters={selectedGlobalFilters}
+            recentGlobalFilters={recentGlobalFilters}
+            filterCategories={filterCategories}
+            genericFiltersStrictMode={genericFiltersStrictMode}
+            filterableEquipmentTypes={filterableEquipmentTypes}
+            selectGlobalFilter={selectGlobalFilter}
+            unselectGlobalFilters={unselectGlobalFilters}
+            clearSelectedGlobalFilters={clearSelectedGlobalFilters}
+            addGlobalFilterOptions={addGlobalFilterOptions}
+            removeGlobalFilterOption={removeGlobalFilterOption}
+        >
+            {children}
+        </GlobalFilterContextProvider>
     );
-
-    return <GlobalFilterContext.Provider value={value}>{children}</GlobalFilterContext.Provider>;
 }

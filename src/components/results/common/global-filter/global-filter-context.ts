@@ -6,23 +6,9 @@
  */
 
 import { createContext, useContext } from 'react';
-import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
+import { GlobalFilterContextValue } from './global-filter-context-types';
 
-export type GlobalFilterContextType = {
-    globalFilterOptions: GlobalFilter[];
-    selectedGlobalFilters: GlobalFilter[];
-    recentGlobalFilters: RecentGlobalFilter[];
-    filterCategories: string[];
-    genericFiltersStrictMode: boolean;
-    filterableEquipmentTypes: string[];
-    selectGlobalFilter: (id: string) => void;
-    unselectGlobalFilters: (ids: string[]) => void;
-    clearSelectedGlobalFilters: () => void;
-    addGlobalFilterOptions: (newFilters: GlobalFilter[]) => void;
-    removeGlobalFilterOption: (id: string) => void;
-};
-
-export const GlobalFilterContext = createContext<GlobalFilterContextType | null>(null);
+export const GlobalFilterContext = createContext<GlobalFilterContextValue | null>(null);
 
 export function useGlobalFilterContext() {
     const context = useContext(GlobalFilterContext);
