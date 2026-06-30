@@ -10,14 +10,12 @@ import { EquipmentType, OverflowableChip } from '@gridsuite/commons-ui';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import { Box, Divider, List, ListItem, Typography } from '@mui/material';
 import { getOptionLabel } from './global-filter-utils';
-import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { FilterType } from '../utils';
 import { useGlobalFilterContext } from './global-filter-context';
 
 function SelectedGlobalFilters() {
-    const { selectedGlobalFilters, unselectGlobalFilters } = useGlobalFilterContext();
-    const { translate } = useLocalizedCountries();
+    const { selectedGlobalFilters, translateCountryCode, unselectGlobalFilters } = useGlobalFilterContext();
     const intl = useIntl();
 
     const filtersByCategories: Map<string, GlobalFilter[]> = new Map();
@@ -70,7 +68,7 @@ function SelectedGlobalFilters() {
                         {filters.map((element: GlobalFilter) => (
                             <OverflowableChip
                                 key={element.id}
-                                label={getOptionLabel(element, translate, intl)}
+                                label={getOptionLabel(element, translateCountryCode, intl)}
                                 sx={getResultsGlobalFiltersChipStyle(element)}
                                 onDelete={() => {
                                     unselectGlobalFilters([element.id]);

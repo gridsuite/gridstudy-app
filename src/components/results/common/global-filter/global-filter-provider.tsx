@@ -5,13 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
 import { FilterType, isCriteriaFilter } from '../utils';
 import {
     ElementAttributes,
     ElementType,
+    EquipmentType,
     fetchDirectoryElementPath,
+    fetchElementsInfos,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -30,6 +32,9 @@ import { HttpStatusCode } from '../../../../utils/http-status-code';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../redux/reducer.type';
 import GlobalFilterContextProvider from './global-filter-context-provider';
+import { fetchSubstationPropertiesGlobalFilters } from './global-filter-app-data';
+import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
+import type { UUID } from 'node:crypto';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];
 
@@ -53,6 +58,8 @@ export default function GlobalFilterProvider({
 }: Readonly<GlobalFilterProviderProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
+    const { translate: translateCountryCode } = useLocalizedCountries();
+    const [substationPropertiesGlobalFilters, setSubstationPropertiesGlobalFilters] = useState<Map<string, string[]>>();
 
     const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
 
@@ -67,10 +74,16 @@ export default function GlobalFilterProvider({
             selectedFilterIds
                 ? selectedFilterIds
                       .map((id) => globalFilterOptions.find((opt) => opt.id === id))
-                      .filter((f) => f !== undefined)
+                      .filter((filter): filter is GlobalFilter => filter !== undefined)
                 : [],
         [selectedFilterIds, globalFilterOptions]
     );
+
+    useEffect(() => {
+        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
+            setSubstationPropertiesGlobalFilters(substationPropertiesGlobalFilters);
+        });
+    }, []);
 
     const updateGenericFilter = useCallback(
         async (genericFilter: GlobalFilter): Promise<FilterUpdateResult> => {
@@ -143,13 +156,6 @@ export default function GlobalFilterProvider({
         dispatch(clearSelectedGlobalFiltersAction(tableType, tableUuid));
     }, [dispatch, tableType, tableUuid]);
 
-    const addGlobalFilterOptions = useCallback(
-        (newFilters: GlobalFilter[]) => {
-            dispatch(addToGlobalFilterOptions(newFilters));
-        },
-        [dispatch]
-    );
-
     const removeGlobalFilterOption = useCallback(
         (id: string) => {
             dispatch(removeFromGlobalFilterOptions(id));
@@ -157,19 +163,51 @@ export default function GlobalFilterProvider({
         [dispatch]
     );
 
+    const addFiltersToGlobalFiltersOptions = useCallback(
+        async (elementIds: UUID[]) => {
+            const elements: ElementAttributes[] = await fetchElementsInfos(elementIds);
+            const newlySelectedFilters: GlobalFilter[] = [];
+            elements.forEach((element: ElementAttributes) => {
+                // ignore already selected filters and non-generic filters :
+                if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
+                    // add the others
+                    const substationOrVoltageLevel =
+                        element.specificMetadata?.equipmentType === EquipmentType.SUBSTATION ||
+                        element.specificMetadata?.equipmentType === EquipmentType.VOLTAGE_LEVEL;
+                    newlySelectedFilters.push({
+                        id: element.elementUuid,
+                        uuid: element.elementUuid,
+                        equipmentType: element.specificMetadata?.equipmentType,
+                        label: element.elementName,
+                        filterType: substationOrVoltageLevel ? FilterType.SUBSTATION_OR_VL : FilterType.GENERIC_FILTER,
+                        filterTypeFromMetadata: element.specificMetadata?.type,
+                    });
+                }
+            });
+
+            dispatch(addToGlobalFilterOptions(newlySelectedFilters));
+            newlySelectedFilters.forEach((filter) =>
+                dispatch(addToSelectedGlobalFilters(tableType, tableUuid, [filter.id]))
+            );
+        },
+        [dispatch, selectedGlobalFilters, tableType, tableUuid]
+    );
+
     return (
         <GlobalFilterContextProvider
             globalFilterOptions={globalFilterOptions}
             selectedGlobalFilters={selectedGlobalFilters}
             recentGlobalFilters={recentGlobalFilters}
+            substationPropertiesGlobalFilters={substationPropertiesGlobalFilters}
             filterCategories={filterCategories}
             genericFiltersStrictMode={genericFiltersStrictMode}
             filterableEquipmentTypes={filterableEquipmentTypes}
+            translateCountryCode={translateCountryCode}
             selectGlobalFilter={selectGlobalFilter}
             unselectGlobalFilters={unselectGlobalFilters}
             clearSelectedGlobalFilters={clearSelectedGlobalFilters}
-            addGlobalFilterOptions={addGlobalFilterOptions}
             removeGlobalFilterOption={removeGlobalFilterOption}
+            addFiltersToGlobalFiltersOptions={addFiltersToGlobalFiltersOptions}
         >
             {children}
         </GlobalFilterContextProvider>

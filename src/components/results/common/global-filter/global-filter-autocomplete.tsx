@@ -26,7 +26,6 @@ import {
 } from '@mui/material';
 import { Delete as DeleteIcon, FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { FilterType } from '../utils';
 import { EquipmentType, OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
 import { GlobalFilter } from './global-filter-types';
@@ -91,10 +90,9 @@ function RenderOption({
 }) {
     const { children, ...otherProps } = props;
     const intl = useIntl();
-    const { translate } = useLocalizedCountries();
-    const { removeGlobalFilterOption } = useGlobalFilterContext();
+    const { removeGlobalFilterOption, translateCountryCode } = useGlobalFilterContext();
 
-    const label = getOptionLabel(option, translate, intl) ?? '';
+    const label = getOptionLabel(option, translateCountryCode, intl) ?? '';
 
     let content: React.ReactNode;
     switch (option.filterType) {
@@ -178,9 +176,9 @@ function GlobalFilterAutocomplete() {
         selectGlobalFilter,
         unselectGlobalFilters,
         clearSelectedGlobalFilters,
+        translateCountryCode,
     } = useGlobalFilterContext();
     const intl = useIntl();
-    const { translate } = useLocalizedCountries();
     const autocompleteRef = useRef<HTMLDivElement | null>(null);
     const [openedDropdown, setOpenedDropdown] = useState(false);
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
@@ -223,7 +221,7 @@ function GlobalFilterAutocomplete() {
                 // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
                 .filter((option: GlobalFilter) => {
                     const labelToMatch: string =
-                        option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
+                        option.filterType === FilterType.COUNTRY ? translateCountryCode(option.label) : option.label;
                     return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
                 })
                 .filter((option: GlobalFilter) => {
@@ -258,7 +256,7 @@ function GlobalFilterAutocomplete() {
 
             return filteredOptions;
         },
-        [filterGroupSelected, translate, filterableEquipmentTypes, recentGlobalFilters]
+        [filterGroupSelected, translateCountryCode, filterableEquipmentTypes, recentGlobalFilters]
     );
 
     const options = useMemo(
@@ -275,18 +273,24 @@ function GlobalFilterAutocomplete() {
                 .sort((a: GlobalFilter, b: GlobalFilter) => {
                     // only the countries are sorted alphabetically
                     if (a.filterType === FilterType.COUNTRY && b.filterType === FilterType.COUNTRY) {
-                        const bt: string = translate(b.label);
-                        const at: string = translate(a.label);
+                        const bt: string = translateCountryCode(b.label);
+                        const at: string = translateCountryCode(a.label);
                         return at.localeCompare(bt);
                     }
                     return 0;
                 }),
-        [globalFilterOptions, translate, filterCategories, genericFiltersStrictMode, filterableEquipmentTypes]
+        [
+            globalFilterOptions,
+            translateCountryCode,
+            filterCategories,
+            genericFiltersStrictMode,
+            filterableEquipmentTypes,
+        ]
     );
 
     const inputFieldChip = useCallback(
         (element: GlobalFilter, index: number, getTagsProps: AutocompleteRenderGetTagProps, filtersNumber: number) => {
-            const label = getOptionLabel(element, translate, intl);
+            const label = getOptionLabel(element, translateCountryCode, intl);
             const key: string = `inputFieldChip_${element.label}`;
             if (index < TAG_LIMIT_NUMBER) {
                 return (
@@ -306,7 +310,7 @@ function GlobalFilterAutocomplete() {
 
             return undefined;
         },
-        [translate, intl]
+        [translateCountryCode, intl]
     );
 
     const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => option.id === value.id, []);

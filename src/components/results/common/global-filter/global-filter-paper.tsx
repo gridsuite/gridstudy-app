@@ -9,19 +9,16 @@ import { Box, Button, Grid, ListItemButton, Paper, Typography } from '@mui/mater
 import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { PropsWithChildren, RefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import { PropsWithChildren, RefObject, useCallback, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType, isCriteriaFilterType } from '../utils';
-import { GlobalFilter } from './global-filter-types';
-import { fetchSubstationPropertiesGlobalFilters, RECENT_FILTER } from './global-filter-utils';
+import { RECENT_FILTER } from './global-filter-utils';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {
     DirectoryItemSelector,
-    ElementAttributes,
     ElementType,
     EquipmentType,
-    fetchElementsInfos,
     mergeSx,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
@@ -49,23 +46,15 @@ function GlobalFilterPaper({
 }: Readonly<GlobalFilterPaperProps>) {
     const intl = useIntl();
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
-    const [substationPropertiesFilters, setSubstationPropertiesFilters] = useState<Map<string, string[]>>();
     const {
         selectedGlobalFilters,
+        substationPropertiesGlobalFilters,
         filterCategories,
         genericFiltersStrictMode,
         filterableEquipmentTypes,
-        selectGlobalFilter,
         clearSelectedGlobalFilters,
-        addGlobalFilterOptions,
+        addFiltersToGlobalFiltersOptions,
     } = useGlobalFilterContext();
-
-    // fetches substation properties global filters from local config
-    useEffect(() => {
-        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
-            setSubstationPropertiesFilters(substationPropertiesGlobalFilters);
-        });
-    }, []);
 
     const filteringOnlySubstations = useMemo(() => {
         return filterableEquipmentTypes?.length === 1 && filterableEquipmentTypes[0] === EquipmentType.SUBSTATION;
@@ -97,7 +86,7 @@ function GlobalFilterPaper({
     const categories = useMemo(() => {
         const sortedCategories = [
             ...standardCategories,
-            ...(substationPropertiesFilters ? Array.from(substationPropertiesFilters.keys()) : []),
+            ...(substationPropertiesGlobalFilters ? Array.from(substationPropertiesGlobalFilters.keys()) : []),
         ];
         // criteria filters are always at the end of the menu
         const substationCategory: string[] = sortedCategories.splice(
@@ -115,7 +104,7 @@ function GlobalFilterPaper({
             sortedCategories.push(genericFilterCategory[0]);
         }
         return sortedCategories;
-    }, [standardCategories, substationPropertiesFilters]);
+    }, [standardCategories, substationPropertiesGlobalFilters]);
 
     const filtersMsg: string = useMemo(
         () =>
@@ -131,45 +120,17 @@ function GlobalFilterPaper({
         [intl, selectedGlobalFilters.length]
     );
 
-    const addSelectedFilters = useCallback(
+    const addSelectedFiltersToGlobalFiltersOptions = useCallback(
         async (values: TreeViewFinderNodeProps[] | undefined) => {
             if (!values) {
                 return;
             }
 
             setOpenedDropdown(true);
-
-            const elements: ElementAttributes[] = await fetchElementsInfos(values.map((value) => value.id));
-            const newlySelectedFilters: GlobalFilter[] = [];
-            elements.forEach((element: ElementAttributes) => {
-                // ignore already selected filters and non-generic filters :
-                if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
-                    // add the others
-                    const substationOrVoltageLevel =
-                        element.specificMetadata?.equipmentType === EquipmentType.SUBSTATION ||
-                        element.specificMetadata?.equipmentType === EquipmentType.VOLTAGE_LEVEL;
-                    newlySelectedFilters.push({
-                        id: element.elementUuid,
-                        uuid: element.elementUuid,
-                        equipmentType: element.specificMetadata?.equipmentType,
-                        label: element.elementName,
-                        filterType: substationOrVoltageLevel ? FilterType.SUBSTATION_OR_VL : FilterType.GENERIC_FILTER,
-                        filterTypeFromMetadata: element.specificMetadata?.type,
-                    });
-                }
-            });
-
-            addGlobalFilterOptions(newlySelectedFilters);
-            newlySelectedFilters.forEach((filter) => selectGlobalFilter(filter.id));
+            await addFiltersToGlobalFiltersOptions(values.map((value) => value.id));
             setDirectoryItemSelectorOpen(false);
         },
-        [
-            selectedGlobalFilters,
-            setDirectoryItemSelectorOpen,
-            setOpenedDropdown,
-            addGlobalFilterOptions,
-            selectGlobalFilter,
-        ]
+        [addFiltersToGlobalFiltersOptions, setDirectoryItemSelectorOpen, setOpenedDropdown]
     );
 
     /**
@@ -290,7 +251,7 @@ function GlobalFilterPaper({
             </ClickAwayListener>
             <DirectoryItemSelector
                 open={directoryItemSelectorOpen}
-                onClose={addSelectedFilters}
+                onClose={addSelectedFiltersToGlobalFiltersOptions}
                 types={[ElementType.FILTER]}
                 equipmentTypes={allowedEquipmentTypes}
                 title={intl.formatMessage({ id: 'Filters' })}

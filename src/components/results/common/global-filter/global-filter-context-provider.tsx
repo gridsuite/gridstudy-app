@@ -7,48 +7,54 @@
 
 import { useMemo } from 'react';
 import { GlobalFilterContext } from './global-filter-context';
-import { GlobalFilterContextValue, ReusableGlobalFilterProviderProps } from './global-filter-context-types';
+import { GlobalFilterContextProviderProps, GlobalFilterContextValue } from './global-filter-context-types';
 
 export default function GlobalFilterContextProvider({
     children,
     globalFilterOptions,
     selectedGlobalFilters,
     recentGlobalFilters,
+    substationPropertiesGlobalFilters,
     filterCategories,
     genericFiltersStrictMode,
     filterableEquipmentTypes,
+    translateCountryCode,
     selectGlobalFilter,
     unselectGlobalFilters,
     clearSelectedGlobalFilters,
-    addGlobalFilterOptions,
     removeGlobalFilterOption,
-}: Readonly<ReusableGlobalFilterProviderProps>) {
+    addFiltersToGlobalFiltersOptions,
+}: Readonly<GlobalFilterContextProviderProps>) {
     const value = useMemo<GlobalFilterContextValue>(
         () => ({
             globalFilterOptions,
             selectedGlobalFilters,
             recentGlobalFilters,
+            substationPropertiesGlobalFilters,
             filterCategories,
             genericFiltersStrictMode,
             filterableEquipmentTypes,
+            translateCountryCode,
             selectGlobalFilter,
             unselectGlobalFilters,
             clearSelectedGlobalFilters,
-            addGlobalFilterOptions,
             removeGlobalFilterOption,
+            addSelectedDirectoryFilters: addFiltersToGlobalFiltersOptions,
         }),
         [
             globalFilterOptions,
             selectedGlobalFilters,
             recentGlobalFilters,
+            substationPropertiesGlobalFilters,
             filterCategories,
             genericFiltersStrictMode,
             filterableEquipmentTypes,
+            translateCountryCode,
             selectGlobalFilter,
             unselectGlobalFilters,
             clearSelectedGlobalFilters,
-            addGlobalFilterOptions,
             removeGlobalFilterOption,
+            addFiltersToGlobalFiltersOptions,
         ]
     );
 

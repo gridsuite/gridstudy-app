@@ -7,19 +7,22 @@
 
 import { PropsWithChildren } from 'react';
 import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
+import type { UUID } from 'node:crypto';
 
 export type GlobalFilterContextValue = {
     globalFilterOptions: GlobalFilter[];
     selectedGlobalFilters: GlobalFilter[];
     recentGlobalFilters: RecentGlobalFilter[];
+    substationPropertiesGlobalFilters?: Map<string, string[]>;
     filterCategories: string[];
     genericFiltersStrictMode: boolean;
     filterableEquipmentTypes: string[];
+    translateCountryCode: (countryCode: string) => string;
     selectGlobalFilter: (id: string) => void;
     unselectGlobalFilters: (ids: string[]) => void;
     clearSelectedGlobalFilters: () => void;
-    addGlobalFilterOptions: (newFilters: GlobalFilter[]) => void;
     removeGlobalFilterOption: (id: string) => void;
+    addFiltersToGlobalFiltersOptions: (elementIds: UUID[]) => Promise<void>;
 };
 
-export type ReusableGlobalFilterProviderProps = PropsWithChildren<GlobalFilterContextValue>;
+export type GlobalFilterContextProviderProps = PropsWithChildren<GlobalFilterContextValue>;
