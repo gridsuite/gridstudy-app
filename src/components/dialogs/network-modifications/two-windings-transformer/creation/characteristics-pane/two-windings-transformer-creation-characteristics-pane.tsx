@@ -14,10 +14,9 @@ import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-level
 import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
 import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
 import { TwoWindingsTransformerCreationDialogTab } from '../../two-windings-transformer-utils';
-import { LimitsPane } from '../../../../limits/limits-pane';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { ConnectivityForm } from '@gridsuite/commons-ui';
+import { ConnectivityForm, LimitsPane } from '@gridsuite/commons-ui';
 import PositionDiagramPane from '../../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../../services/study/network';

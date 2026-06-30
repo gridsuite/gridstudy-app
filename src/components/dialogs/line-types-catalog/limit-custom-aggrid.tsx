@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { AgGridReact } from 'ag-grid-react';
-import { CATEGORIES_TABS, LineTypeInfo } from './line-catalog.type';
 import { ColDef } from 'ag-grid-community';
 import { RefObject, useMemo } from 'react';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CATEGORIES_TABS, CustomAGGrid, LineTypeInfo } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { suppressEventsToPreventEditMode } from '../commons/utils';
 
