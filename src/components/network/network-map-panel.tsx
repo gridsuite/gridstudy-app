@@ -83,27 +83,11 @@ import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popov
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import { useBaseVoltages } from '../../hooks/use-base-voltages';
+import { mergeByIdKeepOrder } from 'components/utils/utils';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
 const EMPTY_ARRAY: any[] = [];
-
-function mergeByIdKeepOrder<T extends { id: string }>(array1: T[], array2: T[]): T[] {
-    const a2ById = new Map<string, T>();
-    for (const x of array2) a2ById.set(x.id, x);
-
-    const result: T[] = [];
-
-    // keep array1 order; replace when id exists in array2
-    for (const x of array1) {
-        result.push(a2ById.get(x.id) ?? x);
-        a2ById.delete(x.id); // remaining are “new” ids
-    }
-
-    // append new items from array2 in array2 order
-    result.push(...a2ById.values());
-    return result;
-}
 
 const styles = {
     divNominalVoltageFilter: {
