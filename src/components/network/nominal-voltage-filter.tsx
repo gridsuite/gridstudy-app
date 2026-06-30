@@ -6,12 +6,23 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip } from '@mui/material';
+import {
+    Checkbox,
+    Divider,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemText,
+    Paper,
+    type SxProps,
+    type Theme,
+    Tooltip,
+} from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { BaseVoltage, type MuiStyles } from '@gridsuite/commons-ui';
+import { BaseVoltage, mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { useBaseVoltages } from '../../hooks/use-base-voltages';
 
-const styles = {
+const defaultStyles = {
     nominalVoltageZone: {
         minWidth: '90px',
         maxHeight: '300px',
@@ -26,16 +37,7 @@ const styles = {
     },
     nominalVoltageText: {
         fontSize: 12,
-    },
-    nominalVoltageSelectionControl: {
-        fontSize: 12,
-        textDecoration: 'underline',
-        textTransform: 'none',
-        padding: '0px',
-        minWidth: '45%',
-        '&:hover, &:focus': {
-            textDecoration: 'underline',
-        },
+        ml: 0.5,
     },
 } as const satisfies MuiStyles;
 
@@ -43,18 +45,29 @@ type VoltageLevelValuesInterval = Pick<BaseVoltage, 'name' | 'minValue' | 'maxVa
     vlListValues: number[];
 };
 
+/** Per-element style overrides, merged with the component defaults via `mergeSx`. */
+export interface NominalVoltageFilterStyles {
+    root?: SxProps<Theme>;
+    nominalVoltageZone?: SxProps<Theme>;
+    nominalVoltageItem?: SxProps<Theme>;
+    nominalVoltageCheck?: SxProps<Theme>;
+    nominalVoltageText?: SxProps<Theme>;
+}
+
 export type NominalVoltageFilterProps = {
     nominalVoltages: number[];
     filteredNominalVoltages: number[];
     onChange: (filteredNominalVoltages: number[]) => void;
-    disabled: boolean;
+    isDisabled: boolean;
+    styles?: NominalVoltageFilterStyles;
 };
 
 export default function NominalVoltageFilter({
     nominalVoltages,
     filteredNominalVoltages,
     onChange,
-    disabled,
+    isDisabled,
+    styles: styleOverrides,
 }: Readonly<NominalVoltageFilterProps>) {
     const { baseVoltages, getBaseVoltageInterval } = useBaseVoltages();
     const voltageLevelIntervals: VoltageLevelValuesInterval[] = useMemo(() => {
@@ -94,8 +107,26 @@ export default function NominalVoltageFilter({
         },
         [nominalVoltages, onChange]
     );
-    const handleSelectAll = useCallback(() => handleToggleCheckAll(true), [handleToggleCheckAll]);
-    const handleSelectNone = useCallback(() => handleToggleCheckAll(false), [handleToggleCheckAll]);
+
+    // Master checkbox state: all present voltages selected / none / some (indeterminate).
+    const checkedCount = useMemo(
+        () => nominalVoltages.filter((v) => filteredNominalVoltages.includes(v)).length,
+        [nominalVoltages, filteredNominalVoltages]
+    );
+    const allChecked = nominalVoltages.length > 0 && checkedCount === nominalVoltages.length;
+    const noneChecked = checkedCount === 0;
+    const handleToggleMaster = useCallback(() => handleToggleCheckAll(!allChecked), [handleToggleCheckAll, allChecked]);
+
+    const sx = useMemo(
+        () => ({
+            root: mergeSx(styleOverrides?.root),
+            nominalVoltageZone: mergeSx(defaultStyles.nominalVoltageZone, styleOverrides?.nominalVoltageZone),
+            nominalVoltageItem: mergeSx(defaultStyles.nominalVoltageItem, styleOverrides?.nominalVoltageItem),
+            nominalVoltageCheck: mergeSx(defaultStyles.nominalVoltageCheck, styleOverrides?.nominalVoltageCheck),
+            nominalVoltageText: mergeSx(defaultStyles.nominalVoltageText, styleOverrides?.nominalVoltageText),
+        }),
+        [styleOverrides]
+    );
 
     const nominalVoltagesList = useMemo(
         () =>
@@ -106,7 +137,7 @@ export default function NominalVoltageFilter({
                         (voltageValue) => voltageValue >= interval.minValue && voltageValue < interval.maxValue
                     );
                     return (
-                        <ListItem sx={styles.nominalVoltageItem} key={interval.name}>
+                        <ListItem sx={sx.nominalVoltageItem} key={interval.name}>
                             <Tooltip
                                 title={
                                     <FormattedMessage
@@ -123,12 +154,12 @@ export default function NominalVoltageFilter({
                                     role={undefined}
                                     dense
                                     onClick={() => handleToggle(interval)}
-                                    disabled={!filteredNominalVoltages || disabled}
+                                    disabled={!filteredNominalVoltages || isDisabled}
                                 >
-                                    <Checkbox color="default" sx={styles.nominalVoltageCheck} checked={isChecked} />
+                                    <Checkbox color="default" sx={sx.nominalVoltageCheck} checked={isChecked} />
 
                                     <ListItemText
-                                        sx={styles.nominalVoltageText}
+                                        sx={sx.nominalVoltageText}
                                         disableTypography
                                         primary={<FormattedMessage id={interval.name} />}
                                     ></ListItemText>
@@ -137,34 +168,31 @@ export default function NominalVoltageFilter({
                         </ListItem>
                     );
                 }),
-        [filteredNominalVoltages, handleToggle, voltageLevelIntervals, disabled]
+        [filteredNominalVoltages, handleToggle, voltageLevelIntervals, isDisabled, sx]
     );
 
     if (nominalVoltages.length <= 0) {
         return false;
     }
     return (
-        <Paper>
-            <List sx={styles.nominalVoltageZone}>
-                <ListItem sx={styles.nominalVoltageItem}>
-                    <Button
-                        size={'small'}
-                        sx={styles.nominalVoltageSelectionControl}
-                        onClick={handleSelectAll}
-                        disabled={disabled}
-                    >
-                        <FormattedMessage id="CBAll" />
-                    </Button>
-                    <ListItemText sx={styles.nominalVoltageText} secondary={'/'} />
-                    <Button
-                        size={'small'}
-                        sx={styles.nominalVoltageSelectionControl}
-                        onClick={handleSelectNone}
-                        disabled={disabled}
-                    >
-                        <FormattedMessage id="CBNone" />
-                    </Button>
+        <Paper sx={sx.root}>
+            <List sx={sx.nominalVoltageZone}>
+                <ListItem sx={sx.nominalVoltageItem}>
+                    <ListItemButton role={undefined} dense onClick={handleToggleMaster} disabled={isDisabled}>
+                        <Checkbox
+                            color="default"
+                            sx={sx.nominalVoltageCheck}
+                            checked={allChecked}
+                            indeterminate={!allChecked && !noneChecked}
+                        />
+                        <ListItemText
+                            sx={sx.nominalVoltageText}
+                            disableTypography
+                            primary={<FormattedMessage id="CBAll" />}
+                        />
+                    </ListItemButton>
                 </ListItem>
+                <Divider component="li" variant="middle" />
                 {nominalVoltagesList}
             </List>
         </Paper>
