@@ -16,6 +16,9 @@ import { PHASE_TAP, RuleType } from '../two-windings-transformer.types';
 import { AppState } from 'redux/reducer.type';
 import { transformIfFrenchNumber } from '../../tabular/tabular-common';
 
+// Tap-changer rule imports treat every column as optional: no column is required.
+const NO_REQUIRED_COLUMNS: string[] = [];
+
 export interface ImportRuleDialogProps {
     ruleType: RuleType;
     openImportRuleDialog: boolean;
@@ -85,8 +88,7 @@ export const ImportRuleDialog = ({
                     <Grid>
                         <CsvPicker<Record<string, string>>
                             label={ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule'}
-                            header={csvColumns}
-                            allowMissingColumns
+                            requiredColumns={NO_REQUIRED_COLUMNS}
                             maxLineNumber={MAX_ROWS_NUMBER}
                             language={language}
                             parseConfig={parseConfig}
