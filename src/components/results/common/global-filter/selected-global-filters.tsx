@@ -10,19 +10,13 @@ import { EquipmentType, OverflowableChip } from '@gridsuite/commons-ui';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import { Box, Divider, List, ListItem, Typography } from '@mui/material';
 import { getOptionLabel } from './global-filter-utils';
-import { useContext } from 'react';
-import { GlobalFilterContext } from './global-filter-context';
-import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { FilterType } from '../utils';
-import { removeFromSelectedGlobalFilters } from '../../../../redux/actions';
-import { useDispatch } from 'react-redux';
+import { useGlobalFilterContext } from './global-filter-context';
 
 function SelectedGlobalFilters() {
-    const { selectedGlobalFilters, tableType, tableUuid } = useContext(GlobalFilterContext);
-    const { translate } = useLocalizedCountries();
+    const { selectedGlobalFilters, translateCountryCode, unselectGlobalFilters } = useGlobalFilterContext();
     const intl = useIntl();
-    const dispatch = useDispatch();
 
     const filtersByCategories: Map<string, GlobalFilter[]> = new Map();
     selectedGlobalFilters.forEach((filter: GlobalFilter) => {
@@ -74,10 +68,10 @@ function SelectedGlobalFilters() {
                         {filters.map((element: GlobalFilter) => (
                             <OverflowableChip
                                 key={element.id}
-                                label={getOptionLabel(element, translate, intl)}
+                                label={getOptionLabel(element, translateCountryCode, intl)}
                                 sx={getResultsGlobalFiltersChipStyle(element)}
                                 onDelete={() => {
-                                    dispatch(removeFromSelectedGlobalFilters(tableType, tableUuid, [element.id]));
+                                    unselectGlobalFilters([element.id]);
                                 }}
                             />
                         ))}

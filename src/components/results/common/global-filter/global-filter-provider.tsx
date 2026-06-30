@@ -11,21 +11,43 @@ import { FilterType, isCriteriaFilter } from '../utils';
 import {
     ElementAttributes,
     ElementType,
+    EquipmentType,
     fetchDirectoryElementPath,
+    fetchElementsInfos,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { addToGlobalFilterOptions, markNotFoundGlobalFiltersAsDeleted } from '../../../../redux/actions';
+import {
+    addToGlobalFilterOptions,
+    addToSelectedGlobalFilters,
+    clearSelectedGlobalFilters as clearSelectedGlobalFiltersAction,
+    markNotFoundGlobalFiltersAsDeleted,
+    removeFromGlobalFilterOptions,
+    removeFromSelectedGlobalFilters,
+} from '../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
-import { GlobalFilterContext } from './global-filter-context';
 import { HttpStatusCode } from '../../../../utils/http-status-code';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../redux/reducer.type';
+import GlobalFilterContextProvider from './global-filter-context-provider';
+import { fetchSubstationPropertiesGlobalFilters } from './global-filter-app-data';
+import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
+import type { UUID } from 'node:crypto';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];
+
 type FilterUpdateResult = { kind: 'updated' | 'notFound'; filter: GlobalFilter } | { kind: 'unchanged' };
+
+type GlobalFilterProviderProps = PropsWithChildren<{
+    filterCategories: FilterType[];
+    genericFiltersStrictMode: boolean;
+    filterableEquipmentTypes: string[];
+    tableType: TableType;
+    tableUuid: string;
+}>;
+
 export default function GlobalFilterProvider({
     children,
     filterCategories,
@@ -33,15 +55,11 @@ export default function GlobalFilterProvider({
     filterableEquipmentTypes = [],
     tableType,
     tableUuid,
-}: PropsWithChildren & {
-    filterCategories: FilterType[];
-    genericFiltersStrictMode: boolean;
-    filterableEquipmentTypes: string[];
-    tableType: TableType;
-    tableUuid: string;
-}) {
+}: Readonly<GlobalFilterProviderProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
+    const { translate: translateCountryCode } = useLocalizedCountries();
+    const [substationPropertiesGlobalFilters, setSubstationPropertiesGlobalFilters] = useState<Map<string, string[]>>();
 
     const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
 
@@ -56,15 +74,16 @@ export default function GlobalFilterProvider({
             selectedFilterIds
                 ? selectedFilterIds
                       .map((id) => globalFilterOptions.find((opt) => opt.id === id))
-                      .filter((f) => f !== undefined)
+                      .filter((filter): filter is GlobalFilter => filter !== undefined)
                 : [],
         [selectedFilterIds, globalFilterOptions]
     );
 
-    const [openedDropdown, setOpenedDropdown] = useState(false);
-    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
-    // maybe a filter type or a recent filter or whatever category
-    const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
+    useEffect(() => {
+        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
+            setSubstationPropertiesGlobalFilters(substationPropertiesGlobalFilters);
+        });
+    }, []);
 
     const updateGenericFilter = useCallback(
         async (genericFilter: GlobalFilter): Promise<FilterUpdateResult> => {
@@ -119,37 +138,78 @@ export default function GlobalFilterProvider({
         checkSelectedFilters().catch((error) => console.error(error));
     }, [dispatch, selectedGlobalFilters, tableType, tableUuid, updateGenericFilter]);
 
-    const value = useMemo(
-        () => ({
-            openedDropdown,
-            setOpenedDropdown,
-            directoryItemSelectorOpen,
-            setDirectoryItemSelectorOpen,
-            filterGroupSelected,
-            setFilterGroupSelected,
-            globalFilterOptions,
-            selectedGlobalFilters,
-            recentGlobalFilters,
-            filterCategories,
-            genericFiltersStrictMode,
-            filterableEquipmentTypes,
-            tableType,
-            tableUuid,
-        }),
-        [
-            openedDropdown,
-            directoryItemSelectorOpen,
-            filterGroupSelected,
-            globalFilterOptions,
-            selectedGlobalFilters,
-            recentGlobalFilters,
-            filterCategories,
-            genericFiltersStrictMode,
-            filterableEquipmentTypes,
-            tableType,
-            tableUuid,
-        ]
+    const selectGlobalFilter = useCallback(
+        (id: string) => {
+            dispatch(addToSelectedGlobalFilters(tableType, tableUuid, [id]));
+        },
+        [dispatch, tableType, tableUuid]
     );
 
-    return <GlobalFilterContext.Provider value={value}>{children}</GlobalFilterContext.Provider>;
+    const unselectGlobalFilters = useCallback(
+        (ids: string[]) => {
+            dispatch(removeFromSelectedGlobalFilters(tableType, tableUuid, ids));
+        },
+        [dispatch, tableType, tableUuid]
+    );
+
+    const clearSelectedGlobalFilters = useCallback(() => {
+        dispatch(clearSelectedGlobalFiltersAction(tableType, tableUuid));
+    }, [dispatch, tableType, tableUuid]);
+
+    const removeGlobalFilterOption = useCallback(
+        (id: string) => {
+            dispatch(removeFromGlobalFilterOptions(id));
+        },
+        [dispatch]
+    );
+
+    const addFiltersToGlobalFiltersOptions = useCallback(
+        async (elementIds: UUID[]) => {
+            const elements: ElementAttributes[] = await fetchElementsInfos(elementIds);
+            const newlySelectedFilters: GlobalFilter[] = [];
+            elements.forEach((element: ElementAttributes) => {
+                // ignore already selected filters and non-generic filters :
+                if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
+                    // add the others
+                    const substationOrVoltageLevel =
+                        element.specificMetadata?.equipmentType === EquipmentType.SUBSTATION ||
+                        element.specificMetadata?.equipmentType === EquipmentType.VOLTAGE_LEVEL;
+                    newlySelectedFilters.push({
+                        id: element.elementUuid,
+                        uuid: element.elementUuid,
+                        equipmentType: element.specificMetadata?.equipmentType,
+                        label: element.elementName,
+                        filterType: substationOrVoltageLevel ? FilterType.SUBSTATION_OR_VL : FilterType.GENERIC_FILTER,
+                        filterTypeFromMetadata: element.specificMetadata?.type,
+                    });
+                }
+            });
+
+            dispatch(addToGlobalFilterOptions(newlySelectedFilters));
+            newlySelectedFilters.forEach((filter) =>
+                dispatch(addToSelectedGlobalFilters(tableType, tableUuid, [filter.id]))
+            );
+        },
+        [dispatch, selectedGlobalFilters, tableType, tableUuid]
+    );
+
+    return (
+        <GlobalFilterContextProvider
+            globalFilterOptions={globalFilterOptions}
+            selectedGlobalFilters={selectedGlobalFilters}
+            recentGlobalFilters={recentGlobalFilters}
+            substationPropertiesGlobalFilters={substationPropertiesGlobalFilters}
+            filterCategories={filterCategories}
+            genericFiltersStrictMode={genericFiltersStrictMode}
+            filterableEquipmentTypes={filterableEquipmentTypes}
+            translateCountryCode={translateCountryCode}
+            selectGlobalFilter={selectGlobalFilter}
+            unselectGlobalFilters={unselectGlobalFilters}
+            clearSelectedGlobalFilters={clearSelectedGlobalFilters}
+            removeGlobalFilterOption={removeGlobalFilterOption}
+            addFiltersToGlobalFiltersOptions={addFiltersToGlobalFiltersOptions}
+        >
+            {children}
+        </GlobalFilterContextProvider>
+    );
 }

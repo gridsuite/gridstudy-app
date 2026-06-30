@@ -7,7 +7,6 @@
 
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
-import { fetchStudyMetadata } from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
 import { UUID } from 'node:crypto';
 
@@ -58,15 +57,3 @@ export const getOptionLabel = (
     }
     return '';
 };
-
-export async function fetchSubstationPropertiesGlobalFilters(): Promise<{
-    substationPropertiesGlobalFilters?: Map<string, string[]>;
-}> {
-    const { substationPropertiesGlobalFilters } = await fetchStudyMetadata();
-    const definedSubstationPropertiesGlobalFilters: Map<string, string[]> = substationPropertiesGlobalFilters
-        ? new Map(Object.entries(substationPropertiesGlobalFilters))
-        : new Map<string, string[]>();
-    return {
-        substationPropertiesGlobalFilters: definedSubstationPropertiesGlobalFilters,
-    };
-}

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useContext, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteChangeDetails,
@@ -26,8 +26,6 @@ import {
 } from '@mui/material';
 import { Delete as DeleteIcon, FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { useDispatch } from 'react-redux';
 import { FilterType } from '../utils';
 import { EquipmentType, OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
 import { GlobalFilter } from './global-filter-types';
@@ -35,14 +33,7 @@ import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './g
 import GlobalFilterPaper from './global-filter-paper';
 import IconButton from '@mui/material/IconButton';
 import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
-import { GlobalFilterContext } from './global-filter-context';
-import {
-    addToSelectedGlobalFilters,
-    clearSelectedGlobalFilters,
-    removeFromGlobalFilterOptions,
-    removeFromSelectedGlobalFilters,
-} from '../../../../redux/actions';
-import { AppDispatch } from '../../../../redux/store';
+import { useGlobalFilterContext } from './global-filter-context';
 
 const TAG_LIMIT_NUMBER: number = 4;
 
@@ -99,10 +90,9 @@ function RenderOption({
 }) {
     const { children, ...otherProps } = props;
     const intl = useIntl();
-    const dispatch = useDispatch<AppDispatch>();
-    const { translate } = useLocalizedCountries();
+    const { removeGlobalFilterOption, translateCountryCode } = useGlobalFilterContext();
 
-    const label = getOptionLabel(option, translate, intl) ?? '';
+    const label = getOptionLabel(option, translateCountryCode, intl) ?? '';
 
     let content: React.ReactNode;
     switch (option.filterType) {
@@ -127,7 +117,7 @@ function RenderOption({
                         }}
                         onClick={(e) => {
                             e.stopPropagation();
-                            dispatch(removeFromGlobalFilterOptions(option.id));
+                            removeGlobalFilterOption(option.id);
                         }}
                     >
                         <DeleteIcon fontSize="small" />
@@ -177,22 +167,21 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
 
 function GlobalFilterAutocomplete() {
     const {
-        openedDropdown,
-        setOpenedDropdown,
-        filterGroupSelected,
-        genericFiltersStrictMode,
-        tableType,
-        tableUuid,
         globalFilterOptions,
         selectedGlobalFilters,
         recentGlobalFilters,
         filterCategories,
+        genericFiltersStrictMode,
         filterableEquipmentTypes,
-    } = useContext(GlobalFilterContext);
+        selectGlobalFilter,
+        unselectGlobalFilters,
+        clearSelectedGlobalFilters,
+        translateCountryCode,
+    } = useGlobalFilterContext();
     const intl = useIntl();
-    const { translate } = useLocalizedCountries();
-    const dispatch = useDispatch();
     const autocompleteRef = useRef<HTMLDivElement | null>(null);
+    const [openedDropdown, setOpenedDropdown] = useState(false);
+    const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
 
     // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
@@ -232,7 +221,7 @@ function GlobalFilterAutocomplete() {
                 // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
                 .filter((option: GlobalFilter) => {
                     const labelToMatch: string =
-                        option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
+                        option.filterType === FilterType.COUNTRY ? translateCountryCode(option.label) : option.label;
                     return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
                 })
                 .filter((option: GlobalFilter) => {
@@ -267,7 +256,7 @@ function GlobalFilterAutocomplete() {
 
             return filteredOptions;
         },
-        [filterGroupSelected, translate, filterableEquipmentTypes, recentGlobalFilters]
+        [filterGroupSelected, translateCountryCode, filterableEquipmentTypes, recentGlobalFilters]
     );
 
     const options = useMemo(
@@ -284,18 +273,24 @@ function GlobalFilterAutocomplete() {
                 .sort((a: GlobalFilter, b: GlobalFilter) => {
                     // only the countries are sorted alphabetically
                     if (a.filterType === FilterType.COUNTRY && b.filterType === FilterType.COUNTRY) {
-                        const bt: string = translate(b.label);
-                        const at: string = translate(a.label);
+                        const bt: string = translateCountryCode(b.label);
+                        const at: string = translateCountryCode(a.label);
                         return at.localeCompare(bt);
                     }
                     return 0;
                 }),
-        [globalFilterOptions, translate, filterCategories, genericFiltersStrictMode, filterableEquipmentTypes]
+        [
+            globalFilterOptions,
+            translateCountryCode,
+            filterCategories,
+            genericFiltersStrictMode,
+            filterableEquipmentTypes,
+        ]
     );
 
     const inputFieldChip = useCallback(
         (element: GlobalFilter, index: number, getTagsProps: AutocompleteRenderGetTagProps, filtersNumber: number) => {
-            const label = getOptionLabel(element, translate, intl);
+            const label = getOptionLabel(element, translateCountryCode, intl);
             const key: string = `inputFieldChip_${element.label}`;
             if (index < TAG_LIMIT_NUMBER) {
                 return (
@@ -315,14 +310,22 @@ function GlobalFilterAutocomplete() {
 
             return undefined;
         },
-        [translate, intl]
+        [translateCountryCode, intl]
     );
 
     const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => option.id === value.id, []);
 
     const PaperComponentMemo = useCallback(
-        (props: PaperProps) => <GlobalFilterPaper {...props} autocompleteRef={autocompleteRef} />,
-        [autocompleteRef]
+        (props: PaperProps) => (
+            <GlobalFilterPaper
+                {...props}
+                autocompleteRef={autocompleteRef}
+                setOpenedDropdown={setOpenedDropdown}
+                filterGroupSelected={filterGroupSelected}
+                setFilterGroupSelected={setFilterGroupSelected}
+            />
+        ),
+        [autocompleteRef, filterGroupSelected]
     );
 
     const handleOnChange = useCallback(
@@ -334,19 +337,19 @@ function GlobalFilterAutocomplete() {
         ) => {
             switch (reason) {
                 case 'selectOption':
-                    dispatch(addToSelectedGlobalFilters(tableType, tableUuid, [details!.option.id]));
+                    selectGlobalFilter(details!.option.id);
                     break;
                 case 'removeOption':
-                    dispatch(removeFromSelectedGlobalFilters(tableType, tableUuid, [details!.option.id]));
+                    unselectGlobalFilters([details!.option.id]);
                     break;
                 case 'clear':
-                    dispatch(clearSelectedGlobalFilters(tableType, tableUuid));
+                    clearSelectedGlobalFilters();
                     break;
                 default:
                     break;
             }
         },
-        [dispatch, tableType, tableUuid]
+        [clearSelectedGlobalFilters, selectGlobalFilter, unselectGlobalFilters]
     );
 
     return (

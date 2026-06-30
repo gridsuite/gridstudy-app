@@ -8,11 +8,8 @@ import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useEffect } from 'react';
 import { fetchAllCountries } from '../../../../services/study/network-map';
 import { FilterType } from '../utils';
-import {
-    addGlobalFilterId,
-    fetchSubstationPropertiesGlobalFilters,
-    GlobalFilterWithoutId,
-} from './global-filter-utils';
+import { addGlobalFilterId, GlobalFilterWithoutId } from './global-filter-utils';
+import { fetchSubstationPropertiesGlobalFilters } from './global-filter-app-data';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
 import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
