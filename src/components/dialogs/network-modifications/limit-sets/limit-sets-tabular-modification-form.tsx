@@ -66,7 +66,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     }, [repeatableColumns]);
 
     const requiredColumns = useMemo(
-        (): string[] => csvColumns.filter((column) => column.required).map((column) => column.id),
+        () => csvColumns.filter((column) => column.required).map((column) => column.id),
         [csvColumns]
     );
 

@@ -303,7 +303,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     }, [csvFields, selectedProperties]);
 
     const requiredColumns = useMemo(
-        (): string[] => csvFields.filter((field: TabularField) => field.required).map((field) => field.id),
+        () => csvFields.filter((field) => field.required).map((field) => field.id),
         [csvFields]
     );
 
