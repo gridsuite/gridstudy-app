@@ -17,7 +17,7 @@
         "Artistic-2.0",
         "Python-2.0",
         "Unlicense",
-	"BlueOak-1.0.0"
+        "BlueOak-1.0.0"
     ],
     "excludePackages": [
         "@mapbox/jsonlint-lines-primitives@2.0.2",
