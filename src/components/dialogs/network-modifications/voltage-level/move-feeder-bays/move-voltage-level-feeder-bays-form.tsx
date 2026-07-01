@@ -342,7 +342,7 @@ export function MoveVoltageLevelFeederBaysForm({
             <Grid paddingTop={2}>
                 <FormattedMessage id={'moveFeederBaysSections'} />
             </Grid>
-            <Box sx={{ flexGrow: 1, minHeight: 0, pt: 1 }}>
+            <Box sx={{ pt: 1 }}>
                 <CustomAGGrid
                     rowData={groupedRowData}
                     defaultColDef={defaultColDef}
