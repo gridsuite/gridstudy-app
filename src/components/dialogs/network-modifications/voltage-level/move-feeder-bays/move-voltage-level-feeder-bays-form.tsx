@@ -7,7 +7,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { Box, Grid2 as Grid, TextField, Tooltip } from '@mui/material';
+import { Box, Grid2 as Grid, Stack, TextField, Tooltip } from '@mui/material';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import HeaderWithTooltip from '../topology-modification/header-with-tooltip';
@@ -327,7 +327,7 @@ export function MoveVoltageLevelFeederBaysForm({
     );
 
     return (
-        <Grid container sx={{ height: '100%', width: 'auto' }} direction="column">
+        <Stack sx={{ height: '100%', width: 'auto' }}>
             <Grid container spacing={2} sx={{ width: '100%' }}>
                 <Grid size={4}>{voltageLevelIdField}</Grid>
                 {isNodeBuiltValue && (
@@ -342,7 +342,7 @@ export function MoveVoltageLevelFeederBaysForm({
             <Grid paddingTop={2}>
                 <FormattedMessage id={'moveFeederBaysSections'} />
             </Grid>
-            <Grid size="grow" paddingTop={1}>
+            <Box sx={{ flexGrow: 1, minHeight: 0, pt: 1 }}>
                 <CustomAGGrid
                     rowData={groupedRowData}
                     defaultColDef={defaultColDef}
@@ -364,7 +364,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     }}
                     fullWidthCellRenderer={renderGroupCell}
                 />
-            </Grid>
+            </Box>
             <Box>
                 <PositionDiagramPane
                     open={isDiagramPaneOpen}
@@ -372,6 +372,6 @@ export function MoveVoltageLevelFeederBaysForm({
                     voltageLevelId={selectedId}
                 />
             </Box>
-        </Grid>
+        </Stack>
     );
 }

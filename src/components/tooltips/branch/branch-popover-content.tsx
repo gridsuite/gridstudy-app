@@ -6,7 +6,7 @@
  */
 
 import { EquipmentType } from '@gridsuite/commons-ui';
-import { Grid2 as Grid } from '@mui/material';
+import { Stack } from '@mui/material';
 import { RunningStatus } from '../../utils/running-status';
 import { BranchCharacteristicsTable } from './branch-characteristics-table';
 import { TwtTapChangerCharacteristics } from './twt-tap-changer-characteristics';
@@ -26,14 +26,14 @@ export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
     equipmentType,
 }) => {
     return (
-        <Grid container direction="column" rowSpacing={2} alignItems="center">
+        <Stack spacing={2} alignItems="center">
             <BranchCharacteristicsTable equipmentInfos={equipmentInfos} />
             <BranchCharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
             {equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER && (
                 <TwtTapChangerCharacteristics equipmentInfos={equipmentInfos as TwtEquipmentInfos} />
             )}
             <BranchLimitsTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
-        </Grid>
+        </Stack>
     );
 };
 

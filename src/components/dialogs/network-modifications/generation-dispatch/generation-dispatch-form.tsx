@@ -19,7 +19,7 @@ import {
     GENERATORS_WITHOUT_OUTAGE,
     LOSS_COEFFICIENT,
 } from 'components/utils/field-constants';
-import { Box, Grid2 as Grid, Typography } from '@mui/material';
+import { Box, Grid2 as Grid, Stack, Typography } from '@mui/material';
 import FrequencyReservePane from './frequency-reserve-pane';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
 import { Grid2Item as GridItem } from '../../commons/grid2-item';
@@ -132,9 +132,9 @@ const GenerationDispatchForm = ({
                 </Grid>
             </Grid>
             <GridSection title="GeneratorsOrdering" />
-            <Grid container direction="column" spacing={2} alignItems="start">
+            <Stack spacing={2} alignItems="start">
                 <SubstationsGeneratorsOrderingPane substations={substations} />
-            </Grid>
+            </Stack>
         </Box>
     );
 };

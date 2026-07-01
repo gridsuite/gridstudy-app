@@ -15,6 +15,7 @@ import {
     DialogTitle,
     Grid2 as Grid,
     Link,
+    Stack,
     Tooltip,
     Typography,
 } from '@mui/material';
@@ -345,14 +346,14 @@ export default function ColumnCreationDialog({
             >
                 <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>
-                    <Grid container spacing={2} direction="column" alignItems="center">
+                    <Stack spacing={2} alignItems="center">
                         <Grid sx={mergeSx(styles.field, { marginTop: '5px' })}>{columnNameField}</Grid>
                         <Grid sx={styles.field}>{columnIdField}</Grid>
                         <Grid sx={styles.field}>{columnType}</Grid>
                         {watchColumnType === COLUMN_TYPES.NUMBER && <Grid sx={styles.field}>{precisionField}</Grid>}
                         <Grid sx={styles.field}>{formulaField}</Grid>
                         <Grid sx={styles.field}>{dependenciesField}</Grid>
-                    </Grid>
+                    </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Grid container spacing={0.5}>

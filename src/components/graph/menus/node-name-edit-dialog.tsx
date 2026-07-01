@@ -7,7 +7,7 @@
 
 import { CustomFormProvider, isObjectEmpty } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid2 as Grid, Stack } from '@mui/material';
 import { NAME } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -94,7 +94,7 @@ const NodeNameEditDialog: React.FC<BaseDialogProps> = ({
                 titleId={titleId}
                 disabledSave={!isFormValid}
             >
-                <Grid container spacing={1} direction="column">
+                <Stack spacing={1}>
                     <Grid>
                         <UniqueCheckNameInput
                             name={NAME}
@@ -106,7 +106,7 @@ const NodeNameEditDialog: React.FC<BaseDialogProps> = ({
                             formProps={{ fullWidth: true }}
                         />
                     </Grid>
-                </Grid>
+                </Stack>
             </ModificationDialog>
         </CustomFormProvider>
     );

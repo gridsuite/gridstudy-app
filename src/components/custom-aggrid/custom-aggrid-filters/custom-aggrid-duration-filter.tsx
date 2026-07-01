@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { Grid2 as Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import { Grid2 as Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
 import { type MuiStyles } from '@gridsuite/commons-ui';
@@ -135,7 +135,7 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
     }, [handleClearFilter]);
 
     return (
-        <Grid container direction={'column'} gap={0.8} sx={{ padding: '8px' }}>
+        <Stack gap={0.8} sx={{ padding: '8px' }}>
             <CustomAggridComparatorSelector
                 value={selectedFilterComparator}
                 onChange={handleFilterComparatorChange}
@@ -189,7 +189,7 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                     </Grid>
                 )}
             </Grid>
-        </Grid>
+        </Stack>
     );
 };
 

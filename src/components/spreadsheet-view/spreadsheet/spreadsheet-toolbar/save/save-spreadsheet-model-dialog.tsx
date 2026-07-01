@@ -10,6 +10,7 @@ import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
 import {
     Grid,
+    Stack,
     Box,
     Button,
     CircularProgress,
@@ -343,7 +344,7 @@ export function SaveSpreadsheetModelDialog({
             }}
             disabledSave={disableSave}
         >
-            <Grid container spacing={2} marginTop="auto" direction="column">
+            <Stack spacing={2} marginTop="auto">
                 <Grid>
                     <RadioInput
                         name={FieldConstants.OPERATION_TYPE}
@@ -415,7 +416,7 @@ export function SaveSpreadsheetModelDialog({
                     <DescriptionField />
                 </Grid>
                 {renderChooser()}
-            </Grid>
+            </Stack>
             <DirectoryItemSelector
                 key={isCreateMode ? destinationFolder?.id : selectedItem?.id}
                 open={directorySelectorOpen}

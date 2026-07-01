@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useMemo } from 'react';
-import { Grid2 as Grid } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import {
     CustomFormProvider,
     DirectoryItemsInput,
@@ -121,15 +121,15 @@ export default function AddSpreadsheetFromModelDialog({ open }: Readonly<AddSpre
                 onClear={() => null}
                 PaperProps={{ sx: dialogStyles.dialogContent }}
             >
-                <Grid container spacing={2} direction="column" marginTop="auto">
-                    <Grid size="grow">
+                <Stack spacing={2} marginTop="auto">
+                    <Box>
                         <TextInput
                             name={SPREADSHEET_NAME}
                             label="spreadsheet/create_new_spreadsheet/spreadsheet_name"
                             formProps={{ autoFocus: true }}
                         />
-                    </Grid>
-                    <Grid size="grow">
+                    </Box>
+                    <Box>
                         <DirectoryItemsInput
                             name={SPREADSHEET_MODEL}
                             elementType={ElementType.SPREADSHEET_CONFIG}
@@ -137,8 +137,8 @@ export default function AddSpreadsheetFromModelDialog({ open }: Readonly<AddSpre
                             label="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
                             allowMultiSelect={false}
                         />
-                    </Grid>
-                </Grid>
+                    </Box>
+                </Stack>
             </ModificationDialog>
         </CustomFormProvider>
     );

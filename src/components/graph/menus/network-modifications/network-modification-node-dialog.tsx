@@ -13,7 +13,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid2 as Grid, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
@@ -116,7 +116,7 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
                 disabledSave={!isFormValid}
                 {...dialogProps}
             >
-                <Grid container spacing={2} direction="column">
+                <Stack spacing={2}>
                     <Grid>
                         <UniqueCheckNameInput
                             name={NAME}
@@ -132,7 +132,7 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
                     <Grid>
                         <DescriptionField rows={6} maxCharactersNumber={MAX_CHAR_NODE_DESCRIPTION} />
                     </Grid>
-                </Grid>
+                </Stack>
             </ModificationDialog>
         </CustomFormProvider>
     );

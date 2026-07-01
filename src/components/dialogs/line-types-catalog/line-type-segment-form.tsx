@@ -7,7 +7,7 @@
 
 import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid2 as Grid, Stack } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     APPLY_SEGMENTS_LIMITS,
@@ -496,7 +496,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 <GridItem size={2}>{totalSusceptanceField}</GridItem>
                 <GridItem size={1}>{<div />}</GridItem>
             </Grid>
-            <Grid container direction="column">
+            <Stack>
                 <Grid>
                     <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
                 </Grid>
@@ -508,15 +508,15 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                         />
                     </Grid>
                 )}
-            </Grid>
-            <Grid container sx={{ height: '100%' }} direction="column">
+            </Stack>
+            <Stack sx={{ height: '100%' }}>
                 <CustomAGGrid
                     rowData={rowData}
                     defaultColDef={limitsDefaultColDef}
                     columnDefs={limitsColumnDefs}
                     domLayout="autoHeight"
                 />
-            </Grid>
+            </Stack>
             {openCatalogDialogIndex !== null && (
                 <LineTypesCatalogSelectorDialog
                     onClose={onCatalogDialogClose}
