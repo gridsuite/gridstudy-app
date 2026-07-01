@@ -185,7 +185,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
     );
 
     return (
-        <Grid container>
+        <>
             <GridSection title="Characteristics" />
             <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem>{dcNominalVoltageField}</GridItem>
@@ -209,7 +209,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             </Grid>
 
             <PropertiesForm isModification={isEquipementModification} />
-        </Grid>
+        </>
     );
 };
 

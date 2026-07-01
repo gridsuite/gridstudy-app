@@ -29,9 +29,9 @@ import {
 } from '@gridsuite/commons-ui';
 import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { InputAdornment, Grid, TextField } from '@mui/material';
+import { InputAdornment, Grid2 as Grid, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import GridItem from '../../../commons/grid-item';
+import { Grid2Item as GridItem } from '../../../commons/grid2-item';
 
 export const SusceptanceArea = () => {
     const id = AUTOMATON;
@@ -105,7 +105,7 @@ export const SusceptanceArea = () => {
     );
 
     return (
-        <Grid container spacing={2} padding={2}>
+        <Grid container spacing={2}>
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                 <>
                     <GridItem size={4}>{minSusceptanceField}</GridItem>

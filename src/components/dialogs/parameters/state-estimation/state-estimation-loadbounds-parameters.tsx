@@ -8,9 +8,9 @@ import { FunctionComponent, useMemo } from 'react';
 import { DEFAULT_BOUNDS, DEFAULT_FIXED_BOUNDS, VOLTAGE_LEVEL } from '../../../utils/field-constants';
 import { loadboundsParametersFields, TabValue } from './state-estimation-parameters-utils';
 import { useIntl } from 'react-intl';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
-import GridSection from '../../commons/grid-section';
+import { Grid2Section as GridSection } from '../../commons/grid2-section';
 import { CustomVoltageLevelTable, type LimitReductionIColumnsDef } from '@gridsuite/commons-ui';
 
 export const StateEstimationLoadboundsParameters: FunctionComponent = () => {

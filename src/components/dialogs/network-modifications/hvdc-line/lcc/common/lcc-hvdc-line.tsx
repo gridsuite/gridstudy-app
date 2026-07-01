@@ -87,7 +87,7 @@ export default function LccHvdcLine({ id, previousValues, isModification }: Read
     );
 
     return (
-        <Grid container>
+        <>
             <GridSection title="Characteristics" />
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <GridItem>{dcNominalVoltageField}</GridItem>
@@ -101,6 +101,6 @@ export default function LccHvdcLine({ id, previousValues, isModification }: Read
             </Grid>
 
             <PropertiesForm id={id} isModification={isModification} />
-        </Grid>
+        </>
     );
 }

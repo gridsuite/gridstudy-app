@@ -6,7 +6,7 @@
  */
 import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
-import { Grid, IconButton } from '@mui/material';
+import { IconButton, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useCustomAggridComparatorFilter } from './hooks/use-custom-aggrid-comparator-filter';
 
@@ -32,7 +32,7 @@ export const CustomAggridComparatorFilter = ({ colId, filterParams }: CustomAggr
         selectedFilterComparator === FILTER_TEXT_COMPARATORS.IS_NOT_EMPTY;
 
     return (
-        <Grid container direction={'column'} gap={0.8} sx={{ padding: '8px' }}>
+        <Stack gap={0.8} sx={{ padding: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <div style={{ flex: 1 }}>
                     <CustomAggridComparatorSelector
@@ -57,6 +57,6 @@ export const CustomAggridComparatorFilter = ({ colId, filterParams }: CustomAggr
                     decimalAfterDot={decimalAfterDot}
                 />
             )}
-        </Grid>
+        </Stack>
     );
 };

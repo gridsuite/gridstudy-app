@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import GridSection from '../../commons/grid-section';
+import { Grid2Section as GridSection } from '../../commons/grid2-section';
 import { qualityParametersFields, TabValue } from './state-estimation-parameters-utils';
 import {
     QUALITY_PER_REGION,
@@ -21,7 +21,7 @@ import {
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
 import { useMemo } from 'react';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import { useIntl } from 'react-intl';
 import {
@@ -58,13 +58,13 @@ export const StateEstimationQualityParameters = () => {
 
     return (
         <>
-            <Grid container item xs={8}>
+            <Grid container size={8}>
                 <GridSection title="StateEstimationParametersQualitySection" heading={4} />
-                <Grid container item alignItems="center" spacing={2} direction={'row'}>
-                    <Grid item xs={10} sx={parametersStyles.parameterName}>
+                <Grid container alignItems="center" spacing={2} direction={'row'} size={12}>
+                    <Grid size={10} sx={parametersStyles.parameterName}>
                         <FieldLabel label={'qualityPerRegion'} />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid size={2}>
                         <SwitchInput name={`${TabValue.QUALITY}.${QUALITY_PER_REGION}`} />
                     </Grid>
                 </Grid>

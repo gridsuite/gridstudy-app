@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import { Grid2 as Grid } from '@mui/material';
+import { Box, Grid2 as Grid, Stack } from '@mui/material';
 import { FloatInput, IntegerInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 
 import { Grid2Section as GridSection } from '../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../commons/grid2-item';
 import CountriesAutocomplete from './countries-autocomplete';
 import {
     BALANCES_ADJUSTMENT,
@@ -47,8 +46,8 @@ export default function BalancesAdjustmentAdvancedContent() {
     });
 
     return (
-        <Grid container direction="column" sx={{ width: '100%' }} minWidth={'300px'}>
-            <Grid container size={8} sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <Stack sx={{ width: '100%' }} minWidth={'300px'}>
+            <Grid container sx={{ width: '66.666667%', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Grid>
                     <GridSection title="Loadflow" />
                 </Grid>
@@ -59,16 +58,16 @@ export default function BalancesAdjustmentAdvancedContent() {
                 </Grid>
             </Grid>
 
-            <Grid container size={8} spacing={2} direction="column">
-                <GridItem sx={{ width: '100%' }}>
+            <Stack spacing={2} sx={{ width: '66.666667%' }}>
+                <Box sx={{ width: '100%' }}>
                     <CountriesAutocomplete
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE}`}
                         limitTags={3}
                         label={intl.formatMessage({ id: 'descLfCountriesToBalance' })}
                         disabled={!withLoadFlow}
                     />
-                </GridItem>
-                <GridItem sx={{ width: '100%' }}>
+                </Box>
+                <Box sx={{ width: '100%' }}>
                     <SelectInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_BALANCE_TYPE}`}
                         label={'descLfBalanceType'}
@@ -77,12 +76,16 @@ export default function BalancesAdjustmentAdvancedContent() {
                         disabled={!withLoadFlow}
                         disableClearable={true}
                     />
-                </GridItem>
-            </Grid>
+                </Box>
+            </Stack>
             <Grid
                 container
-                size={8}
-                sx={{ justifyContent: 'space-between', alignItems: 'center', marginLeft: 1, marginTop: 1 }}
+                sx={{
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginLeft: 1,
+                    marginTop: 1,
+                }}
             >
                 <Grid>
                     <FormattedMessage id="LoadFlowWithRatioTapChangers" />
@@ -97,8 +100,8 @@ export default function BalancesAdjustmentAdvancedContent() {
                 </Grid>
             </Grid>
             <GridSection title="Algorithm" />
-            <Grid container size={8} spacing={2} direction="column">
-                <GridItem sx={{ width: '100%' }}>
+            <Stack spacing={2}>
+                <Box sx={{ width: '100%' }}>
                     <IntegerInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS}`}
                         label={'maxNumberIterations'}
@@ -106,8 +109,8 @@ export default function BalancesAdjustmentAdvancedContent() {
                             disabled: !withLoadFlow,
                         }}
                     />
-                </GridItem>
-                <GridItem sx={{ width: '100%' }}>
+                </Box>
+                <Box sx={{ width: '100%' }}>
                     <FloatInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION}`}
                         label={'thresholdNetPosition'}
@@ -115,8 +118,8 @@ export default function BalancesAdjustmentAdvancedContent() {
                             disabled: !withLoadFlow,
                         }}
                     />
-                </GridItem>
-                <GridItem sx={{ width: '100%' }}>
+                </Box>
+                <Box sx={{ width: '100%' }}>
                     <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                         <Grid>
                             <FormattedMessage id="subtractLoadFlowBalancing" />
@@ -128,8 +131,8 @@ export default function BalancesAdjustmentAdvancedContent() {
                             />
                         </Grid>
                     </Grid>
-                </GridItem>
-            </Grid>
-        </Grid>
+                </Box>
+            </Stack>
+        </Stack>
     );
 }
