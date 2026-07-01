@@ -173,7 +173,7 @@ export function VoltageLevelTopologyModificationForm({
                     </Button>
                 </Grid>
             </Grid>
-            <Box sx={{ pt: 2 }}>
+            <Box sx={{ pt: 2, flex: 1, minHeight: 0 }}>
                 <CustomAGGrid
                     rowData={mergedRowData}
                     defaultColDef={defaultColDef}
