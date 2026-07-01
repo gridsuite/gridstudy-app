@@ -132,7 +132,7 @@ const GenerationDispatchForm = ({
                 </Grid>
             </Grid>
             <GridSection title="GeneratorsOrdering" />
-            <Stack spacing={2} alignItems="start">
+            <Stack spacing={2} sx={{ width: '100%' }}>
                 <SubstationsGeneratorsOrderingPane substations={substations} />
             </Stack>
         </Box>
