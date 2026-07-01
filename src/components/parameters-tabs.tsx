@@ -96,7 +96,11 @@ enum TAB_VALUES {
 const ParametersTabs: FunctionComponent = () => {
     const dispatch = useDispatch();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
-    const user = useSelector((state: AppState) => state.user);
+    const userProfile = useSelector(
+        (state: AppState) => state.user?.profile ?? null,
+        (a, b) =>
+            a === b || (a?.sub === b?.sub && a?.name === b?.name && a?.email === b?.email && a?.profile === b?.profile)
+    );
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode ?? null);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
@@ -147,7 +151,7 @@ const ParametersTabs: FunctionComponent = () => {
     }, [computationStatus, shortCircuitOneBusStatus, tabValue]);
 
     const loadFlowParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.LOAD_FLOW,
         OptionalServicesStatus.Up,
@@ -162,7 +166,7 @@ const ParametersTabs: FunctionComponent = () => {
     useParametersNotification(ComputingType.LOAD_FLOW, OptionalServicesStatus.Up, loadFlowParametersBackend);
 
     const securityAnalysisParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
@@ -192,7 +196,7 @@ const ParametersTabs: FunctionComponent = () => {
     );
 
     const sensitivityAnalysisBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability,
@@ -208,7 +212,7 @@ const ParametersTabs: FunctionComponent = () => {
     );
 
     const shortCircuitParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.SHORT_CIRCUIT,
         shortCircuitAvailability,
@@ -221,7 +225,7 @@ const ParametersTabs: FunctionComponent = () => {
     useParametersNotification(ComputingType.SHORT_CIRCUIT, shortCircuitAvailability, shortCircuitParametersBackend);
 
     const dynamicSimulationParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.DYNAMIC_SIMULATION,
         dynamicSimulationAvailability,
@@ -238,7 +242,7 @@ const ParametersTabs: FunctionComponent = () => {
     );
 
     const dynamicSecurityAnalysisParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
         dynamicSecurityAnalysisAvailability,
@@ -255,7 +259,7 @@ const ParametersTabs: FunctionComponent = () => {
     );
 
     const dynamicMarginCalculationParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.DYNAMIC_MARGIN_CALCULATION,
         dynamicMarginCalculationAvailability,
@@ -444,7 +448,7 @@ const ParametersTabs: FunctionComponent = () => {
                     <NetworkVisualizationParametersInline
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
-                        user={user}
+                        userProfile={userProfile}
                         parameters={networkVisualizationsParameters}
                     />
                 );
@@ -467,7 +471,7 @@ const ParametersTabs: FunctionComponent = () => {
         currentNode?.type,
         shortCircuitParametersBackend,
         pccMinParameters,
-        user,
+        userProfile,
         dynamicSimulationParametersBackend,
         dynamicSecurityAnalysisParametersBackend,
         dynamicMarginCalculationParametersBackend,
