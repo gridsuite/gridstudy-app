@@ -8,7 +8,7 @@ import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
 import { IntlShape } from 'react-intl';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { FilterConfig, SortConfig, TableType } from 'types/custom-aggrid-types';
-import { GlobalFilter } from './global-filter/global-filter-types';
+import { GlobalFilter } from './global-filter/global-filter.type';
 import { Dispatch } from 'redux';
 import { UUID } from 'node:crypto';
 import {

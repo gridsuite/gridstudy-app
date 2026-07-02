@@ -25,10 +25,10 @@ import { SensiKind } from './sensitivity-analysis-result.type';
 import { SortWay, TableType } from '../../../types/custom-aggrid-types';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { getColumnFiltersFromStore } from '../../../redux/selectors/filter-store-selectors';
 
-import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+import { getSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 
 interface SensitivityExportButtonProps {
     studyUuid: UUID;

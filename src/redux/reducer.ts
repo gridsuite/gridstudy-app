@@ -291,15 +291,18 @@ import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper
 import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 import { isCriteriaFilter } from '../components/results/common/utils';
-import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
-import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter-types';
+import {
+    addGlobalFilterId,
+    getGlobalFilterId,
+} from '../components/results/common/global-filter/utils/global-filter-utils';
+import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter.type';
 import {
     addSelectedGlobalFiltersToTableState,
     clearSelectedGlobalFiltersFromTableState,
     markNotFoundGlobalFiltersAsDeletedInState,
     MAX_RECENT_GLOBAL_FILTERS,
     removeSelectedGlobalFiltersFromTableState,
-} from '../components/results/common/global-filter/global-filter-state.utils';
+} from '../components/results/common/global-filter/utils/global-filter-state.utils';
 
 // Types are defined in reducer.type.ts — import them directly from there
 import {

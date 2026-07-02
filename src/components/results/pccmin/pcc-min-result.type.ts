@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { GlobalFilters } from '../common/global-filter/global-filter.type';
 import { Page, Selector } from '../common/utils';
 import { ColumnContext, numericFilterParams, TableType, textFilterParams } from 'types/custom-aggrid-types';
 import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';

@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import GlobalFilterProvider from './global-filter-provider';
+import GlobalFilterProvider from './adapter/global-filter-provider';
 import { FilterType } from '../utils';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
-import GlobalFilterAutocomplete from './global-filter-autocomplete';
+import GlobalFilter from './ui/global-filter';
 
 export type GlobalFilterSelectorProps = {
     filterCategories?: FilterType[];
@@ -35,7 +35,7 @@ export default function GlobalFilterSelector({
             tableType={tableType}
             tableUuid={tableUuid ?? tableType}
         >
-            <GlobalFilterAutocomplete />
+            <GlobalFilter />
         </GlobalFilterProvider>
     );
 }

@@ -6,7 +6,7 @@
  */
 
 import { PropsWithChildren } from 'react';
-import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
+import { GlobalFilter, RecentGlobalFilter } from '../global-filter.type';
 import type { UUID } from 'node:crypto';
 
 export type GlobalFilterContextValue = {

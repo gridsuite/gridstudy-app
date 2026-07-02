@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
+import { GlobalFilter, RecentGlobalFilter } from '../global-filter.type';
 
 export const MAX_RECENT_GLOBAL_FILTERS = 10;
 

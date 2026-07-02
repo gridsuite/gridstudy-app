@@ -7,7 +7,7 @@
 
 import { useMemo } from 'react';
 import { GlobalFilterContext } from './global-filter-context';
-import { GlobalFilterContextProviderProps, GlobalFilterContextValue } from './global-filter-context-types';
+import { GlobalFilterContextProviderProps, GlobalFilterContextValue } from './global-filter-context.type';
 
 export default function GlobalFilterContextProvider({
     children,

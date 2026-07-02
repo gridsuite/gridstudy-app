@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GlobalFilter } from './global-filter-types';
-import { FilterType } from '../utils';
+import { GlobalFilter } from '../global-filter.type';
+import { FilterType } from '../../utils';
 import { IntlShape } from 'react-intl';
 import { UUID } from 'node:crypto';
 

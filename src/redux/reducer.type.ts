@@ -33,7 +33,7 @@ import type {
 } from '../types/custom-aggrid-types';
 import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
-import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter-types';
+import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter.type';
 import type { CopyType } from '../components/network-modification.type';
 import type {
     CurrentTreeNode,

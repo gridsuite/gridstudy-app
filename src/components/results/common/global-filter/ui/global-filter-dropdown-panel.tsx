@@ -6,14 +6,14 @@
  */
 
 import { Box, Button, Grid, ListItemButton, Paper, Typography } from '@mui/material';
-import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from './global-filter-styles';
+import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from '../global-filter.style';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { PropsWithChildren, RefObject, useCallback, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
-import { FilterType, isCriteriaFilterType } from '../utils';
-import { RECENT_FILTER } from './global-filter-utils';
+import { FilterType, isCriteriaFilterType } from '../../utils';
+import { RECENT_FILTER } from '../utils/global-filter-utils';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {
     DirectoryItemSelector,
@@ -23,8 +23,8 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import SelectedGlobalFilters from './selected-global-filters';
-import { TextWithInfoIcon } from './text-with-info-icon';
-import { useGlobalFilterContext } from './global-filter-context';
+import { LabelWithInfoTooltip } from './label-with-info-tooltip';
+import { useGlobalFilterContext } from '../context/global-filter-context';
 
 const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;
@@ -37,7 +37,7 @@ type GlobalFilterPaperProps = PropsWithChildren<{
     setFilterGroupSelected: (selectedFilterGroup: string) => void;
 }>;
 
-function GlobalFilterPaper({
+function GlobalFilterDropdownPanel({
     children,
     autocompleteRef,
     setOpenedDropdown,
@@ -168,7 +168,7 @@ function GlobalFilterPaper({
                 <Paper sx={resultsGlobalFilterStyles.dropdown}>
                     <Grid container>
                         <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cellHeader}>
-                            <TextWithInfoIcon
+                            <LabelWithInfoTooltip
                                 text="results.globalFilter.categories"
                                 tooltipMessage="results.globalFilter.categoriesHelp"
                             />
@@ -202,7 +202,7 @@ function GlobalFilterPaper({
                                             <ListItemText
                                                 primary={
                                                     category === 'genericFilter' ? (
-                                                        <TextWithInfoIcon
+                                                        <LabelWithInfoTooltip
                                                             text={
                                                                 filteringOnlySubstations
                                                                     ? 'results.globalFilter.substationFilter'
@@ -261,4 +261,4 @@ function GlobalFilterPaper({
     );
 }
 
-export default GlobalFilterPaper;
+export default GlobalFilterDropdownPanel;

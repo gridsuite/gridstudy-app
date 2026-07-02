@@ -6,8 +6,8 @@
  */
 
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { GlobalFilter, RecentGlobalFilter } from './global-filter-types';
-import { FilterType, isCriteriaFilter } from '../utils';
+import { GlobalFilter, RecentGlobalFilter } from '../global-filter.type';
+import { FilterType, isCriteriaFilter } from '../../utils';
 import {
     ElementAttributes,
     ElementType,
@@ -17,7 +17,7 @@ import {
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { computeFullPath } from '../../../../utils/compute-title';
+import { computeFullPath } from '../../../../../utils/compute-title';
 import {
     addToGlobalFilterOptions,
     addToSelectedGlobalFilters,
@@ -25,15 +25,15 @@ import {
     markNotFoundGlobalFiltersAsDeleted,
     removeFromGlobalFilterOptions,
     removeFromSelectedGlobalFilters,
-} from '../../../../redux/actions';
+} from '../../../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../../../../redux/store';
-import { HttpStatusCode } from '../../../../utils/http-status-code';
-import { TableType } from '../../../../types/custom-aggrid-types';
-import { AppState } from '../../../../redux/reducer.type';
-import GlobalFilterContextProvider from './global-filter-context-provider';
+import { AppDispatch } from '../../../../../redux/store';
+import { HttpStatusCode } from '../../../../../utils/http-status-code';
+import { TableType } from '../../../../../types/custom-aggrid-types';
+import { AppState } from '../../../../../redux/reducer.type';
+import GlobalFilterContextProvider from '../context/global-filter-context-provider';
 import { fetchSubstationPropertiesGlobalFilters } from './global-filter-app-data';
-import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
+import { useLocalizedCountries } from '../../../../utils/localized-countries-hook';
 import type { UUID } from 'node:crypto';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];

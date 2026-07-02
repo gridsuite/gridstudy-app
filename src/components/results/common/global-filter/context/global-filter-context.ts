@@ -6,7 +6,7 @@
  */
 
 import { createContext, useContext } from 'react';
-import { GlobalFilterContextValue } from './global-filter-context-types';
+import { GlobalFilterContextValue } from './global-filter-context.type';
 
 export const GlobalFilterContext = createContext<GlobalFilterContextValue | null>(null);
 

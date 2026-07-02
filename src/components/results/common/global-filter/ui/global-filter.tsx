@@ -26,14 +26,14 @@ import {
 } from '@mui/material';
 import { Delete as DeleteIcon, FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
-import { FilterType } from '../utils';
+import { FilterType } from '../../utils';
 import { EquipmentType, OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
-import { GlobalFilter } from './global-filter-types';
-import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
-import GlobalFilterPaper from './global-filter-paper';
+import type { GlobalFilter } from '../global-filter.type';
+import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from '../global-filter.style';
+import GlobalFilterDropdownPanel from './global-filter-dropdown-panel';
 import IconButton from '@mui/material/IconButton';
-import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
-import { useGlobalFilterContext } from './global-filter-context';
+import { getOptionLabel, RECENT_FILTER } from '../utils/global-filter-utils';
+import { useGlobalFilterContext } from '../context/global-filter-context';
 
 const TAG_LIMIT_NUMBER: number = 4;
 
@@ -165,7 +165,7 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
     );
 }
 
-function GlobalFilterAutocomplete() {
+function GlobalFilter() {
     const {
         globalFilterOptions,
         selectedGlobalFilters,
@@ -317,7 +317,7 @@ function GlobalFilterAutocomplete() {
 
     const PaperComponentMemo = useCallback(
         (props: PaperProps) => (
-            <GlobalFilterPaper
+            <GlobalFilterDropdownPanel
                 {...props}
                 autocompleteRef={autocompleteRef}
                 setOpenedDropdown={setOpenedDropdown}
@@ -424,4 +424,4 @@ function GlobalFilterAutocomplete() {
     );
 }
 
-export default GlobalFilterAutocomplete;
+export default GlobalFilter;

@@ -42,7 +42,7 @@ import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { SortConfig, TableType } from '../../../../../types/custom-aggrid-types';
-import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import { GlobalFilter } from '../../../../results/common/global-filter/global-filter.type';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 
 interface SaveSpreadsheetCollectionDialogProps {

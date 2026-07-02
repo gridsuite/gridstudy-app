@@ -26,7 +26,7 @@ import {
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
 import { isSensiKind, mappingTabs, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { PaginationType, TableType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { FilterType, isCriteriaFilterType } from '../common/utils';
