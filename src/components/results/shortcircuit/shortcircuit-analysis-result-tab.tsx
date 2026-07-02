@@ -21,6 +21,7 @@ import { AppState } from '../../../redux/reducer.type';
 import {
     ComputingType,
     EquipmentType,
+    ManagedExportCsvButton,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -53,7 +54,6 @@ import {
 import { downloadZipFile } from '../../../services/utils';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
-import { ManagedExportCsvButton } from '../common/csvDownloader/managed-export-csv-button';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;

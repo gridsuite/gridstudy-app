@@ -11,11 +11,11 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import {
     ComputingType,
     CustomTablePagination,
+    ManagedExportCsvButton,
     MuiStyles,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { ManagedExportCsvButton } from '../common/csvDownloader';
 import { downloadZipFile } from '../../../services/utils';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';

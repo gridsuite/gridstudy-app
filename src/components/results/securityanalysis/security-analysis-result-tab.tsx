@@ -21,6 +21,7 @@ import {
     ComputingType,
     EquipmentType,
     GsLangUser,
+    ManagedExportCsvButton,
     MuiStyles,
     NmkType,
     PARAM_DEVELOPER_MODE,
@@ -57,7 +58,6 @@ import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handle
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { downloadZipFile } from 'services/utils';
-import { ManagedExportCsvButton } from '../common/csvDownloader/managed-export-csv-button';
 
 const styles = {
     toolbarRow: {

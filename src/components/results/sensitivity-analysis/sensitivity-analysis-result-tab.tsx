@@ -14,8 +14,13 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { ManagedExportCsvButton } from '../common/csvDownloader/managed-export-csv-button.js';
+import {
+    ComputingType,
+    EquipmentType,
+    ManagedExportCsvButton,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import {

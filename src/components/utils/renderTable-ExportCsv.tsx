@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, RefObject, useCallback, useEffect } from 'react';
+import { FunctionComponent, Key, RefObject, useCallback, useEffect } from 'react';
 import { ColDef, RowClassParams, RowStyle } from 'ag-grid-community';
 import { CsvExport, CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
@@ -45,6 +45,7 @@ interface RenderTableAndExportCsvProps {
     skipColumnHeaders: boolean;
     computationType: TableType;
     computationSubType: string;
+    exportCsvResetKey?: Key;
 }
 
 export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvProps> = ({
@@ -59,6 +60,7 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     computationSubType,
     skipColumnHeaders = false,
     showLinearProgress = false,
+    exportCsvResetKey,
 }) => {
     const isRowsEmpty = !rows || rows.length === 0;
     const language = useSelector((state: AppState) => state.computedLanguage);
@@ -81,10 +83,11 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
                 <CsvExport
                     columns={columns}
                     tableName={tableName}
-                    disabled={isRowsEmpty}
+                    disabled={!isRowsEmpty}
                     skipColumnHeaders={skipColumnHeaders}
                     language={language}
                     getData={(params: any) => gridRef.current?.api?.exportDataAsCsv(params)}
+                    resetKey={exportCsvResetKey}
                 />
             </Box>
 
