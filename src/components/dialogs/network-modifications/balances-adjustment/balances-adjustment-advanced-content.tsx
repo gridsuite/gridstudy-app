@@ -46,8 +46,8 @@ export default function BalancesAdjustmentAdvancedContent() {
     });
 
     return (
-        <Stack sx={{ width: '100%' }} minWidth={'300px'}>
-            <Grid container sx={{ width: '66.666667%', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Stack sx={{ width: '66%' }} minWidth={'300px'}>
+            <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <Grid>
                     <GridSection title="Loadflow" />
                 </Grid>
@@ -58,7 +58,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                 </Grid>
             </Grid>
 
-            <Stack spacing={2} sx={{ width: '66.666667%' }}>
+            <Stack spacing={2}>
                 <Box sx={{ width: '100%' }}>
                     <CountriesAutocomplete
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE}`}
