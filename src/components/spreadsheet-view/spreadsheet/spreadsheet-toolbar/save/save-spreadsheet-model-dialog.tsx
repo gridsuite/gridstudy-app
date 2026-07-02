@@ -344,7 +344,7 @@ export function SaveSpreadsheetModelDialog({
             }}
             disabledSave={disableSave}
         >
-            <Stack spacing={2} marginTop="auto">
+            <Stack spacing={2} marginTop={2}>
                 <Grid>
                     <RadioInput
                         name={FieldConstants.OPERATION_TYPE}

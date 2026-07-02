@@ -121,7 +121,7 @@ export default function AddSpreadsheetFromModelDialog({ open }: Readonly<AddSpre
                 onClear={() => null}
                 PaperProps={{ sx: dialogStyles.dialogContent }}
             >
-                <Stack spacing={2} marginTop="auto">
+                <Stack spacing={2} marginTop={2}>
                     <Box>
                         <TextInput
                             name={SPREADSHEET_NAME}

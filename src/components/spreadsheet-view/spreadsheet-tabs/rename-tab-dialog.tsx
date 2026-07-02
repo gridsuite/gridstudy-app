@@ -84,9 +84,10 @@ export default function RenameTabDialog({
                 onSave={onSubmit}
                 onClear={() => null}
                 PaperProps={{ sx: { width: '30%' } }}
+                dialogContentSx={{ overflow: 'visible', pt: 1.5 }}
                 {...dialogProps}
             >
-                <Stack spacing={2} marginTop="auto">
+                <Stack spacing={2} marginTop={2}>
                     <Grid>
                         <TextInput
                             name="name"
