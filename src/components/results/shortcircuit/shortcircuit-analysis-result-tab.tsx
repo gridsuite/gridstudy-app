@@ -7,7 +7,7 @@
 
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
-import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
+import { ShortCircuitAnalysisResultTabs, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import {
     computingTypeToShortcircuitTabRedirection,
     ResultTabIndexRedirection,
@@ -18,20 +18,42 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
-import { ComputingType, EquipmentType } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentType,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button';
 import type { UUID } from 'node:crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { PaginationType, ShortcircuitAnalysisTab, TableType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
-import { mappingTabs } from './shortcircuit-analysis-result-content';
+import {
+    convertFilterValues,
+    FROM_COLUMN_TO_FIELD,
+    FROM_COLUMN_TO_FIELD_ONE_BUS,
+    mappingTabs,
+} from './shortcircuit-analysis-result-content';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
+import { BranchSide } from 'components/utils/constants';
+import { getColumnFiltersFromStore } from '../../../redux/selectors/filter-store-selectors';
+import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
+import {
+    downloadShortCircuitResultZippedCsv,
+    ShortCircuitCsvExportParams,
+} from '../../../services/study/short-circuit-analysis';
+import { downloadZipFile } from '../../../services/utils';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+import { ManagedExportCsvButton } from '../common/csvDownloader/managed-export-csv-button';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -54,6 +76,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     currentRootNetworkUuid,
 }) => {
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
+    const { snackError } = useSnackMessage();
 
     const [csvHeader, setCsvHeader] = useState<string[]>([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
@@ -153,6 +176,89 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         return [EquipmentType.VOLTAGE_LEVEL];
     }, []);
 
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
+
+    const sortConfig = useSelector(
+        (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(tabIndex)]
+    );
+
+    const enumValueTranslations = useMemo(() => {
+        const returnedValue: Record<string, string> = {};
+        const enumValuesToTranslate = [
+            'THREE_PHASE',
+            'SINGLE_PHASE',
+            'ACTIVE_POWER',
+            'APPARENT_POWER',
+            'CURRENT',
+            'LOW_VOLTAGE',
+            'HIGH_VOLTAGE',
+            'LOW_SHORT_CIRCUIT_CURRENT',
+            'HIGH_SHORT_CIRCUIT_CURRENT',
+            BranchSide.ONE,
+            BranchSide.TWO,
+            'OTHER',
+        ];
+
+        enumValuesToTranslate.forEach((value) => {
+            returnedValue[value] = (window as any).intl?.formatMessage
+                ? (window as any).intl.formatMessage({ id: value })
+                : value;
+        });
+
+        return returnedValue;
+    }, []);
+
+    const resetKey = `${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}-${tabIndex}-${resultOrLogIndex}-${appTabIndex}`;
+
+    const exportCsv = useCallback(async () => {
+        const analysisType = tabIndex;
+        const oneBusCase = analysisType === ShortCircuitAnalysisType.ONE_BUS;
+        const fromFrontColumnToBackKeys = oneBusCase ? FROM_COLUMN_TO_FIELD_ONE_BUS : FROM_COLUMN_TO_FIELD;
+
+        const backSortConfig = sortConfig?.map((sort) => ({
+            ...sort,
+            colId: fromFrontColumnToBackKeys[sort.colId],
+        }));
+
+        const filters = getColumnFiltersFromStore(TableType.ShortcircuitAnalysis, mappingTabs(analysisType));
+        const updatedFilters = filters
+            ? mapFieldsToColumnsFilter(convertFilterValues(filters), fromFrontColumnToBackKeys)
+            : null;
+
+        const selector = {
+            filter: updatedFilters,
+            sort: backSortConfig,
+        };
+
+        const exportParams: ShortCircuitCsvExportParams = {
+            csvHeader,
+            enumValueTranslations,
+            language,
+            oneBusCase,
+        };
+
+        const response = await downloadShortCircuitResultZippedCsv({
+            studyUuid,
+            currentNodeUuid: nodeUuid,
+            currentRootNetworkUuid,
+            type: analysisType,
+            globalFilters: buildValidGlobalFilters(getSelectedGlobalFilters(TableType.ShortcircuitAnalysis)),
+            selector,
+            csvParams: exportParams,
+        });
+
+        const fileBlob = await response.blob();
+        downloadZipFile(fileBlob, oneBusCase ? 'oneBus-results.zip' : 'allBuses_results.zip');
+    }, [tabIndex, sortConfig, csvHeader, enumValueTranslations, language, studyUuid, nodeUuid, currentRootNetworkUuid]);
+
+    const handleExportError = useCallback(
+        (error: unknown) => {
+            snackWithFallback(snackError, error, { headerId: 'shortCircuitAnalysisCsvResultsError' });
+        },
+        [snackError]
+    );
+
     return (
         <>
             <Tabs value={tabIndex} onChange={handleTabChange}>
@@ -187,13 +293,11 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                 {resultOrLogIndex === RESULTS_TAB_INDEX &&
                     (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ||
                         tabIndex === ShortCircuitAnalysisResultTabs.ONE_BUS) && (
-                        <ShortCircuitExportButton
-                            studyUuid={studyUuid}
-                            nodeUuid={nodeUuid}
-                            currentRootNetworkUuid={currentRootNetworkUuid}
-                            csvHeader={csvHeader}
-                            analysisType={tabIndex}
+                        <ManagedExportCsvButton
+                            exportCsv={exportCsv}
+                            resetKey={resetKey}
                             disabled={isCsvButtonDisabled}
+                            onError={handleExportError}
                         />
                     )}
             </Box>
