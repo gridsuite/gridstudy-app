@@ -76,8 +76,9 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
     }, []);
 
     return (
-        <Grid container onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <Grid container onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} sx={{ width: '100%' }}>
             <Grid container alignItems={'center'} wrap={'nowrap'} sx={{ width: '100%' }}>
+                {/* We tweak flexBasis to stick the column filter and custom menu either next the column name or on the far right of the header */}
                 <Grid
                     container
                     sx={{
