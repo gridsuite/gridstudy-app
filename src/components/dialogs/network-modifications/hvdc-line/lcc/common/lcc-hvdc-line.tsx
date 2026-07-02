@@ -16,8 +16,8 @@ import {
 import { ACTIVE_POWER_SETPOINT, CONVERTERS_MODE, MAX_P, NOMINAL_V, R } from '../../../../../utils/field-constants';
 import { VSC_CONVERTER_MODE, VscConverterMode } from 'components/network/constants';
 import { Grid2 as Grid } from '@mui/material';
-import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
+import { GridSection } from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
 import { LccFormInfos } from './lcc-type';
 import { useIntl } from 'react-intl';
 

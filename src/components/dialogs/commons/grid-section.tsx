@@ -9,7 +9,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { InfoOutlined } from '@mui/icons-material';
 import { mergeSx, type SxStyle } from '@gridsuite/commons-ui';
 
-export interface Grid2SectionProps {
+export interface GridSectionProps {
     title: string;
     heading?: 1 | 2 | 3 | 4 | 5 | 6;
     size?: number;
@@ -18,7 +18,7 @@ export interface Grid2SectionProps {
     tooltipMessage?: string;
     isLiteralText?: boolean;
 }
-export function Grid2Section({
+export function GridSection({
     title,
     heading = 3,
     size = 12,
@@ -26,7 +26,7 @@ export function Grid2Section({
     tooltipEnabled = false,
     tooltipMessage,
     isLiteralText,
-}: Readonly<Grid2SectionProps>) {
+}: Readonly<GridSectionProps>) {
     const intl = useIntl();
     return (
         <Grid container spacing={2} size={size}>

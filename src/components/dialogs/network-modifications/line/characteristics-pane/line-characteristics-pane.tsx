@@ -27,8 +27,8 @@ import {
     X,
 } from 'components/utils/field-constants';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import { Grid2Section as GridSection } from '../../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridSection } from '../../../commons/grid-section';
+import { GridItem } from '../../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';

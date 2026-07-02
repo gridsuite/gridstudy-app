@@ -28,7 +28,7 @@ import {
     SelectInput,
     SwitchInput,
 } from '@gridsuite/commons-ui';
-import { Grid2Section as GridSection } from '../../../commons/grid2-section';
+import { GridSection } from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from 'components/grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';

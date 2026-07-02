@@ -33,8 +33,8 @@ import { useWatch } from 'react-hook-form';
 import { FunctionComponent, useCallback } from 'react';
 import type { UUID } from 'node:crypto';
 import { FormattedMessage } from 'react-intl';
-import { Grid2Section as GridSection } from '../../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridSection } from '../../../commons/grid-section';
+import { GridItem } from '../../../commons/grid-item';
 import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 
 export interface SetPointsLimitsFormProps {

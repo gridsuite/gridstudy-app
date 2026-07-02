@@ -30,7 +30,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { IDENTIFIER_LIST } from './variation-utils';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridItem } from '../../../commons/grid-item';
 import { ItemFilterType, VariationType } from '../../../../../services/network-modification-types';
 import { UUID } from 'node:crypto';
 

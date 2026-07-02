@@ -7,7 +7,7 @@
 import { filledTextField, TextInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from '../../../../../utils/field-constants';
 import { Grid2 as Grid } from '@mui/material';
-import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
+import { GridItem } from '../../../../commons/grid-item';
 
 export default function LccCreationDialogHeader() {
     const LccIdField = (

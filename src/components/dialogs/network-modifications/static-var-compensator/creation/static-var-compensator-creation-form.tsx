@@ -13,7 +13,7 @@ import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import type { UUID } from 'node:crypto';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridItem } from '../../../commons/grid-item';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';

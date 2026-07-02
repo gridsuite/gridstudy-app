@@ -16,8 +16,8 @@ import {
     REPLACING_LINE_1_NAME,
 } from 'components/utils/field-constants';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
-import { Grid2Section as GridSection } from '../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../commons/grid2-item';
+import { GridSection } from '../../commons/grid-section';
+import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { getIdOrValue } from 'components/dialogs/commons/utils';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';

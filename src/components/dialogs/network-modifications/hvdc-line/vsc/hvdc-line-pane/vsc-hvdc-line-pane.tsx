@@ -33,8 +33,8 @@ import { Grid2 as Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { useIntl } from 'react-intl';
-import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
+import { GridSection } from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
 
 interface VscHvdcLinePaneProps {
     id: string;

@@ -23,7 +23,7 @@ import {
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
 } from '../../../../utils/field-constants';
 import FeederBayDirectionCellRenderer from './feeder-bay-direction-cell-render';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridItem } from '../../../commons/grid-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
 import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';

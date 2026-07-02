@@ -89,7 +89,7 @@ import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-co
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createLine } from '../../../../../services/study/network-modifications';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridItem } from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 import { LimitsPane } from '../../../limits/limits-pane';
 import { LineCreationInfos } from '../../../../../services/network-modification-types';

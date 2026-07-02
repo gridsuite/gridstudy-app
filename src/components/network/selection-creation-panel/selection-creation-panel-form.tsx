@@ -13,7 +13,7 @@ import { useWatch } from 'react-hook-form';
 import { ContingencyFilterCreationFields } from './contingency-filter-creation/contingency-filter-creation-fields';
 import { SELECTION_TYPES, selectionTypeToLabel } from './selection-types';
 import { SelectionCreationPaneFields } from './selection-creation-schema';
-import { Grid2Section as GridSection } from '../../dialogs/commons/grid2-section';
+import { GridSection } from '../../dialogs/commons/grid-section';
 
 interface SelectionCreationPanelFormProps {
     pendingState: boolean;

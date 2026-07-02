@@ -9,7 +9,7 @@ import { EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { Box, Grid2 as Grid, TextField } from '@mui/material';
 import LineDialogTabs from '../line-dialog-tabs';
 import { filledTextField, TextInput } from '@gridsuite/commons-ui';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridItem } from '../../../commons/grid-item';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 
 export interface LineModificationDialogHeaderProps {

@@ -8,7 +8,7 @@
 import { Box, Stack } from '@mui/material';
 import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
+import { GridSection } from '../../../../commons/grid-section';
 import {
     RATIO_TAP_CHANGER_STATUS,
     PHASE_TAP_CHANGER_STATUS,

@@ -19,8 +19,8 @@ import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import { CONNECTIVITY, ID, VOLTAGE_LEVEL } from '../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { Grid2Section as GridSection } from '../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../commons/grid2-item';
+import { GridSection } from '../../commons/grid-section';
+import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';

@@ -18,7 +18,7 @@ import {
     unscrollableDialogStyles,
     SelectWithConfirmationInput,
 } from '@gridsuite/commons-ui';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridItem } from '../../../commons/grid-item';
 
 interface ByFormulaFormProps {}
 

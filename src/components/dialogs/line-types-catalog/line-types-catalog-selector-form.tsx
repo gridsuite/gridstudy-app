@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { areIdsEqual, AutocompleteInput, Option } from '@gridsuite/commons-ui';
-import { Grid2Item as GridItem } from '../commons/grid2-item';
-import { Grid2Section as GridSection } from '../commons/grid2-section';
+import { GridItem } from '../commons/grid-item';
+import { GridSection } from '../commons/grid-section';
 import { Grid2 as Grid, Tab, Tabs } from '@mui/material';
 import {
     AERIAL_AREAS,

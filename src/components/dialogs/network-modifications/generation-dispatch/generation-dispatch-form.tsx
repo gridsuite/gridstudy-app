@@ -22,8 +22,8 @@ import {
 import { Box, Grid2 as Grid, Stack, Typography } from '@mui/material';
 import FrequencyReservePane from './frequency-reserve-pane';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
-import { Grid2Item as GridItem } from '../../commons/grid2-item';
-import { Grid2Section as GridSection } from '../../commons/grid2-section';
+import { GridItem } from '../../commons/grid-item';
+import { GridSection } from '../../commons/grid-section';
 import { useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';

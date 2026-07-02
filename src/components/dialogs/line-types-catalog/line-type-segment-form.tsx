@@ -45,7 +45,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
-import { Grid2Item as GridItem } from '../commons/grid2-item';
+import { GridItem } from '../commons/grid-item';
 import {
     AreaTemperatureShapeFactorInfo,
     CurrentLimitsInfo,
@@ -54,7 +54,7 @@ import {
 } from './line-catalog.type';
 import { emptyLineSegment, SegmentFormData, SegmentsFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
-import { Grid2Section as GridSection } from '../commons/grid2-section';
+import { GridSection } from '../commons/grid-section';
 
 const styles = {
     h3: {

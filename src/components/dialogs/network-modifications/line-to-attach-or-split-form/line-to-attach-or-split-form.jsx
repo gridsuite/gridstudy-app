@@ -13,7 +13,7 @@ import { useWatch } from 'react-hook-form';
 import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
-import { Grid2Item as GridItem } from '../../commons/grid2-item';
+import { GridItem } from '../../commons/grid-item.tsx';
 
 export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode, currentRootNetworkUuid }) => {
     const [line1Substation, setLine1Substation] = useState('');

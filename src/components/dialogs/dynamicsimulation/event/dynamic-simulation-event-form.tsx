@@ -8,7 +8,7 @@ import { Grid2 as Grid, TextField } from '@mui/material';
 import { Event, EventDefinition, EventPropertyName } from './types/event.type';
 import { makeComponentFor } from './util/event-rhf';
 import { useIntl } from 'react-intl';
-import { Grid2Item as GridItem } from '../../commons/grid2-item';
+import { GridItem } from '../../commons/grid-item';
 import { EquipmentType, filledTextField } from '@gridsuite/commons-ui';
 
 export type DynamicSimulationBasicEventFormProps = {

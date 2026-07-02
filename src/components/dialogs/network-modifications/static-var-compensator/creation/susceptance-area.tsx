@@ -31,7 +31,7 @@ import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { InputAdornment, Grid2 as Grid, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridItem } from '../../../commons/grid-item';
 
 export const SusceptanceArea = () => {
     const id = AUTOMATON;

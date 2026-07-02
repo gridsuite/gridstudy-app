@@ -27,7 +27,7 @@ import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { Grid2 as Grid } from '@mui/material';
-import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
+import { GridItem } from '../../../../commons/grid-item';
 
 interface FormulaProps {
     name: string;
