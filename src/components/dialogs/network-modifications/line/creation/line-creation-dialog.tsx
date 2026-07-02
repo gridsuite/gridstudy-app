@@ -91,7 +91,7 @@ const LineCreationDialog = ({
 
     const formMethods = useForm<DeepNullable<LineCreationFormData>>({
         defaultValues: lineCreationEmptyFormData,
-        resolver: yupResolver<DeepNullable<LineCreationFormData>>(lineCreationFormSchema),
+        resolver: yupResolver<DeepNullable<LineCreationFormData>>(lineCreationFormSchema(displayConnectivity)),
     });
 
     const { reset, setValue, watch } = formMethods;
@@ -229,7 +229,7 @@ const LineCreationDialog = ({
     return (
         <CustomFormProvider
             isNodeBuilt={isNodeBuilt(currentNode)}
-            validationSchema={lineCreationFormSchema}
+            validationSchema={lineCreationFormSchema(displayConnectivity)}
             {...formMethods}
         >
             <ModificationDialog
