@@ -31,7 +31,7 @@ export function ReportViewerProvider({ reportType, children }: ReportViewerProvi
         getColumnFiltersFromState(state, TableType.Logs, reportType)
     );
 
-    const onFiltersUpdate = useCallback(
+    const updateFilters = useCallback(
         (newFilters: FilterConfig[]) => {
             // Map from generic commons-ui FilterConfig to the app's typed action
             dispatch(updateColumnFiltersAction(TableType.Logs, reportType, newFilters as any));
@@ -41,7 +41,7 @@ export function ReportViewerProvider({ reportType, children }: ReportViewerProvi
 
     const { pagination, setPagination } = useLogsPagination(reportType);
 
-    const onPaginationChange = useCallback(
+    const changePagination = useCallback(
         (config: LogsPaginationConfig) => {
             setPagination(config);
         },
@@ -50,7 +50,7 @@ export function ReportViewerProvider({ reportType, children }: ReportViewerProvi
 
     return (
         <ReportFetcherContext.Provider value={{ fetchLogs, fetchLogMatches }}>
-            <ReportFilterContext.Provider value={{ filters, onFiltersUpdate, pagination, onPaginationChange }}>
+            <ReportFilterContext.Provider value={{ filters, updateFilters, pagination, changePagination }}>
                 {children}
             </ReportFilterContext.Provider>
         </ReportFetcherContext.Provider>

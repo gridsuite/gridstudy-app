@@ -37,7 +37,7 @@ const CustomAggridSortReduxProvider = ({ children }: PropsWithChildren) => {
     );
 
     const setSortConfig = useCallback(
-        (sortParams: SortParams, updatedSortConfig: SortConfig[], _api: GridApi | undefined) => {
+        (sortParams: SortParams, updatedSortConfig: SortConfig[]) => {
             dispatch(setTableSort(sortParams.table, sortParams.tab, updatedSortConfig));
         },
         [dispatch]
