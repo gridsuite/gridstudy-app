@@ -119,7 +119,7 @@ export const StateEstimationParameters = ({
         <CustomFormProvider validationSchema={stateEstimationParametersFormSchema} {...formMethods}>
             <ParameterLayout
                 title="StateEstimation"
-                parameterType={ElementType.STATE_ETIMATION_PARAMETERS}
+                parameterType={ElementType.STATE_ESTIMATION_PARAMETERS}
                 isLoading={stateEstimationParams !== null}
                 resetHandler={clear}
                 validateHandler={handleSubmit(onSubmit, onValidationError)}

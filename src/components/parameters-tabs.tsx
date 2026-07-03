@@ -8,7 +8,18 @@
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, DialogContentText, Divider, Grid, MenuItem, Select, Tab, Tabs, Typography } from '@mui/material';
+import {
+    Box,
+    DialogContentText,
+    Divider,
+    Grid2 as Grid,
+    MenuItem,
+    Select,
+    Stack,
+    Tab,
+    Tabs,
+    Typography,
+} from '@mui/material';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from 'redux/reducer.type';
@@ -40,19 +51,19 @@ import {
     fetchSecurityAnalysisProviders,
     getSecurityAnalysisDefaultLimitReductions,
     getSecurityAnalysisParameters,
-    setSecurityAnalysisParameters,
     getSensitivityAnalysisParameters,
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
+    ParameterLayoutProvider,
     PccMinParametersInLine,
     SecurityAnalysisParametersInline,
     SensitivityAnalysisParametersInline,
+    setSecurityAnalysisParameters,
     ShortCircuitParametersInLine,
     useParametersBackend,
     VoltageInitParametersInLine,
-    ParameterLayoutProvider,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -574,8 +585,8 @@ const ParametersTabs: FunctionComponent = () => {
                 sx={[stylesLayout.rootContainer, isXsScreen && { flexDirection: 'column', flexWrap: 'nowrap' }]}
             >
                 {isXsScreen ? (
-                    <Grid container item sx={tabStyles.listTitleDisplay} flexShrink={0}>
-                        <Grid item xs={6}>
+                    <Grid container sx={tabStyles.listTitleDisplay} flexShrink={0}>
+                        <Grid size={6}>
                             <Select
                                 value={tabValue}
                                 onChange={(e) => handleChangeTab(e.target.value)}
@@ -594,46 +605,47 @@ const ParametersTabs: FunctionComponent = () => {
                         </Grid>
                     </Grid>
                 ) : (
-                    <Grid container item xs={2} direction="column" sx={stylesLayout.columnContainer}>
-                        <Grid item>
-                            <Typography variant="subtitle1" sx={tabStyles.listTitleDisplay}>
-                                <FormattedMessage id="parameters" />
-                            </Typography>
-                        </Grid>
-                        <Grid item xs sx={stylesLayout.listDisplayContainer}>
-                            <Tabs
-                                value={tabValue}
-                                variant="scrollable"
-                                onChange={(event, newValue) => handleChangeTab(newValue)}
-                                aria-label="parameters"
-                                orientation={isXsScreen ? 'horizontal' : 'vertical'}
-                                sx={tabStyles.listDisplay}
-                            >
-                                {tabOptions.map((opt) =>
-                                    opt.value === 'divider' ? (
-                                        <Tab
-                                            key="divider"
-                                            sx={tabStyles.dividerTab}
-                                            label=""
-                                            icon={<Divider sx={{ flexGrow: 1 }} />}
-                                            disabled
-                                        />
-                                    ) : (
-                                        <Tab
-                                            key={opt.value}
-                                            label={<FormattedMessage id={opt.labelId} />}
-                                            value={opt.value}
-                                            disabled={opt.disabled}
-                                        />
-                                    )
-                                )}
-                            </Tabs>
-                        </Grid>
+                    <Grid size={2} sx={stylesLayout.columnContainer}>
+                        <Stack sx={stylesLayout.columnContainer}>
+                            <Grid>
+                                <Typography variant="subtitle1" sx={tabStyles.listTitleDisplay}>
+                                    <FormattedMessage id="parameters" />
+                                </Typography>
+                            </Grid>
+                            <Box sx={stylesLayout.listDisplayContainer}>
+                                <Tabs
+                                    value={tabValue}
+                                    variant="scrollable"
+                                    onChange={(event, newValue) => handleChangeTab(newValue)}
+                                    aria-label="parameters"
+                                    orientation={isXsScreen ? 'horizontal' : 'vertical'}
+                                    sx={tabStyles.listDisplay}
+                                >
+                                    {tabOptions.map((opt) =>
+                                        opt.value === 'divider' ? (
+                                            <Tab
+                                                key="divider"
+                                                sx={tabStyles.dividerTab}
+                                                label=""
+                                                icon={<Divider sx={{ flexGrow: 1 }} />}
+                                                disabled
+                                            />
+                                        ) : (
+                                            <Tab
+                                                key={opt.value}
+                                                label={<FormattedMessage id={opt.labelId} />}
+                                                value={opt.value}
+                                                disabled={opt.disabled}
+                                            />
+                                        )
+                                    )}
+                                </Tabs>
+                            </Box>
+                        </Stack>
                     </Grid>
                 )}
                 <Grid
-                    item
-                    xs={isXsScreen ? 12 : 10}
+                    size={isXsScreen ? 12 : 10}
                     sx={[tabStyles.parametersBox, isXsScreen && { flexGrow: 1, height: 'auto', minHeight: 0 }]}
                 >
                     <GlassPane

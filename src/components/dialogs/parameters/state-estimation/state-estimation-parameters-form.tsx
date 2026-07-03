@@ -6,7 +6,7 @@
  */
 import { SyntheticEvent } from 'react';
 import { TabPanel } from '@gridsuite/commons-ui';
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Grid2 as Grid, Stack, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { TabValue } from './state-estimation-parameters-utils';
 import { StateEstimationGeneralParameters } from './state-estimation-general-parameters';
@@ -27,40 +27,38 @@ export const StateEstimationParametersForm = ({
     tabIndexesWithError,
 }: StateEstimationParametersFormProps) => {
     return (
-        <Grid container>
-            <Grid item xs={12}>
-                <Tabs
-                    value={tabValue}
-                    variant="scrollable"
-                    onChange={handleTabChange}
-                    TabIndicatorProps={{
-                        sx: getTabIndicatorStyle(tabIndexesWithError, tabValue),
-                    }}
-                    sx={{ borderBottom: 1, borderColor: 'divider' }}
-                >
-                    <Tab
-                        label={<FormattedMessage id="StateEstimationParametersGeneralTabLabel" />}
-                        value={TabValue.GENERAL}
-                        sx={getTabStyle(tabIndexesWithError, TabValue.GENERAL)}
-                    />
-                    <Tab
-                        label={<FormattedMessage id="StateEstimationParametersWeightsTabLabel" />}
-                        value={TabValue.WEIGHTS}
-                        sx={getTabStyle(tabIndexesWithError, TabValue.WEIGHTS)}
-                    />
-                    <Tab
-                        label={<FormattedMessage id="StateEstimationParametersQualityTabLabel" />}
-                        value={TabValue.QUALITY}
-                        sx={getTabStyle(tabIndexesWithError, TabValue.QUALITY)}
-                    />
-                    <Tab
-                        label={<FormattedMessage id="StateEstimationParametersLoadboundsTabLabel" />}
-                        value={TabValue.LOADBOUNDS}
-                        sx={getTabStyle(tabIndexesWithError, TabValue.LOADBOUNDS)}
-                    />
-                </Tabs>
-            </Grid>
-            <Grid container item sx={{ paddingTop: 2 }}>
+        <Stack>
+            <Tabs
+                value={tabValue}
+                variant="scrollable"
+                onChange={handleTabChange}
+                TabIndicatorProps={{
+                    sx: getTabIndicatorStyle(tabIndexesWithError, tabValue),
+                }}
+                sx={{ borderBottom: 1, borderColor: 'divider' }}
+            >
+                <Tab
+                    label={<FormattedMessage id="StateEstimationParametersGeneralTabLabel" />}
+                    value={TabValue.GENERAL}
+                    sx={getTabStyle(tabIndexesWithError, TabValue.GENERAL)}
+                />
+                <Tab
+                    label={<FormattedMessage id="StateEstimationParametersWeightsTabLabel" />}
+                    value={TabValue.WEIGHTS}
+                    sx={getTabStyle(tabIndexesWithError, TabValue.WEIGHTS)}
+                />
+                <Tab
+                    label={<FormattedMessage id="StateEstimationParametersQualityTabLabel" />}
+                    value={TabValue.QUALITY}
+                    sx={getTabStyle(tabIndexesWithError, TabValue.QUALITY)}
+                />
+                <Tab
+                    label={<FormattedMessage id="StateEstimationParametersLoadboundsTabLabel" />}
+                    value={TabValue.LOADBOUNDS}
+                    sx={getTabStyle(tabIndexesWithError, TabValue.LOADBOUNDS)}
+                />
+            </Tabs>
+            <Grid container sx={{ paddingTop: 2 }}>
                 <TabPanel value={tabValue} index={TabValue.GENERAL}>
                     <StateEstimationGeneralParameters />
                 </TabPanel>
@@ -74,6 +72,6 @@ export const StateEstimationParametersForm = ({
                     <StateEstimationLoadboundsParameters />
                 </TabPanel>
             </Grid>
-        </Grid>
+        </Stack>
     );
 };

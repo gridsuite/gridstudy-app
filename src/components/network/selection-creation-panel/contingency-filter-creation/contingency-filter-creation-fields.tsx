@@ -13,7 +13,7 @@ import {
     UniqueNameInput,
     PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, NAME } from 'components/utils/field-constants';
 import { FC, useMemo } from 'react';
 import { SELECTION_TYPES } from '../selection-types';

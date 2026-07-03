@@ -30,7 +30,7 @@ import {
     TYPE,
 } from 'components/utils/field-constants';
 import { v4 as uuid4 } from 'uuid';
-import { Alert, Grid2 as Grid } from '@mui/material';
+import { Alert, Grid2 as Grid, Stack } from '@mui/material';
 import type Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
@@ -284,7 +284,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     );
 
     return (
-        <Grid container spacing={2} paddingTop={1} direction="column" wrap="nowrap" sx={[{ height: '100%' }]}>
+        <Stack spacing={2} paddingTop={1} sx={[{ height: '100%' }]}>
             <Grid sx={{ width: 400, maxWidth: '100%' }}>{equipmentTypeField}</Grid>
             <Grid container justifyContent="space-between" alignItems="center">
                 <Grid>
@@ -327,6 +327,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                     />
                 </Grid>
             )}
-        </Grid>
+        </Stack>
     );
 }

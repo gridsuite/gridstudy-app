@@ -10,15 +10,11 @@ import { IconButton, MenuItem, Select } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { useCustomAggridColumnFilter } from './hooks/use-custom-aggrid-column-filter';
+import { useCustomAggridColumnFilter } from '@gridsuite/commons-ui';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { BooleanFilterValue } from './utils/aggrid-filters-utils';
-import {
-    CustomAggridFilterParams,
-    FILTER_DATA_TYPES,
-    FILTER_TEXT_COMPARATORS,
-} from '../../../types/custom-aggrid-types';
+import { CustomAggridFilterParams, FILTER_DATA_TYPES } from '../../../types/custom-aggrid-types';
 
 const styles = {
     input: {
@@ -37,7 +33,7 @@ export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterPara
         const newValue = event.target.value;
         handleChangeFilterValue({
             value: newValue,
-            type: FILTER_TEXT_COMPARATORS.EQUALS,
+            type: 'booleanMatches',
             dataType: FILTER_DATA_TYPES.BOOLEAN,
         });
     };
