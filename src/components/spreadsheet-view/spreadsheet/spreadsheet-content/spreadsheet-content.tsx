@@ -174,6 +174,12 @@ export const SpreadsheetContent = memo(
             );
         }, [equipments, currentNode.id, nodeAliases]);
 
+        useEffect(() => {
+            if (gridRef.current?.api) {
+                gridRef.current.api.setGridOption('rowData', transformedRowData);
+            }
+        }, [transformedRowData, gridRef, isGridReady]);
+
         const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
             getColumnFiltersFromState(state, TableType.Spreadsheet, tableDefinition?.uuid)
         );
