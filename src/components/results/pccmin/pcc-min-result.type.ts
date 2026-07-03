@@ -9,10 +9,10 @@ import type { UUID } from 'node:crypto';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
 import { ColumnContext, numericFilterParams, TableType, textFilterParams } from 'types/custom-aggrid-types';
-import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
+import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import { ICellRendererParams } from 'ag-grid-community';
 
 export interface SinglePccMinResultInfos {

@@ -9,9 +9,9 @@ import { Grid2 as Grid, IconButton, InputAdornment, Stack, TextField, Typography
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
+import { CustomAggridComparatorSelector } from '@gridsuite/commons-ui';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { useCustomAggridColumnFilter } from './hooks/use-custom-aggrid-column-filter';
+import { useCustomAggridColumnFilter } from '@gridsuite/commons-ui';
 
 import { CustomAggridFilterParams } from '../../../types/custom-aggrid-types';
 
