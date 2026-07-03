@@ -24,7 +24,7 @@ import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
 import { ACTIVE_VARIATION_MODES, REACTIVE_VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { IDENTIFIER_LIST } from './variation-utils';
-import GridItem from '../../../commons/grid-item';
+import { GridItem } from '../../../commons/grid-item';
 import { ItemFilterType, VariationType } from '../../../../../services/network-modification-types';
 
 const LOADS = [EquipmentType.LOAD];

@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { areIdsEqual, AutocompleteInput, CATEGORIES_TABS, LineTypeInfo, Option } from '@gridsuite/commons-ui';
-import GridItem from '../commons/grid-item';
-import GridSection from '../commons/grid-section';
-import { Grid, Tab, Tabs } from '@mui/material';
+import { GridItem } from '../commons/grid-item';
+import { GridSection } from '../commons/grid-section';
+import { Grid2 as Grid, Tab, Tabs } from '@mui/material';
 import {
     AERIAL_AREAS,
     AERIAL_TEMPERATURES,
