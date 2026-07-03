@@ -86,6 +86,30 @@ export const areNumbersOrdered = (array?: unknown) => {
     return true;
 };
 
+export function mergeByIdKeepOrder<T extends { id: string }>(array1: T[], array2: T[]): T[] {
+    if (array2.length === 0) {
+        return array1;
+    }
+    if (array1.length === 0) {
+        return array2;
+    }
+
+    const array2ById = new Map<string, T>();
+    for (const x of array2) array2ById.set(x.id, x);
+
+    const result: T[] = [];
+
+    // keep array1 order; replace when id exists in array2
+    for (const x of array1) {
+        result.push(array2ById.get(x.id) ?? x);
+        array2ById.delete(x.id); // remaining are “new” ids
+    }
+
+    // append new items from array2 in array2 order
+    result.push(...array2ById.values());
+    return result;
+}
+
 export function toModificationUnsetOperation<T>(
     value: T
 ): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
