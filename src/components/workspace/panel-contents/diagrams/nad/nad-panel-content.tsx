@@ -45,9 +45,12 @@ export const NadPanelContent = memo(function NadPanelContent({
 
     const { handleShowInSpreadsheet } = useDiagramNavigation();
 
-    // Voltage-level band filtering using CSS classes
+    // Voltage-level band filtering using CSS classes. The context key changes only when a different NAD
+    // is loaded (nadConfigUuid), which resets the filter. Changing the filter, the node or the root
+    // network keeps the current selection.
+    const filterContextKey = diagram.nadConfigUuid ?? '';
     const { presentNominalVoltages, selectedNominalVoltages, setSelectedNominalVoltages, unselectedVlNames } =
-        useNadVoltageLevelFilter(diagram.svg?.metadata as DiagramMetadata | null | undefined);
+        useNadVoltageLevelFilter(diagram.svg?.metadata as DiagramMetadata | null | undefined, filterContextKey);
 
     // Information-layer filtering (P/Q values, % IST, arrows, labels) using CSS classes
     const { selectedInfos, toggleSelectedInfo, hiddenInfoSelectors } = useNadInfoFilter();
@@ -121,9 +124,9 @@ export const NadPanelContent = memo(function NadPanelContent({
             {!globalError && (
                 <NadNavigationSidebar
                     nadPanelId={panelId}
-                    allVoltages={presentNominalVoltages}
-                    selectedVoltages={selectedNominalVoltages}
-                    onVoltagesChange={setSelectedNominalVoltages}
+                    allNominalVoltages={presentNominalVoltages}
+                    selectedNominalVoltages={selectedNominalVoltages}
+                    onNominalVoltagesChange={setSelectedNominalVoltages}
                     selectedInfos={selectedInfos}
                     onSelectedInfoToggle={toggleSelectedInfo}
                 />

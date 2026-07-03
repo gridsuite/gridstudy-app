@@ -6,16 +6,18 @@
  */
 import { PropsWithChildren, ReactNode } from 'react';
 import { Grid2 as Grid, Grid2Props as GridProps, Tooltip } from '@mui/material';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 export interface Grid2ItemProps extends PropsWithChildren {
     size?: GridProps['size'];
     alignItem?: string;
     tooltip?: ReactNode;
+    sx?: GridProps['sx'];
 }
 
-export function Grid2Item({ children, size = 6, alignItem = 'flex-start', tooltip }: Readonly<Grid2ItemProps>) {
+export function Grid2Item({ children, size = 6, alignItem = 'flex-start', tooltip, sx }: Readonly<Grid2ItemProps>) {
     return (
-        <Grid size={size} sx={{ alignItems: alignItem }}>
+        <Grid size={size} sx={mergeSx({ alignItems: alignItem }, sx)}>
             {children &&
                 (tooltip ? (
                     <Tooltip title={tooltip}>

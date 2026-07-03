@@ -8,7 +8,7 @@
 import { memo, useCallback, useMemo } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import { History as HistoryIcon, Info as InfoIcon } from '@mui/icons-material';
-import { VoltageLevelIcon } from '@gridsuite/commons-ui';
+import { NominalVoltageIcon } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import {
@@ -31,18 +31,18 @@ const voltageFilterStyles: NominalVoltageFilterStyles = {
 
 interface NadNavigationSidebarProps {
     readonly nadPanelId: UUID;
-    readonly allVoltages: number[];
-    readonly selectedVoltages: number[];
-    readonly onVoltagesChange: (checkedVoltages: number[]) => void;
+    readonly allNominalVoltages: number[];
+    readonly selectedNominalVoltages: number[];
+    readonly onNominalVoltagesChange: (checkedNominalVoltages: number[]) => void;
     readonly selectedInfos: NadSelectedInfos;
     readonly onSelectedInfoToggle: (key: NadSelectedInfoKey) => void;
 }
 
 export const NadNavigationSidebar = memo(function NadNavigationSidebar({
     nadPanelId,
-    allVoltages,
-    selectedVoltages,
-    onVoltagesChange,
+    allNominalVoltages,
+    selectedNominalVoltages,
+    onNominalVoltagesChange,
     selectedInfos,
     onSelectedInfoToggle,
 }: NadNavigationSidebarProps) {
@@ -71,7 +71,7 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
     const reversedHistory = useMemo(() => [...(navigationHistory || [])].reverse(), [navigationHistory]);
 
     const hasHistory = reversedHistory.length > 0;
-    const hasVoltages = allVoltages.length > 0;
+    const hasNominalVoltages = allNominalVoltages.length > 0;
 
     const sections = useMemo<SidebarSection[]>(
         () => [
@@ -91,14 +91,14 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
             },
             {
                 id: 'voltage',
-                icon: <VoltageLevelIcon fontSize="medium" />,
+                icon: <NominalVoltageIcon fontSize="medium" />,
                 titleId: 'nadVoltageFilter',
-                isDisabled: !hasVoltages,
+                isDisabled: !hasNominalVoltages,
                 content: (
                     <NominalVoltageFilter
-                        nominalVoltages={allVoltages}
-                        filteredNominalVoltages={selectedVoltages}
-                        onChange={onVoltagesChange}
+                        nominalVoltages={allNominalVoltages}
+                        filteredNominalVoltages={selectedNominalVoltages}
+                        onChange={onNominalVoltagesChange}
                         isDisabled={!isBuilt}
                         styles={voltageFilterStyles}
                     />
@@ -124,10 +124,10 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
             isBuilt,
             associatedVoltageLevelIds,
             handleNavigationSidebarClick,
-            hasVoltages,
-            allVoltages,
-            selectedVoltages,
-            onVoltagesChange,
+            hasNominalVoltages,
+            allNominalVoltages,
+            selectedNominalVoltages,
+            onNominalVoltagesChange,
             selectedInfos,
             onSelectedInfoToggle,
         ]
