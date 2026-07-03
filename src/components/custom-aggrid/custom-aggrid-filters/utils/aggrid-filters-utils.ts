@@ -22,8 +22,8 @@ interface FilterModel {
 const generateEnumFilterModel = (filter: FilterConfig) => {
     const filterValue = filter.value as string[];
     return {
-        type: 'text',
-        filterType: 'customInRange',
+        type: 'customInRange',
+        filterType: 'text',
         filter: filterValue,
     };
 };
