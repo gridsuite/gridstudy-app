@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     AmpereAdornment,
@@ -222,7 +222,7 @@ export function LimitsSidePane({
                         spacing={2}
                         sx={{ paddingBottom: 1, paddingTop: 3 }}
                     >
-                        <Grid item xs={4}>
+                        <Grid size={4}>
                             <TextInput
                                 name={`${name}.${NAME}`}
                                 label="name"
@@ -230,7 +230,7 @@ export function LimitsSidePane({
                                 disabled={disabled}
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid size={4}>
                             <SelectInput
                                 label="Applicability"
                                 options={Object.values(APPLICABILITY)}
@@ -243,7 +243,7 @@ export function LimitsSidePane({
                                 formProps={{ error: !!error?.message }}
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid size={4}>
                             <FloatInput
                                 name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
                                 label="PermanentCurrentLimitText"

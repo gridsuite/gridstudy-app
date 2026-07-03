@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { Grid } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import {
     CustomFormProvider,
     DirectoryItemsInput,
@@ -145,9 +145,9 @@ export default function AddSpreadsheetsFromCollectionDialog({ open }: Readonly<D
                     onClear={() => null}
                     PaperProps={{ sx: dialogStyles.dialogContent }}
                 >
-                    <Grid container spacing={2} direction="column">
-                        <Grid item>{updateModeSelectionField}</Grid>
-                        <Grid item xs>
+                    <Stack spacing={2}>
+                        <Box>{updateModeSelectionField}</Box>
+                        <Box>
                             <DirectoryItemsInput
                                 name={SPREADSHEET_COLLECTION}
                                 elementType={ElementType.SPREADSHEET_CONFIG_COLLECTION}
@@ -155,8 +155,8 @@ export default function AddSpreadsheetsFromCollectionDialog({ open }: Readonly<D
                                 label="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
                                 allowMultiSelect={false}
                             />
-                        </Grid>
-                    </Grid>
+                        </Box>
+                    </Stack>
                 </ModificationDialog>
             </CustomFormProvider>
 
