@@ -7,7 +7,7 @@
 
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { Box, Grid, LinearProgress } from '@mui/material';
+import { Box, Grid2 as Grid, LinearProgress } from '@mui/material';
 import DynamicSimulationResultChart from './timeseries/dynamic-simulation-result-chart';
 import { memo, SyntheticEvent, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Typography } from '@mui/material';
+import { Grid2 as Grid, Typography } from '@mui/material';
 import { areIdsEqual, AutocompleteInput, EquipmentType, getObjectId, snackWithFallback } from '@gridsuite/commons-ui';
 import { useEffect, useState } from 'react';
 import { PercentageArea } from '../../percentage-area/percentage-area';
@@ -13,7 +13,7 @@ import { useWatch } from 'react-hook-form';
 import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
-import GridItem from '../../commons/grid-item';
+import { GridItem } from '../../commons/grid-item.tsx';
 
 export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode, currentRootNetworkUuid }) => {
     const [line1Substation, setLine1Substation] = useState('');
