@@ -17,6 +17,7 @@ import WaitingLoader from './utils/waiting-loader';
 import { WorkspaceContainer } from './workspace/core/workspace-container';
 import useStudyPath from 'hooks/use-study-path';
 import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
+import { CustomAggridReduxProvider } from './custom-aggrid/custom-aggrid-redux-provider';
 
 const styles = {
     paneContainer: {
@@ -62,15 +63,17 @@ const StudyPane = () => {
     useSpreadsheetEquipments();
 
     return (
-        <Box sx={styles.paneContainer}>
-            <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
-            <Box sx={styles.breadCrumbs}>
-                <StudyPathBreadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
+        <CustomAggridReduxProvider>
+            <Box sx={styles.paneContainer}>
+                <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
+                <Box sx={styles.breadCrumbs}>
+                    <StudyPathBreadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
+                </Box>
+                <Box sx={styles.workspaceContainer}>
+                    <WorkspaceContainer />
+                </Box>
             </Box>
-            <Box sx={styles.workspaceContainer}>
-                <WorkspaceContainer />
-            </Box>
-        </Box>
+        </CustomAggridReduxProvider>
     );
 };
 

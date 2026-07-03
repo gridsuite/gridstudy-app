@@ -27,6 +27,11 @@ const serverSettings: CommonServerOptions = {
 };
 
 export default defineConfig((_config) => ({
+    define: {
+        // Work around react-draggable accessing process.env in browser bundles:
+        // https://github.com/react-grid-layout/react-draggable/issues/806
+        'process.env.DRAGGABLE_DEBUG': false,
+    },
     plugins: [
         react(),
         process.env.VITE_CHECKER_ENABLED === 'true' &&
