@@ -19,13 +19,14 @@ export type NadSelectedInfoKey =
 export type NadSelectedInfos = Record<NadSelectedInfoKey, boolean>;
 
 // CSS selectors (on the rendered NAD SVG) hidden when the matching info is turned off.
-// Values are <text> elements, arrows are <path> elements carrying both the direction class
-// (nad-arrow-in/out) and the edge-info type class (nad-active/nad-reactive).
+// Values are <text> elements, arrows are <path> elements carrying the direction class
+// (nad-arrow-in/out). As in the theme css-vars files, active arrows carry only the direction
+// class while reactive arrows also carry nad-reactive.
 const INFO_SELECTORS: Record<NadSelectedInfoKey, string[]> = {
     activePowerValue: ['text.nad-active'],
     reactivePowerValue: ['text.nad-reactive'],
     permanentLimitPercentage: ['text.nad-permanent-limit-percentage'],
-    activePowerArrow: ['.nad-active.nad-arrow-in', '.nad-active.nad-arrow-out'],
+    activePowerArrow: ['.nad-arrow-in:not(.nad-reactive)', '.nad-arrow-out:not(.nad-reactive)'],
     reactivePowerArrow: ['.nad-reactive.nad-arrow-in', '.nad-reactive.nad-arrow-out'],
     voltageLevelName: ['.nad-text-nodes'],
 };
