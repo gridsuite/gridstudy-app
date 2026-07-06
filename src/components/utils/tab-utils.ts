@@ -45,6 +45,9 @@ export const stylesLayout = {
 } as const satisfies MuiStyles;
 
 export const tabStyles = {
+    menuSelect: (theme) => ({
+        backgroundColor: theme.palette.mode === 'light' ? 'white' : 'none',
+    }),
     listTitleDisplay: (theme) => ({
         paddingTop: 1,
         paddingBottom: 1,
@@ -73,6 +76,7 @@ export const tabStyles = {
         '.MuiTabScrollButton-root:nth-of-type(1)': {
             height: '30px', //40px by default
         },
+        height: '100%',
     }),
     parametersBox: (theme) => ({
         backgroundColor:
@@ -86,9 +90,11 @@ export const tabStyles = {
     contentBox: (theme) => ({
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
-        paddingLeft: theme.spacing(8),
-        paddingRight: theme.spacing(8),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
         height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
     }),
     dividerTab: (theme) => ({
         padding: 0,

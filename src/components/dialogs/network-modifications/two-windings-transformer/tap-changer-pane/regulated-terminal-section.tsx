@@ -20,8 +20,8 @@ import {
 import { SIDE } from '../../../../network/constants';
 import { getRegulationTypeLabel, getTapSideLabel } from './tap-changer-pane-utils';
 import { useIntl } from 'react-intl';
-import { Grid2Section as GridSection } from '../../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridSection } from '../../../commons/grid-section';
+import { GridItem } from '../../../commons/grid-item';
 import { Grid2 as Grid } from '@mui/material';
 import { getTapChangerEquipmentSectionTypeValue } from '../../../../utils/utils';
 import type { UUID } from 'node:crypto';

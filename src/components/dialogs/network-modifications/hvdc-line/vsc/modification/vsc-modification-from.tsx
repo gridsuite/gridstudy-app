@@ -17,13 +17,13 @@ import ConverterStationPane from '../converter-station/converter-station-pane';
 import type { UUID } from 'node:crypto';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { PowerMeasurementsForm, TextInput } from '@gridsuite/commons-ui';
-import { Box, Grid, TextField } from '@mui/material';
+import { Box, Grid2 as Grid, TextField } from '@mui/material';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
-import GridItem from '../../../../commons/grid-item';
+import { GridItem } from '../../../../commons/grid-item';
 import { VSC_TABS } from '../vsc-utils';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
-import { Grid2Section } from '../../../../commons/grid2-section';
+import { GridSection } from '../../../../commons/grid-section';
 
 interface VscModificationFormProps {
     tabIndex: number;
@@ -80,7 +80,7 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{vscIdField}</GridItem>
                 <GridItem size={4}>{vscNameField}</GridItem>
             </Grid>
@@ -128,14 +128,14 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
                 />
             </Box>
             <Box hidden={tabIndex !== VSC_TABS.STATE_ESTIMATION} p={1}>
-                <Grid2Section title="MeasurementsSection" />
-                <Grid2Section title={CONVERTER_STATION_1} />
+                <GridSection title="MeasurementsSection" />
+                <GridSection title={CONVERTER_STATION_1} />
                 <PowerMeasurementsForm
                     activePowerMeasurement={vscToModify?.converterStation1?.measurementP}
                     reactivePowerMeasurement={vscToModify?.converterStation1?.measurementQ}
                     idPrefix={CONVERTER_STATION_1}
                 />
-                <Grid2Section title={CONVERTER_STATION_2} />
+                <GridSection title={CONVERTER_STATION_2} />
                 <PowerMeasurementsForm
                     activePowerMeasurement={vscToModify?.converterStation2?.measurementP}
                     reactivePowerMeasurement={vscToModify?.converterStation2?.measurementQ}

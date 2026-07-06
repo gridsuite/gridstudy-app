@@ -29,12 +29,12 @@ import {
 } from '../../../../../utils/field-constants';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
 import { FunctionComponent, useEffect } from 'react';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { useIntl } from 'react-intl';
-import GridSection from '../../../../commons/grid-section';
-import GridItem from '../../../../commons/grid-item';
+import { GridSection } from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
 
 interface VscHvdcLinePaneProps {
     id: string;
@@ -185,22 +185,22 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
     );
 
     return (
-        <Grid container spacing={2}>
+        <>
             <GridSection title="Characteristics" />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem>{dcNominalVoltageField}</GridItem>
                 <GridItem>{dcResistanceField}</GridItem>
                 <GridItem>{maximumActivePowerField}</GridItem>
             </Grid>
 
             <GridSection title={'Limits'} />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem>{operatorActivePowerLimitSide1Field}</GridItem>
                 <GridItem>{operatorActivePowerLimitSide2Field}</GridItem>
             </Grid>
 
             <GridSection title={'Setpoints'} />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem>{converterModeField}</GridItem>
                 <GridItem>{activePowerField}</GridItem>
                 <GridItem size={12}>{AngleDroopActivePowerControl}</GridItem>
@@ -209,7 +209,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             </Grid>
 
             <PropertiesForm isModification={isEquipementModification} />
-        </Grid>
+        </>
     );
 };
 

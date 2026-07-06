@@ -18,7 +18,7 @@ import {
 import { FormFiller } from './formFiller.js';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
-import { Grid2Item as GridItem } from '../commons/grid2-item';
+import { GridItem } from '../commons/grid-item';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
 
