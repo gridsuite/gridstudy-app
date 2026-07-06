@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Grid2 as Grid } from '@mui/material';
+import { Grid2 as Grid, Stack } from '@mui/material';
 import {
     ESTIM_ALGO_TYPE,
     ESTIM_LOG_LEVEL,
@@ -17,7 +17,7 @@ import { parametersStyles } from '../util/styles';
 
 export const StateEstimationGeneralParameters = () => {
     return (
-        <Grid container direction={'column'}>
+        <Stack>
             <Grid container alignItems="center" spacing={2}>
                 <Grid size={10} sx={parametersStyles.parameterName}>
                     <FieldLabel label={'StateEstimationParametersPrincipalObservableZoneLabel'} />
@@ -60,6 +60,6 @@ export const StateEstimationGeneralParameters = () => {
                     />
                 </Grid>
             </Grid>
-        </Grid>
+        </Stack>
     );
 };

@@ -37,8 +37,8 @@ import {
     getComputedRegulationTypeId,
     getComputedTapSideId,
 } from './ratio-tap-changer-pane-utils';
-import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
-import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
+import { GridItem } from '../../../../commons/grid-item';
+import { GridSection } from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
 import {
     TapChangerMapInfos,

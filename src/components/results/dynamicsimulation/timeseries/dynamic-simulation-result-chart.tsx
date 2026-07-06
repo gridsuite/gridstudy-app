@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid, Paper, TextField, ToggleButton, Tooltip, Typography } from '@mui/material';
+import { Box, Grid2 as Grid, Paper, TextField, ToggleButton, Tooltip, Typography } from '@mui/material';
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
 import { ChangeEvent, memo, useCallback, useMemo, useRef, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
@@ -347,7 +347,7 @@ function DynamicSimulationResultChart({
             <Box>
                 <Grid container sx={styles.toolBar} alignItems="center" justifyContent="center">
                     {!plotIdScale && (
-                        <Grid item>
+                        <Grid>
                             <Paper elevation={2} sx={styles.paperOptionsGroup}>
                                 <ToggleButton size={'small'} value="sync" selected={sync} onChange={handleSync}>
                                     {sync ? (
@@ -390,7 +390,7 @@ function DynamicSimulationResultChart({
                         </Grid>
                     )}
                     {!plotIdScale && (
-                        <Grid item ml={2}>
+                        <Grid ml={2}>
                             <TooltipIconButton
                                 tooltip={intl.formatMessage({
                                     id: 'DynamicSimulationAddGraph',
@@ -402,8 +402,8 @@ function DynamicSimulationResultChart({
                             </TooltipIconButton>
                         </Grid>
                     )}
-                    <Grid item xs />
-                    <Grid item xs={'auto'}>
+                    <Grid size="grow" />
+                    <Grid size={'auto'}>
                         <Paper elevation={2} sx={styles.paperOptionsGroup}>
                             <ToggleButton
                                 sx={styles.fullViewButton}
@@ -466,8 +466,7 @@ function DynamicSimulationResultChart({
             >
                 <Grid container sx={{ height: '100%' }}>
                     <Grid
-                        item
-                        xs
+                        size="grow"
                         sx={{
                             height: '100%',
                         }}
@@ -520,8 +519,7 @@ function DynamicSimulationResultChart({
                         </Box>
                     </Grid>
                     <Grid
-                        item
-                        xs={'auto'}
+                        size={'auto'}
                         sx={{
                             height: '100%',
                         }}
