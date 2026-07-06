@@ -648,11 +648,7 @@ const ParametersTabs: FunctionComponent = () => {
                     size={isXsScreen ? 12 : 10}
                     sx={[tabStyles.parametersBox, isXsScreen && { flexGrow: 1, height: 'auto', minHeight: 0 }]}
                 >
-                    <GlassPane
-                        active={shouldDisplayGlassPane}
-                        loadingMessageText="computationInProgress"
-                        sx={{ height: '100%', position: 'relative' }}
-                    >
+                    <GlassPane active={shouldDisplayGlassPane} loadingMessageText="computationInProgress">
                         <Box sx={[tabStyles.contentBox]}>
                             <ParameterLayoutProvider isXsScreen={isXsScreen}>{displayTab()}</ParameterLayoutProvider>
                         </Box>

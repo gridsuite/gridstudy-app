@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, ReactNode } from 'react';
-import { Box, CircularProgress, SxProps } from '@mui/material';
+import { ReactNode } from 'react';
+import { Box, CircularProgress } from '@mui/material';
+import { FunctionComponent } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 
@@ -30,12 +31,11 @@ interface GlassPaneProps {
     active: boolean;
     children: ReactNode;
     loadingMessageText?: string;
-    sx?: SxProps;
 }
 
-const GlassPane: FunctionComponent<GlassPaneProps> = ({ active, children, loadingMessageText, sx }) => {
+const GlassPane: FunctionComponent<GlassPaneProps> = ({ active, children, loadingMessageText }) => {
     return (
-        <Box sx={sx}>
+        <>
             {active && (
                 <Box sx={styles.glassPane}>
                     <CircularProgress size={64} />
@@ -43,7 +43,7 @@ const GlassPane: FunctionComponent<GlassPaneProps> = ({ active, children, loadin
                 </Box>
             )}
             {children}
-        </Box>
+        </>
     );
 };
 
