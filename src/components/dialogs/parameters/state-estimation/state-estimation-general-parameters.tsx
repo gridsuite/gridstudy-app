@@ -17,49 +17,53 @@ import { parametersStyles } from '../util/styles';
 
 export const StateEstimationGeneralParameters = () => {
     return (
-        <Stack>
-            <Grid container alignItems="center" spacing={2}>
-                <Grid size={10} sx={parametersStyles.parameterName}>
-                    <FieldLabel label={'StateEstimationParametersPrincipalObservableZoneLabel'} />
-                </Grid>
-                <Grid size={2}>
-                    <SwitchInput name={`${TabValue.GENERAL}.${PRINCIPAL_OBSERVABLE_ZONE}`} />
-                </Grid>
-            </Grid>
+        <Grid container>
+            <Grid size={8}>
+                <Stack>
+                    <Grid container alignItems="center" spacing={2}>
+                        <Grid size={10} sx={parametersStyles.parameterName}>
+                            <FieldLabel label={'StateEstimationParametersPrincipalObservableZoneLabel'} />
+                        </Grid>
+                        <Grid size={2}>
+                            <SwitchInput name={`${TabValue.GENERAL}.${PRINCIPAL_OBSERVABLE_ZONE}`} />
+                        </Grid>
+                    </Grid>
 
-            <Grid container alignItems="center" spacing={2}>
-                <Grid size={10} sx={parametersStyles.parameterName}>
-                    <FieldLabel label={'StateEstimationParametersUniquePhaseLabel'} />
-                </Grid>
-                <Grid size={2}>
-                    <SwitchInput name={`${TabValue.GENERAL}.${UNIQUE_PHASE}`} />
-                </Grid>
-            </Grid>
+                    <Grid container alignItems="center" spacing={2}>
+                        <Grid size={10} sx={parametersStyles.parameterName}>
+                            <FieldLabel label={'StateEstimationParametersUniquePhaseLabel'} />
+                        </Grid>
+                        <Grid size={2}>
+                            <SwitchInput name={`${TabValue.GENERAL}.${UNIQUE_PHASE}`} />
+                        </Grid>
+                    </Grid>
 
-            <Grid container spacing={1} paddingTop={3}>
-                <Grid size={8} sx={parametersStyles.parameterName}>
-                    <FieldLabel label={'StateEstimationParametersLogLevelLabel'} />
-                </Grid>
-                <Grid size={4}>
-                    <MuiSelectInput
-                        name={`${TabValue.GENERAL}.${ESTIM_LOG_LEVEL}`}
-                        options={estimLogLevelValues}
-                        fullWidth
-                    />
-                </Grid>
+                    <Grid container spacing={1} paddingTop={3}>
+                        <Grid size={8} sx={parametersStyles.parameterName}>
+                            <FieldLabel label={'StateEstimationParametersLogLevelLabel'} />
+                        </Grid>
+                        <Grid size={4}>
+                            <MuiSelectInput
+                                name={`${TabValue.GENERAL}.${ESTIM_LOG_LEVEL}`}
+                                options={estimLogLevelValues}
+                                fullWidth
+                            />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={1} paddingTop={3}>
+                        <Grid size={8} sx={parametersStyles.parameterName}>
+                            <FieldLabel label={'StateEstimationParametersAlgoTypeLabel'} />
+                        </Grid>
+                        <Grid size={4}>
+                            <MuiSelectInput
+                                name={`${TabValue.GENERAL}.${ESTIM_ALGO_TYPE}`}
+                                options={estimAlgoTypeValues}
+                                fullWidth
+                            />
+                        </Grid>
+                    </Grid>
+                </Stack>
             </Grid>
-            <Grid container spacing={1} paddingTop={3}>
-                <Grid size={8} sx={parametersStyles.parameterName}>
-                    <FieldLabel label={'StateEstimationParametersAlgoTypeLabel'} />
-                </Grid>
-                <Grid size={4}>
-                    <MuiSelectInput
-                        name={`${TabValue.GENERAL}.${ESTIM_ALGO_TYPE}`}
-                        options={estimAlgoTypeValues}
-                        fullWidth
-                    />
-                </Grid>
-            </Grid>
-        </Stack>
+        </Grid>
     );
 };
