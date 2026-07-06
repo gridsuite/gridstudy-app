@@ -13,7 +13,7 @@ import { StateEstimationGeneralParameters } from './state-estimation-general-par
 import { StateEstimationWeightsParameters } from './state-estimation-weights-parameters';
 import { StateEstimationQualityParameters } from './state-estimation-quality-parameters';
 import { StateEstimationLoadboundsParameters } from './state-estimation-loadbounds-parameters';
-import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
+import { getTabStyle } from '../../../utils/tab-utils';
 
 interface StateEstimationParametersFormProps {
     tabValue: TabValue;
@@ -32,9 +32,6 @@ export const StateEstimationParametersForm = ({
                 value={tabValue}
                 variant="scrollable"
                 onChange={handleTabChange}
-                TabIndicatorProps={{
-                    sx: getTabIndicatorStyle(tabIndexesWithError, tabValue),
-                }}
                 sx={{ borderBottom: 1, borderColor: 'divider' }}
             >
                 <Tab
