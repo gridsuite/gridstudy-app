@@ -15,12 +15,12 @@ import {
     PropertiesForm,
     VoltageAdornment,
 } from '@gridsuite/commons-ui';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
-import GridItem from '../../../commons/grid-item';
+import { GridItem } from '../../../commons/grid-item';
 import { TwoWindingsTransformerMapInfos } from '../two-windings-transformer.types';
-import GridSection from '../../../commons/grid-section';
+import { GridSection } from '../../../commons/grid-section';
 
 export interface TwoWindingsTransformerCharacteristicsPaneProps {
     id?: string;
@@ -108,26 +108,26 @@ const TwoWindingsTransformerCharacteristicsPane = ({
     return (
         <>
             <GridSection title={'Characteristics'} />
-            <Grid container item spacing={2} xs={width}>
+            <Grid container spacing={2} size={width}>
                 <GridItem>{seriesResistanceField}</GridItem>
                 <GridItem>{seriesReactanceField}</GridItem>
                 <GridItem>{magnetizingConductanceField}</GridItem>
                 <GridItem>{magnetizingSusceptanceField}</GridItem>
                 <GridItem>{ratedSField}</GridItem>
             </Grid>
-            <Grid container item spacing={2} xs={width}>
-                <Grid item xs={6}>
+            <Grid container spacing={2} size={width}>
+                <Grid size={6}>
                     <h4>
                         <FormattedMessage id="Side1" />
                     </h4>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                     <h4>
                         <FormattedMessage id="Side2" />
                     </h4>
                 </Grid>
             </Grid>
-            <Grid container item spacing={2} xs={width}>
+            <Grid container spacing={2} size={width}>
                 <GridItem>{ratedVoltage1Field}</GridItem>
                 <GridItem>{ratedVoltage2Field}</GridItem>
             </Grid>

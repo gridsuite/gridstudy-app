@@ -9,26 +9,27 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
-    BatteryCreationDto,
-    ByFilterDeletionDto,
     EquipmentDeletionDto,
     EquipmentInfos,
-    EquipmentType,
-    ExcludedNetworkModifications,
-    GeneratorCreationDto,
-    GeneratorModificationDto,
     LoadCreationDto,
     LoadModificationDto,
     MODIFICATION_TYPES,
-    ModificationByAssignmentDto,
     ModificationType,
-    NetworkModificationMetadata,
     safeEncodeURIComponent,
-    ShuntCompensatorCreationDto,
     SubstationCreationDto,
     SubstationModificationDto,
     toModificationOperation,
     VoltageLevelModificationDto,
+    ByFilterDeletionDto,
+    EquipmentType,
+    ExcludedNetworkModifications,
+    ModificationByAssignmentDto,
+    GeneratorCreationDto,
+    GeneratorModificationDto,
+    ShuntCompensatorCreationDto,
+    ShuntCompensatorModificationDto,
+    BatteryCreationDto,
+    BatteryModificationDto,
 } from '@gridsuite/commons-ui';
 import { getBaseNetworkModificationUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -36,7 +37,6 @@ import type { UUID } from 'node:crypto';
 import {
     AttachLineInfo,
     BalancesAdjustmentInfos,
-    BatteryModificationInfos,
     ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
     CreateVoltageLevelSectionInfos,
@@ -51,7 +51,6 @@ import {
     LinesAttachToSplitLinesInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    ShuntCompensatorModificationInfos,
     StaticVarCompensatorCreationInfo,
     TopologyVoltageLevelModificationInfos,
     TwoWindingsTransformerCreationInfo,
@@ -355,19 +354,12 @@ export function createBattery(
     });
 }
 
-export function modifyBattery({
-    batteryModificationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    batteryModificationInfos: BatteryModificationInfos;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid: string | null;
-    isUpdate: boolean;
-}) {
+export function modifyBattery(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: BatteryModificationDto
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -376,12 +368,12 @@ export function modifyBattery({
         console.info('Creating battery modification');
     }
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(batteryModificationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -429,19 +421,12 @@ export function modifyLoad(
     });
 }
 
-export function modifyGenerator({
-    dto,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    dto: GeneratorModificationDto;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid: string | null;
-    isUpdate: boolean;
-}) {
+export function modifyGenerator(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: GeneratorModificationDto
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
@@ -451,7 +436,7 @@ export function modifyGenerator({
         console.info('Creating generator modification');
     }
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -460,19 +445,12 @@ export function modifyGenerator({
     });
 }
 
-export function createGenerator({
-    dto,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    dto: GeneratorCreationDto;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: string | null;
-    isUpdate: boolean;
-}) {
+export function createGenerator(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: GeneratorCreationDto
+) {
     let createGeneratorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         createGeneratorUrl += '/' + encodeURIComponent(modificationUuid);
@@ -481,7 +459,7 @@ export function createGenerator({
         console.info('Creating generator creation');
     }
     return backendFetchText(createGeneratorUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -522,13 +500,13 @@ export function createShuntCompensator({
 }
 
 export function modifyShuntCompensator({
-    shuntCompensatorModificationInfos,
+    shuntCompensatorModificationDto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    shuntCompensatorModificationInfos: ShuntCompensatorModificationInfos;
+    shuntCompensatorModificationDto: ShuntCompensatorModificationDto;
     studyUuid: UUID;
     nodeUuid?: UUID;
     modificationUuid: string | null;
@@ -549,7 +527,7 @@ export function modifyShuntCompensator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(shuntCompensatorModificationInfos),
+        body: JSON.stringify(shuntCompensatorModificationDto),
     });
 }
 
@@ -1935,6 +1913,22 @@ export function moveVoltageLevelFeederBays({
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(moveVoltageLevelFeederBaysInfos),
+    });
+}
+
+export function assembleModificationsIntoComposite(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuids: UUID[]
+): Promise<UUID> {
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modification`;
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(modificationUuids),
     });
 }
 

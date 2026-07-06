@@ -5,16 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { EXPORT_DESTINATION, EXPORT_FORMAT, EXPORT_PARAMETERS, FILE_NAME } from '../../utils/field-constants';
+import * as yup from 'yup';
 import {
+    DESCRIPTION,
     DIRECTORY_ITEM,
-    EXPORT_DESTINATION,
-    EXPORT_FORMAT,
-    EXPORT_PARAMETERS,
-    FILE_NAME,
-} from '../../utils/field-constants';
-import yup from '../../utils/yup-config';
-import { DESCRIPTION, MAX_CHAR_DESCRIPTION, Parameter } from '@gridsuite/commons-ui';
-import { directoryItemSchema } from '../../utils/rhf-inputs/directory-item-input/directory-item-utils';
+    directoryItemSchema,
+    MAX_CHAR_DESCRIPTION,
+    Parameter,
+} from '@gridsuite/commons-ui';
 
 export enum ExportDestinationType {
     GRID_EXPLORE = 'gridExplore',

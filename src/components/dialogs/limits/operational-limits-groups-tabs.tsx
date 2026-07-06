@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Grid2 as Grid, Tab, Tabs } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     LIMITS_PROPERTIES,

@@ -6,20 +6,12 @@
  */
 
 import { useEffect, useState } from 'react';
-import {
-    Constraint,
-    ConstraintsFromContingencyItem,
-    ContingenciesFromConstraintItem,
-    LimitViolation,
-    RESULT_TYPE,
-    SecurityAnalysisNmkTableRow,
-    SubjectIdRendererType,
-} from './security-analysis.type';
+import { RESULT_TYPE, SubjectIdRendererType } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
-import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
-import { ComputingType, ContingencyCellRenderer } from '@gridsuite/commons-ui';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
+import { ColDef, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import { ComputingType, ContingencyCellRenderer, NmkType } from '@gridsuite/commons-ui';
+import { translateLimitNameFrontToBack } from '../common/utils';
+import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import {
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
@@ -31,7 +23,7 @@ import { AppState } from 'redux/reducer.type';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import RunningStatus from 'components/utils/running-status';
 import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import {
     ColumnContext,
@@ -44,7 +36,6 @@ import {
     TableType,
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
-import { MAX_INT32 } from 'services/utils';
 import { createEnumColumn } from '../common/column-filter/utilis';
 
 interface TableParams {
@@ -76,93 +67,6 @@ const contingencyGetterValues = (params: ValueGetterParams) => {
             tooltipValue: params.data?.contingencyEquipmentsIds.join('\n'),
         };
     }
-};
-
-export const flattenNmKResultsContingencies = (intl: IntlShape, result: ConstraintsFromContingencyItem[] | null) => {
-    const rows: SecurityAnalysisNmkTableRow[] = [];
-    if (!result) {
-        return undefined;
-    }
-
-    result?.forEach(({ subjectLimitViolations = [], contingency }: ConstraintsFromContingencyItem, index: number) => {
-        const { contingencyId, status, elements = [] } = contingency || {};
-        rows.push({
-            contingencyId,
-            contingencyEquipmentsIds: elements.map((element) => element.id),
-            status: status,
-            violationCount: subjectLimitViolations.length,
-            elementId: index,
-        });
-        subjectLimitViolations?.forEach((constraint: Constraint) => {
-            const { limitViolation = {} as LimitViolation, subjectId } = constraint || {};
-
-            rows.push({
-                subjectId: subjectId,
-                locationId: limitViolation.locationId,
-                limitType: limitViolation.limitType,
-                limit: limitViolation.limit,
-                patlLimit: limitViolation.patlLimit,
-                value: limitViolation.value,
-                loading: limitViolation.loading,
-                patlLoading: limitViolation.patlLoading,
-                limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
-                nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
-                side: limitViolation.side,
-                linkedElementId: index,
-                // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
-                acceptableDuration:
-                    limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
-                upcomingAcceptableDuration:
-                    limitViolation?.upcomingAcceptableDuration === MAX_INT32
-                        ? null
-                        : limitViolation?.upcomingAcceptableDuration,
-            });
-        });
-    });
-
-    return rows;
-};
-
-export const flattenNmKResultsConstraints = (intl: IntlShape, result: ContingenciesFromConstraintItem[] | null) => {
-    const rows: SecurityAnalysisNmkTableRow[] = [];
-
-    if (!result) {
-        return undefined;
-    }
-
-    result?.forEach(({ contingencies = [], subjectId }, index) => {
-        if (!rows.find((row) => row.subjectId === subjectId)) {
-            rows.push({ subjectId, elementId: index });
-
-            contingencies.forEach(({ contingency = {}, limitViolation = {} }) => {
-                rows.push({
-                    contingencyId: contingency.contingencyId,
-                    contingencyEquipmentsIds: contingency.elements?.map((element) => element.id),
-                    status: contingency.status,
-                    limitType: limitViolation.limitType,
-                    limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
-                    nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
-                    side: limitViolation.side,
-                    // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
-                    acceptableDuration:
-                        limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
-                    upcomingAcceptableDuration:
-                        limitViolation?.upcomingAcceptableDuration === MAX_INT32
-                            ? null
-                            : limitViolation?.upcomingAcceptableDuration,
-                    limit: limitViolation.limit,
-                    patlLimit: limitViolation.patlLimit,
-                    value: limitViolation.value,
-                    loading: limitViolation.loading,
-                    patlLoading: limitViolation.patlLoading,
-                    locationId: limitViolation.locationId,
-                    linkedElementId: index,
-                });
-            });
-        }
-    });
-
-    return rows;
 };
 
 interface AgGridFilterParams {
@@ -561,38 +465,47 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     ];
 };
 
-export const handlePostSortRows = (isFromContingency: boolean) => (params: PostSortRowsParams) => {
-    const agGridRows = params.nodes;
-    const idField = isFromContingency ? 'contingencyId' : 'subjectId';
-    const isContingency = !isFromContingency;
+export const securityAnalysisTableNmKCutOffPowerColumnsDefinition = (
+    intl: IntlShape,
+    filterEnums: FilterEnumsType,
+    getEnumLabel: (value: string) => string,
+    tabIndex: number
+): ColDef[] => {
+    const { sortParams, filterParams } = createTableParams(tabIndex);
 
-    // Because Map remembers the original insertion order of the keys.
-    const mappedRows = new Map();
-
-    if (isContingency) {
-        mappedRows.set('contingencies', []);
-    }
-
-    // index parents by their unique elementId
-    agGridRows.forEach((row) => {
-        if (row.data[idField] != null) {
-            mappedRows.set(row.data.elementId, [row]);
-        }
-    });
-
-    // attach children to their parent group via linkedElementId
-    agGridRows.forEach((row) => {
-        if (isContingency && !row.data.linkedElementId && !row.data[idField]) {
-            mappedRows.get('contingencies').push(row); // orphans
-        } else if (row.data[idField] == null) {
-            const group = mappedRows.get(row.data.linkedElementId);
-            if (group) {
-                group.push(row);
-            }
-        }
-    });
-
-    return Object.assign(agGridRows, [...mappedRows.values()].flat());
+    return [
+        makeAgGridCustomHeaderColumn({
+            ...makeAgGridStringColumn('Contingency', 'contingencyId', intl, filterParams, {
+                ...sortParams,
+                isChildren: false,
+            }),
+        }),
+        createEnumColumn(
+            'status',
+            'ComputationStatus',
+            filterEnums['status'] ?? [],
+            getEnumLabel,
+            intl,
+            { ...sortParams, isChildren: false },
+            filterParams
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('disconnectedLoadActivePower', 'disconnectedLoadActivePower', intl, filterParams, {
+                ...sortParams,
+                isChildren: false,
+            })
+        ),
+        makeAgGridCustomHeaderColumn({
+            ...makeAgGridFloatColumn(
+                'disconnectedGenerationActivePower',
+                'disconnectedGenerationActivePower',
+                intl,
+                filterParams,
+                { ...sortParams, isChildren: false }
+            ),
+            hide: false,
+        }),
+    ];
 };
 
 // We can use this custom hook for fetching enums for AutoComplete filter
@@ -732,10 +645,12 @@ export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> =
     patlLoading: 'contingencyLimitViolations.patlLoading',
 };
 
-export enum NMK_TYPE {
-    CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
-    CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
-}
+export const FROM_COLUMN_TO_FIELD_NMK_POWER_CUT_OFF: Record<string, string> = {
+    contingencyId: 'contingencyId',
+    status: 'status',
+    disconnectedLoadActivePower: 'connectivityResult.disconnectedLoadActivePower',
+    disconnectedGenerationActivePower: 'connectivityResult.disconnectedGenerationActivePower',
+};
 
 export const mappingColumnToField = (resultType: RESULT_TYPE) => {
     switch (resultType) {
@@ -745,6 +660,8 @@ export const mappingColumnToField = (resultType: RESULT_TYPE) => {
             return FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES;
         case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
             return FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS;
+        case RESULT_TYPE.NMK_CUT_OFF_POWER:
+            return FROM_COLUMN_TO_FIELD_NMK_POWER_CUT_OFF;
     }
 };
 
@@ -765,8 +682,6 @@ export const convertFilterValues = (intl: IntlShape, filterSelector: FilterConfi
 
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
-export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
-
 export const getStoreFields = (index: number): string => {
     switch (index) {
         case 0:
@@ -777,3 +692,9 @@ export const getStoreFields = (index: number): string => {
             return '';
     }
 };
+
+export const NMK_SUBTABS = [
+    { messageId: 'ConstraintsFromContingencies', value: NmkType.CONSTRAINTS_FROM_CONTINGENCIES },
+    { messageId: 'ContingenciesFromConstraints', value: NmkType.CONTINGENCIES_FROM_CONSTRAINTS },
+    { messageId: 'CutOffPowerFromConstraints', value: NmkType.CUT_OFF_POWER_FROM_CONSTRAINTS },
+] as const;

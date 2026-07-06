@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Grid2 as Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import { LineCreationDialogTab } from './creation/line-creation-dialog-utils';

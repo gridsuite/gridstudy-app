@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, TextField } from '@mui/material';
+import { Grid2 as Grid, TextField } from '@mui/material';
 import { ENABLED, EQUIPMENT_NAME, RATIO_TAP_CHANGER, PHASE_TAP_CHANGER } from 'components/utils/field-constants';
 import { filledTextField, SwitchInput, TextInput } from '@gridsuite/commons-ui';
-import GridItem from '../../../commons/grid-item';
+import { GridItem } from '../../../commons/grid-item';
 
 interface TwoWindingsTransformerModificationDialogHeaderProps {
     equipmentToModify?: string;
@@ -52,7 +52,7 @@ const TwoWindingsTransformerModificationDialogHeader = ({
     );
 
     return (
-        <Grid container item spacing={2}>
+        <Grid container spacing={2} size={12}>
             <GridItem size={4}>{twoWindingsTransformerIdField}</GridItem>
             <GridItem size={4}>{twoWindingsTransformerNameField}</GridItem>
             <GridItem size={2}>{ratioTapChangerEnabledField}</GridItem>

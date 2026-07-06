@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { useFieldArray } from 'react-hook-form';
-import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Grid2 as Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import {
     type ColumnNumeric,
     type ColumnText,
@@ -44,16 +44,17 @@ interface CustomTableCellProps {
 
 function EditableTableCell({ name, column, previousValue, valueModified, ...props }: Readonly<CustomTableCellProps>) {
     return (
-        <TableCell sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
+        <TableCell sx={{ padding: 0.5, maxWidth: column.maxWidth, verticalAlign: 'top' }}>
             {column.type === DndColumnType.NUMERIC ? (
                 <TableNumericalInput
                     name={name}
                     previousValue={previousValue}
                     valueModified={valueModified}
+                    hideErrorMessage={column.hideErrorMessage}
                     {...props}
                 />
             ) : (
-                <TableTextInput name={name} showErrorMsg={column.showErrorMsg} {...props} />
+                <TableTextInput name={name} hideErrorMessage={column.hideErrorMessage} {...props} />
             )}
         </TableCell>
     );
@@ -155,8 +156,8 @@ function TemporaryLimitsTable({
     }
 
     return (
-        <Grid item container spacing={1}>
-            <Grid item container>
+        <Grid container spacing={1}>
+            <Grid container size={12}>
                 <TableContainer>
                     <Table stickyHeader size="small" padding="none">
                         {renderTableHead()}

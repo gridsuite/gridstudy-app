@@ -7,7 +7,7 @@
 
 import { filledTextField, IntegerInput, SwitchesBetweenSections } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
-import { Box, Grid, TextField, Tooltip } from '@mui/material';
+import { Box, Grid2 as Grid, Stack, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -60,44 +60,47 @@ export default function CreateVoltageLevelTopologyForm({
         [intl, voltageLevelId]
     );
 
-    const diagramToolTip = useMemo(
-        () => (
-            <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}>
-                <InfoOutlined color="info" fontSize="medium" />
-            </Tooltip>
-        ),
-        [intl]
-    );
-
     return (
         <>
-            <Grid container direction="column">
-                <Grid item>
-                    <Grid container spacing={3}>
-                        <Grid item xs={4}>
-                            {voltageLevelIdField}
-                        </Grid>
-                        {isNodeBuilt(currentNode) && (
-                            <Grid item xs={3}>
-                                <Button onClick={handleClickOpenDiagramPane} variant="outlined">
-                                    <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
-                                </Button>
-                                {diagramToolTip}
+            <Stack>
+                <Grid>
+                    <Stack spacing={2}>
+                        <Grid>
+                            <Grid container spacing={3} alignItems="center">
+                                <Grid size={4}>{voltageLevelIdField}</Grid>
+                                {isNodeBuilt(currentNode) && (
+                                    <Grid>
+                                        <Grid container spacing={1}>
+                                            <Grid>
+                                                <Button onClick={handleClickOpenDiagramPane} variant="outlined">
+                                                    <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
+                                                </Button>
+                                            </Grid>
+                                            <Grid>
+                                                <Tooltip
+                                                    title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}
+                                                >
+                                                    <InfoOutlined color="info" fontSize="small" />
+                                                </Tooltip>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                )}
                             </Grid>
-                        )}
-                    </Grid>
-                </Grid>
-                <Grid item>
-                    <Grid container>
-                        <Grid item xs={4}>
-                            <IntegerInput name={`${SECTION_COUNT}`} label={'SectionCount'} />
                         </Grid>
-                    </Grid>
+                        <Grid>
+                            <Grid container spacing={3}>
+                                <Grid size={4}>
+                                    <IntegerInput name={`${SECTION_COUNT}`} label={'SectionCount'} />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Stack>
                 </Grid>
-                <Grid item>
+                <Grid>
                     <SwitchesBetweenSections />
                 </Grid>
-            </Grid>
+            </Stack>
             <Box>
                 <PositionDiagramPane
                     open={isDiagramPaneOpen}

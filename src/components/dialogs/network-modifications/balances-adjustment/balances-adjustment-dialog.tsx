@@ -6,7 +6,7 @@
  */
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, snackWithFallback, useSnackMessage, YUP_REQUIRED } from '@gridsuite/commons-ui';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -30,7 +30,7 @@ import {
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FetchStatus } from '../../../../services/utils';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     BalancesAdjustmentInfos,
@@ -127,7 +127,7 @@ export function BalancesAdjustmentDialog({
                                 [BALANCES_ADJUSTMENT_COUNTRIES]: yup
                                     .array()
                                     .of(yup.string().oneOf(countryCodes).required())
-                                    .min(1, 'balancesAdjustment.emptyCountries')
+                                    .min(1, YUP_REQUIRED)
                                     .required(),
                                 [BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE]: yup
                                     .string()
@@ -152,7 +152,7 @@ export function BalancesAdjustmentDialog({
                             .of(yup.string().oneOf(countryCodes).required())
                             .when(BALANCES_ADJUSTMENT_WITH_LOAD_FLOW, {
                                 is: (withLoadFlow: boolean) => withLoadFlow,
-                                then: (schema) => schema.min(1, 'balancesAdjustment.emptyCountries'),
+                                then: (schema) => schema.min(1, YUP_REQUIRED),
                                 otherwise: (schema) => schema.optional(),
                             })
                             .required(),

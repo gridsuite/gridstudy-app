@@ -8,7 +8,7 @@
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
+import { Box, DialogContentText, Divider, Grid2 as Grid, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from 'redux/reducer.type';
@@ -96,7 +96,11 @@ enum TAB_VALUES {
 const ParametersTabs: FunctionComponent = () => {
     const dispatch = useDispatch();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
-    const user = useSelector((state: AppState) => state.user);
+    const userProfile = useSelector(
+        (state: AppState) => state.user?.profile ?? null,
+        (a, b) =>
+            a === b || (a?.sub === b?.sub && a?.name === b?.name && a?.email === b?.email && a?.profile === b?.profile)
+    );
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode ?? null);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
@@ -147,7 +151,7 @@ const ParametersTabs: FunctionComponent = () => {
     }, [computationStatus, shortCircuitOneBusStatus, tabValue]);
 
     const loadFlowParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.LOAD_FLOW,
         OptionalServicesStatus.Up,
@@ -162,7 +166,7 @@ const ParametersTabs: FunctionComponent = () => {
     useParametersNotification(ComputingType.LOAD_FLOW, OptionalServicesStatus.Up, loadFlowParametersBackend);
 
     const securityAnalysisParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
@@ -192,7 +196,7 @@ const ParametersTabs: FunctionComponent = () => {
     );
 
     const sensitivityAnalysisBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability,
@@ -208,7 +212,7 @@ const ParametersTabs: FunctionComponent = () => {
     );
 
     const shortCircuitParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.SHORT_CIRCUIT,
         shortCircuitAvailability,
@@ -221,7 +225,7 @@ const ParametersTabs: FunctionComponent = () => {
     useParametersNotification(ComputingType.SHORT_CIRCUIT, shortCircuitAvailability, shortCircuitParametersBackend);
 
     const dynamicSimulationParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.DYNAMIC_SIMULATION,
         dynamicSimulationAvailability,
@@ -238,7 +242,7 @@ const ParametersTabs: FunctionComponent = () => {
     );
 
     const dynamicSecurityAnalysisParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
         dynamicSecurityAnalysisAvailability,
@@ -255,7 +259,7 @@ const ParametersTabs: FunctionComponent = () => {
     );
 
     const dynamicMarginCalculationParametersBackend = useParametersBackend(
-        user,
+        userProfile,
         studyUuid,
         ComputingType.DYNAMIC_MARGIN_CALCULATION,
         dynamicMarginCalculationAvailability,
@@ -444,7 +448,7 @@ const ParametersTabs: FunctionComponent = () => {
                     <NetworkVisualizationParametersInline
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
-                        user={user}
+                        userProfile={userProfile}
                         parameters={networkVisualizationsParameters}
                     />
                 );
@@ -467,7 +471,7 @@ const ParametersTabs: FunctionComponent = () => {
         currentNode?.type,
         shortCircuitParametersBackend,
         pccMinParameters,
-        user,
+        userProfile,
         dynamicSimulationParametersBackend,
         dynamicSecurityAnalysisParametersBackend,
         dynamicMarginCalculationParametersBackend,
@@ -479,92 +483,99 @@ const ParametersTabs: FunctionComponent = () => {
     return (
         <>
             <Grid container spacing={0} sx={stylesLayout.rootContainer}>
-                <Grid container item xs={2} direction="column" sx={stylesLayout.columnContainer}>
-                    <Grid item>
-                        <Typography variant="subtitle1" sx={tabStyles.listTitleDisplay}>
-                            <FormattedMessage id="parameters" />
-                        </Typography>
-                    </Grid>
-                    <Grid item xs sx={stylesLayout.listDisplayContainer}>
-                        <Tabs
-                            value={tabValue}
-                            variant="scrollable"
-                            onChange={(event, newValue) => handleChangeTab(newValue)}
-                            aria-label="parameters"
-                            orientation="vertical"
-                            sx={tabStyles.listDisplay}
-                        >
-                            <Tab
-                                label={<FormattedMessage id="LoadFlow" />}
-                                disabled={
-                                    computationStatus === RunningStatus.RUNNING &&
-                                    tabValue === TAB_VALUES.lfParamsTabValue
-                                }
-                                value={TAB_VALUES.lfParamsTabValue}
-                            />
-                            <Tab
-                                disabled={securityAnalysisAvailability !== OptionalServicesStatus.Up}
-                                label={<FormattedMessage id="SecurityAnalysis" />}
-                                value={TAB_VALUES.securityAnalysisParamsTabValue}
-                            />
-                            <Tab
-                                disabled={sensitivityAnalysisAvailability !== OptionalServicesStatus.Up}
-                                label={<FormattedMessage id="SensitivityAnalysis" />}
-                                value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
-                            />
-                            <Tab
-                                disabled={shortCircuitAvailability !== OptionalServicesStatus.Up}
-                                label={<FormattedMessage id="ShortCircuit" />}
-                                value={TAB_VALUES.shortCircuitParamsTabValue}
-                            />
-                            <Tab
-                                disabled={pccMinAvailability !== OptionalServicesStatus.Up}
-                                label={<FormattedMessage id="PccMin" />}
-                                value={TAB_VALUES.pccMinTabValue}
-                            />
-                            {isDeveloperMode ? (
+                <Grid size={2} sx={stylesLayout.columnContainer}>
+                    <Stack sx={stylesLayout.columnContainer}>
+                        <Grid>
+                            <Typography variant="subtitle1" sx={tabStyles.listTitleDisplay}>
+                                <FormattedMessage id="parameters" />
+                            </Typography>
+                        </Grid>
+                        <Box sx={stylesLayout.listDisplayContainer}>
+                            <Tabs
+                                value={tabValue}
+                                variant="scrollable"
+                                onChange={(event, newValue) => handleChangeTab(newValue)}
+                                aria-label="parameters"
+                                orientation="vertical"
+                                sx={tabStyles.listDisplay}
+                            >
                                 <Tab
-                                    disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="DynamicSimulation" />}
-                                    value={TAB_VALUES.dynamicSimulationParamsTabValue}
+                                    label={<FormattedMessage id="LoadFlow" />}
+                                    disabled={
+                                        computationStatus === RunningStatus.RUNNING &&
+                                        tabValue === TAB_VALUES.lfParamsTabValue
+                                    }
+                                    value={TAB_VALUES.lfParamsTabValue}
                                 />
-                            ) : null}
-                            {isDeveloperMode ? (
                                 <Tab
-                                    disabled={dynamicSecurityAnalysisAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="DynamicSecurityAnalysis" />}
-                                    value={TAB_VALUES.dynamicSecurityAnalysisParamsTabValue}
+                                    disabled={securityAnalysisAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="SecurityAnalysis" />}
+                                    value={TAB_VALUES.securityAnalysisParamsTabValue}
                                 />
-                            ) : null}
-                            {isDeveloperMode ? (
                                 <Tab
-                                    disabled={dynamicMarginCalculationAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="DynamicMarginCalculation" />}
-                                    value={TAB_VALUES.dynamicMarginCalculationParamsTabValue}
+                                    disabled={sensitivityAnalysisAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="SensitivityAnalysis" />}
+                                    value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
                                 />
-                            ) : null}
-                            <Tab
-                                disabled={voltageInitAvailability !== OptionalServicesStatus.Up}
-                                label={<FormattedMessage id="VoltageInit" />}
-                                value={TAB_VALUES.voltageInitParamsTabValue}
-                            />
-                            {isDeveloperMode ? (
                                 <Tab
-                                    disabled={stateEstimationAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="StateEstimation" />}
-                                    value={TAB_VALUES.stateEstimationTabValue}
+                                    disabled={shortCircuitAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="ShortCircuit" />}
+                                    value={TAB_VALUES.shortCircuitParamsTabValue}
                                 />
-                            ) : null}
-                            {/*In order to insert a Divider under a Tabs collection it need to be nested in a dedicated Tab to prevent console warnings*/}
-                            <Tab sx={tabStyles.dividerTab} label="" icon={<Divider sx={{ flexGrow: 1 }} />} disabled />
-                            <Tab
-                                label={<FormattedMessage id="NetworkVisualizations" />}
-                                value={TAB_VALUES.networkVisualizationsParams}
-                            />
-                        </Tabs>
-                    </Grid>
+                                <Tab
+                                    disabled={pccMinAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="PccMin" />}
+                                    value={TAB_VALUES.pccMinTabValue}
+                                />
+                                {isDeveloperMode ? (
+                                    <Tab
+                                        disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}
+                                        label={<FormattedMessage id="DynamicSimulation" />}
+                                        value={TAB_VALUES.dynamicSimulationParamsTabValue}
+                                    />
+                                ) : null}
+                                {isDeveloperMode ? (
+                                    <Tab
+                                        disabled={dynamicSecurityAnalysisAvailability !== OptionalServicesStatus.Up}
+                                        label={<FormattedMessage id="DynamicSecurityAnalysis" />}
+                                        value={TAB_VALUES.dynamicSecurityAnalysisParamsTabValue}
+                                    />
+                                ) : null}
+                                {isDeveloperMode ? (
+                                    <Tab
+                                        disabled={dynamicMarginCalculationAvailability !== OptionalServicesStatus.Up}
+                                        label={<FormattedMessage id="DynamicMarginCalculation" />}
+                                        value={TAB_VALUES.dynamicMarginCalculationParamsTabValue}
+                                    />
+                                ) : null}
+                                <Tab
+                                    disabled={voltageInitAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="VoltageInit" />}
+                                    value={TAB_VALUES.voltageInitParamsTabValue}
+                                />
+                                {isDeveloperMode ? (
+                                    <Tab
+                                        disabled={stateEstimationAvailability !== OptionalServicesStatus.Up}
+                                        label={<FormattedMessage id="StateEstimation" />}
+                                        value={TAB_VALUES.stateEstimationTabValue}
+                                    />
+                                ) : null}
+                                {/*In order to insert a Divider under a Tabs collection it need to be nested in a dedicated Tab to prevent console warnings*/}
+                                <Tab
+                                    sx={tabStyles.dividerTab}
+                                    label=""
+                                    icon={<Divider sx={{ flexGrow: 1 }} />}
+                                    disabled
+                                />
+                                <Tab
+                                    label={<FormattedMessage id="NetworkVisualizations" />}
+                                    value={TAB_VALUES.networkVisualizationsParams}
+                                />
+                            </Tabs>
+                        </Box>
+                    </Stack>
                 </Grid>
-                <Grid item xs={10} sx={tabStyles.parametersBox}>
+                <Grid size={10} sx={tabStyles.parametersBox}>
                     <GlassPane active={shouldDisplayGlassPane} loadingMessageText="computationInProgress">
                         <Box sx={tabStyles.contentBox}>{displayTab()}</Box>
                     </GlassPane>

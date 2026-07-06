@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Grid2 as Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useWatch } from 'react-hook-form';
 import { ENABLED, PHASE_TAP_CHANGER, RATIO_TAP_CHANGER } from 'components/utils/field-constants';
@@ -31,7 +31,7 @@ const TwoWindingsTransformerModificationDialogTabs = ({
     });
 
     return (
-        <Grid container item>
+        <Grid container>
             <Tabs
                 value={tabIndex}
                 variant="scrollable"

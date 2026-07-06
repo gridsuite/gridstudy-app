@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { TextInput } from '@gridsuite/commons-ui';
-import GridItem from '../../../commons/grid-item';
+import { GridItem } from '../../../commons/grid-item';
 
 const StaticVarCompensatorCreationDialogHeader = () => {
     const staticCompensatorIdField = (
@@ -19,7 +19,7 @@ const StaticVarCompensatorCreationDialogHeader = () => {
         <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ variant: 'filled' }} />
     );
     return (
-        <Grid container item spacing={2}>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
             <GridItem size={4}>{staticCompensatorIdField}</GridItem>
             <GridItem size={4}>{staticCompensatorNameField}</GridItem>
         </Grid>

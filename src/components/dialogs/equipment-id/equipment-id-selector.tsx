@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import type { UUID } from 'node:crypto';
-import { Autocomplete, Box, CircularProgress, Grid, TextField } from '@mui/material';
+import { Autocomplete, Box, CircularProgress, Grid2 as Grid, TextField } from '@mui/material';
 import {
     type EquipmentType,
     type ExtendedEquipmentType,
@@ -18,7 +18,7 @@ import {
 import { FormFiller } from './formFiller.js';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
-import GridItem from '../commons/grid-item';
+import { GridItem } from '../commons/grid-item';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
 

@@ -4,23 +4,30 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType, Identifiable, SelectInput } from '@gridsuite/commons-ui';
+import {
+    EquipmentType,
+    Identifiable,
+    REGULATION_TYPES,
+    RegulatingTerminalForm,
+    SelectInput,
+} from '@gridsuite/commons-ui';
 import {
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
     REGULATION_SIDE,
     REGULATION_TYPE,
 } from '../../../../utils/field-constants';
-import { REGULATION_TYPES, SIDE } from '../../../../network/constants';
+import { SIDE } from '../../../../network/constants';
 import { getRegulationTypeLabel, getTapSideLabel } from './tap-changer-pane-utils';
 import { useIntl } from 'react-intl';
-import GridSection from '../../../commons/grid-section';
-import GridItem from '../../../commons/grid-item';
-import Grid from '@mui/material/Grid';
-import { RegulatingTerminalForm } from '../../../regulating-terminal/regulating-terminal-form';
+import { GridSection } from '../../../commons/grid-section';
+import { GridItem } from '../../../commons/grid-item';
+import { Grid2 as Grid } from '@mui/material';
 import { getTapChangerEquipmentSectionTypeValue } from '../../../../utils/utils';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { useCallback } from 'react';
+import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 
 export default function RegulatedTerminalSection({
     id,
@@ -49,6 +56,12 @@ export default function RegulatedTerminalSection({
               ? previousValues?.phaseTapChanger
               : undefined;
 
+    const fetchVoltageLevelEquipmentsCallback = useCallback(
+        (voltageLevelId: string) =>
+            fetchVoltageLevelEquipments(studyUuid, currentNode?.id, currentRootNetworkUuid, voltageLevelId, true),
+        [studyUuid, currentNode?.id, currentRootNetworkUuid]
+    );
+
     const regulationTypeField = (
         <SelectInput
             name={`${id}.${REGULATION_TYPE}`}
@@ -76,9 +89,7 @@ export default function RegulatedTerminalSection({
             id={id}
             disabled={tapChangerDisabled}
             equipmentSectionTypeDefaultValue={EquipmentType.TWO_WINDINGS_TRANSFORMER}
-            studyUuid={studyUuid}
-            currentNodeUuid={currentNode?.id}
-            currentRootNetworkUuid={currentRootNetworkUuid}
+            fetchVoltageLevelEquipments={fetchVoltageLevelEquipmentsCallback}
             voltageLevelOptions={voltageLevelOptions}
             regulatingTerminalVlId={tapChangerPreviousValues?.regulatingTerminalVlId}
             equipmentSectionType={getTapChangerEquipmentSectionTypeValue(tapChangerPreviousValues) ?? undefined}
@@ -88,7 +99,7 @@ export default function RegulatedTerminalSection({
     return (
         <>
             <GridSection title="RegulatedTerminal" heading={4} />
-            <Grid item container spacing={1}>
+            <Grid container spacing={1}>
                 <GridItem size={4}>{regulationTypeField}</GridItem>
                 {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
                 {regulationType === REGULATION_TYPES.DISTANT.id && (

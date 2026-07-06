@@ -25,7 +25,7 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 import { InferType } from 'yup';
 import { LineSegmentInfos } from '../../../services/network-modification-types';
 import { DeepNullable } from '@gridsuite/commons-ui';
