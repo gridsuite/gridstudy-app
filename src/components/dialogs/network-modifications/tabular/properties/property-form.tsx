@@ -7,7 +7,7 @@
 
 import { NAME, PREDEFINED, SELECTED } from 'components/utils/field-constants';
 import { CheckboxInput, italicFontTextField, TextInput } from '@gridsuite/commons-ui';
-import GridItem from '../../../commons/grid-item';
+import { GridItem } from '../../../commons/grid-item';
 import { useWatch } from 'react-hook-form';
 
 type PropertyFormProps = {

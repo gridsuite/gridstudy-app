@@ -1,6 +1,6 @@
 {
     "name": "gridstudy-app",
-    "version": "2.37.0-SNAPSHOT",
+    "version": "2.38.0-SNAPSHOT",
     "license": "MPL-2.0",
     "private": true,
     "type": "module",
@@ -11,7 +11,8 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@gridsuite/commons-ui": "0.237.0",
+        "@grgit idsuite/commons-ui": "0.237.0",
+        "@gridsuite/commons-ui": "0.240.0",
         "@hello-pangea/dnd": "^18.0.1",
         "@hookform/resolvers": "^4.1.3",
         "@mui/icons-material": "^6.5.0",

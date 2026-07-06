@@ -19,7 +19,7 @@ import LccHvdcLine from '../common/lcc-hvdc-line';
 import LccConverterStation from '../common/lcc-converter-station';
 import LccTabs from '../common/lcc-tabs';
 import { filledTextField, TextInput } from '@gridsuite/commons-ui';
-import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
+import { GridItem } from '../../../../commons/grid-item';
 
 interface LccModificationFormProps {
     tabIndex: number;

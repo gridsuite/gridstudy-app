@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid2 as Grid } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
+import { GridSection } from '../../../../commons/grid-section';
 import {
     RATIO_TAP_CHANGER_STATUS,
     PHASE_TAP_CHANGER_STATUS,
@@ -61,10 +60,10 @@ export const ToBeEstimatedForm: FunctionComponent<ToBeEstimatedProps> = ({ toBeE
     return (
         <>
             <GridSection title="EstimateTapPositionSection" />
-            <Grid container spacing={2} direction={'column'}>
-                <GridItem size={6}>{ratioTapChangerStatusField}</GridItem>
-                <GridItem size={6}>{phaseTapChangerStatusField}</GridItem>
-            </Grid>
+            <Stack spacing={2}>
+                <Box sx={{ width: '50%' }}>{ratioTapChangerStatusField}</Box>
+                <Box sx={{ width: '50%' }}>{phaseTapChangerStatusField}</Box>
+            </Stack>
         </>
     );
 };
