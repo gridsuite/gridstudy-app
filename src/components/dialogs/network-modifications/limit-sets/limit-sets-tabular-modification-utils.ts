@@ -28,6 +28,7 @@ import type { UUID } from 'node:crypto';
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 import { APPLICABILITY } from '../../../network/constants';
 import { AttributeModification, EquipmentType, toModificationOperation } from '@gridsuite/commons-ui';
+import { MODIFICATIONS_REQUIRED_TAB_ERROR } from '../../../../utils/translationKeys';
 
 type TemporaryLimit = {
     name: AttributeModification<string>;
@@ -202,7 +203,7 @@ export const formSchema = yup
             .min(1, 'amountTemporaryLimitsError')
             .max(50, 'amountTemporaryLimitsError')
             .required(),
-        [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
+        [MODIFICATIONS_TABLE]: yup.array().min(1, MODIFICATIONS_REQUIRED_TAB_ERROR).required(),
         [CSV_FILENAME]: yup.string().nullable().required(),
     })
     .required();

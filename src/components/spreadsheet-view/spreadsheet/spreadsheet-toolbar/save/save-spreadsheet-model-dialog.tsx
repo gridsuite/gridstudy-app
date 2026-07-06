@@ -37,6 +37,7 @@ import {
     useSnackMessage,
     DirectoryInitConfig,
     initializeDirectory,
+    DESCRIPTION_LIMIT_ERROR,
 } from '@gridsuite/commons-ui';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
@@ -102,7 +103,7 @@ const schema = yup
     .object()
     .shape({
         [FieldConstants.NAME]: yup.string().trim().required(),
-        [FieldConstants.DESCRIPTION]: yup.string().optional().max(MAX_CHAR_DESCRIPTION, 'descriptionLimitError'),
+        [FieldConstants.DESCRIPTION]: yup.string().optional().max(MAX_CHAR_DESCRIPTION, DESCRIPTION_LIMIT_ERROR),
         [FieldConstants.OPERATION_TYPE]: yup.string().oneOf(Object.values(OperationType)).required(),
     })
     .required();

@@ -49,6 +49,7 @@ import {
     getPropertiesFromModification,
     MODIFICATION_TYPES,
     modificationPropertiesSchema,
+    NORMALIZED_PERCENTAGE,
     sanitizeString,
     toModificationOperation,
     UNDEFINED_CONNECTION_DIRECTION,
@@ -59,17 +60,20 @@ import {
     LccShuntCompensatorInfos,
     LccShuntCompensatorModificationInfos,
 } from '../../../../../../services/network-modification-types';
+import {
+    ACTIVE_POWER_SETPOINT_MAX_VALUE_ERROR,
+    ACTIVE_POWER_SETPOINT_MIN_VALUE_ERROR,
+    DC_RESISTANCE_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
+    MAX_P_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
+    NOMINAL_V_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
+    Q_MAX_AT_NOMINAL_V_MUST_BE_GREATER_THAN_ZERO,
+} from 'utils/translationKeys';
 
 export const getLccConverterStationSchema = () =>
     yup.object().shape({
         [CONVERTER_STATION_ID]: yup.string().nullable().required(),
         [CONVERTER_STATION_NAME]: yup.string().nullable(),
-        [LOSS_FACTOR]: yup
-            .number()
-            .nullable()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage')
-            .required(),
+        [LOSS_FACTOR]: yup.number().nullable().min(0, NORMALIZED_PERCENTAGE).max(100, NORMALIZED_PERCENTAGE).required(),
         [POWER_FACTOR]: yup
             .number()
             .nullable()
@@ -85,7 +89,7 @@ export const getLccConverterStationSchema = () =>
                     [MAX_Q_AT_NOMINAL_V]: yup
                         .number()
                         .nullable()
-                        .min(0, 'qMaxAtNominalVMustBeGreaterThanZero')
+                        .min(0, Q_MAX_AT_NOMINAL_V_MUST_BE_GREATER_THAN_ZERO)
                         .required(),
                     [SHUNT_COMPENSATOR_SELECTED]: yup.boolean().nullable(),
                 })
@@ -98,7 +102,7 @@ export const getLccConverterStationModificationSchema = () =>
     yup.object().shape({
         [CONVERTER_STATION_ID]: yup.string().nullable(),
         [CONVERTER_STATION_NAME]: yup.string().nullable(),
-        [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
+        [LOSS_FACTOR]: yup.number().nullable().min(0, NORMALIZED_PERCENTAGE).max(100, NORMALIZED_PERCENTAGE),
         [POWER_FACTOR]: yup
             .number()
             .nullable()
@@ -113,7 +117,7 @@ export const getLccConverterStationModificationSchema = () =>
                     [MAX_Q_AT_NOMINAL_V]: yup
                         .number()
                         .nullable()
-                        .min(0, 'qMaxAtNominalVMustBeGreaterThanZero')
+                        .min(0, Q_MAX_AT_NOMINAL_V_MUST_BE_GREATER_THAN_ZERO)
                         .required(),
                     [SHUNT_COMPENSATOR_SELECTED]: yup.boolean().nullable(),
                 })
@@ -386,14 +390,14 @@ export const getLccHvdcLineSchema = () =>
     yup
         .object()
         .shape({
-            [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVMustBeGreaterOrEqualToZero').required(),
-            [R]: yup.number().nullable().min(0, 'dcResistanceMustBeGreaterOrEqualToZero').required(),
-            [MAX_P]: yup.number().nullable().min(0, 'maxPMustBeGreaterOrEqualToZero').required(),
+            [NOMINAL_V]: yup.number().nullable().min(0, NOMINAL_V_MUST_BE_GREATER_OR_EQUAL_TO_ZERO).required(),
+            [R]: yup.number().nullable().min(0, DC_RESISTANCE_MUST_BE_GREATER_OR_EQUAL_TO_ZERO).required(),
+            [MAX_P]: yup.number().nullable().min(0, MAX_P_MUST_BE_GREATER_OR_EQUAL_TO_ZERO).required(),
             [ACTIVE_POWER_SETPOINT]: yup
                 .number()
                 .nullable()
-                .min(0, 'activePowerSetpointMinValueError')
-                .max(yup.ref(MAX_P), 'activePowerSetpointMaxValueError')
+                .min(0, ACTIVE_POWER_SETPOINT_MIN_VALUE_ERROR)
+                .max(yup.ref(MAX_P), ACTIVE_POWER_SETPOINT_MAX_VALUE_ERROR)
                 .required(),
             [CONVERTERS_MODE]: yup.string().required(),
         })
@@ -403,14 +407,14 @@ export const getLccHvdcLineModificationSchema = () =>
     yup
         .object()
         .shape({
-            [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVMustBeGreaterOrEqualToZero'),
-            [R]: yup.number().nullable().min(0, 'dcResistanceMustBeGreaterOrEqualToZero'),
-            [MAX_P]: yup.number().nullable().min(0, 'maxPMustBeGreaterOrEqualToZero'),
+            [NOMINAL_V]: yup.number().nullable().min(0, NOMINAL_V_MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
+            [R]: yup.number().nullable().min(0, DC_RESISTANCE_MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
+            [MAX_P]: yup.number().nullable().min(0, MAX_P_MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
             [ACTIVE_POWER_SETPOINT]: yup
                 .number()
                 .nullable()
-                .min(0, 'activePowerSetpointMinValueError')
-                .max(yup.ref(MAX_P), 'activePowerSetpointMaxValueError'),
+                .min(0, ACTIVE_POWER_SETPOINT_MIN_VALUE_ERROR)
+                .max(yup.ref(MAX_P), ACTIVE_POWER_SETPOINT_MAX_VALUE_ERROR),
             [CONVERTERS_MODE]: yup.string().nullable(),
         })
         .concat(modificationPropertiesSchema);

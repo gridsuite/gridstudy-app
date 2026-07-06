@@ -32,6 +32,7 @@ import { DeepNullable } from '@gridsuite/commons-ui';
 import { CurrentLimitsInfo } from './line-catalog.type';
 import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from '../limits/operational-limits-groups-types';
 import { APPLICABILITY } from '../../network/constants';
+import { SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO } from '../../../utils/translationKeys';
 
 export const SegmentTemporaryLimitSchema = yup.object().shape({
     [LIMIT_VALUE]: yup.number().required(),
@@ -48,8 +49,8 @@ export const SegmentCurrentLimitsSchema = yup.object().shape({
 export const SegmentSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup
         .number()
-        .required('SegmentDistanceMustBeGreaterThanZero')
-        .moreThan(0, 'SegmentDistanceMustBeGreaterThanZero'),
+        .required(SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO)
+        .moreThan(0, SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO),
     [SEGMENT_TYPE_VALUE]: yup
         .string()
         .required()
