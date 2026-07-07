@@ -32,7 +32,7 @@ const TwoWindingsTransformerCreationDialogHeader = () => {
     );
 
     return (
-        <Grid container spacing={2} size={12}>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
             <GridItem size={4}>{twoWindingsTransformerIdField}</GridItem>
             <GridItem size={4}>{twoWindingsTransformerNameField}</GridItem>
             <GridItem size={2}>{ratioTapChangerEnabledField}</GridItem>
