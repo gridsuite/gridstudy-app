@@ -35,7 +35,7 @@ import {
     TABULAR_PROPERTIES,
     TYPE,
 } from 'components/utils/field-constants';
-import { Alert, Button, Grid2 as Grid } from '@mui/material';
+import { Alert, Button, Grid2 as Grid, Stack } from '@mui/material';
 import Papa from 'papaparse';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
@@ -478,6 +478,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     case NUMBER:
                         columnDef.cellDataType = NUMBER;
                         columnDef.cellEditor = NumericEditor;
+                        columnDef.cellEditorParams = { allowNegativeValues: true };
                         columnDef.suppressKeyboardEvent = suppressNonNumericKeyboardEvent;
                         break;
                     case ENUM:
@@ -545,7 +546,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     );
 
     return (
-        <Grid container spacing={2} paddingTop={1} direction="column" wrap="nowrap" sx={{ height: '100%' }}>
+        <Stack spacing={2} paddingTop={1} sx={{ height: '100%' }}>
             <Grid sx={{ width: 400, maxWidth: '100%' }}>{equipmentTypeField}</Grid>
             <Grid container justifyContent="space-between" alignItems="center">
                 <Grid>
@@ -625,7 +626,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     onGenerate={onPrefilledModelGenerate}
                 />
             )}
-        </Grid>
+        </Stack>
     );
 }
 
