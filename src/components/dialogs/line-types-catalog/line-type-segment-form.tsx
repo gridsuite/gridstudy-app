@@ -45,7 +45,6 @@ import {
     type MuiStyles,
     ReadOnlyInput,
     SegmentFormData,
-    LineSegmentsFormData,
     snackWithFallback,
     SwitchInput,
     useSnackMessage,
@@ -74,16 +73,11 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface LineTypeSegmentFormProps {
-    editDataCreationCase?: LineSegmentsFormData | null;
-    editDataModificationCase?: SegmentsFormData;
+    editData?: SegmentsFormData;
     isModification: boolean;
 }
 
-export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({
-    editDataCreationCase,
-    editDataModificationCase,
-    isModification,
-}) => {
+export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData, isModification }) => {
     const { setValue, getValues, clearErrors, watch } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
@@ -238,24 +232,15 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        if (isModification && !editDataModificationCase?.[FieldConstants.LINE_SEGMENTS]?.length) {
-            return;
-        }
-        if (!isModification && !editDataCreationCase?.length) {
+        if (isModification && !editData?.[FieldConstants.LINE_SEGMENTS]?.length) {
             return;
         }
         arrayRef.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
             let promises;
-            if (!isModification && editDataCreationCase) {
-                promises = editDataCreationCase.map((segment) => getSegmentLimits(segment));
+            if (!isModification && editData?.lineSegments) {
+                promises = editData.lineSegments.map((segment) => getSegmentLimits(segment));
             }
-            if (isModification && editDataModificationCase) {
-                promises = editDataModificationCase[FieldConstants.LINE_SEGMENTS]?.map((segment) =>
-                    getSegmentLimits(segment)
-                );
-            }
-
             try {
                 if (promises) {
                     const segmentsWithLimits = await Promise.all(promises);
@@ -272,19 +257,10 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         updateSegmentsLimits().then(() => {
             updateTotals();
             keepMostConstrainingLimits();
-            const applyLimits = isModification ? (editDataModificationCase?.applySegmentsLimits ?? true) : true;
+            const applyLimits = isModification ? (editData?.applySegmentsLimits ?? true) : true;
             setValue(APPLY_SEGMENTS_LIMITS, applyLimits);
         });
-    }, [
-        editDataCreationCase,
-        editDataModificationCase,
-        isModification,
-        getSegmentLimits,
-        snackError,
-        updateTotals,
-        keepMostConstrainingLimits,
-        setValue,
-    ]);
+    }, [editData, isModification, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits, setValue]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {

@@ -7,122 +7,54 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    convertInputValue,
-    convertOutputValue,
-    createConnectivityData,
     CustomFormProvider,
     DeepNullable,
-    emptyProperties,
     EquipmentType,
     FieldConstants,
-    FieldType,
-    getBranchActiveReactivePowerEditData,
-    getBranchActiveReactivePowerEmptyFormData,
-    getBranchActiveReactivePowerValidationSchema,
-    getLineCharacteristicsFormData,
-    getCon1andCon2WithPositionValidationSchema,
     getConcatenatedProperties,
-    getConnectivityFormData,
-    getCont1Cont2WithPositionEmptyFormData,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    OperationalLimitsGroupsFormSchema,
-    sanitizeString,
     snackWithFallback,
-    toModificationOperation,
-    toModificationProperties,
     useSnackMessage,
-    addModificationTypeToOpLimitsGroups,
-    addOperationTypeToSelectedOpLG,
-    getLimitsEmptyFormData,
-    getLineCharacteristicsEmptyFormData,
-    getLineCharacteristicsValidationSchemaProps,
-    getLimitsValidationSchema,
-    formatOpLimitGroupsToFormInfos,
     convertToOperationalLimitsGroupFormSchema,
     OperationalLimitsGroupFormSchema,
-    getAllLimitsFormData,
     BranchInfos,
     ComputedLineCharacteristics,
     convertToLineSegmentInfos,
     convertLimitsToOperationalLimitsGroupFormSchema,
-    SegmentFormData,
     LineSegmentsFormData,
+    lineModificationFormToDto,
+    LineForm,
+    LineModificationDto,
+    lineModificationFormSchema,
+    lineModificationEmptyFormData,
+    LineModificationFormData,
+    lineModificationDtoToForm,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    APPLY_SEGMENTS_LIMITS,
-    B1,
-    B2,
-    BUS_OR_BUSBAR_SECTION,
-    CHARACTERISTICS,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
-    CONNECTIVITY_1,
-    CONNECTIVITY_2,
-    ENABLE_OLG_MODIFICATION,
-    EQUIPMENT_NAME,
-    FINAL_CURRENT_LIMITS,
-    G1,
-    G2,
-    LIMITS,
-    LINE_SEGMENTS,
-    MEASUREMENT_P1,
-    MEASUREMENT_P2,
-    MEASUREMENT_Q1,
-    MEASUREMENT_Q2,
-    NAME,
-    OPERATIONAL_LIMITS_GROUPS,
-    R,
-    SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
-    SELECTED_OPERATIONAL_LIMITS_GROUP_ID2,
-    STATE_ESTIMATION,
-    TOTAL_REACTANCE,
-    TOTAL_RESISTANCE,
-    TOTAL_SUSCEPTANCE,
-    VALIDITY,
-    VOLTAGE_LEVEL,
-    X,
-} from 'components/utils/field-constants';
-import { FieldErrors } from 'react-hook-form';
-import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import LineModificationDialogTabs from './line-modification-dialog-tabs';
-import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLine } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
-import { LineModificationDialogTab } from './line-utils';
-import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import type { UUID } from 'node:crypto';
-import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import {
+    fetchBusesOrBusbarSectionsForVoltageLevel,
+    fetchNetworkElementInfos,
+} from '../../../../../services/study/network';
 import { useIntl } from 'react-intl';
-import { LineModificationFormSchema } from './line-modification-type';
-import { LineModificationInfos } from '../../../../../services/network-modification-types';
+import { FetchStatus } from '../../../../../services/utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { WithModificationId } from 'services/network-modification-types';
+import { EquipmentModificationDialogProps } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
-export interface LineModificationDialogProps {
-    // contains data when we try to edit an existing hypothesis from the current node's list
-    editData: LineModificationInfos | null | undefined;
-    // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
-    defaultIdValue: string;
-    studyUuid: UUID;
-    currentNode: CurrentTreeNode;
-    currentRootNetworkUuid: UUID;
-    isUpdate: boolean;
-    editDataFetchStatus?: string;
-    open?: boolean;
-    onClose?: () => void;
-    //...dialogProps
-}
+interface LineModificationDtoWithId extends LineModificationDto, WithModificationId {}
+
+export type LineModificationDialogProps = EquipmentModificationDialogProps & {
+    editData?: LineModificationDtoWithId;
+};
 
 /**
  * Dialog to modify a line in the network
@@ -149,167 +81,50 @@ const LineModificationDialog = ({
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState<BranchInfos | null>(null);
-    const [tabIndex, setTabIndex] = useState<number>(LineModificationDialogTab.CONNECTIVITY_TAB);
     const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
-    const emptyFormData: any = useMemo(
-        () => ({
-            [EQUIPMENT_NAME]: '',
-            ...getCont1Cont2WithPositionEmptyFormData(true),
-            ...getLineCharacteristicsEmptyFormData(),
-            ...getLimitsEmptyFormData(),
-            ...getBranchActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
-            ...emptyProperties,
-        }),
-        []
-    );
-
-    const formSchema = yup
-        .object()
-        .shape({
-            [EQUIPMENT_NAME]: yup.string().nullable(),
-            ...getCon1andCon2WithPositionValidationSchema(true),
-            [CHARACTERISTICS]: getLineCharacteristicsValidationSchemaProps(true),
-            ...getLimitsValidationSchema(LIMITS, true),
-            ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
-        })
-        .concat(modificationPropertiesSchema)
-        .required();
-
-    const formMethods = useFormWithDirtyTracking({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+    const formMethods = useFormWithDirtyTracking<DeepNullable<LineModificationFormData>>({
+        defaultValues: lineModificationEmptyFormData,
+        resolver: yupResolver<DeepNullable<LineModificationFormData>>(lineModificationFormSchema),
     });
 
     const { reset, setValue, getValues, watch } = formMethods;
 
-    const editSegmentsValue = watch(LINE_SEGMENTS);
-    const applySegmentsLimits = watch(APPLY_SEGMENTS_LIMITS);
+    const editSegmentsValue = watch(FieldConstants.LINE_SEGMENTS) as LineSegmentsFormData;
+    const applySegmentsLimits = watch(FieldConstants.APPLY_SEGMENTS_LIMITS) as boolean;
 
     const editSegmentsData = useMemo(
         () => ({
-            [LINE_SEGMENTS]: editSegmentsValue ?? [],
-            [APPLY_SEGMENTS_LIMITS]: applySegmentsLimits ?? true,
+            [FieldConstants.LINE_SEGMENTS]: editSegmentsValue ?? [],
+            [FieldConstants.APPLY_SEGMENTS_LIMITS]: applySegmentsLimits ?? true,
         }),
         [editSegmentsValue, applySegmentsLimits]
     );
 
-    const fromEditDataToFormValues = useCallback(
-        (lineModification: LineModificationInfos) => {
-            if (lineModification?.equipmentId) {
-                setSelectedId(lineModification.equipmentId);
-            }
-            reset({
-                [EQUIPMENT_NAME]: lineModification.equipmentName?.value ?? '',
-                [CONNECTIVITY]: {
-                    ...getConnectivityFormData(
-                        createConnectivityData(lineModification, 1),
-                        FieldConstants.CONNECTIVITY_1
-                    ),
-                    ...getConnectivityFormData(
-                        createConnectivityData(lineModification, 2),
-                        FieldConstants.CONNECTIVITY_2
-                    ),
-                },
-                ...getBranchActiveReactivePowerEditData(STATE_ESTIMATION, lineModification),
-                ...getLineCharacteristicsFormData({
-                    r: lineModification.r?.value ?? null,
-                    x: lineModification.x?.value ?? null,
-                    g1: convertInputValue(FieldType.G1, lineModification.g1?.value ?? null),
-                    b1: convertInputValue(FieldType.B1, lineModification.b1?.value ?? null),
-                    g2: convertInputValue(FieldType.G2, lineModification.g2?.value ?? null),
-                    b2: convertInputValue(FieldType.B2, lineModification.b2?.value ?? null),
-                }),
-                ...getAllLimitsFormData(
-                    formatOpLimitGroupsToFormInfos(lineModification.operationalLimitsGroups),
-                    lineModification.selectedOperationalLimitsGroupId1?.value ?? null,
-                    lineModification.selectedOperationalLimitsGroupId2?.value ?? null,
-                    lineModification[ENABLE_OLG_MODIFICATION]
-                ),
-                ...getPropertiesFromModification(lineModification.properties),
-                [LINE_SEGMENTS]: lineModification.lineSegments,
-                [APPLY_SEGMENTS_LIMITS]: lineModification.applySegmentsLimits ?? true,
-            });
-        },
-        [reset]
-    );
-
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
+            reset(lineModificationDtoToForm(editData));
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [reset, editData]);
 
     const onSubmit = useCallback(
-        (line: LineModificationFormSchema) => {
-            const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
-            const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
-            const characteristics = line[CHARACTERISTICS];
-            const stateEstimationData = line[STATE_ESTIMATION];
-            const limits: OperationalLimitsGroupsFormSchema = line[LIMITS];
-            modifyLine({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid ?? '',
-                lineId: selectedId,
-                equipmentName: toModificationOperation(sanitizeString(line[EQUIPMENT_NAME]) ?? ''),
-                r: characteristics[R],
-                x: characteristics[X],
-                g1: convertOutputValue(FieldType.G1, characteristics[G1]),
-                b1: convertOutputValue(FieldType.B1, characteristics[B1]),
-                g2: convertOutputValue(FieldType.G2, characteristics[G2]),
-                b2: convertOutputValue(FieldType.B2, characteristics[B2]),
-                operationalLimitsGroups: limits[ENABLE_OLG_MODIFICATION]
-                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
-                    : [],
-                selectedOperationalLimitsGroupId1: addOperationTypeToSelectedOpLG(
-                    limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1],
-                    intl.formatMessage({
-                        id: 'None',
-                    })
-                ),
-                selectedOperationalLimitsGroupId2: addOperationTypeToSelectedOpLG(
-                    limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2],
-                    intl.formatMessage({
-                        id: 'None',
-                    })
-                ),
-                [ENABLE_OLG_MODIFICATION]: limits[ENABLE_OLG_MODIFICATION],
-                voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
-                busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
-                voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,
-                busOrBusbarSectionId2: connectivity2[BUS_OR_BUSBAR_SECTION]?.id,
-                connectionName1: sanitizeString(connectivity1[CONNECTION_NAME]),
-                connectionName2: sanitizeString(connectivity2[CONNECTION_NAME]),
-                connectionDirection1: connectivity1[CONNECTION_DIRECTION],
-                connectionDirection2: connectivity2[CONNECTION_DIRECTION],
-                connectionPosition1: connectivity1[CONNECTION_POSITION],
-                connectionPosition2: connectivity2[CONNECTION_POSITION],
-                connected1: connectivity1[CONNECTED],
-                connected2: connectivity2[CONNECTED],
-                properties: toModificationProperties(line),
-                p1MeasurementValue: stateEstimationData[MEASUREMENT_P1][FieldConstants.VALUE],
-                p1MeasurementValidity: stateEstimationData[MEASUREMENT_P1][VALIDITY],
-                q1MeasurementValue: stateEstimationData[MEASUREMENT_Q1][FieldConstants.VALUE],
-                q1MeasurementValidity: stateEstimationData[MEASUREMENT_Q1][VALIDITY],
-                p2MeasurementValue: stateEstimationData[MEASUREMENT_P2][FieldConstants.VALUE],
-                p2MeasurementValidity: stateEstimationData[MEASUREMENT_P2][VALIDITY],
-                q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][FieldConstants.VALUE],
-                q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
-                lineSegments: line[LINE_SEGMENTS],
-                applySegmentsLimits: line[APPLY_SEGMENTS_LIMITS] ?? true,
-            }).catch((error) => {
+        (lineForm: LineModificationFormData) => {
+            const dto = lineModificationFormToDto(lineForm, intl);
+            modifyLine(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: unknown) => {
                 snackWithFallback(snackError, error, { headerId: 'LineModificationError' });
             });
         },
-        [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError]
+        [currentNodeUuid, editData?.uuid, intl, snackError, studyUuid]
     );
 
     const clear = () => {
-        reset(emptyFormData);
+        reset(lineModificationEmptyFormData);
     };
 
     const onEquipmentIdChange = useCallback(
@@ -329,18 +144,21 @@ const LineModificationDialog = ({
                         if (line) {
                             setLineToModify(line);
                             reset(
-                                (formValues: LineModificationFormSchema) => ({
+                                (formValues: DeepNullable<LineModificationFormData>) => ({
                                     ...formValues,
                                     ...{
-                                        [LIMITS]: formValues?.limits[ENABLE_OLG_MODIFICATION]
+                                        [FieldConstants.LIMITS]: formValues?.limits?.[
+                                            FieldConstants.ENABLE_OLG_MODIFICATION
+                                        ]
                                             ? {
-                                                  [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
-                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                  [FieldConstants.ENABLE_OLG_MODIFICATION]:
+                                                      formValues.limits?.[FieldConstants.ENABLE_OLG_MODIFICATION],
+                                                  [FieldConstants.OPERATIONAL_LIMITS_GROUPS]:
                                                       formValues.limits?.operationalLimitsGroups ?? [],
                                               }
                                             : {
-                                                  [ENABLE_OLG_MODIFICATION]: false,
-                                                  [OPERATIONAL_LIMITS_GROUPS]:
+                                                  [FieldConstants.ENABLE_OLG_MODIFICATION]: false,
+                                                  [FieldConstants.OPERATIONAL_LIMITS_GROUPS]:
                                                       convertToOperationalLimitsGroupFormSchema(
                                                           line?.currentLimits ?? []
                                                       ),
@@ -355,16 +173,20 @@ const LineModificationDialog = ({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset(
+                            { ...lineModificationEmptyFormData, [FieldConstants.EQUIPMENT_ID]: equipmentId },
+                            { keepDirty: true }
+                        );
                         if (editData?.equipmentId !== equipmentId) {
                             setLineToModify(null);
                         }
                     });
             } else {
                 setLineToModify(null);
-                reset(emptyFormData, { keepDefaultValues: true });
+                reset(lineModificationEmptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData?.equipmentId, emptyFormData]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData?.equipmentId]
     );
 
     useEffect(() => {
@@ -372,31 +194,6 @@ const LineModificationDialog = ({
             onEquipmentIdChange(selectedId);
         }
     }, [selectedId, onEquipmentIdChange]);
-
-    const onValidationError = (errors: FieldErrors<LineModificationFormSchema>) => {
-        let tabsInError: number[] = [];
-        if (errors?.[LIMITS] !== undefined) {
-            tabsInError.push(LineModificationDialogTab.LIMITS_TAB);
-        }
-        if (errors?.[CHARACTERISTICS] !== undefined) {
-            tabsInError.push(LineModificationDialogTab.CHARACTERISTICS_TAB);
-        }
-        if (errors?.[CONNECTIVITY] !== undefined) {
-            tabsInError.push(LineModificationDialogTab.CONNECTIVITY_TAB);
-        }
-        if (errors?.[STATE_ESTIMATION] !== undefined) {
-            tabsInError.push(LineModificationDialogTab.STATE_ESTIMATION_TAB);
-        }
-
-        if (tabsInError.includes(tabIndex)) {
-            // error in current tab => do not change tab systematically but remove current tab in error list
-            setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
-        } else if (tabsInError.length > 0) {
-            // switch to the first tab in the list then remove the tab in the error list
-            setTabIndex(tabsInError[0]);
-            setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
-        }
-    };
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -412,54 +209,72 @@ const LineModificationDialog = ({
 
     const handleLineSegmentsBuildSubmit = (
         data: ComputedLineCharacteristics,
-        lineSegments: DeepNullable<SegmentFormData | null>[],
+        lineSegments: LineSegmentsFormData,
         applyLimits: boolean | null
     ) => {
-        setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
+        setValue(
+            `${FieldConstants.CHARACTERISTICS}.${FieldConstants.R}` as any,
+            data[FieldConstants.TOTAL_RESISTANCE],
+            {
+                shouldDirty: true,
+            }
+        );
+        setValue(`${FieldConstants.CHARACTERISTICS}.${FieldConstants.X}` as any, data[FieldConstants.TOTAL_REACTANCE], {
             shouldDirty: true,
         });
-        setValue(`${CHARACTERISTICS}.${X}`, data[TOTAL_REACTANCE], {
-            shouldDirty: true,
-        });
-        setValue(`${CHARACTERISTICS}.${B1}`, data[TOTAL_SUSCEPTANCE] / 2, {
-            shouldDirty: true,
-        });
-        setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
-            shouldDirty: true,
-        });
-        setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments as LineSegmentsFormData));
+        setValue(
+            `${FieldConstants.CHARACTERISTICS}.${FieldConstants.B1}` as any,
+            data[FieldConstants.TOTAL_SUSCEPTANCE] / 2,
+            {
+                shouldDirty: true,
+            }
+        );
+        setValue(
+            `${FieldConstants.CHARACTERISTICS}.${FieldConstants.B2}` as any,
+            data[FieldConstants.TOTAL_SUSCEPTANCE] / 2,
+            {
+                shouldDirty: true,
+            }
+        );
+        setValue(FieldConstants.LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
 
         const shouldApplyLimits = applyLimits ?? true;
-        setValue(APPLY_SEGMENTS_LIMITS, shouldApplyLimits);
+        setValue(FieldConstants.APPLY_SEGMENTS_LIMITS, shouldApplyLimits);
         if (shouldApplyLimits) {
-            const limitsFromSegments = convertLimitsToOperationalLimitsGroupFormSchema(data[FINAL_CURRENT_LIMITS]);
+            const limitsFromSegments = convertLimitsToOperationalLimitsGroupFormSchema(
+                data[FieldConstants.FINAL_CURRENT_LIMITS]
+            );
             const actualLimits: OperationalLimitsGroupFormSchema[] =
-                getValues(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`) ?? [];
+                getValues(`${FieldConstants.LIMITS}.${FieldConstants.OPERATIONAL_LIMITS_GROUPS}`) ?? [];
             const mergedLimits = [
                 ...actualLimits.filter(
                     (actualLimit) =>
-                        !limitsFromSegments.some((limitsFromSegment) => limitsFromSegment[NAME] === actualLimit[NAME])
+                        !limitsFromSegments.some(
+                            (limitsFromSegment) =>
+                                limitsFromSegment[FieldConstants.NAME] === actualLimit[FieldConstants.NAME]
+                        )
                 ),
                 ...limitsFromSegments,
             ];
-            setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, mergedLimits);
-            setValue(`${LIMITS}.${ENABLE_OLG_MODIFICATION}`, true);
+            setValue(`${FieldConstants.LIMITS}.${FieldConstants.OPERATIONAL_LIMITS_GROUPS}` as any, mergedLimits);
+            setValue(`${FieldConstants.LIMITS}.${FieldConstants.ENABLE_OLG_MODIFICATION}` as any, true);
         }
     };
 
-    const headerAndTabs = (
-        <LineModificationDialogHeader
-            lineToModify={lineToModify}
-            tabIndexesWithError={tabIndexesWithError}
-            tabIndex={tabIndex}
-            setTabIndex={setTabIndex}
-            equipmentId={selectedId}
-        />
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
 
     return (
         <CustomFormProvider
-            validationSchema={formSchema}
+            validationSchema={lineModificationFormSchema}
             removeOptional={true}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -469,18 +284,18 @@ const LineModificationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                onValidationError={onValidationError}
                 maxWidth={'xl'}
                 titleId="ModifyLine"
-                subtitle={selectedId != null ? headerAndTabs : undefined}
                 open={open}
                 keepMounted={true}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
-                PaperProps={{
-                    sx: {
-                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '95vh',
+                        },
                     },
                 }}
                 onOpenCatalogDialog={selectedId != null ? () => setIsOpenLineTypesCatalogDialog(true) : undefined}
@@ -493,20 +308,21 @@ const LineModificationDialog = ({
                         equipmentType={EquipmentType.LINE}
                     />
                 )}
-                {selectedId != null && ( // TODO when moving to commons-ui, use generic <LineForm>
+                {selectedId != null && (
                     <>
-                        <LineModificationDialogTabs
-                            studyUuid={studyUuid}
-                            currentNode={currentNode}
-                            currentRootNetworkUuid={currentRootNetworkUuid}
+                        <LineForm
                             lineToModify={lineToModify}
-                            tabIndex={tabIndex}
+                            voltageLevelOptions={voltageLevelOptions}
+                            PositionDiagramPane={PositionDiagramPane}
+                            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
+                            isModification
                         />
                         <LineTypeSegmentDialog
                             open={isOpenLineTypesCatalogDialog}
                             onClose={handleCloseLineTypesCatalogDialog}
-                            onSaveModificationCase={handleLineSegmentsBuildSubmit}
-                            editDataModificationCase={editSegmentsData}
+                            onSave={handleLineSegmentsBuildSubmit}
+                            editData={editSegmentsData}
+                            isModification
                         />
                     </>
                 )}
