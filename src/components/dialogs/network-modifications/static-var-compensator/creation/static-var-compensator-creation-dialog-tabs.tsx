@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Grid2 as Grid, Tab, Tabs } from '@mui/material';
 import { FunctionComponent } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { getTabStyle } from '../../../../utils/tab-utils';
@@ -23,7 +23,7 @@ const StaticVarCompensatorCreationDialogTabs: FunctionComponent<StaticVarCompens
     setTabIndex,
 }) => {
     return (
-        <Grid container item>
+        <Grid container sx={{ width: '100%' }}>
             <Tabs value={tabIndex} onChange={(event, newValue) => setTabIndex(newValue)}>
                 <Tab
                     label={<FormattedMessage id="StaticVarCompensatorConnectivityTab" />}

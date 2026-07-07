@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, type GridProps } from '@mui/material';
+import { Grid2 as Grid, type Grid2Props as GridProps } from '@mui/material';
 import { Restore as RestoreIcon, Save as SaveIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import NodesConfigButton from '../spreadsheet/spreadsheet-toolbar/nodes-config/nodes-config-button';
@@ -29,14 +29,14 @@ export default function SpreadsheetTabsToolbar({
     ...props
 }: Readonly<SpreadsheetTabsToolbarProps>) {
     return (
-        <Grid item container {...props}>
-            <Grid item padding={padding}>
+        <Grid container {...props}>
+            <Grid padding={padding}>
                 <NodesConfigButton disabled={disabled} />
             </Grid>
-            <Grid item padding={padding}>
+            <Grid padding={padding}>
                 <PartialLoadingMenuButton disabled={disabled} />
             </Grid>
-            <Grid item padding={padding}>
+            <Grid padding={padding}>
                 <TooltipIconButton
                     tooltip={<FormattedMessage id="spreadsheet/collection/save/button_tooltip" />}
                     sx={spreadsheetStyles.toolbarButton}
@@ -47,7 +47,7 @@ export default function SpreadsheetTabsToolbar({
                     <SaveIcon />
                 </TooltipIconButton>
             </Grid>
-            <Grid item padding={padding}>
+            <Grid padding={padding}>
                 <TooltipIconButton
                     tooltip={<FormattedMessage id="spreadsheet/reset_spreadsheet_collection/button_tooltip" />}
                     sx={spreadsheetStyles.toolbarButton}

@@ -24,7 +24,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { WarningAmber } from '@mui/icons-material';
 import { SusceptanceArea } from './susceptance-area';
-import { TextField, Tooltip, Grid, Box } from '@mui/material';
+import { TextField, Tooltip, Grid2 as Grid, Box } from '@mui/material';
 
 type FieldKeys = 'standby' | 'lVoltageSetLimit' | 'hVoltageSetLimit' | 'lVoltageThreshold' | 'hVoltageThreshold';
 export const StandbyAutomatonForm = () => {
@@ -71,7 +71,7 @@ export const StandbyAutomatonForm = () => {
         ),
         standby: (
             <Grid container onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-                <Grid container item xs={12}>
+                <Grid container sx={{ width: '100%' }}>
                     <FormControlLabel
                         value="StandbyAutomaton"
                         control={
@@ -123,7 +123,7 @@ export const StandbyAutomatonForm = () => {
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={4}>
+            <Grid size={4}>
                 <Box>
                     <CheckboxInput name={`${id}.${ADD_STAND_BY_AUTOMATON}`} label="AddAutomaton" />
                 </Box>
@@ -134,7 +134,7 @@ export const StandbyAutomatonForm = () => {
                         {Object.keys(fields).map((key: string) => {
                             const typedKey = key as FieldKeys;
                             return (
-                                <Grid item xs={6} key={key}>
+                                <Grid size={6} key={key}>
                                     {fields[typedKey]}
                                 </Grid>
                             );

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Button, Grid, ListItemButton, Paper, Typography } from '@mui/material';
-import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from '../global-filter.style';
+import { Box, Button, Grid2 as Grid, ListItemButton, Paper, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { PropsWithChildren, RefObject, useCallback, useMemo, useState } from 'react';
@@ -25,6 +24,7 @@ import {
 import SelectedGlobalFilters from './selected-global-filters';
 import { LabelWithInfoTooltip } from './label-with-info-tooltip';
 import { useGlobalFilterContext } from '../context/global-filter-context';
+import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from '../global-filter.style';
 
 const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;
@@ -167,14 +167,14 @@ function GlobalFilterDropdownPanel({
             >
                 <Paper sx={resultsGlobalFilterStyles.dropdown}>
                     <Grid container>
-                        <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cellHeader}>
+                        <Grid size={XS_COLUMN1} sx={resultsGlobalFilterStyles.cellHeader}>
                             <LabelWithInfoTooltip
                                 text="results.globalFilter.categories"
                                 tooltipMessage="results.globalFilter.categoriesHelp"
                             />
                         </Grid>
-                        <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellHeader} />
-                        <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellHeader}>
+                        <Grid size={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellHeader} />
+                        <Grid size={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellHeader}>
                             <Typography variant="caption">{filtersMsg}</Typography>
                             <Button
                                 size="small"
@@ -187,7 +187,7 @@ function GlobalFilterDropdownPanel({
                                 </Typography>
                             </Button>
                         </Grid>
-                        <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cell}>
+                        <Grid size={XS_COLUMN1} sx={resultsGlobalFilterStyles.cell}>
                             <List sx={resultsGlobalFilterStyles.list}>
                                 {categories.map((category) => {
                                     return (
@@ -220,7 +220,7 @@ function GlobalFilterDropdownPanel({
                                 })}
                             </List>
                         </Grid>
-                        <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
+                        <Grid size={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
                             <Box
                                 sx={mergeSx(resultsGlobalFilterStyles.list, {
                                     height: isCriteriaFilterType(filterGroupSelected)
@@ -243,7 +243,7 @@ function GlobalFilterDropdownPanel({
                                 </Button>
                             )}
                         </Grid>
-                        <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
+                        <Grid size={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
                             <SelectedGlobalFilters />
                         </Grid>
                     </Grid>

@@ -23,13 +23,13 @@ import {
     FILTER_TEXT_COMPARATORS,
     TableType,
 } from '../../../types/custom-aggrid-types';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
+import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer.type';
 import { GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
