@@ -474,6 +474,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     case NUMBER:
                         columnDef.cellDataType = NUMBER;
                         columnDef.cellEditor = NumericEditor;
+                        columnDef.cellEditorParams = { allowNegativeValues: true };
                         columnDef.suppressKeyboardEvent = suppressNonNumericKeyboardEvent;
                         break;
                     case ENUM:
