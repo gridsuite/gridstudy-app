@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid2 as Grid } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid2 as Grid, Stack } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton, CsvPicker, getCsvDelimiter, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
@@ -70,7 +70,7 @@ export const ImportRuleDialog = ({
                 <FormattedMessage id={ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule'} />
             </DialogTitle>
             <DialogContent>
-                <Grid container spacing={2} direction={'column'}>
+                <Stack spacing={2}>
                     <Grid>
                         <CSVDownloader
                             data={[csvColumns]}
@@ -100,7 +100,7 @@ export const ImportRuleDialog = ({
                             <Alert severity="error">{fileErrorMessage}</Alert>
                         </Grid>
                     )}
-                </Grid>
+                </Stack>
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleCloseDialog} />

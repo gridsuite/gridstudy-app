@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { styles } from '../generic-equipment-popover-utils';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
 import { renderCommonCharacteristicsTable } from './branch-utils';
@@ -14,9 +14,5 @@ interface BranchCharacteristicsProps {
     equipmentInfos: BranchEquipmentInfos;
 }
 export const BranchCharacteristicsTable: React.FC<BranchCharacteristicsProps> = ({ equipmentInfos }) => {
-    return (
-        <Grid item sx={styles.grid}>
-            {renderCommonCharacteristicsTable(equipmentInfos)}
-        </Grid>
-    );
+    return <Grid sx={styles.grid}>{renderCommonCharacteristicsTable(equipmentInfos)}</Grid>;
 };
