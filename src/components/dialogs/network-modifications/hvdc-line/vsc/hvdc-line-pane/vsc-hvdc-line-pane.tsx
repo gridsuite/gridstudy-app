@@ -33,8 +33,8 @@ import { Grid2 as Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { useIntl } from 'react-intl';
-import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
+import { GridSection } from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
 
 interface VscHvdcLinePaneProps {
     id: string;
@@ -185,7 +185,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
     );
 
     return (
-        <Grid container>
+        <>
             <GridSection title="Characteristics" />
             <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem>{dcNominalVoltageField}</GridItem>
@@ -209,7 +209,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             </Grid>
 
             <PropertiesForm isModification={isEquipementModification} />
-        </Grid>
+        </>
     );
 };
 

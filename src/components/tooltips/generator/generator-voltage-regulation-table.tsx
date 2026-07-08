@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Table, TableRow, TableContainer, Grid } from '@mui/material';
+import { Table, TableRow, TableContainer, Grid2 as Grid } from '@mui/material';
 import { GeneratorEquipmentInfos } from '../equipment-popover-type';
 import { styles } from '../generic-equipment-popover-utils';
 import { CellRender } from '../cell-render';
@@ -16,7 +16,7 @@ interface GeneratorVoltageRegulationTableProps {
 
 export const GeneratorVoltageRegulationTable: React.FC<GeneratorVoltageRegulationTableProps> = ({ equipmentInfos }) => {
     return (
-        <Grid item sx={styles.grid}>
+        <Grid sx={styles.grid}>
             <TableContainer sx={styles.table}>
                 <Table size="small" sx={styles.layout}>
                     <TableRow>

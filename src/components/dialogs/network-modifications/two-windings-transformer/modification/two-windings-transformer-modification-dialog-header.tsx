@@ -8,7 +8,7 @@
 import { Grid2 as Grid, TextField } from '@mui/material';
 import { ENABLED, EQUIPMENT_NAME, RATIO_TAP_CHANGER, PHASE_TAP_CHANGER } from 'components/utils/field-constants';
 import { filledTextField, SwitchInput, TextInput } from '@gridsuite/commons-ui';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridItem } from '../../../commons/grid-item';
 
 interface TwoWindingsTransformerModificationDialogHeaderProps {
     equipmentToModify?: string;
@@ -52,7 +52,7 @@ const TwoWindingsTransformerModificationDialogHeader = ({
     );
 
     return (
-        <Grid container spacing={2} size={12}>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
             <GridItem size={4}>{twoWindingsTransformerIdField}</GridItem>
             <GridItem size={4}>{twoWindingsTransformerNameField}</GridItem>
             <GridItem size={2}>{ratioTapChangerEnabledField}</GridItem>
