@@ -138,6 +138,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         studyUuid,
         currentNode,
         currentRootNetworkUuid,
+        onMoveNode,
+        onMoveTextNode,
     };
     const latestRef = useRef(latestValues);
     latestRef.current = latestValues;
@@ -397,12 +399,12 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     );
 
     const handleMoveNode = useEffectEvent((equipmentId: string, nodeId: string, x: number, y: number) => {
-        onMoveNode(equipmentId, x, y);
+        latestRef.current.onMoveNode(equipmentId, x, y);
     });
 
     const handleMoveTextnode = useEffectEvent(
         (equipmentId: string, vlNodeId: string, textNodeId: string, shiftX: number, shiftY: number) => {
-            onMoveTextNode(equipmentId, shiftX, shiftY);
+            latestRef.current.onMoveTextNode(equipmentId, shiftX, shiftY);
         }
     );
 
