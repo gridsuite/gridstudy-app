@@ -23,6 +23,7 @@ import {
     EquipmentType,
     fetchElementsInfos,
     mergeSx,
+    TableType,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
@@ -147,9 +148,21 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 // ignore already selected filters and non-generic filters :
                 if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
                     // add the others
-                    const substationOrVoltageLevel =
-                        element.specificMetadata?.equipmentType === EquipmentType.SUBSTATION ||
-                        element.specificMetadata?.equipmentType === EquipmentType.VOLTAGE_LEVEL;
+                    let substationOrVoltageLevel: boolean;
+                    if (
+                        element.specificMetadata?.equipmentType === EquipmentType.VOLTAGE_LEVEL &&
+                        filterGroupSelected === FilterType.GENERIC_FILTER &&
+                        tableType === TableType.SecurityAnalysis
+                    ) {
+                        // Special case : voltage level filter that can be added in the global filter
+                        // 'Elements' category (only in security analysis results) should be considered as GENERIC_FILTER
+                        substationOrVoltageLevel = false;
+                    } else {
+                        substationOrVoltageLevel =
+                            element.specificMetadata?.equipmentType === EquipmentType.SUBSTATION ||
+                            element.specificMetadata?.equipmentType === EquipmentType.VOLTAGE_LEVEL;
+                    }
+
                     newlySelectedFilters.push({
                         id: element.elementUuid,
                         uuid: element.elementUuid,
@@ -171,7 +184,15 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
             );
             setDirectoryItemSelectorOpen(false);
         },
-        [selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown, dispatch, tableType, tableUuid]
+        [
+            selectedGlobalFilters,
+            setDirectoryItemSelectorOpen,
+            setOpenedDropdown,
+            dispatch,
+            tableType,
+            tableUuid,
+            filterGroupSelected,
+        ]
     );
 
     /**
