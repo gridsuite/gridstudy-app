@@ -71,7 +71,7 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
         () => [
             {
                 id: 'history',
-                icon: <HistoryIcon fontSize="medium" />,
+                icon: <HistoryIcon fontSize="small" />,
                 titleId: 'history',
                 isDisabled: !hasHistory,
                 content: (
@@ -85,7 +85,7 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
             },
             {
                 id: 'voltage',
-                icon: <NominalVoltageIcon fontSize="medium" />,
+                icon: <NominalVoltageIcon fontSize="small" />,
                 titleId: 'nadVoltageFilter',
                 isDisabled: !hasNominalVoltages,
                 content: (
