@@ -86,18 +86,18 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
     },
-    headerExpanded: (theme: Theme, enabled: boolean) => ({
+    headerExpanded: (theme: Theme, isDisabled?: boolean) => ({
         display: 'flex',
         alignItems: 'center',
         p: 0.5,
-        cursor: enabled ? 'pointer' : 'default',
+        cursor: isDisabled ? 'default' : 'pointer',
         '&:hover': {
-            backgroundColor: enabled ? theme.palette.action.hover : 'transparent',
+            backgroundColor: isDisabled ? 'transparent' : theme.palette.action.hover,
         },
     }),
-    icon: (theme: Theme, enabled: boolean) => ({
+    icon: (theme: Theme, isDisabled?: boolean) => ({
         display: 'flex',
-        color: enabled ? theme.palette.text.primary : theme.palette.text.disabled,
+        color: isDisabled ? theme.palette.text.disabled : theme.palette.text.primary,
     }),
     section: {
         display: 'flex',
@@ -138,41 +138,35 @@ export const NavigationSidebar = memo(function NavigationSidebar({
         <Box sx={styles.sidebar(theme, !anyExpanded, isAbsolutePositioned)}>
             {!anyExpanded
                 ? // Collapsed rail: one icon button per section.
-                  sections.map((section) => {
-                      const enabled = !section.isDisabled;
-                      return (
-                          <Box key={section.id} sx={mergeSx(styles.headerContainer, styles.headerCollapsed)}>
-                              <IconButton
-                                  onClick={enabled ? () => toggleExpand(section.id) : undefined}
-                                  disabled={!enabled}
-                                  size="small"
-                                  sx={styles.iconButton}
-                              >
-                                  <Box sx={styles.icon(theme, enabled)}>{section.icon}</Box>
-                              </IconButton>
-                          </Box>
-                      );
-                  })
+                  sections.map((section) => (
+                      <Box key={section.id} sx={mergeSx(styles.headerContainer, styles.headerCollapsed)}>
+                          <IconButton
+                              onClick={section.isDisabled ? undefined : () => toggleExpand(section.id)}
+                              disabled={section.isDisabled}
+                              size="small"
+                              sx={styles.iconButton}
+                          >
+                              <Box sx={styles.icon(theme, section.isDisabled)}>{section.icon}</Box>
+                          </IconButton>
+                      </Box>
+                  ))
                 : // Expanded: each section shows its header, and its content when open.
-                  sections.map((section) => {
-                      const enabled = !section.isDisabled;
-                      return (
-                          <Box key={section.id} sx={styles.section}>
-                              <Box sx={styles.headerContainer}>
-                                  <Box
-                                      onClick={enabled ? () => toggleExpand(section.id) : undefined}
-                                      sx={styles.headerExpanded(theme, enabled)}
-                                  >
-                                      <Box sx={styles.icon(theme, enabled)}>{section.icon}</Box>
-                                      <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
-                                          {intl.formatMessage({ id: section.titleId })}
-                                      </Typography>
-                                  </Box>
+                  sections.map((section) => (
+                      <Box key={section.id} sx={styles.section}>
+                          <Box sx={styles.headerContainer}>
+                              <Box
+                                  onClick={section.isDisabled ? undefined : () => toggleExpand(section.id)}
+                                  sx={styles.headerExpanded(theme, section.isDisabled)}
+                              >
+                                  <Box sx={styles.icon(theme, section.isDisabled)}>{section.icon}</Box>
+                                  <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
+                                      {intl.formatMessage({ id: section.titleId })}
+                                  </Typography>
                               </Box>
-                              {isExpanded(section) && <Box sx={styles.sectionContent}>{section.content}</Box>}
                           </Box>
-                      );
-                  })}
+                          {isExpanded(section) && <Box sx={styles.sectionContent}>{section.content}</Box>}
+                      </Box>
+                  ))}
         </Box>
     );
 });
