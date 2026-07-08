@@ -7,7 +7,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { Box, Grid, TextField, Tooltip } from '@mui/material';
+import { Box, Grid2 as Grid, Stack, TextField, Tooltip } from '@mui/material';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import HeaderWithTooltip from '../topology-modification/header-with-tooltip';
@@ -23,7 +23,7 @@ import {
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
 } from '../../../../utils/field-constants';
 import FeederBayDirectionCellRenderer from './feeder-bay-direction-cell-render';
-import GridItem from '../../../commons/grid-item';
+import { GridItem } from '../../../commons/grid-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
 import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
@@ -327,11 +327,9 @@ export function MoveVoltageLevelFeederBaysForm({
     );
 
     return (
-        <Grid container sx={{ height: '100%', width: 'auto' }} direction="column">
-            <Grid container item spacing={2}>
-                <Grid item xs={4}>
-                    {voltageLevelIdField}
-                </Grid>
+        <Stack sx={{ height: '100%', width: 'auto' }}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
+                <Grid size={4}>{voltageLevelIdField}</Grid>
                 {isNodeBuiltValue && (
                     <GridItem size={3}>
                         <Button onClick={handleClickOpenDiagramPane} variant="outlined">
@@ -341,10 +339,10 @@ export function MoveVoltageLevelFeederBaysForm({
                     </GridItem>
                 )}
             </Grid>
-            <Grid item spacing={2} paddingTop={2}>
+            <Grid paddingTop={2}>
                 <FormattedMessage id={'moveFeederBaysSections'} />
             </Grid>
-            <Grid item xs paddingTop={1}>
+            <Box sx={{ pt: 1, flex: 1, minHeight: 0 }}>
                 <CustomAGGrid
                     rowData={groupedRowData}
                     defaultColDef={defaultColDef}
@@ -366,7 +364,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     }}
                     fullWidthCellRenderer={renderGroupCell}
                 />
-            </Grid>
+            </Box>
             <Box>
                 <PositionDiagramPane
                     open={isDiagramPaneOpen}
@@ -374,6 +372,6 @@ export function MoveVoltageLevelFeederBaysForm({
                     voltageLevelId={selectedId}
                 />
             </Box>
-        </Grid>
+        </Stack>
     );
 }

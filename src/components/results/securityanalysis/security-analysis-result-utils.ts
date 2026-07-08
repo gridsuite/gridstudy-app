@@ -10,8 +10,8 @@ import { RESULT_TYPE, SubjectIdRendererType } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { ComputingType, ContingencyCellRenderer, NmkType } from '@gridsuite/commons-ui';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { translateLimitNameFrontToBack } from '../common/utils';
+import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import {
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
@@ -23,7 +23,7 @@ import { AppState } from 'redux/reducer.type';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import RunningStatus from 'components/utils/running-status';
 import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import {
     ColumnContext,

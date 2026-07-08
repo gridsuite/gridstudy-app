@@ -7,7 +7,7 @@
 
 import { filledTextField, IntegerInput, SwitchesBetweenSections } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
-import { Box, Grid2 as Grid, TextField, Tooltip } from '@mui/material';
+import { Box, Grid2 as Grid, Stack, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -62,9 +62,9 @@ export default function CreateVoltageLevelTopologyForm({
 
     return (
         <>
-            <Grid container direction="column">
+            <Stack>
                 <Grid>
-                    <Grid container direction="column" spacing={2}>
+                    <Stack spacing={2}>
                         <Grid>
                             <Grid container spacing={3} alignItems="center">
                                 <Grid size={4}>{voltageLevelIdField}</Grid>
@@ -95,12 +95,12 @@ export default function CreateVoltageLevelTopologyForm({
                                 </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </Stack>
                 </Grid>
                 <Grid>
                     <SwitchesBetweenSections />
                 </Grid>
-            </Grid>
+            </Stack>
             <Box>
                 <PositionDiagramPane
                     open={isDiagramPaneOpen}
