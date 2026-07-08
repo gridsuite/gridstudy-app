@@ -10,7 +10,8 @@ import { useSelector } from 'react-redux';
 import { History as HistoryIcon } from '@mui/icons-material';
 import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { HistorySectionContent, NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
+import { NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
+import { HistorySectionContent } from '../common/history-section-content';
 
 interface SldNavigationSidebarProps {
     navigationHistory: string[];

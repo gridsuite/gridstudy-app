@@ -5,18 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    Box,
-    Typography,
-    List,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    useTheme,
-    Theme,
-    IconButton,
-} from '@mui/material';
-import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { Box, Typography, useTheme, Theme, IconButton } from '@mui/material';
 import { memo, useCallback, useState, type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 import { mergeSx } from '@gridsuite/commons-ui';
@@ -168,43 +157,5 @@ export const NavigationSidebar = memo(function NavigationSidebar({
                       </Box>
                   ))}
         </Box>
-    );
-});
-
-interface HistorySectionContentProps {
-    navigationHistory: string[];
-    onNavigate: (voltageLevelId: string) => void;
-    isItemSelected?: (voltageLevelId: string) => boolean;
-    isDisabled: boolean;
-}
-
-export const HistorySectionContent = memo(function HistorySectionContent({
-    navigationHistory,
-    onNavigate,
-    isItemSelected,
-    isDisabled,
-}: HistorySectionContentProps) {
-    return (
-        <List dense sx={{ py: 0 }}>
-            {navigationHistory.map((voltageLevelId, index) => (
-                <ListItemButton
-                    key={`${voltageLevelId}-${index}`}
-                    selected={isItemSelected ? isItemSelected(voltageLevelId) : false}
-                    onClick={() => onNavigate(voltageLevelId)}
-                    disabled={isDisabled}
-                >
-                    <ListItemIcon sx={{ minWidth: 32 }}>
-                        <ArrowBackIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={voltageLevelId}
-                        primaryTypographyProps={{
-                            variant: 'caption',
-                            noWrap: true,
-                        }}
-                    />
-                </ListItemButton>
-            ))}
-        </List>
     );
 });

@@ -17,7 +17,8 @@ import {
 } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../redux/store';
-import { HistorySectionContent, NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
+import { NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
+import { HistorySectionContent } from '../common/history-section-content';
 import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
 import NominalVoltageFilter, { type NominalVoltageFilterStyles } from '../../../network/nominal-voltage-filter';
 
