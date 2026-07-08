@@ -813,6 +813,8 @@ export const reducer = createReducer(initialState, (builder) => {
             state.tableFilters.globalFilters[tabUuid] = {
                 selected: selectedFilters.map(getGlobalFilterId),
                 recents: buildSortedRecents(recentFilters),
+                // programmatic change (collection loading): evaluate the filter immediately, without debounce
+                lastChangeFromUser: false,
             };
             // Store full objects in globalFilterOptions only if not already present
             filters.filter(isCriteriaFilter).forEach((filter) => {
@@ -1586,6 +1588,8 @@ export const reducer = createReducer(initialState, (builder) => {
             state.tableFilters.globalFilters[action.tabUuid] ??= { selected: [], recents: [] };
             if (!areSelectedEqual) {
                 state.tableFilters.globalFilters[action.tabUuid].selected = newSelectedIds;
+                // programmatic change (init/sync): evaluate the filter immediately, without debounce
+                state.tableFilters.globalFilters[action.tabUuid].lastChangeFromUser = false;
             }
             if (!areRecentsEqual) {
                 state.tableFilters.globalFilters[action.tabUuid].recents = newRecents;
@@ -1642,6 +1646,8 @@ export const reducer = createReducer(initialState, (builder) => {
 
         state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
+        // manual user selection: debounce the filter evaluation
+        tableState.lastChangeFromUser = true;
 
         filterIds.forEach((id) => {
             if (!tableState.selected.includes(id)) {
@@ -1656,6 +1662,8 @@ export const reducer = createReducer(initialState, (builder) => {
 
         state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
+        // manual user selection: debounce the filter evaluation
+        tableState.lastChangeFromUser = true;
 
         tableState.selected = tableState.selected.filter((id) => !filterIds.includes(id));
 
@@ -1673,6 +1681,8 @@ export const reducer = createReducer(initialState, (builder) => {
         const { tableId } = action;
         state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
+        // manual user selection: debounce the filter evaluation
+        tableState.lastChangeFromUser = true;
         const now = Date.now();
         const newRecents = tableState.selected
             .filter((filterId) => {

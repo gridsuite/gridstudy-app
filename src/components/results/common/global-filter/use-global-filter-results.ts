@@ -6,7 +6,7 @@
  */
 
 import type { NonEmptyTuple } from 'type-fest';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import type { GlobalFilter } from './global-filter-types';
@@ -18,7 +18,16 @@ import { buildValidGlobalFilters } from './build-valid-global-filters';
 
 /* Because of ESLint react-hooks/rules-of-hooks, nullable value must be managed inside the hook, because
  * React hooks can't be called conditionally and/or different order. */
-export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: NonEmptyTuple<FilterEquipmentType>) {
+/**
+ * @param debounce when true (default), the filter evaluation is debounced to smooth rapid user
+ * interactions in the filter component. Set to false to evaluate immediately (e.g. when the filter
+ * change is programmatic, such as loading a spreadsheet collection with a preset filter).
+ */
+export function useGlobalFilterResults(
+    filters: GlobalFilter[],
+    equipmentTypes: NonEmptyTuple<FilterEquipmentType>,
+    debounce: boolean = true
+) {
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -62,9 +71,23 @@ export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: 
 
     const debouncedFetchFilteredIds = useDebounce(fetchFilteredIds);
 
+    // Reading `debounce` non-reactively: only an actual filters/equipmentTypes change should
+    // (re)evaluate — flipping the debounce mode alone must not re-run the effect.
+    const evaluateFilteredIds = useEffectEvent(
+        (filtersParam: GlobalFilter[], equipmentTypesParam: NonEmptyTuple<FilterEquipmentType>) => {
+            if (debounce) {
+                debouncedFetchFilteredIds(filtersParam, equipmentTypesParam);
+            } else {
+                // cancel any pending debounced evaluation before running immediately
+                debouncedFetchFilteredIds.clear();
+                fetchFilteredIds(filtersParam, equipmentTypesParam);
+            }
+        }
+    );
+
     useEffect(() => {
-        debouncedFetchFilteredIds(filters, equipmentTypes);
-    }, [equipmentTypes, filters, debouncedFetchFilteredIds]);
+        evaluateFilteredIds(filters, equipmentTypes);
+    }, [equipmentTypes, filters]);
 
     return filteredIds;
 }

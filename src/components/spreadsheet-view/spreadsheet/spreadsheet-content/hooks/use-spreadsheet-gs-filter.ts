@@ -6,8 +6,10 @@
  */
 
 import { type RefObject, useCallback, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import type { FilterChangedEvent, GridOptions } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
+import type { AppState } from '../../../../../redux/reducer.type';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
@@ -27,6 +29,11 @@ export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
     equipmentType: SpreadsheetEquipmentType
 ) {
     const selectedGlobalFilters = useSelectedGlobalFilters(tabUuid);
+    // Debounce the filter evaluation only for manual user selections; run immediately for programmatic
+    // changes (e.g. loading a collection with a preset filter) to avoid a flash of unfiltered data.
+    const lastChangeFromUser = useSelector(
+        (state: AppState) => state.tableFilters.globalFilters[tabUuid]?.lastChangeFromUser ?? false
+    );
 
     const equipmentTypes = useMemo(
         () =>
@@ -35,7 +42,7 @@ export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
                 : ([equipmentType as unknown as FilterEquipmentType] as const),
         [equipmentType]
     );
-    const filteredEquipmentIds = useGlobalFilterResults(selectedGlobalFilters, equipmentTypes);
+    const filteredEquipmentIds = useGlobalFilterResults(selectedGlobalFilters, equipmentTypes, lastChangeFromUser);
     useEffect(() => {
         gridRef.current?.api?.onFilterChanged();
     }, [filteredEquipmentIds, gridRef]);
