@@ -6,88 +6,112 @@
  */
 
 import type { NonEmptyTuple } from 'type-fest';
-import { useCallback, useEffect, useEffectEvent, useState } from 'react';
+import type { UUID } from 'node:crypto';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
-import type { GlobalFilter } from './global-filter-types';
+import { type BuildStatus, snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import type { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { evaluateGlobalFilter } from '../../../../services/study/filter';
 import type { AppState } from '../../../../redux/reducer.type';
 import type { FilterEquipmentType } from '../../../../types/filter-lib/filter';
 import { isStatusBuilt } from '../../../graph/util/model-functions';
 import { buildValidGlobalFilters } from './build-valid-global-filters';
 
+type EvaluationRequest = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    rootNetworkUuid: UUID;
+    equipmentTypes: NonEmptyTuple<FilterEquipmentType>;
+    globalFilters: GlobalFilters;
+    // not sent to the backend, but part of the request identity: rebuilding the node invalidates the previous result
+    buildStatus: BuildStatus;
+};
+
 /* Because of ESLint react-hooks/rules-of-hooks, nullable value must be managed inside the hook, because
  * React hooks can't be called conditionally and/or different order. */
 /**
- * @param debounce when true (default), the filter evaluation is debounced to smooth rapid user
- * interactions in the filter component. Set to false to evaluate immediately (e.g. when the filter
- * change is programmatic, such as loading a spreadsheet collection with a preset filter).
+ * Evaluates the given global filters and returns the matching equipment ids.
+ *
+ * `isPending` is true between a filter change and the arrival of the corresponding ids. Callers must
+ * not display data as unfiltered during that window, otherwise the rows briefly show up unfiltered.
  */
-export function useGlobalFilterResults(
-    filters: GlobalFilter[],
-    equipmentTypes: NonEmptyTuple<FilterEquipmentType>,
-    debounce: boolean = true
-) {
+export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: NonEmptyTuple<FilterEquipmentType>) {
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const [filteredIds, setFilteredIds] = useState<string[]>();
     const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
+    const [evaluated, setEvaluated] = useState<{ key: string; ids: string[] }>();
+
+    const buildStatus = currentNode?.data?.globalBuildStatus;
+
+    /* The key identifies the evaluation by its *content*: `filters` gets a new reference whenever any
+     * global filter option is added or refreshed in the store, but most of those changes leave the
+     * request untouched and must not trigger another evaluation. */
+    const evaluationKey = useMemo(() => {
+        if (!isTreeModelUpToDate || !studyUuid || !currentRootNetworkUuid || !currentNode?.id || !buildStatus) {
+            return undefined;
+        }
+        if (!isStatusBuilt(buildStatus)) {
+            return undefined;
+        }
+        const globalFilters = buildValidGlobalFilters(filters);
+        if (!globalFilters) {
+            return undefined;
+        }
+        const request: EvaluationRequest = {
+            studyUuid,
+            nodeUuid: currentNode.id,
+            rootNetworkUuid: currentRootNetworkUuid,
+            equipmentTypes,
+            globalFilters,
+            buildStatus,
+        };
+        return JSON.stringify(request);
+    }, [buildStatus, currentNode?.id, currentRootNetworkUuid, equipmentTypes, filters, isTreeModelUpToDate, studyUuid]);
+
+    // derived from the key so that it stays referentially stable as long as the content doesn't change
+    const evaluationRequest = useMemo(
+        () => (evaluationKey ? (JSON.parse(evaluationKey) as EvaluationRequest) : undefined),
+        [evaluationKey]
+    );
+
+    // the evaluation is debounced, so several requests may be in flight: only the latest one is relevant
+    const latestKeyRef = useRef<string | undefined>(undefined);
 
     const fetchFilteredIds = useCallback(
-        (filtersParam: GlobalFilter[], equipmentTypesParam: NonEmptyTuple<FilterEquipmentType>) => {
-            if (
-                isTreeModelUpToDate &&
-                studyUuid &&
-                currentRootNetworkUuid &&
-                currentNode?.id &&
-                isStatusBuilt(currentNode?.data?.globalBuildStatus)
-            ) {
-                const globalFilters = buildValidGlobalFilters(filtersParam);
-                globalFilters &&
-                    evaluateGlobalFilter(
-                        studyUuid,
-                        currentNode.id,
-                        currentRootNetworkUuid,
-                        equipmentTypesParam,
-                        globalFilters
-                    )
-                        .then(setFilteredIds)
-                        .catch((error) => {
-                            snackWithFallback(snackError, error, { headerId: 'FilterEvaluationError' });
-                        });
-            }
+        (key: string, request: EvaluationRequest) => {
+            evaluateGlobalFilter(
+                request.studyUuid,
+                request.nodeUuid,
+                request.rootNetworkUuid,
+                request.equipmentTypes,
+                request.globalFilters
+            )
+                .then((ids) => {
+                    if (latestKeyRef.current === key) {
+                        setEvaluated({ key, ids });
+                    }
+                })
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'FilterEvaluationError' });
+                });
         },
-        [
-            currentNode?.data?.globalBuildStatus,
-            currentNode?.id,
-            currentRootNetworkUuid,
-            isTreeModelUpToDate,
-            snackError,
-            studyUuid,
-        ]
+        [snackError]
     );
 
     const debouncedFetchFilteredIds = useDebounce(fetchFilteredIds);
 
-    // Reading `debounce` non-reactively: only an actual filters/equipmentTypes change should
-    // (re)evaluate — flipping the debounce mode alone must not re-run the effect.
-    const evaluateFilteredIds = useEffectEvent(
-        (filtersParam: GlobalFilter[], equipmentTypesParam: NonEmptyTuple<FilterEquipmentType>) => {
-            if (debounce) {
-                debouncedFetchFilteredIds(filtersParam, equipmentTypesParam);
-            } else {
-                // cancel any pending debounced evaluation before running immediately
-                debouncedFetchFilteredIds.clear();
-                fetchFilteredIds(filtersParam, equipmentTypesParam);
-            }
-        }
-    );
-
     useEffect(() => {
-        evaluateFilteredIds(filters, equipmentTypes);
-    }, [equipmentTypes, filters]);
+        latestKeyRef.current = evaluationKey;
+        if (evaluationKey && evaluationRequest) {
+            debouncedFetchFilteredIds(evaluationKey, evaluationRequest);
+        }
+    }, [debouncedFetchFilteredIds, evaluationKey, evaluationRequest]);
 
-    return filteredIds;
+    return {
+        // the previous result is kept while a new one is being evaluated, to avoid flickering the rows
+        filteredIds: evaluated?.ids,
+        isPending: evaluationKey !== undefined && evaluated?.key !== evaluationKey,
+    };
 }

@@ -290,7 +290,6 @@ import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
-import { isCriteriaFilter } from '../components/results/common/utils';
 import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
 import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 
@@ -354,6 +353,20 @@ function buildSortedRecents(filters: GlobalFilter[]): RecentGlobalFilter[] {
         .map((f) => ({ id: getGlobalFilterId(f), unselectedDate: f.unselectedDate! }))
         .sort((a, b) => b.unselectedDate - a.unselectedDate)
         .slice(0, MAX_RECENT_GLOBAL_FILTERS);
+}
+
+/**
+ * Stores the full filter objects in globalFilterOptions, so that the ids kept in
+ * tableFilters.globalFilters can be resolved right away — without waiting for the asynchronous
+ * option fetches of useGlobalFilterOptions (countries, substation properties, base voltages).
+ */
+function registerGlobalFilterOptions(globalFilterOptions: GlobalFilter[], filters: GlobalFilter[]) {
+    filters.forEach((filter) => {
+        const id = getGlobalFilterId(filter);
+        if (!globalFilterOptions.some((opt) => opt.id === id)) {
+            globalFilterOptions.push(addGlobalFilterId(filter));
+        }
+    });
 }
 
 export const DEFAULT_PAGINATION: PaginationConfig = {
@@ -813,16 +826,8 @@ export const reducer = createReducer(initialState, (builder) => {
             state.tableFilters.globalFilters[tabUuid] = {
                 selected: selectedFilters.map(getGlobalFilterId),
                 recents: buildSortedRecents(recentFilters),
-                // programmatic change (collection loading): evaluate the filter immediately, without debounce
-                lastChangeFromUser: false,
             };
-            // Store full objects in globalFilterOptions only if not already present
-            filters.filter(isCriteriaFilter).forEach((filter) => {
-                const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
-                if (!alreadyExists) {
-                    state.globalFilterOptions.push(addGlobalFilterId(filter));
-                }
-            });
+            registerGlobalFilterOptions(state.globalFilterOptions, filters);
         });
     });
 
@@ -1588,21 +1593,13 @@ export const reducer = createReducer(initialState, (builder) => {
             state.tableFilters.globalFilters[action.tabUuid] ??= { selected: [], recents: [] };
             if (!areSelectedEqual) {
                 state.tableFilters.globalFilters[action.tabUuid].selected = newSelectedIds;
-                // programmatic change (init/sync): evaluate the filter immediately, without debounce
-                state.tableFilters.globalFilters[action.tabUuid].lastChangeFromUser = false;
             }
             if (!areRecentsEqual) {
                 state.tableFilters.globalFilters[action.tabUuid].recents = newRecents;
             }
         }
 
-        // Store full objects in globalFilterOptions only if not already present (same as above and also preserve the recent status)
-        action.filters.filter(isCriteriaFilter).forEach((filter) => {
-            const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
-            if (!alreadyExists) {
-                state.globalFilterOptions.push(addGlobalFilterId(filter));
-            }
-        });
+        registerGlobalFilterOptions(state.globalFilterOptions, action.filters);
     });
 
     builder.addCase(SET_CALCULATION_SELECTIONS, (state, action: SetCalculationSelectionsAction) => {
@@ -1646,8 +1643,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
         state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
-        // manual user selection: debounce the filter evaluation
-        tableState.lastChangeFromUser = true;
 
         filterIds.forEach((id) => {
             if (!tableState.selected.includes(id)) {
@@ -1662,8 +1657,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
         state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
-        // manual user selection: debounce the filter evaluation
-        tableState.lastChangeFromUser = true;
 
         tableState.selected = tableState.selected.filter((id) => !filterIds.includes(id));
 
@@ -1681,8 +1674,6 @@ export const reducer = createReducer(initialState, (builder) => {
         const { tableId } = action;
         state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
         const tableState = state.tableFilters.globalFilters[tableId];
-        // manual user selection: debounce the filter evaluation
-        tableState.lastChangeFromUser = true;
         const now = Date.now();
         const newRecents = tableState.selected
             .filter((filterId) => {

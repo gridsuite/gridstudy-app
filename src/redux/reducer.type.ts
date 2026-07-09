@@ -135,10 +135,6 @@ export type SpreadsheetNetworkState = {
 export type GlobalFiltersState = {
     selected: string[];
     recents: RecentGlobalFilter[]; // sorted by unselectedDate descending (most recent first), max 10
-    // true when the last change to `selected` was made manually by the user in the global filter component.
-    // Used to decide whether the filter evaluation should be debounced (manual user interaction) or run
-    // immediately (programmatic changes, e.g. loading a spreadsheet collection).
-    lastChangeFromUser?: boolean;
 };
 
 export type TableFiltersState = {
