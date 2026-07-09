@@ -107,7 +107,7 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
             },
             {
                 id: 'informations',
-                icon: <InfoIcon fontSize="medium" />,
+                icon: <InfoIcon fontSize="small" />,
                 titleId: 'nadInfoFilter',
                 disabled: !isBuilt,
                 content: (
