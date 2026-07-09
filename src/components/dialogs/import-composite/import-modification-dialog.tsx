@@ -176,7 +176,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             type: DndColumnType.CUSTOM,
             component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} disabled={!isDeveloperMode} />,
         }),
-        []
+        [isDeveloperMode]
     );
 
     // SPLIT mode — name is read-only, drag-and-drop only, cannot be shared
