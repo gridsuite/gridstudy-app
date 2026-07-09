@@ -290,7 +290,6 @@ import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
-import { isCriteriaFilter } from '../components/results/common/utils';
 import {
     addGlobalFilterId,
     getGlobalFilterId,
@@ -313,6 +312,7 @@ import {
     type SpreadsheetNetworkState,
     type Substation,
 } from './reducer.type';
+import { isCriteriaFilter } from '../components/results/common/global-filter/filter.type';
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
     switch (updateType) {

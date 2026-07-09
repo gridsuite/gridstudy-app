@@ -8,6 +8,7 @@
 import { ColDef } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { BranchSide } from '../../utils/constants';
+import { LimitTypes } from '../common/global-filter/limit-violtation.type';
 
 export interface ComponentResult {
     componentResultUuid: UUID;
@@ -56,12 +57,6 @@ export interface LoadFlowResult {
     componentResults: ComponentResult[];
     countryAdequacies: CountryAdequacy[];
     exchanges: Record<string, ExchangeValue[]>;
-}
-
-export enum LimitTypes {
-    HIGH_VOLTAGE = 'HIGH_VOLTAGE',
-    LOW_VOLTAGE = 'LOW_VOLTAGE',
-    CURRENT = 'CURRENT',
 }
 
 export interface LoadFlowTabProps {

@@ -50,10 +50,11 @@ import { UUID } from 'node:crypto';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
-import { FilterType, isCriteriaFilterType } from '../common/utils';
 import { setTableSort } from '../../../redux/actions';
 import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handler';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
+
+import { FilterType, isCriteriaFilterType } from '../common/global-filter/filter.type';
 
 const styles = {
     toolbarRow: {

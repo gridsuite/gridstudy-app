@@ -11,8 +11,9 @@ import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from '../
 import { Box, Divider, List, ListItem, Typography } from '@mui/material';
 import { getOptionLabel } from '../utils/global-filter-utils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { FilterType } from '../../utils';
 import { useGlobalFilterContext } from '../context/global-filter-context';
+
+import { FilterType } from '../filter.type';
 
 function SelectedGlobalFilters() {
     const { selectedGlobalFilters, translateCountryCode, unselectGlobalFilters } = useGlobalFilterContext();

@@ -6,11 +6,12 @@
  */
 
 import GlobalFilterProvider from './adapter/global-filter-provider';
-import { FilterType } from '../utils';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
 import GlobalFilter from './ui/global-filter';
+
+import { FilterType } from './filter.type';
 
 export type GlobalFilterSelectorProps = {
     filterCategories?: FilterType[];

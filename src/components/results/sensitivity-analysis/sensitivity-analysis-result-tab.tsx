@@ -29,7 +29,8 @@ import { isSensiKind, mappingTabs, SensitivityResultTabs } from './sensitivity-a
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { PaginationType, TableType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
-import { FilterType, isCriteriaFilterType } from '../common/utils';
+
+import { FilterType, isCriteriaFilterType } from '../common/global-filter/filter.type';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;

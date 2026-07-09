@@ -6,9 +6,10 @@
  */
 
 import { GlobalFilter } from '../global-filter.type';
-import { FilterType } from '../../utils';
 import { IntlShape } from 'react-intl';
 import { UUID } from 'node:crypto';
+
+import { FilterType } from '../filter.type';
 
 export type GlobalFilterWithoutId = Omit<GlobalFilter, 'id'>;
 

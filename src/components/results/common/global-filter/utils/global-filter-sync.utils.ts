@@ -6,7 +6,7 @@
  */
 
 import { GlobalFilter } from '../global-filter.type';
-import { markEditingGlobalFilter, unmarkEditingGlobalFilter } from '../../../../../utils/editing-global-filter-sync';
+import { markEditingGlobalFilter, unmarkEditingGlobalFilter } from '../editing-global-filter-sync';
 
 const DEFAULT_GLOBAL_FILTER_SYNC_DEBOUNCE_MS = 2000;
 

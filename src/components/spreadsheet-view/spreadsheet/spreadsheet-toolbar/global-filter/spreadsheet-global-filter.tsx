@@ -7,12 +7,13 @@
 
 import { useMemo } from 'react';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
-import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector, {
     type GlobalFilterSelectorProps,
 } from '../../../../results/common/global-filter/global-filter-selector';
 import { TableType } from '../../../../../types/custom-aggrid-types';
 import { EquipmentType } from '@gridsuite/commons-ui';
+
+import { FilterType } from '../../../../results/common/global-filter/filter.type';
 
 export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;

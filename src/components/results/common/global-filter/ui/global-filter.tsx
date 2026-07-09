@@ -26,7 +26,6 @@ import {
 } from '@mui/material';
 import { Delete as DeleteIcon, FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
-import { FilterType } from '../../utils';
 import { EquipmentType, OverflowableChip, OverflowableText } from '@gridsuite/commons-ui';
 import type { GlobalFilter } from '../global-filter.type';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from '../global-filter.style';
@@ -34,6 +33,8 @@ import GlobalFilterDropdownPanel from './global-filter-dropdown-panel';
 import IconButton from '@mui/material/IconButton';
 import { getOptionLabel, RECENT_FILTER } from '../utils/global-filter-utils';
 import { useGlobalFilterContext } from '../context/global-filter-context';
+
+import { FilterType } from '../filter.type';
 
 const TAG_LIMIT_NUMBER: number = 4;
 

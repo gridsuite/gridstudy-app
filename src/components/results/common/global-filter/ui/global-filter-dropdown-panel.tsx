@@ -11,7 +11,6 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { PropsWithChildren, RefObject, useCallback, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
-import { FilterType, isCriteriaFilterType } from '../../utils';
 import { RECENT_FILTER } from '../utils/global-filter-utils';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {
@@ -25,6 +24,7 @@ import SelectedGlobalFilters from './selected-global-filters';
 import { LabelWithInfoTooltip } from './label-with-info-tooltip';
 import { useGlobalFilterContext } from '../context/global-filter-context';
 import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from '../global-filter.style';
+import { FilterType, isCriteriaFilterType } from '../filter.type';
 
 const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;

@@ -10,7 +10,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { LimitTypes, LoadFlowTabProps, OverloadedEquipment } from './load-flow-result.type';
+import { LoadFlowTabProps, OverloadedEquipment } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
@@ -50,6 +50,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import { LimitTypes } from '../common/global-filter/limit-violtation.type';
 
 const styles = {
     flexWrapper: {
