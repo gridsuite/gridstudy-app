@@ -43,6 +43,7 @@ import {
     getRegulatingTerminalFormData,
     REGULATION_TYPES,
 } from '@gridsuite/commons-ui';
+import { TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO } from '../../../../../../utils/translationKeys';
 
 const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -132,7 +133,7 @@ const ratioTapChangerValidationSchema = (isModification: boolean, id: string) =>
             .nullable()
             .when(LOAD_TAP_CHANGING_CAPABILITIES, {
                 is: true,
-                then: () => yup.number().nullable().min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
+                then: () => yup.number().nullable().min(0, TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
             }),
         [LOW_TAP_POSITION]: yup
             .number()

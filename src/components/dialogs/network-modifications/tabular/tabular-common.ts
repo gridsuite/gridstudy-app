@@ -37,6 +37,7 @@ import {
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import type { UUID } from 'node:crypto';
+import { MODIFICATIONS_REQUIRED_TAB_ERROR } from '../../../../utils/translationKeys';
 
 export type TabularModificationEditDataType = {
     uuid: UUID;
@@ -56,7 +57,7 @@ export const tabularFormSchema = yup
     .object()
     .shape({
         [TYPE]: yup.string().nullable().required(),
-        [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
+        [MODIFICATIONS_TABLE]: yup.array().min(1, MODIFICATIONS_REQUIRED_TAB_ERROR).required(),
         [CSV_FILENAME]: yup.string(),
     })
     .concat(propertiesSchema)

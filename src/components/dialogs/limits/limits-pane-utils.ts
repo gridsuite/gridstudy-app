@@ -48,6 +48,7 @@ import {
     OperationType,
     sanitizeString,
     toModificationOperation,
+    MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
 } from '@gridsuite/commons-ui';
 
 const limitsGroupValidationSchema = () => ({
@@ -65,7 +66,7 @@ const temporaryLimitsValidationSchema = () => {
             [TEMPORARY_LIMIT_DURATION]: yup
                 .number()
                 .nullable()
-                .min(0, 'mustBeGreaterOrEqualToZero')
+                .min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
                 .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_NAME], {
                     is: (value: number | null, name: string | null) => value != null || !!name,
                     then: (schema) => schema.required(),

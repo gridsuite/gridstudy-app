@@ -32,6 +32,7 @@ import {
     SIEMENS,
     YUP_REQUIRED,
 } from '@gridsuite/commons-ui';
+import { WRONG_REF_OR_VALUE_ERROR } from '../../../../../../utils/translationKeys';
 
 export type EquipmentField = {
     id: string;
@@ -196,7 +197,7 @@ export function getFormulaSchema() {
             [REFERENCE_FIELD_OR_VALUE_1]: yup
                 .mixed()
                 .required()
-                .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
+                .test('checkRefOrValue', WRONG_REF_OR_VALUE_ERROR, checkValueInEquipmentFieldsOrNumeric)
                 .when([OPERATOR], {
                     is: 'PERCENTAGE',
                     then: (schema) =>
@@ -209,7 +210,7 @@ export function getFormulaSchema() {
             [REFERENCE_FIELD_OR_VALUE_2]: yup
                 .mixed()
                 .required()
-                .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
+                .test('checkRefOrValue', WRONG_REF_OR_VALUE_ERROR, checkValueInEquipmentFieldsOrNumeric)
                 .when([OPERATOR], {
                     is: 'PERCENTAGE',
                     then: (schema) =>

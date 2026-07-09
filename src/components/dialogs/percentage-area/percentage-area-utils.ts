@@ -8,11 +8,12 @@
 import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import * as yup from 'yup';
 import { Input } from '@gridsuite/commons-ui';
+import { OUT_OF_BOUNDS_PERCENTAGE } from '../../../utils/translationKeys';
 
 const percentageAreaValidationSchema = () => ({
     [SLIDER_PERCENTAGE]: yup.number(),
-    [LEFT_SIDE_PERCENTAGE]: yup.number().min(0.1, 'OutOfBoundsPercentage').max(99.9, 'OutOfBoundsPercentage'),
-    [RIGHT_SIDE_PERCENTAGE]: yup.number().min(0.1, 'OutOfBoundsPercentage').max(99.9, 'OutOfBoundsPercentage'),
+    [LEFT_SIDE_PERCENTAGE]: yup.number().min(0.1, OUT_OF_BOUNDS_PERCENTAGE).max(99.9, OUT_OF_BOUNDS_PERCENTAGE),
+    [RIGHT_SIDE_PERCENTAGE]: yup.number().min(0.1, OUT_OF_BOUNDS_PERCENTAGE).max(99.9, OUT_OF_BOUNDS_PERCENTAGE),
 });
 export const getPercentageAreaValidationSchema = () => {
     return percentageAreaValidationSchema();
