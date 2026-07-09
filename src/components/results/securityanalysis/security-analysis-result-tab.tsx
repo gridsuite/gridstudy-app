@@ -319,9 +319,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
 
     const exportResultCsv = useCallback(async () => {
         const fileBlob = await downloadZipResult(
-            studyUuid as UUID,
-            nodeUuid as UUID,
-            currentRootNetworkUuid as UUID,
+            studyUuid,
+            nodeUuid,
+            currentRootNetworkUuid,
             enumValueTranslations,
             language
         );
