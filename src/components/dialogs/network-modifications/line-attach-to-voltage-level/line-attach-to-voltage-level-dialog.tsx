@@ -12,6 +12,7 @@ import {
     getConnectivityPropertiesValidationSchema,
     getConnectivityWithoutPositionEmptyFormData,
     getNewVoltageLevelData,
+    LineCreationDto,
     ModificationType,
     sanitizeString,
     snackWithFallback,
@@ -56,7 +57,6 @@ import { FetchStatus } from '../../../../services/utils.type';
 import {
     AttachLineInfo,
     ExtendedVoltageLevelCreationInfo,
-    LineCreationInfos,
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
 
@@ -124,7 +124,7 @@ const LineAttachToVoltageLevelDialog = ({
 }: LineAttachToVoltageLevelDialogProps) => {
     const currentNodeUuid = currentNode?.id;
 
-    const [attachmentLine, setAttachmentLine] = useState<LineCreationInfos>();
+    const [attachmentLine, setAttachmentLine] = useState<LineCreationDto>();
     const [newVoltageLevel, setNewVoltageLevel] = useState<ExtendedVoltageLevelCreationInfo>();
     const [attachmentPoint, setAttachmentPoint] = useState<ExtendedVoltageLevelCreationInfo>({
         type: ModificationType.VOLTAGE_LEVEL_CREATION,
@@ -254,7 +254,7 @@ const LineAttachToVoltageLevelDialog = ({
     }, [reset]);
 
     const onLineCreationDo = useCallback(
-        ({ lineCreationInfos }: { lineCreationInfos: LineCreationInfos }) => {
+        ({ lineCreationInfos }: { lineCreationInfos: LineCreationDto }) => {
             return new Promise<string>(() => {
                 // clean unused (required) fields by a simple copy with casting
                 const {
@@ -273,7 +273,7 @@ const LineAttachToVoltageLevelDialog = ({
                     properties,
                 } = lineCreationInfos;
 
-                const preparedLine: LineCreationInfos = {
+                const preparedLine: LineCreationDto = {
                     type,
                     equipmentId,
                     equipmentName,
@@ -287,7 +287,7 @@ const LineAttachToVoltageLevelDialog = ({
                     selectedOperationalLimitsGroupId1,
                     selectedOperationalLimitsGroupId2,
                     properties,
-                } as LineCreationInfos;
+                } as LineCreationDto;
 
                 setAttachmentLine(preparedLine);
                 setValue(`${ATTACHMENT_LINE_ID}`, preparedLine.equipmentId, {
@@ -368,7 +368,7 @@ const LineAttachToVoltageLevelDialog = ({
 
                 setNewVoltageLevel(preparedVoltageLevel);
                 setValue(
-                    `${CONNECTIVITY}.${VOLTAGE_LEVEL}`,
+                    `${CONNECTIVITY}.${VOLTAGE_LEVEL}` as any,
                     {
                         [ID]: preparedVoltageLevel.equipmentId,
                     },
@@ -377,7 +377,7 @@ const LineAttachToVoltageLevelDialog = ({
                         shouldDirty: true,
                     }
                 );
-                setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`, null);
+                setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}` as any, null);
             });
         },
         [currentNodeUuid, studyUuid, newVoltageLevel?.equipmentId, voltageLevelOptions, setValue]

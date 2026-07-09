@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
 import {
     APPLY_SEGMENTS_LIMITS,
     CHARACTERISTICS,
@@ -16,17 +15,7 @@ import {
     LINE_SEGMENTS,
     STATE_ESTIMATION,
 } from '../../../../utils/field-constants';
-import { FieldConstants, Property } from '@gridsuite/commons-ui';
-import { LineSegmentInfos } from '../../../../../services/network-modification-types';
-
-export interface LineCharacteristics {
-    r: number | null;
-    x: number | null;
-    g1: number | null;
-    b1: number | null;
-    g2: number | null;
-    b2: number | null;
-}
+import { FieldConstants, LineSegmentInfos, OperationalLimitsGroupsFormSchema, Property } from '@gridsuite/commons-ui';
 
 export interface LineModificationFormSchema {
     [EQUIPMENT_ID]?: string;
