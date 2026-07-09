@@ -31,7 +31,7 @@ import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcirc
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import type { UUID } from 'node:crypto';
-import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { ColDef, DisplayedColumnsChangedEvent, GridApi, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { PaginationType, ShortcircuitAnalysisTab, TableType } from '../../../types/custom-aggrid-types';
@@ -61,9 +61,9 @@ interface ShortCircuitAnalysisResultTabProps {
     currentRootNetworkUuid: UUID;
 }
 
-const getDisplayedColumns = (params: GridReadyEvent) => {
+const getDisplayedColumns = (gridApi: GridApi) => {
     return (
-        (params.api
+        (gridApi
             ?.getColumnDefs()
             ?.filter((col: ColDef) => !col.hide)
             ?.map((col) => col.headerName) as string[]) ?? []
@@ -162,13 +162,19 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
 
     const handleGridColumnsChanged = useCallback((params: GridReadyEvent) => {
         if (params?.api) {
-            setCsvHeader(getDisplayedColumns(params));
+            setCsvHeader(getDisplayedColumns(params?.api));
         }
     }, []);
 
     const handleRowDataUpdated = useCallback((event: RowDataUpdatedEvent) => {
         if (event?.api) {
             setIsCsvButtonDisabled(event.api.getDisplayedRowCount() === 0);
+        }
+    }, []);
+
+    const handleDisplayedColumnsChanged = useCallback((event: DisplayedColumnsChangedEvent) => {
+        if (event?.api) {
+            setCsvHeader(getDisplayedColumns(event.api));
         }
     }, []);
 
@@ -306,11 +312,13 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <ShortCircuitAnalysisAllBusesResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
+                        onDisplayedColumnsChanged={handleDisplayedColumnsChanged}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
+                        onDisplayedColumnsChanged={handleDisplayedColumnsChanged}
                     />
                 ))}
             {resultOrLogIndex === LOGS_TAB_INDEX && (

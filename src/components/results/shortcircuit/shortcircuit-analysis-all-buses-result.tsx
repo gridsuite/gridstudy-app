@@ -15,16 +15,18 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { ComputingType } from '@gridsuite/commons-ui';
-import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { DisplayedColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisAllBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    onDisplayedColumnsChanged: (event: DisplayedColumnsChangedEvent) => void;
 }
 
 export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitAnalysisAllBusResultProps> = ({
     onGridColumnsChanged,
     onRowDataUpdated,
+    onDisplayedColumnsChanged,
 }) => {
     const allBusesShortCircuitAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
@@ -47,6 +49,7 @@ export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitA
             }}
             onGridColumnsChanged={onGridColumnsChanged}
             onRowDataUpdated={onRowDataUpdated}
+            onDisplayedColumnsChanged={onDisplayedColumnsChanged}
         />
     );
 };
