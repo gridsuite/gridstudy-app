@@ -64,6 +64,15 @@ export const styles = {
         '& .sld-pst-arrow': {
             stroke: theme.palette.text.primary,
         },
+        '& .sld-feeder-info.sld-measurement-valid text': {
+            fill: 'black',
+        },
+        '& .sld-feeder-info.sld-measurement-invalid text': {
+            fill: 'red',
+        },
+        '& .sld-feeder-info.sld-measurement-critical text': {
+            fontWeight: 'bold',
+        },
         '.legend-root': {
             display: 'inline-flex',
             gap: '8px',

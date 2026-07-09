@@ -8,10 +8,10 @@ import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react
 
 import {
     CustomFormProvider,
+    ElementType,
+    ParameterLayout,
     snackWithFallback,
     useSnackMessage,
-    ParameterLayout,
-    ElementType,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -120,7 +120,7 @@ export const StateEstimationParameters = ({
             <ParameterLayout
                 title="StateEstimation"
                 parameterType={ElementType.STATE_ESTIMATION_PARAMETERS}
-                isLoading={stateEstimationParams !== null}
+                isLoading={stateEstimationParams === null}
                 resetHandler={clear}
                 validateHandler={handleSubmit(onSubmit, onValidationError)}
             >

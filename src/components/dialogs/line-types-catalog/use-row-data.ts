@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useMemo } from 'react';
-import { CATEGORIES_TABS, LineTypeInfo } from './line-catalog.type';
+import { CATEGORIES_TABS, LineTypeInfo } from '@gridsuite/commons-ui';
 
 export const useRowData = (rowData: LineTypeInfo[]) => {
     const aerialRowData = useMemo(
