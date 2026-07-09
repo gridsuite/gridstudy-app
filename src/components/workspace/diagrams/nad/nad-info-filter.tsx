@@ -37,15 +37,15 @@ const styles = {
 export interface NadInfoFilterProps {
     selectedInfos: NadSelectedInfos;
     onToggle: (key: NadSelectedInfoKey) => void;
-    isDisabled: boolean;
+    disabled: boolean;
 }
 
-export default function NadInfoFilter({ selectedInfos, onToggle, isDisabled }: Readonly<NadInfoFilterProps>) {
+export default function NadInfoFilter({ selectedInfos, onToggle, disabled }: Readonly<NadInfoFilterProps>) {
     return (
         <List sx={styles.list}>
             {INFO_ROWS.map(({ key, labelId }) => (
                 <ListItem sx={styles.item} key={key}>
-                    <ListItemButton dense onClick={() => onToggle(key)} disabled={isDisabled}>
+                    <ListItemButton dense onClick={() => onToggle(key)} disabled={disabled}>
                         <Switch size="small" checked={selectedInfos[key]} edge="start" />
                         <ListItemText sx={styles.text} disableTypography primary={<FormattedMessage id={labelId} />} />
                     </ListItemButton>

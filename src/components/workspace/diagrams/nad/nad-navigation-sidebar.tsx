@@ -109,13 +109,9 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
                 id: 'informations',
                 icon: <InfoIcon fontSize="medium" />,
                 titleId: 'nadInfoFilter',
-                isDisabled: !isBuilt,
+                disabled: !isBuilt,
                 content: (
-                    <NadInfoFilter
-                        selectedInfos={selectedInfos}
-                        onToggle={onSelectedInfoToggle}
-                        isDisabled={!isBuilt}
-                    />
+                    <NadInfoFilter selectedInfos={selectedInfos} onToggle={onSelectedInfoToggle} disabled={!isBuilt} />
                 ),
             },
         ],
