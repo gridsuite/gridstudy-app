@@ -26,6 +26,7 @@ import {
     VoltageLevelConnectivityForm,
     TextInput,
     VoltageLevelOption,
+    LineCreationDto,
 } from '@gridsuite/commons-ui';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
@@ -37,7 +38,6 @@ import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import {
     ExtendedVoltageLevelCreationInfo,
-    LineCreationInfos,
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
@@ -47,8 +47,8 @@ interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationInfos }) => Promise<string>;
-    lineToEdit?: LineCreationInfos;
+    onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationDto }) => Promise<string>;
+    lineToEdit?: LineCreationDto;
     onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     voltageLevelToEdit?: ExtendedVoltageLevelCreationInfo;
     onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
