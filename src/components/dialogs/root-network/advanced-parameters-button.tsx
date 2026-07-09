@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Grid } from '@mui/material';
+import { Button, Grid2 as Grid } from '@mui/material';
 import { Check as CheckIcon, Settings as SettingsIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 
@@ -23,7 +23,7 @@ export default function AdvancedParameterButton({
     disabled = false,
 }: Readonly<AdvancedParameterButtonProps>) {
     return (
-        <Grid item xs={12} sx={{ marginTop: '30px', marginBottom: '10px' }}>
+        <Grid size={12} sx={{ marginTop: '30px', marginBottom: '10px' }}>
             <Button
                 startIcon={<SettingsIcon />}
                 endIcon={showOpenIcon && <CheckIcon sx={{ color: 'green' }} />}

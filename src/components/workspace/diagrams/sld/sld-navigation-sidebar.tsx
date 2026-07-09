@@ -10,7 +10,8 @@ import { useSelector } from 'react-redux';
 import { History as HistoryIcon } from '@mui/icons-material';
 import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { HistorySectionContent, NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
+import { NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
+import { HistorySectionContent } from '../common/history-section-content';
 
 interface SldNavigationSidebarProps {
     navigationHistory: string[];
@@ -22,26 +23,26 @@ export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
     ({ navigationHistory, currentVoltageLevelId, onNavigate }) => {
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
         const hasHistory = navigationHistory.length > 0;
-        const isDisabled = !isNodeBuilt(currentNode);
+        const disabled = !isNodeBuilt(currentNode);
 
         const sections = useMemo<SidebarSection[]>(
             () => [
                 {
                     id: 'history',
-                    icon: <HistoryIcon fontSize="medium" />,
+                    icon: <HistoryIcon fontSize="small" />,
                     titleId: 'history',
-                    isDisabled: !hasHistory,
+                    disabled: !hasHistory,
                     content: (
                         <HistorySectionContent
                             navigationHistory={navigationHistory}
-                            isDisabled={isDisabled}
+                            disabled={disabled}
                             isItemSelected={(id) => id === currentVoltageLevelId}
                             onNavigate={onNavigate}
                         />
                     ),
                 },
             ],
-            [hasHistory, navigationHistory, isDisabled, currentVoltageLevelId, onNavigate]
+            [hasHistory, navigationHistory, disabled, currentVoltageLevelId, onNavigate]
         );
 
         return <NavigationSidebar sections={sections} isAbsolutePositioned />;

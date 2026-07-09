@@ -19,11 +19,14 @@ import {
     type MapHvdcLine,
     type MapLine,
     type MapSubstation,
-    type MapTieLine,
     type MapVoltageLevel,
     NetworkMap,
     type NetworkMapProps,
     type NetworkMapRef,
+    MapLineWithType,
+    MapTieLineWithType,
+    MapHvdcLineWithType,
+    EQUIPMENT_TYPES,
 } from '@powsybl/network-viewer';
 import { type Color } from '@deck.gl/core';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -80,6 +83,7 @@ import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popov
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import { useBaseVoltages } from '../../hooks/use-base-voltages';
+import { mergeByIdKeepOrder } from 'components/utils/utils';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -206,9 +210,9 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     const currentNodeRef = useRef<CurrentTreeNode | null>(null);
     const currentRootNetworkUuidRef = useRef<UUID | null>(null);
 
-    const [updatedLines, setUpdatedLines] = useState<MapLine[]>([]);
-    const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLine[]>([]);
-    const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
+    const [updatedLines, setUpdatedLines] = useState<MapLineWithType[]>([]);
+    const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLineWithType[]>([]);
+    const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLineWithType[]>([]);
 
     const [shouldOpenSelectionCreationPanel, setShouldOpenSelectionCreationPanel] = useState(false);
     const [nominalVoltages, setNominalVoltages] = useState<number[]>([]);
@@ -657,19 +661,37 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             updatedLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                    setUpdatedLines(values);
+                    const lines: MapLineWithType[] = values.map((line) => ({
+                        ...line,
+                        equipmentType: EQUIPMENT_TYPES.LINE,
+                    }));
+                    setUpdatedLines((oldUpdatedLines) =>
+                        isFullReload ? [] : mergeByIdKeepOrder(oldUpdatedLines, lines)
+                    );
                 }
             });
             updatedTieLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateTieLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                    setUpdatedTieLines(values);
+                    const tieLines: MapTieLineWithType[] = values.map((tieLine) => ({
+                        ...tieLine,
+                        equipmentType: EQUIPMENT_TYPES.TIE_LINE,
+                    }));
+                    setUpdatedTieLines((oldUpdatedTieLines) =>
+                        isFullReload ? [] : mergeByIdKeepOrder(oldUpdatedTieLines, tieLines)
+                    );
                 }
             });
             updatedHvdcLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateHvdcLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                    setUpdatedHvdcLines(values);
+                    const hvdcLines: MapHvdcLineWithType[] = values.map((hvdcLine) => ({
+                        ...hvdcLine,
+                        equipmentType: EQUIPMENT_TYPES.HVDC_LINE,
+                    }));
+                    setUpdatedHvdcLines((oldUpdatedHvdcLines) =>
+                        isFullReload ? [] : mergeByIdKeepOrder(oldUpdatedHvdcLines, hvdcLines)
+                    );
                 }
             });
             return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(() => {
@@ -1076,7 +1098,6 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     ref={networkMapRef}
                     mapEquipments={mapEquipments}
                     geoData={geoData}
-                    // @ts-ignore
                     updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
                     displayOverlayLoader={!basicDataReady && mapDataLoading}
                     filteredNominalVoltages={filteredNominalVoltages}
@@ -1188,7 +1209,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     nominalVoltages={nominalVoltagesFromMapEquipments ?? EMPTY_ARRAY}
                     filteredNominalVoltages={filteredNominalVoltages ?? EMPTY_ARRAY}
                     onChange={handleFilteredNominalVoltagesChange}
-                    isDisabled={!basicDataReady || mapDataLoading}
+                    disabled={!basicDataReady || mapDataLoading}
                 />
             </Box>
         );

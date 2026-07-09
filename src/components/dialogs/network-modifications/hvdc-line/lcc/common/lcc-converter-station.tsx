@@ -16,8 +16,8 @@ import {
 import type { UUID } from 'node:crypto';
 import { Grid2 as Grid } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
+import { GridSection } from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
 
 import FiltersShuntCompensatorTable from '../creation/filters-shunt-compensator-table';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';

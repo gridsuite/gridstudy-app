@@ -25,9 +25,6 @@ export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
 export const FOLDER_ID = 'folderId';
-export const DIRECTORY_ITEM = 'directoryItem';
-export const DIRECTORY_ITEM_ID = 'directoryItemId';
-export const DIRECTORY_ITEM_FULL_PATH = 'directoryItemFullPath';
 export const DESCRIPTION = 'description';
 export const CASE_NAME = 'caseName';
 export const CASE_ID = 'caseId';
@@ -184,23 +181,7 @@ export const TEMPORARY_LIMITS = 'temporaryLimits';
 export const TEMPORARY_LIMIT_NAME = 'name';
 export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
 export const TEMPORARY_LIMIT_VALUE = 'value';
-export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
-    MODIFY: 'MODIFY',
-    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the limit exists it is modified, if not it is created
-    ADD: 'ADD',
-    DELETE: 'DELETE',
-    REPLACE: 'REPLACE',
-} as const;
-// Determines how all the operational limits groups will be modified as a group
-export const OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE = {
-    ADD: 'ADD',
-    // Modification types for Tabular modifications :
-    MODIFY: 'MODIFY', // standard mode : the olg modifications are applied. The unspecified olg are not changed at all
-    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
-    // Modification type for simple form modifications :
-    REPLACE: 'REPLACE', // All the olg are removed, then the olg modification/add etc are applied
-    DELETE: 'DELETE',
-} as const;
+
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
 export const SEGMENT_TYPE_ID = 'segmentTypeId';

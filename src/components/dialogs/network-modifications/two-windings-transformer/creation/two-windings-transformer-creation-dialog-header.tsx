@@ -14,7 +14,7 @@ import {
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
-import { Grid2Item as GridItem } from '../../../commons/grid2-item';
+import { GridItem } from '../../../commons/grid-item';
 
 const TwoWindingsTransformerCreationDialogHeader = () => {
     const twoWindingsTransformerIdField = <TextInput name={`${EQUIPMENT_ID}`} label="ID" formProps={filledTextField} />;
@@ -32,7 +32,7 @@ const TwoWindingsTransformerCreationDialogHeader = () => {
     );
 
     return (
-        <Grid container spacing={2} size={12}>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
             <GridItem size={4}>{twoWindingsTransformerIdField}</GridItem>
             <GridItem size={4}>{twoWindingsTransformerNameField}</GridItem>
             <GridItem size={2}>{ratioTapChangerEnabledField}</GridItem>

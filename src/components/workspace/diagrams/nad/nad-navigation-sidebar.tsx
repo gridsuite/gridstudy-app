@@ -17,7 +17,8 @@ import {
 } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../redux/store';
-import { HistorySectionContent, NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
+import { NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
+import { HistorySectionContent } from '../common/history-section-content';
 import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
 import NominalVoltageFilter, { type NominalVoltageFilterStyles } from '../../../network/nominal-voltage-filter';
 import NadInfoFilter from './nad-info-filter';
@@ -77,13 +78,13 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
         () => [
             {
                 id: 'history',
-                icon: <HistoryIcon fontSize="medium" />,
+                icon: <HistoryIcon fontSize="small" />,
                 titleId: 'history',
-                isDisabled: !hasHistory,
+                disabled: !hasHistory,
                 content: (
                     <HistorySectionContent
                         navigationHistory={reversedHistory}
-                        isDisabled={!isBuilt}
+                        disabled={!isBuilt}
                         isItemSelected={(id) => associatedVoltageLevelIds.includes(id)}
                         onNavigate={handleNavigationSidebarClick}
                     />
@@ -91,15 +92,15 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
             },
             {
                 id: 'voltage',
-                icon: <NominalVoltageIcon fontSize="medium" />,
+                icon: <NominalVoltageIcon fontSize="small" />,
                 titleId: 'nadVoltageFilter',
-                isDisabled: !hasNominalVoltages,
+                disabled: !hasNominalVoltages,
                 content: (
                     <NominalVoltageFilter
                         nominalVoltages={allNominalVoltages}
                         filteredNominalVoltages={selectedNominalVoltages}
                         onChange={onNominalVoltagesChange}
-                        isDisabled={!isBuilt}
+                        disabled={!isBuilt}
                         styles={voltageFilterStyles}
                     />
                 ),

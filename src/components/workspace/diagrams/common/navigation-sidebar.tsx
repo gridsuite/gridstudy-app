@@ -5,18 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    Box,
-    Typography,
-    List,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    useTheme,
-    Theme,
-    IconButton,
-} from '@mui/material';
-import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { Box, Typography, useTheme, Theme, IconButton } from '@mui/material';
 import { memo, useCallback, useState, type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 import { mergeSx } from '@gridsuite/commons-ui';
@@ -29,7 +18,7 @@ export interface SidebarSection {
     /** Translation id of the section title. */
     titleId: string;
     /** When true the section cannot be expanded (header/icon greyed out). */
-    isDisabled?: boolean;
+    disabled?: boolean;
     /** Content rendered below the header when the section is expanded. */
     content: ReactNode;
 }
@@ -86,18 +75,18 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
     },
-    headerExpanded: (theme: Theme, enabled: boolean) => ({
+    headerExpanded: (theme: Theme, disabled?: boolean) => ({
         display: 'flex',
         alignItems: 'center',
         p: 0.5,
-        cursor: enabled ? 'pointer' : 'default',
+        cursor: disabled ? 'default' : 'pointer',
         '&:hover': {
-            backgroundColor: enabled ? theme.palette.action.hover : 'transparent',
+            backgroundColor: disabled ? 'transparent' : theme.palette.action.hover,
         },
     }),
-    icon: (theme: Theme, enabled: boolean) => ({
+    icon: (theme: Theme, disabled?: boolean) => ({
         display: 'flex',
-        color: enabled ? theme.palette.text.primary : theme.palette.text.disabled,
+        color: disabled ? theme.palette.text.disabled : theme.palette.text.primary,
     }),
     section: {
         display: 'flex',
@@ -131,86 +120,42 @@ export const NavigationSidebar = memo(function NavigationSidebar({
         });
     }, []);
 
-    const isExpanded = (section: SidebarSection) => !section.isDisabled && expandedIds.has(section.id);
+    const isExpanded = (section: SidebarSection) => !section.disabled && expandedIds.has(section.id);
     const anyExpanded = sections.some(isExpanded);
 
     return (
         <Box sx={styles.sidebar(theme, !anyExpanded, isAbsolutePositioned)}>
             {!anyExpanded
                 ? // Collapsed rail: one icon button per section.
-                  sections.map((section) => {
-                      const enabled = !section.isDisabled;
-                      return (
-                          <Box key={section.id} sx={mergeSx(styles.headerContainer, styles.headerCollapsed)}>
-                              <IconButton
-                                  onClick={enabled ? () => toggleExpand(section.id) : undefined}
-                                  disabled={!enabled}
-                                  size="small"
-                                  sx={styles.iconButton}
-                              >
-                                  <Box sx={styles.icon(theme, enabled)}>{section.icon}</Box>
-                              </IconButton>
-                          </Box>
-                      );
-                  })
+                  sections.map((section) => (
+                      <Box key={section.id} sx={mergeSx(styles.headerContainer, styles.headerCollapsed)}>
+                          <IconButton
+                              onClick={section.disabled ? undefined : () => toggleExpand(section.id)}
+                              disabled={section.disabled}
+                              size="small"
+                              sx={styles.iconButton}
+                          >
+                              <Box sx={styles.icon(theme, section.disabled)}>{section.icon}</Box>
+                          </IconButton>
+                      </Box>
+                  ))
                 : // Expanded: each section shows its header, and its content when open.
-                  sections.map((section) => {
-                      const enabled = !section.isDisabled;
-                      return (
-                          <Box key={section.id} sx={styles.section}>
-                              <Box sx={styles.headerContainer}>
-                                  <Box
-                                      onClick={enabled ? () => toggleExpand(section.id) : undefined}
-                                      sx={styles.headerExpanded(theme, enabled)}
-                                  >
-                                      <Box sx={styles.icon(theme, enabled)}>{section.icon}</Box>
-                                      <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
-                                          {intl.formatMessage({ id: section.titleId })}
-                                      </Typography>
-                                  </Box>
+                  sections.map((section) => (
+                      <Box key={section.id} sx={styles.section}>
+                          <Box sx={styles.headerContainer}>
+                              <Box
+                                  onClick={section.disabled ? undefined : () => toggleExpand(section.id)}
+                                  sx={styles.headerExpanded(theme, section.disabled)}
+                              >
+                                  <Box sx={styles.icon(theme, section.disabled)}>{section.icon}</Box>
+                                  <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
+                                      {intl.formatMessage({ id: section.titleId })}
+                                  </Typography>
                               </Box>
-                              {isExpanded(section) && <Box sx={styles.sectionContent}>{section.content}</Box>}
                           </Box>
-                      );
-                  })}
+                          {isExpanded(section) && <Box sx={styles.sectionContent}>{section.content}</Box>}
+                      </Box>
+                  ))}
         </Box>
-    );
-});
-
-interface HistorySectionContentProps {
-    navigationHistory: string[];
-    onNavigate: (voltageLevelId: string) => void;
-    isItemSelected?: (voltageLevelId: string) => boolean;
-    isDisabled: boolean;
-}
-
-export const HistorySectionContent = memo(function HistorySectionContent({
-    navigationHistory,
-    onNavigate,
-    isItemSelected,
-    isDisabled,
-}: HistorySectionContentProps) {
-    return (
-        <List dense sx={{ py: 0 }}>
-            {navigationHistory.map((voltageLevelId, index) => (
-                <ListItemButton
-                    key={`${voltageLevelId}-${index}`}
-                    selected={isItemSelected ? isItemSelected(voltageLevelId) : false}
-                    onClick={() => onNavigate(voltageLevelId)}
-                    disabled={isDisabled}
-                >
-                    <ListItemIcon sx={{ minWidth: 32 }}>
-                        <ArrowBackIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={voltageLevelId}
-                        primaryTypographyProps={{
-                            variant: 'caption',
-                            noWrap: true,
-                        }}
-                    />
-                </ListItemButton>
-            ))}
-        </List>
     );
 });

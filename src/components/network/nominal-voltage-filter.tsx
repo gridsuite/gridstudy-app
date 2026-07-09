@@ -58,7 +58,7 @@ export type NominalVoltageFilterProps = {
     nominalVoltages: number[];
     filteredNominalVoltages: number[];
     onChange: (filteredNominalVoltages: number[]) => void;
-    isDisabled: boolean;
+    disabled: boolean;
     styles?: NominalVoltageFilterStyles;
 };
 
@@ -66,7 +66,7 @@ export default function NominalVoltageFilter({
     nominalVoltages,
     filteredNominalVoltages,
     onChange,
-    isDisabled,
+    disabled,
     styles: styleOverrides,
 }: Readonly<NominalVoltageFilterProps>) {
     const { baseVoltages, getBaseVoltageInterval } = useBaseVoltages();
@@ -154,7 +154,7 @@ export default function NominalVoltageFilter({
                                     role={undefined}
                                     dense
                                     onClick={() => handleToggle(interval)}
-                                    disabled={!filteredNominalVoltages || isDisabled}
+                                    disabled={!filteredNominalVoltages || disabled}
                                 >
                                     <Checkbox color="default" sx={sx.nominalVoltageCheck} checked={isChecked} />
 
@@ -168,7 +168,7 @@ export default function NominalVoltageFilter({
                         </ListItem>
                     );
                 }),
-        [filteredNominalVoltages, handleToggle, voltageLevelIntervals, isDisabled, sx]
+        [filteredNominalVoltages, handleToggle, voltageLevelIntervals, disabled, sx]
     );
 
     if (nominalVoltages.length <= 0) {
@@ -178,7 +178,7 @@ export default function NominalVoltageFilter({
         <Paper sx={sx.root}>
             <List sx={sx.nominalVoltageZone}>
                 <ListItem sx={sx.nominalVoltageItem}>
-                    <ListItemButton role={undefined} dense onClick={handleToggleMaster} disabled={isDisabled}>
+                    <ListItemButton role={undefined} dense onClick={handleToggleMaster} disabled={disabled}>
                         <Checkbox
                             color="default"
                             sx={sx.nominalVoltageCheck}

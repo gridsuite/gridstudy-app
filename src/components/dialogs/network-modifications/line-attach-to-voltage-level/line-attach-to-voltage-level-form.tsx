@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid2 as Grid } from '@mui/material';
 import {
     ATTACHMENT_LINE_ID,
     ATTACHMENT_POINT_ID,
@@ -26,19 +26,18 @@ import {
     VoltageLevelConnectivityForm,
     TextInput,
     VoltageLevelOption,
+    LineCreationDto,
 } from '@gridsuite/commons-ui';
-import { Box } from '@mui/material';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import { useWatch } from 'react-hook-form';
-import GridSection from '../../commons/grid-section';
-import GridItem from '../../commons/grid-item';
+import { GridSection } from '../../commons/grid-section';
+import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import {
     ExtendedVoltageLevelCreationInfo,
-    LineCreationInfos,
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
@@ -48,8 +47,8 @@ interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationInfos }) => Promise<string>;
-    lineToEdit?: LineCreationInfos;
+    onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationDto }) => Promise<string>;
+    lineToEdit?: LineCreationDto;
     onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     voltageLevelToEdit?: ExtendedVoltageLevelCreationInfo;
     onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
@@ -211,8 +210,7 @@ const LineAttachToVoltageLevelForm = ({
             <GridSection title="AttachedLine" />
             <Grid container spacing={2}>
                 <GridItem>{lineToIdField}</GridItem>
-                <Box width="100%" />
-                <GridItem>
+                <GridItem size={12}>
                     <AddButton
                         onClick={openLineDialog}
                         mode={lineToEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
