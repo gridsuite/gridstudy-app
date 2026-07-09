@@ -50,7 +50,6 @@ import {
     useSnackMessage,
     SegmentInfoFormData,
     SegmentsFormData,
-    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
 import { GridItem } from '../commons/grid-item';
@@ -232,15 +231,12 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        if (isModification && !editData?.[FieldConstants.LINE_SEGMENTS]?.length) {
+        if (!editData?.lineSegments?.length) {
             return;
         }
         arrayRef.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
-            let promises;
-            if (!isModification && editData?.lineSegments) {
-                promises = editData.lineSegments.map((segment) => getSegmentLimits(segment));
-            }
+            const promises = editData?.lineSegments?.map((segment) => getSegmentLimits(segment));
             try {
                 if (promises) {
                     const segmentsWithLimits = await Promise.all(promises);
@@ -257,10 +253,9 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         updateSegmentsLimits().then(() => {
             updateTotals();
             keepMostConstrainingLimits();
-            const applyLimits = isModification ? (editData?.applySegmentsLimits ?? true) : true;
-            setValue(APPLY_SEGMENTS_LIMITS, applyLimits);
+            setValue(APPLY_SEGMENTS_LIMITS, editData?.applySegmentsLimits ?? true);
         });
-    }, [editData, isModification, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits, setValue]);
+    }, [editData, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits, setValue]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
