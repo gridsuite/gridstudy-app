@@ -74,11 +74,11 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
                 id: 'history',
                 icon: <HistoryIcon fontSize="small" />,
                 titleId: 'history',
-                isDisabled: !hasHistory,
+                disabled: !hasHistory,
                 content: (
                     <HistorySectionContent
                         navigationHistory={reversedHistory}
-                        isDisabled={!isBuilt}
+                        disabled={!isBuilt}
                         isItemSelected={(id) => associatedVoltageLevelIds.includes(id)}
                         onNavigate={handleNavigationSidebarClick}
                     />
@@ -88,13 +88,13 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
                 id: 'voltage',
                 icon: <NominalVoltageIcon fontSize="small" />,
                 titleId: 'nadVoltageFilter',
-                isDisabled: !hasNominalVoltages,
+                disabled: !hasNominalVoltages,
                 content: (
                     <NominalVoltageFilter
                         nominalVoltages={allNominalVoltages}
                         filteredNominalVoltages={selectedNominalVoltages}
                         onChange={onNominalVoltagesChange}
-                        isDisabled={!isBuilt}
+                        disabled={!isBuilt}
                         styles={voltageFilterStyles}
                     />
                 ),

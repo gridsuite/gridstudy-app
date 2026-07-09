@@ -18,7 +18,7 @@ export interface SidebarSection {
     /** Translation id of the section title. */
     titleId: string;
     /** When true the section cannot be expanded (header/icon greyed out). */
-    isDisabled?: boolean;
+    disabled?: boolean;
     /** Content rendered below the header when the section is expanded. */
     content: ReactNode;
 }
@@ -75,18 +75,18 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
     },
-    headerExpanded: (theme: Theme, isDisabled?: boolean) => ({
+    headerExpanded: (theme: Theme, disabled?: boolean) => ({
         display: 'flex',
         alignItems: 'center',
         p: 0.5,
-        cursor: isDisabled ? 'default' : 'pointer',
+        cursor: disabled ? 'default' : 'pointer',
         '&:hover': {
-            backgroundColor: isDisabled ? 'transparent' : theme.palette.action.hover,
+            backgroundColor: disabled ? 'transparent' : theme.palette.action.hover,
         },
     }),
-    icon: (theme: Theme, isDisabled?: boolean) => ({
+    icon: (theme: Theme, disabled?: boolean) => ({
         display: 'flex',
-        color: isDisabled ? theme.palette.text.disabled : theme.palette.text.primary,
+        color: disabled ? theme.palette.text.disabled : theme.palette.text.primary,
     }),
     section: {
         display: 'flex',
@@ -120,7 +120,7 @@ export const NavigationSidebar = memo(function NavigationSidebar({
         });
     }, []);
 
-    const isExpanded = (section: SidebarSection) => !section.isDisabled && expandedIds.has(section.id);
+    const isExpanded = (section: SidebarSection) => !section.disabled && expandedIds.has(section.id);
     const anyExpanded = sections.some(isExpanded);
 
     return (
@@ -130,12 +130,12 @@ export const NavigationSidebar = memo(function NavigationSidebar({
                   sections.map((section) => (
                       <Box key={section.id} sx={mergeSx(styles.headerContainer, styles.headerCollapsed)}>
                           <IconButton
-                              onClick={section.isDisabled ? undefined : () => toggleExpand(section.id)}
-                              disabled={section.isDisabled}
+                              onClick={section.disabled ? undefined : () => toggleExpand(section.id)}
+                              disabled={section.disabled}
                               size="small"
                               sx={styles.iconButton}
                           >
-                              <Box sx={styles.icon(theme, section.isDisabled)}>{section.icon}</Box>
+                              <Box sx={styles.icon(theme, section.disabled)}>{section.icon}</Box>
                           </IconButton>
                       </Box>
                   ))
@@ -144,10 +144,10 @@ export const NavigationSidebar = memo(function NavigationSidebar({
                       <Box key={section.id} sx={styles.section}>
                           <Box sx={styles.headerContainer}>
                               <Box
-                                  onClick={section.isDisabled ? undefined : () => toggleExpand(section.id)}
-                                  sx={styles.headerExpanded(theme, section.isDisabled)}
+                                  onClick={section.disabled ? undefined : () => toggleExpand(section.id)}
+                                  sx={styles.headerExpanded(theme, section.disabled)}
                               >
-                                  <Box sx={styles.icon(theme, section.isDisabled)}>{section.icon}</Box>
+                                  <Box sx={styles.icon(theme, section.disabled)}>{section.icon}</Box>
                                   <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
                                       {intl.formatMessage({ id: section.titleId })}
                                   </Typography>

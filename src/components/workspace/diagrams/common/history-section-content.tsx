@@ -13,14 +13,14 @@ interface HistorySectionContentProps {
     navigationHistory: string[];
     onNavigate: (voltageLevelId: string) => void;
     isItemSelected?: (voltageLevelId: string) => boolean;
-    isDisabled: boolean;
+    disabled: boolean;
 }
 
 export const HistorySectionContent = memo(function HistorySectionContent({
     navigationHistory,
     onNavigate,
     isItemSelected,
-    isDisabled,
+    disabled,
 }: HistorySectionContentProps) {
     return (
         <List dense sx={{ py: 0 }}>
@@ -29,7 +29,7 @@ export const HistorySectionContent = memo(function HistorySectionContent({
                     key={`${voltageLevelId}-${index}`}
                     selected={isItemSelected ? isItemSelected(voltageLevelId) : false}
                     onClick={() => onNavigate(voltageLevelId)}
-                    disabled={isDisabled}
+                    disabled={disabled}
                 >
                     <ListItemIcon>
                         <ArrowBackIcon fontSize="small" />

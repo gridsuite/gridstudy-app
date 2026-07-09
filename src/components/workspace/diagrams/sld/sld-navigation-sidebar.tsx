@@ -23,7 +23,7 @@ export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
     ({ navigationHistory, currentVoltageLevelId, onNavigate }) => {
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
         const hasHistory = navigationHistory.length > 0;
-        const isDisabled = !isNodeBuilt(currentNode);
+        const disabled = !isNodeBuilt(currentNode);
 
         const sections = useMemo<SidebarSection[]>(
             () => [
@@ -31,18 +31,18 @@ export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
                     id: 'history',
                     icon: <HistoryIcon fontSize="small" />,
                     titleId: 'history',
-                    isDisabled: !hasHistory,
+                    disabled: !hasHistory,
                     content: (
                         <HistorySectionContent
                             navigationHistory={navigationHistory}
-                            isDisabled={isDisabled}
+                            disabled={disabled}
                             isItemSelected={(id) => id === currentVoltageLevelId}
                             onNavigate={onNavigate}
                         />
                     ),
                 },
             ],
-            [hasHistory, navigationHistory, isDisabled, currentVoltageLevelId, onNavigate]
+            [hasHistory, navigationHistory, disabled, currentVoltageLevelId, onNavigate]
         );
 
         return <NavigationSidebar sections={sections} isAbsolutePositioned />;
