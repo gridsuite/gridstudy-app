@@ -108,7 +108,6 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
 
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
-    console.log('SBO dynamicSimulationAvailability', dynamicSimulationAvailability);
 
     const oneBusShortcircuitAnalysisState = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
