@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Divider, Grid } from '@mui/material';
+import { Divider, Grid2 as Grid } from '@mui/material';
 
 export default function LineSeparator() {
     return (
-        <Grid item xs={12}>
+        <Grid size={12}>
             <Divider />
         </Grid>
     );

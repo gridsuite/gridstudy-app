@@ -9,41 +9,64 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
+    DndColumn,
+    DndColumnType,
+    DndTable,
     ElementType,
-    PARAM_DEVELOPER_MODE,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { insertCompositeModifications, type ModificationPair } from '../../services/study';
-import { JSX, useCallback, useEffect, useState } from 'react';
+import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { CompositeModificationAction } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { Button, FormControl, Grid, Radio, RadioGroup, TextField, Typography } from '@mui/material';
-import { NoteAlt as NoteAltIcon } from '@mui/icons-material';
-import { Controller, useController, useForm } from 'react-hook-form';
+import {
+    Box,
+    Button,
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    FormControl,
+    FormControlLabel,
+    FormHelperText,
+    Radio,
+    RadioGroup,
+    Step,
+    StepLabel,
+    Stepper,
+    TextField,
+    Typography,
+} from '@mui/material';
+
+import {
+    Controller,
+    useController,
+    useFieldArray,
+    useForm,
+    UseFieldArrayReturn,
+    useFormContext,
+    useWatch,
+} from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
-import { ModificationDialog } from './commons/modificationDialog';
-import { ACTION, COMPOSITE_NAMES, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
-import GridItem from './commons/grid-item';
+import { ACTION, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
+import * as yup from 'yup';
 import { UUID } from 'node:crypto';
-import { useParameterState } from './parameters/use-parameters-state';
-import FormControlLabel from '@mui/material/FormControlLabel';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
- * - SPLIT mode: extracts and inserts individual modifications contained in the composites.
- * - INSERT mode: inserts the composite modifications as-is; a name per composite is required.
+ * Organised as a two-step stepper:
  *
- * The composite selection is presented inline (like RootNetworkCaseSelection):
- * a list icon + selected item names + a button to open the DirectoryItemSelector.
- * Name fields (one per selected item) appear only when INSERT mode is active,
- * and are validated via react-hook-form + yup.
+ * - Step 1 — Selection: inline tree view to browse and pick one or more composites.
+ * - Step 2 — Organisation: reorder selected items and choose insertion mode
+ *   (SPLIT to expand individual modifications, INSERT to keep composites as-is with a required name).
  *
- * @param open     Whether the dialog is open
- * @param onClose  Callback to close the dialog
+ * @param open    Whether the dialog is open.
+ * @param onClose Callback invoked when the dialog is closed or cancelled.
  */
 interface ImportModificationDialogProps {
     open: boolean;
@@ -53,67 +76,106 @@ interface ImportModificationDialogProps {
 interface SelectedComposite {
     id: UUID;
     name: string;
+    originalName: string;
+    isShared: boolean;
 }
-type CompositeNameOverrides = Record<UUID, string>;
 
 interface FormData {
     [ACTION]: CompositeModificationAction;
     [SELECTED_MODIFICATIONS]: SelectedComposite[];
-    [COMPOSITE_NAMES]: CompositeNameOverrides;
 }
 
 const emptyFormData: FormData = {
     [ACTION]: CompositeModificationAction.SPLIT,
     [SELECTED_MODIFICATIONS]: [],
-    [COMPOSITE_NAMES]: {},
 };
+
+interface SharedCellProps {
+    rowIndex: number;
+}
+
+function SharedCell({ rowIndex }: Readonly<SharedCellProps>) {
+    const isShared: boolean = useWatch({
+        name: `${SELECTED_MODIFICATIONS}.${rowIndex}.isShared`,
+    });
+
+    return (
+        <FormControlLabel
+            control={<Checkbox size="small" disabled checked={isShared} sx={{ p: 0, ml: 1 }} />}
+            label={
+                <Typography variant="body2" color="text.disabled" sx={{ ml: 0.5 }}>
+                    <FormattedMessage id="importComposites.shared" />
+                </Typography>
+            }
+            sx={{ mr: 0, alignItems: 'center' }}
+        />
+    );
+}
+
+interface InsertNameCellProps {
+    rowIndex: number;
+}
+
+function InsertNameCell({ rowIndex }: Readonly<InsertNameCellProps>) {
+    const { control } = useFormContext();
+    const originalName: string = useWatch({
+        name: `${SELECTED_MODIFICATIONS}.${rowIndex}.originalName`,
+    });
+
+    return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+            <Controller
+                name={`${SELECTED_MODIFICATIONS}.${rowIndex}.name`}
+                control={control}
+                render={({ field, fieldState }) => (
+                    <TextField {...field} size="small" fullWidth error={!!fieldState.error} />
+                )}
+            />
+            <FormHelperText sx={{ px: 1, mt: 0.25 }}> {originalName}</FormHelperText>
+        </Box>
+    );
+}
 
 const formSchema = yup
     .object()
     .shape({
         [ACTION]: yup.mixed<CompositeModificationAction>().oneOf(Object.values(CompositeModificationAction)).required(),
-        [SELECTED_MODIFICATIONS]: yup.array().min(1).required(),
-        [COMPOSITE_NAMES]: yup.mixed<CompositeNameOverrides>().when(ACTION, ([action], schema) => {
-            if (action === CompositeModificationAction.INSERT) {
-                return schema.test('all-names-filled', 'FieldIsRequired', function (value) {
-                    const selections: SelectedComposite[] = this.parent[SELECTED_MODIFICATIONS] ?? [];
-                    for (const m of selections) {
-                        const name = value?.[m.id] ?? '';
-                        if (!name.trim()) {
-                            return this.createError({
-                                path: `${COMPOSITE_NAMES}.${m.id}`,
-                                message: 'FieldIsRequired',
-                            });
+        [SELECTED_MODIFICATIONS]: yup
+            .array()
+            .min(1)
+            .when(ACTION, ([action], schema) => {
+                if (action === CompositeModificationAction.INSERT) {
+                    return schema.test('all-names-filled', 'FieldIsRequired', function (rows) {
+                        for (const row of rows ?? []) {
+                            if (!row.name?.trim()) {
+                                return this.createError({
+                                    path: `${SELECTED_MODIFICATIONS}`,
+                                    message: 'FieldIsRequired',
+                                });
+                            }
                         }
-                    }
-                    return true;
-                });
-            }
-
-            return schema.optional();
-        }),
+                        return true;
+                    });
+                }
+                return schema;
+            })
+            .required(),
     })
     .required() as yup.ObjectSchema<FormData>;
 
 type FormSchemaType = yup.InferType<typeof formSchema>;
 
-const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationDialogProps>) => JSX.Element = ({
-    open,
-    onClose,
-}) => {
+const STEP_SELECTION = 0;
+const STEP_ORGANIZATION = 1;
+
+const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModificationDialogProps>): JSX.Element => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
+    const [activeStep, setActiveStep] = useState(STEP_SELECTION);
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-
-    const [hasConfirmedFirstSelection, setHasConfirmedFirstSelection] = useState(false);
-    useEffect(() => {
-        if (open) {
-            setIsSelectorOpen(true);
-        }
-    }, [open]);
 
     const formMethods = useForm<FormSchemaType>({
         defaultValues: emptyFormData,
@@ -127,155 +189,273 @@ const ImportModificationDialog: ({ open, onClose }: Readonly<ImportModificationD
         setValue,
         formState: { isValid },
     } = formMethods;
+
     const { field: actionField } = useController({ name: ACTION, control });
 
     const action = watch(ACTION);
     const selectedModifications = watch(SELECTED_MODIFICATIONS);
-    const compositeNames = watch(COMPOSITE_NAMES);
     const isInsertMode = action === CompositeModificationAction.INSERT;
-    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const isNextDisabled = selectedModifications.length === 0;
+
+    // useFieldArray — consumed by DndTable
+    const useFieldArrayOutput = useFieldArray({
+        control,
+        name: SELECTED_MODIFICATIONS,
+    }) as unknown as UseFieldArrayReturn;
+
+    // Column definitions
+    const sharedColumn: DndColumn = useMemo(
+        () => ({
+            label: '',
+            dataKey: 'isShared',
+            initialValue: false,
+            editable: true,
+            width: '25%',
+            type: DndColumnType.CUSTOM,
+            component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} />,
+        }),
+        []
+    );
+
+    // SPLIT mode — name is read-only, drag-and-drop only
+    const splitColumnsDefinition: DndColumn[] = useMemo(
+        () => [
+            {
+                label: '',
+                dataKey: 'originalName',
+                initialValue: '',
+                editable: false,
+                width: '75%',
+                type: DndColumnType.TEXT,
+            },
+            sharedColumn,
+        ],
+        [sharedColumn]
+    );
+
+    // INSERT mode — name is editable with original name shown below
+    const insertColumnsDefinition: DndColumn[] = useMemo(
+        () => [
+            {
+                label: '',
+                dataKey: 'name',
+                initialValue: '',
+                editable: true,
+                width: '75%',
+                type: DndColumnType.CUSTOM,
+                component: (rowIndex: number) => <InsertNameCell rowIndex={rowIndex} />,
+            },
+            sharedColumn,
+        ],
+        [sharedColumn]
+    );
+
+    const columnsDefinition = isInsertMode ? insertColumnsDefinition : splitColumnsDefinition;
 
     useEffect(() => {
-        if (!isDeveloperMode && action === CompositeModificationAction.INSERT) {
-            setValue(ACTION, CompositeModificationAction.SPLIT, { shouldValidate: true });
+        if (open) {
+            setActiveStep(STEP_SELECTION);
+            setIsSelectorOpen(true);
+        } else {
+            setIsSelectorOpen(false);
+            reset(emptyFormData);
         }
-    }, [isDeveloperMode, action, setValue]);
+    }, [open, reset]);
 
-    const handleOpenSelector = useCallback(() => {
-        setIsSelectorOpen(true);
-    }, []);
+    const handleInlineSelectionChange = useCallback(
+        (selectedElements: TreeViewFinderNodeProps[]) => {
+            const newRows: SelectedComposite[] = selectedElements.map((e) => ({
+                id: e.id as UUID,
+                name: e.name,
+                originalName: e.name,
+                isShared: false,
+            }));
+            setValue(SELECTED_MODIFICATIONS, newRows, {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+        },
+        [setValue]
+    );
 
     const handleSelectModification = useCallback(
         (selectedElements: TreeViewFinderNodeProps[]) => {
             setIsSelectorOpen(false);
 
             if (!selectedElements.length) {
-                // Cancel before any confirmed selection -> close the whole dialog.
-                if (!hasConfirmedFirstSelection) {
+                if (selectedModifications.length === 0) {
                     onClose();
                 }
                 return;
             }
 
-            setHasConfirmedFirstSelection(true);
-            const newSelections = selectedElements.map((e) => ({ id: e.id, name: e.name }));
-            setValue(SELECTED_MODIFICATIONS, newSelections, { shouldValidate: true, shouldDirty: true });
-
-            const currentNames = compositeNames ?? {};
-            setValue(
-                COMPOSITE_NAMES,
-                Object.fromEntries(newSelections.map((e) => [e.id, currentNames[e.id] ?? e.name])),
-                { shouldValidate: true }
-            );
-        },
-        [hasConfirmedFirstSelection, compositeNames, onClose, setValue]
-    );
-
-    const handleClear = useCallback(() => {
-        reset(emptyFormData);
-    }, [reset]);
-
-    const handleSave = useCallback(
-        (values: FormData) => {
-            if (!studyUuid || !currentNode) return;
-            const modificationsToInsert: ModificationPair[] = values[SELECTED_MODIFICATIONS].map((m) => ({
-                first: m.id,
-                second: values[COMPOSITE_NAMES][m.id] ?? m.name,
+            const newRows: SelectedComposite[] = selectedElements.map((e) => ({
+                id: e.id as UUID,
+                name: e.name,
+                originalName: e.name,
+                isShared: false, // currently always false, to be computed later when shared modifications are added
             }));
-            insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, values[ACTION]).catch(
-                (error) => {
-                    snackWithFallback(snackError, error, { headerId: 'importComposites.error' });
-                }
-            );
-            onClose();
+
+            setValue(SELECTED_MODIFICATIONS, newRows, {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
         },
-        [studyUuid, currentNode, snackError, onClose]
+        [setValue, selectedModifications.length, onClose]
     );
+
+    const handleNext = useCallback(() => {
+        if (isNextDisabled) return;
+        setActiveStep(STEP_ORGANIZATION);
+    }, [isNextDisabled]);
+
+    const handlePrevious = useCallback(() => {
+        setActiveStep(STEP_SELECTION);
+        setIsSelectorOpen(true);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        reset(emptyFormData);
+        setActiveStep(STEP_SELECTION);
+        setIsSelectorOpen(false);
+        onClose();
+    }, [reset, onClose]);
+
+    const handleSave = useCallback(() => {
+        if (!studyUuid || !currentNode || !isValid) return;
+
+        const modificationsToInsert: ModificationPair[] = selectedModifications.map((m) => ({
+            first: m.id,
+            second: action === CompositeModificationAction.SPLIT ? m.originalName : m.name,
+        }));
+
+        insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, action).catch((error) =>
+            snackWithFallback(snackError, error, { headerId: 'importComposites.error' })
+        );
+
+        handleClose();
+    }, [studyUuid, currentNode, isValid, selectedModifications, action, handleClose, snackError]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <ModificationDialog
-                open={open}
-                onClose={onClose}
-                onClear={handleClear}
-                onSave={handleSave}
-                titleId="importComposites.title"
-                disabledSave={!isValid}
-                PaperProps={{ sx: { minWidth: '50%' } }}
-                sx={{ visibility: hasConfirmedFirstSelection ? 'visible' : 'hidden' }}
-            >
-                <Grid container spacing={2} marginTop="auto" sx={{ alignItems: 'center' }}>
-                    <GridItem size={12}>
-                        <Button size="medium" onClick={handleOpenSelector}>
-                            <NoteAltIcon />
-                            <FormattedMessage id={'importComposites.select'} />
-                        </Button>
-                    </GridItem>
-                    <GridItem size={4}>
-                        <FormattedMessage id="importComposites.label" />
-                    </GridItem>
-                    <GridItem size={8}>
-                        <FormControl>
-                            <RadioGroup row value={actionField.value} onChange={actionField.onChange}>
-                                <FormControlLabel
-                                    control={<Radio />}
-                                    value={CompositeModificationAction.SPLIT}
-                                    label={<FormattedMessage id="importComposites.action.split" />}
-                                />
-                                <FormControlLabel
-                                    control={<Radio />}
-                                    value={CompositeModificationAction.INSERT}
-                                    label={<FormattedMessage id="importComposites.action.insert" />}
-                                    disabled={!isDeveloperMode}
-                                />
-                            </RadioGroup>
-                        </FormControl>
-                    </GridItem>
-                </Grid>
-                {selectedModifications.length > 0 && (
-                    <Grid container spacing={1} direction="column" sx={{ padding: 2 }}>
-                        <FormattedMessage id="importComposites.selected" />
-                        {selectedModifications.map((m) => (
-                            <GridItem key={m.id}>
-                                {isInsertMode ? (
-                                    <Controller
-                                        name={`${COMPOSITE_NAMES}.${m.id}`}
-                                        control={control}
-                                        render={({ field, fieldState }) => {
-                                            return (
-                                                <TextField
-                                                    {...field}
-                                                    label={m.name}
-                                                    required
-                                                    size="small"
-                                                    error={!!fieldState.error}
-                                                    helperText={
-                                                        fieldState.error
-                                                            ? intl.formatMessage({ id: 'FieldIsRequired' })
-                                                            : undefined
-                                                    }
-                                                />
-                                            );
-                                        }}
-                                    />
-                                ) : (
-                                    <Typography variant="body1" component="span" fontWeight="fontWeightMedium">
-                                        {m.name}
-                                    </Typography>
-                                )}
-                            </GridItem>
-                        ))}
-                    </Grid>
-                )}
-            </ModificationDialog>
+            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth PaperProps={{ sx: { p: 1 } }}>
+                <DialogTitle>
+                    <FormattedMessage id="importComposites.title" />
+                </DialogTitle>
 
-            <DirectoryItemSelector
-                open={isSelectorOpen}
-                onClose={handleSelectModification}
-                types={[ElementType.MODIFICATION]}
-                multiSelect={true}
-                title={intl.formatMessage({ id: 'ModificationsSelection' })}
-            />
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: 490 }}>
+                    <Stepper
+                        activeStep={activeStep}
+                        alternativeLabel
+                        sx={{
+                            justifyContent: 'center',
+                            '& .MuiStepConnector-root': { flex: '0 1 150px', minWidth: 0 },
+                            '& .MuiStepConnector-line': { minWidth: 0 },
+                        }}
+                    >
+                        <Step completed={activeStep > STEP_SELECTION}>
+                            <StepLabel>
+                                <FormattedMessage id="importComposites.step.selection" />
+                            </StepLabel>
+                        </Step>
+                        <Step>
+                            <StepLabel>
+                                <FormattedMessage id="importComposites.step.organization" />
+                            </StepLabel>
+                        </Step>
+                    </Stepper>
+                    <Divider sx={{ mt: 2 }} />
+                    {/* ======================================================
+                        STEP 1 — SELECTION
+                        ====================================================== */}
+                    <Box
+                        sx={{
+                            display: activeStep === STEP_SELECTION ? 'flex' : 'none',
+                            flexDirection: 'column',
+                            gap: 2,
+                            mt: 2,
+                        }}
+                    >
+                        <DirectoryItemSelector
+                            open={isSelectorOpen}
+                            onClose={handleSelectModification}
+                            types={[ElementType.MODIFICATION]}
+                            multiSelect
+                            inline
+                            onSelectionChange={handleInlineSelectionChange}
+                            title={intl.formatMessage({ id: 'ModificationsSelection' })}
+                        />
+                    </Box>
+                    {/* ======================================================
+                        STEP 2 — ORGANIZATION & SHARING
+                        ====================================================== */}
+                    {activeStep === STEP_ORGANIZATION && (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+                            {/* Radio group */}
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography variant="body2">
+                                    <FormattedMessage id="importComposites.organizationLabel" />
+                                </Typography>
+                                <FormControl>
+                                    <RadioGroup row value={actionField.value} onChange={actionField.onChange}>
+                                        <FormControlLabel
+                                            value={CompositeModificationAction.SPLIT}
+                                            control={<Radio />}
+                                            label={<FormattedMessage id="importComposites.action.split" />}
+                                        />
+                                        <FormControlLabel
+                                            value={CompositeModificationAction.INSERT}
+                                            control={<Radio />}
+                                            label={<FormattedMessage id="importComposites.action.insert" />}
+                                        />
+                                    </RadioGroup>
+                                </FormControl>
+                            </Box>
+
+                            <Typography variant="body2">
+                                <FormattedMessage id="importComposites.selected" />
+                            </Typography>
+
+                            <Box sx={{ '& thead': { display: 'none' } }}>
+                                <DndTable
+                                    name={SELECTED_MODIFICATIONS}
+                                    useFieldArrayOutput={useFieldArrayOutput}
+                                    columnsDefinition={columnsDefinition}
+                                    tableHeight={270}
+                                    withAddRowsDialog={false}
+                                    disableAddingRows
+                                    disabledDeletion
+                                    showMoveArrow={false}
+                                />
+                            </Box>
+                        </Box>
+                    )}
+                </DialogContent>
+
+                <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box>
+                        {activeStep === STEP_ORGANIZATION && (
+                            <Button onClick={handlePrevious}>
+                                <FormattedMessage id="button.previous" />
+                            </Button>
+                        )}
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button onClick={handleClose}>
+                            <FormattedMessage id="cancel" />
+                        </Button>
+                        {activeStep === STEP_SELECTION ? (
+                            <Button variant="contained" onClick={handleNext} disabled={isNextDisabled}>
+                                <FormattedMessage id="button.next" />
+                            </Button>
+                        ) : (
+                            <Button variant="contained" onClick={handleSave} disabled={!isValid}>
+                                <FormattedMessage id="validate" />
+                            </Button>
+                        )}
+                    </Box>
+                </DialogActions>
+            </Dialog>
         </CustomFormProvider>
     );
 };

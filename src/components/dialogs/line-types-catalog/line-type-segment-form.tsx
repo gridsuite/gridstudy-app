@@ -7,11 +7,13 @@
 
 import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid, Stack } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    APPLY_SEGMENTS_LIMITS,
     AREA,
     FINAL_CURRENT_LIMITS,
+    LINE_SEGMENTS,
     SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_REACTANCE,
@@ -39,19 +41,20 @@ import {
     type MuiStyles,
     ReadOnlyInput,
     snackWithFallback,
+    SwitchInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
-import GridItem from '../commons/grid-item';
+import { GridItem } from '../commons/grid-item';
 import {
     AreaTemperatureShapeFactorInfo,
     CurrentLimitsInfo,
     LimitSelectedRowData,
     LineTypeInfo,
 } from './line-catalog.type';
-import { emptyLineSegment, SegmentFormData } from './segment-utils';
+import { emptyLineSegment, SegmentFormData, SegmentsFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
-import GridSection from '../commons/grid-section';
+import { GridSection } from '../commons/grid-section';
 
 const styles = {
     h3: {
@@ -69,11 +72,12 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface LineTypeSegmentFormProps {
-    editData?: SegmentFormData[];
+    editData?: SegmentsFormData;
+    isModification: boolean;
 }
 
-export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData }) => {
-    const { setValue, getValues, clearErrors } = useFormContext();
+export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData, isModification }) => {
+    const { setValue, getValues, clearErrors, watch } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
     const { snackError } = useSnackMessage();
@@ -94,6 +98,8 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 })
             );
     }, [snackError]);
+
+    const watchedApplySegmentsLimits = watch(APPLY_SEGMENTS_LIMITS) ?? true;
 
     const updateSegmentValues = useCallback(
         (index: number) => {
@@ -225,17 +231,19 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        if (!editData || editData.length === 0) {
+        if (!editData?.[LINE_SEGMENTS]?.length) {
             return;
         }
         arrayRef.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
-            const promises = editData.map((segment) => getSegmentLimits(segment));
+            const promises = editData[LINE_SEGMENTS]?.map((segment) => getSegmentLimits(segment));
 
             try {
-                const segmentsWithLimits = await Promise.all(promises);
-                for (const segmentWithLimits of segmentsWithLimits) {
-                    arrayRef?.current?.appendItem(segmentWithLimits);
+                if (promises) {
+                    const segmentsWithLimits = await Promise.all(promises);
+                    for (const segmentWithLimits of segmentsWithLimits) {
+                        arrayRef?.current?.appendItem(segmentWithLimits);
+                    }
                 }
             } catch (error) {
                 snackWithFallback(snackError, error, {
@@ -246,8 +254,9 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         updateSegmentsLimits().then(() => {
             updateTotals();
             keepMostConstrainingLimits();
+            setValue(APPLY_SEGMENTS_LIMITS, editData?.applySegmentsLimits ?? true);
         });
-    }, [editData, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits]);
+    }, [editData, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits, setValue]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {
@@ -487,16 +496,27 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 <GridItem size={2}>{totalSusceptanceField}</GridItem>
                 <GridItem size={1}>{<div />}</GridItem>
             </Grid>
-            <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
-            <Grid container sx={{ height: '100%' }} direction="column">
+            <Stack>
+                <Grid>
+                    <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
+                </Grid>
+                {isModification && (
+                    <Grid>
+                        <SwitchInput
+                            name={APPLY_SEGMENTS_LIMITS}
+                            label={watchedApplySegmentsLimits ? 'applied' : 'notApplied'}
+                        />
+                    </Grid>
+                )}
+            </Stack>
+            <Stack sx={{ height: '100%' }}>
                 <CustomAGGrid
                     rowData={rowData}
                     defaultColDef={limitsDefaultColDef}
                     columnDefs={limitsColumnDefs}
                     domLayout="autoHeight"
                 />
-            </Grid>
-
+            </Stack>
             {openCatalogDialogIndex !== null && (
                 <LineTypesCatalogSelectorDialog
                     onClose={onCatalogDialogClose}

@@ -5,17 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { PropsWithChildren, ReactNode } from 'react';
-import { Grid, GridProps, Tooltip } from '@mui/material';
+import { Grid2 as Grid, Grid2Props as GridProps, Tooltip } from '@mui/material';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 export interface GridItemProps extends PropsWithChildren {
-    size?: GridProps['xs'];
+    size?: GridProps['size'];
     alignItem?: string;
     tooltip?: ReactNode;
+    sx?: GridProps['sx'];
 }
 
-export default function GridItem({ children, size = 6, alignItem = 'flex-start', tooltip }: Readonly<GridItemProps>) {
+export function GridItem({ children, size = 6, alignItem = 'flex-start', tooltip, sx }: Readonly<GridItemProps>) {
     return (
-        <Grid item xs={size} alignItems={alignItem}>
+        <Grid size={size} sx={mergeSx({ alignItems: alignItem }, sx)}>
             {children &&
                 (tooltip ? (
                     <Tooltip title={tooltip}>

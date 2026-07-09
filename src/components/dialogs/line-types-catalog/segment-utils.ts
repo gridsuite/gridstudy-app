@@ -6,9 +6,11 @@
  */
 
 import {
+    APPLY_SEGMENTS_LIMITS,
     AREA,
     LIMIT_SET_NAME,
     LIMIT_VALUE,
+    LINE_SEGMENTS,
     PERMANENT_LIMIT,
     SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
@@ -23,10 +25,13 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 import { InferType } from 'yup';
 import { LineSegmentInfos } from '../../../services/network-modification-types';
 import { DeepNullable } from '@gridsuite/commons-ui';
+import { CurrentLimitsInfo } from './line-catalog.type';
+import { OperationalLimitsGroupFormSchema, TemporaryLimitFormSchema } from '../limits/operational-limits-groups-types';
+import { APPLICABILITY } from '../../network/constants';
 
 export const SegmentTemporaryLimitSchema = yup.object().shape({
     [LIMIT_VALUE]: yup.number().required(),
@@ -63,6 +68,11 @@ export type SegmentFormData = InferType<typeof SegmentSchema>;
 export type SegmentTemporaryLimitFormData = InferType<typeof SegmentTemporaryLimitSchema>;
 export type SegmentCurrentLimitsFormData = InferType<typeof SegmentCurrentLimitsSchema>;
 
+export interface SegmentsFormData {
+    [LINE_SEGMENTS]: SegmentFormData[];
+    [APPLY_SEGMENTS_LIMITS]?: boolean;
+}
+
 export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_DISTANCE_VALUE]: 0.0,
     [SEGMENT_TYPE_VALUE]: '',
@@ -88,4 +98,29 @@ export function convertToLineSegmentInfos(lineSegments: DeepNullable<SegmentForm
                 [SHAPE_FACTOR]: segment[SHAPE_FACTOR],
             })) ?? []
     );
+}
+
+export function convertLimitsToOperationalLimitsGroupFormSchema(limitSets: CurrentLimitsInfo[]) {
+    const finalLimitSets: OperationalLimitsGroupFormSchema[] = [];
+    limitSets.forEach((limitSet: CurrentLimitsInfo) => {
+        const temporaryLimitsList: TemporaryLimitFormSchema[] = [];
+        limitSet.temporaryLimits?.forEach((temporaryLimit) => {
+            temporaryLimitsList.push({
+                name: temporaryLimit.name,
+                acceptableDuration: temporaryLimit.acceptableDuration,
+                value: temporaryLimit.limitValue,
+            });
+        });
+        finalLimitSets.push({
+            id: limitSet.limitSetName + APPLICABILITY.EQUIPMENT.id,
+            name: limitSet.limitSetName,
+            applicability: APPLICABILITY.EQUIPMENT.id,
+            currentLimits: {
+                id: limitSet.limitSetName,
+                permanentLimit: limitSet.permanentLimit,
+                temporaryLimits: temporaryLimitsList,
+            },
+        });
+    });
+    return finalLimitSets;
 }

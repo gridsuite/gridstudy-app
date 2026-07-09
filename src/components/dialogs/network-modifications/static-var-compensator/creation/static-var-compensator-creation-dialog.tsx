@@ -6,6 +6,7 @@
  */
 
 import {
+    CHARACTERISTICS_CHOICES,
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     CustomFormProvider,
@@ -22,6 +23,7 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
     getConnectivityWithPositionSchema,
+    REGULATION_TYPES,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -32,7 +34,6 @@ import {
     B0,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
     CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
@@ -63,13 +64,13 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { FORM_LOADING_DELAY, REGULATION_TYPES } from 'components/network/constants';
-import yup from 'components/utils/yup-config';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { createStaticVarCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import StaticVarCompensatorCreationDialogTabs from './static-var-compensator-creation-dialog-tabs';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import StaticVarCompensatorCreationForm from './static-var-compensator-creation-form';
 import StaticVarCompensatorCreationDialogHeader from './static-var-compensator-creation-dialog-header';
 import {

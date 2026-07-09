@@ -6,7 +6,7 @@
  */
 
 import { filledTextField, SwitchInput, TextInput } from '@gridsuite/commons-ui';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import {
     ENABLED,
     EQUIPMENT_ID,
@@ -14,7 +14,7 @@ import {
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
-import GridItem from '../../../commons/grid-item';
+import { GridItem } from '../../../commons/grid-item';
 
 const TwoWindingsTransformerCreationDialogHeader = () => {
     const twoWindingsTransformerIdField = <TextInput name={`${EQUIPMENT_ID}`} label="ID" formProps={filledTextField} />;
@@ -32,7 +32,7 @@ const TwoWindingsTransformerCreationDialogHeader = () => {
     );
 
     return (
-        <Grid container item spacing={2}>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
             <GridItem size={4}>{twoWindingsTransformerIdField}</GridItem>
             <GridItem size={4}>{twoWindingsTransformerNameField}</GridItem>
             <GridItem size={2}>{ratioTapChangerEnabledField}</GridItem>

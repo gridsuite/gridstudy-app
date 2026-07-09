@@ -62,53 +62,6 @@ export interface VscModificationInfo {
     terminalConnected?: boolean | null;
 }
 
-export interface BatteryModificationInfos {
-    type: string;
-    uuid: string | null;
-    equipmentId: string;
-    equipmentName: AttributeModification<string> | null;
-    maxP: AttributeModification<number> | null;
-    minP: AttributeModification<number> | null;
-    targetP: AttributeModification<number> | null;
-    targetQ: AttributeModification<number> | null;
-    participate: AttributeModification<boolean> | null;
-    droop: AttributeModification<number> | null;
-    reactiveCapabilityCurve: AttributeModification<boolean> | null;
-    minQ: AttributeModification<number> | null;
-    maxQ: AttributeModification<number> | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
-    voltageLevelId: AttributeModification<string> | null;
-    busOrBusbarSectionId: AttributeModification<string> | null;
-    connectionDirection: AttributeModification<string> | null;
-    connectionName: AttributeModification<string> | null;
-    connectionPosition: AttributeModification<number> | null;
-    terminalConnected: AttributeModification<boolean> | null;
-    properties: Property[] | null;
-    directTransX: AttributeModification<number> | null;
-    stepUpTransformerX: AttributeModification<number> | null;
-}
-
-export interface ShuntCompensatorModificationInfos {
-    type: string;
-    uuid: string | null;
-    equipmentId: string;
-    equipmentName: AttributeModification<string> | null;
-    maxSusceptance: AttributeModification<number> | null;
-    maxQAtNominalV: AttributeModification<number> | null;
-    shuntCompensatorType: AttributeModification<string> | null;
-    sectionCount: AttributeModification<number> | null;
-    maximumSectionCount: AttributeModification<number> | null;
-    voltageLevelId: AttributeModification<string> | null;
-    busOrBusbarSectionId: AttributeModification<string> | null;
-    connectionDirection: AttributeModification<string> | null;
-    connectionName?: AttributeModification<string> | null;
-    connectionPosition?: AttributeModification<number> | null;
-    terminalConnected?: AttributeModification<boolean> | null;
-    qMeasurementValue: AttributeModification<number> | null;
-    qMeasurementValidity: AttributeModification<boolean> | null;
-    properties: Property[] | null;
-}
-
 export interface StaticVarCompensatorCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
@@ -396,51 +349,6 @@ export interface Assignment {
     propertyName?: string;
 }
 
-export interface BatteryCreationInfos {
-    type: ModificationType;
-    uuid: string | null;
-    equipmentId: string;
-    equipmentName: string | null;
-    minP: number | null;
-    maxP: number | null;
-    reactiveCapabilityCurve?: boolean | null;
-    targetP: number | null;
-    targetQ: number | null;
-    voltageLevelId: string | null;
-    busOrBusbarSectionId: string | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
-    directTransX: number | null;
-    stepUpTransformerX: number | null;
-    participate: boolean | null;
-    droop: number | null;
-    maxQ: number | null;
-    minQ: number | null;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean | null;
-    properties: Property[] | null;
-}
-
-export interface ShuntCompensatorCreationInfos {
-    type: ModificationType;
-    uuid?: string;
-    equipmentId: string;
-    equipmentName: string | null;
-    maxSusceptance: number | null;
-    maxQAtNominalV: number | null;
-    shuntCompensatorType: string | null;
-    sectionCount: number;
-    maximumSectionCount: number;
-    voltageLevelId: string | null;
-    busOrBusbarSectionId: string | null;
-    connectionDirection: string | null;
-    connectionName: string | null;
-    connectionPosition: number | null;
-    terminalConnected: boolean | null;
-    properties: Property[] | null;
-}
-
 export interface LineSegmentInfos {
     [SEGMENT_TYPE_ID]: string; //used to fetch LineTypeInfo
     [SEGMENT_DISTANCE_VALUE]: number;
@@ -497,6 +405,7 @@ export interface LineModificationInfos {
     selectedOperationalLimitsGroupId1: AttributeModification<string> | null;
     selectedOperationalLimitsGroupId2: AttributeModification<string> | null;
     [ENABLE_OLG_MODIFICATION]: boolean;
+    applySegmentsLimits: boolean;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;

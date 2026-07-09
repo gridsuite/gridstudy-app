@@ -6,12 +6,19 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    FieldConstants,
+    ModificationType,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { v4 as uuid4 } from 'uuid';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
 import { FORM_LOADING_DELAY } from 'components/network/constants.js';
-import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, CSV_FILENAME, TYPE } from 'components/utils/field-constants.js';
+import { CSV_FILENAME, MODIFICATIONS_TABLE, TABULAR_PROPERTIES, TYPE } from 'components/utils/field-constants.js';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { createTabularModification } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.type';
@@ -111,7 +118,7 @@ export function TabularDialog({
                     }
                 }
                 modification = addPropertiesFromBack(modification, modif?.[TABULAR_PROPERTIES]);
-                return modification;
+                return { [FieldConstants.AG_GRID_ROW_UUID]: uuid4(), ...modification };
             });
             reset({
                 [TYPE]: getEquipmentTypeFromModificationType(modificationType),
@@ -126,7 +133,10 @@ export function TabularDialog({
     const initTabularCreationData = useCallback(
         (editData: TabularModificationEditDataType) => {
             const equipmentType = getEquipmentTypeFromCreationType(editData?.modificationType);
-            const creations = convertCreations(editData?.modifications);
+            const creations = convertCreations(editData?.modifications).map((creation) => ({
+                [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+                ...creation,
+            }));
             reset({
                 [TYPE]: equipmentType,
                 [MODIFICATIONS_TABLE]: creations,
@@ -241,6 +251,7 @@ export function TabularDialog({
                 titleId={dialogMode === TabularModificationType.CREATION ? 'TabularCreation' : 'TabularModification'}
                 open={open}
                 isDataFetching={dataFetching}
+                slotProps={{ paper: { sx: { height: '95vh' } } }}
                 {...dialogProps}
             >
                 <TabularForm dataFetching={dataFetching} dialogMode={dialogMode} />

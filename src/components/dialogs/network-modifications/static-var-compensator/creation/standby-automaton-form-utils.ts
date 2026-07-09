@@ -10,7 +10,6 @@ import {
     AUTOMATON,
     B0,
     CHARACTERISTICS_CHOICE_AUTOMATON,
-    CHARACTERISTICS_CHOICES,
     HIGH_VOLTAGE_SET_POINT,
     HIGH_VOLTAGE_THRESHOLD,
     LOW_VOLTAGE_SET_POINT,
@@ -24,7 +23,8 @@ import {
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
-import yup from '../../../../utils/yup-config';
+import { CHARACTERISTICS_CHOICES } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 
 export const getStandbyAutomatonEmptyFormData = (id = AUTOMATON) => ({
     [id]: {

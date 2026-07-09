@@ -15,26 +15,6 @@ export const LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION = [
     { id: UNDEFINED_LOAD_TYPE, label: 'Undefined' },
 ] as const;
 
-// Relevant EnergySource Powsybl enum values
-export const ENERGY_SOURCES = [
-    { id: 'HYDRO', label: 'Hydro' },
-    { id: 'NUCLEAR', label: 'Nuclear' },
-    { id: 'WIND', label: 'Wind' },
-    { id: 'THERMAL', label: 'Thermal' },
-    { id: 'SOLAR', label: 'Solar' },
-    { id: 'OTHER', label: 'Other' },
-] as const;
-
-export const SHUNT_COMPENSATOR_TYPES = {
-    REACTOR: { id: 'REACTOR', label: 'Reactor' },
-    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
-} as const;
-
-export const REGULATION_TYPES = {
-    DISTANT: { id: 'DISTANT', label: 'Distant' },
-    LOCAL: { id: 'LOCAL', label: 'Local' },
-} as const;
-
 export const PHASE_REGULATION_MODES = {
     CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
     ACTIVE_POWER_CONTROL: {
@@ -68,10 +48,6 @@ export const APPLICABILITY = {
     SIDE1: { id: 'SIDE1', label: 'Side1' },
     SIDE2: { id: 'SIDE2', label: 'Side2' },
 };
-
-export function getEnergySourceLabel(energySourceId?: string) {
-    return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
-}
 
 const PROPORTIONAL = { id: 'PROPORTIONAL', label: 'Proportional' } as const;
 const REGULAR_DISTRIBUTION = {

@@ -24,7 +24,7 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult, formatCountryAdequaciesResult, formatExchangesResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';
 import { AppState } from 'redux/reducer.type';
-import GridSection from '../../dialogs/commons/grid-section';
+import { GridSection } from '../../dialogs/commons/grid-section';
 import { TableType } from '../../../types/custom-aggrid-types';
 
 const styles = {

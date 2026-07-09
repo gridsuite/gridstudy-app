@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export enum GeneratorDialogTab {
-    CONNECTIVITY_TAB = 0,
-    SETPOINTS_AND_LIMITS_TAB = 1,
-    SPECIFIC_TAB = 2,
-    ADDITIONAL_INFORMATION_TAB = 3,
-}
+// Must run before any module that defines a yup schema is loaded, so that
+// `string().required()` (no message) captures the configured locale instead
+// of yup's built-in default.
+import { configureYup } from '@gridsuite/commons-ui/configureYup';
+
+configureYup();

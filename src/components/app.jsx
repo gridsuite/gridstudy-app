@@ -89,7 +89,11 @@ const App = () => {
             .catch(() => cleanupStaleStudyData());
     }, []);
 
-    const user = useSelector((state) => state.user);
+    const userProfile = useSelector(
+        (state) => state.user?.profile ?? null,
+        (a, b) =>
+            a === b || (a?.sub === b?.sub && a?.name === b?.name && a?.email === b?.email && a?.profile === b?.profile)
+    );
     const studyUuid = useSelector((state) => state.studyUuid);
     const signInCallbackError = useSelector((state) => state.signInCallbackError);
     const authenticationRouterError = useSelector((state) => state.authenticationRouterError);
@@ -343,7 +347,7 @@ const App = () => {
     }, [initialMatchSilentRenewCallbackUrl, dispatch, initialMatchSigninCallbackUrl]);
 
     useEffect(() => {
-        if (user !== null && studyUuid !== null) {
+        if (userProfile !== null && studyUuid !== null) {
             const fetchNetworkVisualizationParametersPromise = getNetworkVisualizationParameters(studyUuid).then(
                 (params) => updateNetworkVisualizationsParams(params)
             );
@@ -386,8 +390,15 @@ const App = () => {
                 })
                 .catch((error) => snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' }));
         }
-    }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams, resetTableDefinitions]);
-
+    }, [
+        userProfile,
+        studyUuid,
+        dispatch,
+        updateParams,
+        snackError,
+        updateNetworkVisualizationsParams,
+        resetTableDefinitions,
+    ]);
     return (
         <div
             className="singlestretch-child"
@@ -396,8 +407,8 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar user={user} userManager={userManager} />
-            <AnnouncementNotification user={user} />
+            <AppTopBar userProfile={userProfile} userManager={userManager} />
+            <AnnouncementNotification userProfile={userProfile} />
             <CardErrorBoundary>
                 <div
                     className="singlestretch-parent"
@@ -414,7 +425,7 @@ const App = () => {
                         overflow: isStudyPane ? 'hidden' : 'auto',
                     }}
                 >
-                    {user !== null ? (
+                    {userProfile !== null ? (
                         <Routes>
                             <Route path="/studies/:studyUuid" element={<StudyContainer />} />
                             <Route

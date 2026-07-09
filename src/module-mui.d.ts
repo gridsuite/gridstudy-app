@@ -27,6 +27,9 @@ declare module '@mui/material/styles' {
             };
             highlightColor: string;
         };
+        agGridBackground: {
+            color: string;
+        };
         networkModificationPanel: {
             backgroundColor: string;
             border: string;

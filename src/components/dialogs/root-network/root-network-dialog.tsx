@@ -15,11 +15,11 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid, Stack } from '@mui/material';
 import { CASE_ID, CASE_NAME, DESCRIPTION, NAME, TAG } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { ModificationDialog } from '../commons/modificationDialog';
@@ -194,8 +194,8 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                 titleId={titleId}
                 disabledSave={!isFormValid}
             >
-                <Grid container spacing={2} marginTop={'auto'} direction="column">
-                    <Grid item>
+                <Stack spacing={2} marginTop={'auto'}>
+                    <Grid>
                         <UniqueCheckNameInput
                             name={NAME}
                             label={'rootName'}
@@ -208,7 +208,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             onManualChangeCallback={() => setModifiedByUser(true)}
                         />
                     </Grid>
-                    <Grid item>
+                    <Grid>
                         <DescriptionField />
                     </Grid>
                     <RootNetworkCaseSelection
@@ -216,7 +216,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                         onSelectCase={onSelectCase}
                         originalCaseUuid={editableRootNetwork?.originalCaseUuid}
                     />
-                    <Grid item>
+                    <Grid>
                         <UniqueCheckNameInput
                             name={TAG}
                             label={'rootTag'}
@@ -228,7 +228,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             max_length={MAX_TAG_LENGTH}
                         />
                     </Grid>
-                </Grid>
+                </Stack>
                 {!isModification && <ImportParametersSection />}
             </ModificationDialog>
         </CustomFormProvider>

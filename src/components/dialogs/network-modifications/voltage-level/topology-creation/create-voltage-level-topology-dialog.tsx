@@ -16,8 +16,9 @@ import {
     snackWithFallback,
     useSnackMessage,
     DeepNullable,
+    MAX_SECTIONS_COUNT,
 } from '@gridsuite/commons-ui';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateVoltageLevelTopologyDialogSchemaForm } from './create-voltage-level-topology-dialog.type';
@@ -37,7 +38,12 @@ const emptyFormData = {
     [SWITCH_KINDS]: [],
 };
 const formSchema = yup.object().shape({
-    [SECTION_COUNT]: yup.number().required().nullable().min(1, 'AtLeastOneSectionAdded'),
+    [SECTION_COUNT]: yup
+        .number()
+        .required()
+        .nullable()
+        .min(1, 'AtLeastOneSectionAdded')
+        .max(MAX_SECTIONS_COUNT, 'SectionCountMustBeLessThanOrEqualToTwenty'),
     [SWITCHES_BETWEEN_SECTIONS]: yup
         .string()
         .nullable()

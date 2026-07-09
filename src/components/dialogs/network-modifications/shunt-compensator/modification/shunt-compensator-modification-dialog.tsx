@@ -7,48 +7,21 @@
 
 import {
     CustomFormProvider,
-    emptyProperties,
-    EquipmentType,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    MODIFICATION_TYPES,
-    modificationPropertiesSchema,
-    snackWithFallback,
-    toModificationProperties,
-    useSnackMessage,
     DeepNullable,
-    sanitizeString,
+    EquipmentType,
     FieldConstants,
-    toModificationOperation,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityFormData,
-    getConnectivityWithPositionSchema,
-    getInjectionActiveReactivePowerEditData,
-    getInjectionActiveReactivePowerEmptyFormData,
-    getInjectionActiveReactivePowerValidationSchemaProperties,
+    getConcatenatedProperties,
+    ShuntCompensatorFormInfos,
+    ShuntCompensatorModificationDto,
+    shuntCompensatorModificationDtoToForm,
+    shuntCompensatorModificationEmptyFormData,
+    ShuntCompensatorModificationForm,
+    ShuntCompensatorModificationFormData,
+    shuntCompensatorModificationFormSchema,
+    shuntCompensatorModificationFormToDto,
+    snackWithFallback,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
-import {
-    BUS_OR_BUSBAR_SECTION,
-    CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
-    EQUIPMENT_NAME,
-    ID,
-    MAX_Q_AT_NOMINAL_V,
-    MAX_SUSCEPTANCE,
-    MAXIMUM_SECTION_COUNT,
-    MEASUREMENT_Q,
-    SECTION_COUNT,
-    SHUNT_COMPENSATOR_TYPE,
-    STATE_ESTIMATION,
-    VALIDITY,
-    VOLTAGE_LEVEL,
-} from '../../../../utils/field-constants';
-import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useState } from 'react';
 import { ModificationDialog } from '../../../commons/modificationDialog';
@@ -57,41 +30,19 @@ import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import {
+    fetchBusesOrBusbarSectionsForVoltageLevel,
+    fetchNetworkElementInfos,
+} from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { ShuntCompensatorModificationInfos } from '../../../../../services/network-modification-types';
-import { ShuntCompensatorModificationDialogSchemaForm } from '../shunt-compensator-dialog.type';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
-import {
-    getCharacteristicsEmptyFormData,
-    getCharacteristicsFormData,
-    getCharacteristicsFormValidationSchema,
-} from '../characteristics-pane/characteristics-form-utils';
-
-const emptyFormData = {
-    [EQUIPMENT_NAME]: '',
-    ...getConnectivityWithPositionEmptyFormData(true),
-    ...getCharacteristicsEmptyFormData(),
-    ...getInjectionActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
-    ...emptyProperties,
-};
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
-        [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
-        ...getCharacteristicsFormValidationSchema(true),
-    })
-    .concat(modificationPropertiesSchema)
-    .required();
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 
 export type ShuntCompensatorModificationDialogProps = EquipmentModificationDialogProps & {
-    editData?: ShuntCompensatorModificationInfos;
+    editData?: ShuntCompensatorModificationDto;
 };
 export default function ShuntCompensatorModificationDialog({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
@@ -108,12 +59,27 @@ export default function ShuntCompensatorModificationDialog({
     const { snackError } = useSnackMessage();
 
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
-    const [shuntCompensatorInfos, setShuntCompensatorInfos] = useState(null);
+    const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
+    const [shuntCompensatorInfos, setShuntCompensatorInfos] = useState<ShuntCompensatorFormInfos | null>(null);
 
-    const formMethods = useFormWithDirtyTracking<DeepNullable<ShuntCompensatorModificationDialogSchemaForm>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<ShuntCompensatorModificationDialogSchemaForm>>(formSchema),
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
+
+    const formMethods = useFormWithDirtyTracking<DeepNullable<ShuntCompensatorModificationFormData>>({
+        defaultValues: shuntCompensatorModificationEmptyFormData,
+        resolver: yupResolver<DeepNullable<ShuntCompensatorModificationFormData>>(
+            shuntCompensatorModificationFormSchema
+        ),
     });
 
     const {
@@ -127,7 +93,7 @@ export default function ShuntCompensatorModificationDialog({
     // "susceptance per section", and if we choose "Q at nominal voltage", we have to add a value for
     // "shunt compensator type" or for "Q at nominal voltage" numeric field
     const disableSave =
-        (Object.keys(dirtyFields).length === 1 && dirtyFields[CHARACTERISTICS_CHOICE]) ||
+        (Object.keys(dirtyFields).length === 1 && dirtyFields[FieldConstants.CHARACTERISTICS_CHOICE]) ||
         Object.keys(dirtyFields).length === 0;
 
     useEffect(() => {
@@ -135,27 +101,7 @@ export default function ShuntCompensatorModificationDialog({
             if (editData?.equipmentId) {
                 setSelectedId(editData.equipmentId);
             }
-            reset({
-                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                ...getConnectivityFormData({
-                    voltageLevelId: editData?.voltageLevelId?.value ?? null,
-                    busbarSectionId: editData?.busOrBusbarSectionId?.value ?? null,
-                    connectionName: editData?.connectionName?.value ?? '',
-                    connectionDirection: editData?.connectionDirection?.value ?? null,
-                    connectionPosition: editData?.connectionPosition?.value ?? null,
-                    terminalConnected: editData?.terminalConnected?.value ?? null,
-                    isEquipmentModification: true,
-                }),
-                ...getCharacteristicsFormData({
-                    maxSusceptance: editData.maxSusceptance?.value ?? null,
-                    maxQAtNominalV: editData.maxQAtNominalV?.value ?? null,
-                    shuntCompensatorType: editData.shuntCompensatorType?.value ?? null,
-                    sectionCount: editData.sectionCount?.value ?? null,
-                    maximumSectionCount: editData.maximumSectionCount?.value ?? null,
-                }),
-                ...getInjectionActiveReactivePowerEditData(STATE_ESTIMATION, editData),
-                ...getPropertiesFromModification(editData.properties),
-            });
+            reset(shuntCompensatorModificationDtoToForm(editData));
         }
     }, [reset, editData]);
 
@@ -180,7 +126,7 @@ export default function ShuntCompensatorModificationDialog({
                     equipmentId,
                     true
                 )
-                    .then((shuntCompensator) => {
+                    .then((shuntCompensator: ShuntCompensatorFormInfos) => {
                         if (shuntCompensator) {
                             if (shuntCompensator.isLinear) {
                                 setShuntCompensatorInfos(shuntCompensator);
@@ -188,6 +134,7 @@ export default function ShuntCompensatorModificationDialog({
                                 reset(
                                     (formValues) => ({
                                         ...formValues,
+                                        [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                         [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
                                             shuntCompensator,
                                             getValues
@@ -204,6 +151,9 @@ export default function ShuntCompensatorModificationDialog({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                         if (editData?.equipmentId !== equipmentId) {
                             setShuntCompensatorInfos(null);
                         }
@@ -212,7 +162,7 @@ export default function ShuntCompensatorModificationDialog({
                 setShuntCompensatorInfos(null);
             }
         },
-        [currentNode.id, currentRootNetworkUuid, snackError, studyUuid, reset, getValues, editData]
+        [currentNode?.id, currentRootNetworkUuid, snackError, studyUuid, reset, getValues, editData]
     );
 
     useEffect(() => {
@@ -222,54 +172,15 @@ export default function ShuntCompensatorModificationDialog({
     }, [selectedId, onEquipmentIdChange]);
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(shuntCompensatorModificationEmptyFormData);
     }, [reset]);
 
     const onSubmit = useCallback(
-        (shuntCompensator: ShuntCompensatorModificationDialogSchemaForm) => {
-            const stateEstimationData = shuntCompensator[STATE_ESTIMATION];
-
-            const shuntCompensatorModificationInfos = {
-                type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
-                uuid: editData?.uuid ?? null,
-                equipmentId: selectedId,
-                equipmentName: toModificationOperation(sanitizeString(shuntCompensator[EQUIPMENT_NAME])),
-                maximumSectionCount: toModificationOperation(shuntCompensator[MAXIMUM_SECTION_COUNT]),
-                sectionCount: toModificationOperation(shuntCompensator[SECTION_COUNT]),
-                maxSusceptance: toModificationOperation(
-                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                        ? shuntCompensator[MAX_SUSCEPTANCE]
-                        : null
-                ),
-                maxQAtNominalV: toModificationOperation(
-                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                        ? shuntCompensator[MAX_Q_AT_NOMINAL_V]
-                        : null
-                ),
-                shuntCompensatorType: toModificationOperation(
-                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                        ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
-                        : null
-                ),
-                voltageLevelId: toModificationOperation(shuntCompensator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
-                busOrBusbarSectionId: toModificationOperation(
-                    shuntCompensator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]
-                ),
-                connectionName: toModificationOperation(
-                    sanitizeString(shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME])
-                ),
-                connectionDirection: toModificationOperation(shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION]),
-                connectionPosition: toModificationOperation(shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION]),
-                terminalConnected: toModificationOperation(shuntCompensator[CONNECTIVITY]?.[CONNECTED]),
-                qMeasurementValue: toModificationOperation(
-                    stateEstimationData?.[MEASUREMENT_Q]?.[FieldConstants.VALUE]
-                ),
-                qMeasurementValidity: toModificationOperation(stateEstimationData?.[MEASUREMENT_Q]?.[VALIDITY]),
-                properties: toModificationProperties(shuntCompensator),
-            } satisfies ShuntCompensatorModificationInfos;
+        (shuntCompensator: ShuntCompensatorModificationFormData) => {
+            const dto = shuntCompensatorModificationFormToDto(shuntCompensator);
             modifyShuntCompensator({
-                shuntCompensatorModificationInfos: shuntCompensatorModificationInfos,
-                studyUuid: studyUuid,
+                shuntCompensatorModificationDto: dto,
+                studyUuid,
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid ?? null,
                 isUpdate: !!editData,
@@ -277,14 +188,14 @@ export default function ShuntCompensatorModificationDialog({
                 snackWithFallback(snackError, error, { headerId: 'ShuntCompensatorModificationError' });
             });
         },
-        [currentNodeUuid, studyUuid, editData, snackError, selectedId]
+        [currentNodeUuid, studyUuid, editData, snackError]
     );
 
     return (
         <CustomFormProvider
-            validationSchema={formSchema}
+            validationSchema={shuntCompensatorModificationFormSchema}
             {...formMethods}
-            removeOptional={true}
+            removeOptional
             isNodeBuilt={isNodeBuilt(currentNode)}
             isUpdate={isUpdate}
         >
@@ -311,11 +222,10 @@ export default function ShuntCompensatorModificationDialog({
                 )}
                 {selectedId !== null && (
                     <ShuntCompensatorModificationForm
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         shuntCompensatorToModify={shuntCompensatorInfos}
-                        equipmentId={selectedId}
+                        voltageLevelOptions={voltageLevelOptions}
+                        PositionDiagramPane={PositionDiagramPane}
+                        fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                     />
                 )}
             </ModificationDialog>

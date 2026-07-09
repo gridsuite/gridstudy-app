@@ -28,7 +28,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import {
     B1,
     B2,
@@ -59,11 +59,11 @@ import {
     X,
 } from 'components/utils/field-constants';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { APPLICABILITY, FORM_LOADING_DELAY } from 'components/network/constants';
-import yup from 'components/utils/yup-config';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import {
@@ -89,20 +89,20 @@ import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-co
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createLine } from '../../../../../services/study/network-modifications';
-import GridItem from '../../../commons/grid-item';
+import { GridItem } from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 import { LimitsPane } from '../../../limits/limits-pane';
 import { LineCreationInfos } from '../../../../../services/network-modification-types';
 import { LineModificationFormSchema } from '../modification/line-modification-type';
-import { ComputedLineCharacteristics, CurrentLimitsInfo } from '../../../line-types-catalog/line-catalog.type';
+import { ComputedLineCharacteristics } from '../../../line-types-catalog/line-catalog.type';
 import { LineCreationFormSchema, LineFormInfos } from './line-creation-type';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
-import {
-    OperationalLimitsGroupFormSchema,
-    TemporaryLimitFormSchema,
-} from '../../../limits/operational-limits-groups-types';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { convertToLineSegmentInfos, SegmentFormData } from '../../../line-types-catalog/segment-utils';
+import {
+    convertLimitsToOperationalLimitsGroupFormSchema,
+    convertToLineSegmentInfos,
+    SegmentFormData,
+} from '../../../line-types-catalog/segment-utils';
 
 const emptyFormData: any = {
     ...getHeaderEmptyFormData(),
@@ -170,6 +170,13 @@ const LineCreationDialog = ({
     const { reset, setValue, watch } = formMethods;
 
     const editSegmentValue = watch(LINE_SEGMENTS);
+
+    const editSegmentsData = useMemo(
+        () => ({
+            [LINE_SEGMENTS]: editSegmentValue ?? [],
+        }),
+        [editSegmentValue]
+    );
 
     const fromSearchCopyToFormValues = (line: LineFormInfos) => {
         const formData = {
@@ -296,28 +303,10 @@ const LineCreationDialog = ({
         setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
-        const finalLimits: OperationalLimitsGroupFormSchema[] = [];
-        data[FINAL_CURRENT_LIMITS].forEach((item: CurrentLimitsInfo) => {
-            const temporaryLimitsList: TemporaryLimitFormSchema[] = [];
-            item.temporaryLimits.forEach((temporaryLimit) => {
-                temporaryLimitsList.push({
-                    name: temporaryLimit.name,
-                    acceptableDuration: temporaryLimit.acceptableDuration,
-                    value: temporaryLimit.limitValue,
-                });
-            });
-            finalLimits.push({
-                id: item.limitSetName + APPLICABILITY.EQUIPMENT.id,
-                name: item.limitSetName,
-                applicability: APPLICABILITY.EQUIPMENT.id,
-                currentLimits: {
-                    id: item.limitSetName,
-                    permanentLimit: item.permanentLimit,
-                    temporaryLimits: temporaryLimitsList,
-                },
-            });
-        });
-        setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, finalLimits);
+        setValue(
+            `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`,
+            convertLimitsToOperationalLimitsGroupFormSchema(data[FINAL_CURRENT_LIMITS])
+        );
         setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
     };
 
@@ -414,7 +403,7 @@ const LineCreationDialog = ({
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{lineIdField}</GridItem>
                 <GridItem size={4}>{lineNameField}</GridItem>
             </Grid>
@@ -474,7 +463,7 @@ const LineCreationDialog = ({
                     open={isOpenLineTypesCatalogDialog}
                     onClose={handleCloseLineTypesCatalogDialog}
                     onSave={handleLineSegmentsBuildSubmit}
-                    editData={editSegmentValue}
+                    editData={editSegmentsData}
                 />
             </ModificationDialog>
         </CustomFormProvider>

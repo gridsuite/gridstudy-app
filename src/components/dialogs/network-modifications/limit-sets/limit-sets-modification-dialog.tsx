@@ -138,6 +138,7 @@ export function LimitSetsModificationDialog({
                 open={open}
                 isDataFetching={dataFetching}
                 disabledSave={disableSave}
+                slotProps={{ paper: { sx: { height: '95vh' } } }}
                 {...dialogProps}
             >
                 <LimitSetsTabularModificationForm dataFetching={dataFetching} />

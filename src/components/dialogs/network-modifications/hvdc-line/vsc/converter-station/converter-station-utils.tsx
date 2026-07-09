@@ -11,6 +11,9 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
+    getInjectionActiveReactivePowerEditDataProperties,
+    getInjectionActiveReactivePowerEmptyFormDataProperties,
+    getInjectionActiveReactivePowerValidationSchemaProperties,
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
@@ -20,7 +23,7 @@ import {
     toModificationOperation,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '@gridsuite/commons-ui';
-import yup from '../../../../../utils/yup-config';
+import * as yup from 'yup';
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
@@ -32,7 +35,10 @@ import {
     CONVERTER_STATION_NAME,
     ID,
     LOSS_FACTOR,
+    MEASUREMENT_P,
+    MEASUREMENT_Q,
     REACTIVE_POWER,
+    STATE_ESTIMATION,
     VOLTAGE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_ON,
@@ -109,6 +115,7 @@ export function getVscConverterStationModificationSchema(id: string) {
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
             [REACTIVE_POWER]: yup.number().nullable(),
             [VOLTAGE]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+            [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
             ...getReactiveLimitsSchema(true),
         }),
     };
@@ -122,6 +129,7 @@ export function getVscConverterStationEmptyFormData(isModification = false) {
         [REACTIVE_POWER]: null,
         [VOLTAGE_REGULATION_ON]: isModification ? null : false,
         [VOLTAGE]: null,
+        [STATE_ESTIMATION]: getInjectionActiveReactivePowerEmptyFormDataProperties(),
         ...getConnectivityWithPositionEmptyFormData(),
         ...getReactiveLimitsEmptyFormData(),
     };
@@ -171,6 +179,10 @@ export function getConverterStationModificationData(
         voltageLevelId: toModificationOperation(converterStation[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
         busOrBusbarSectionId: toModificationOperation(converterStation[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
         reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
+        pMeasurementValue: toModificationOperation(converterStation[STATE_ESTIMATION]?.[MEASUREMENT_P]?.value),
+        pMeasurementValidity: toModificationOperation(converterStation[STATE_ESTIMATION]?.[MEASUREMENT_P]?.validity),
+        qMeasurementValue: toModificationOperation(converterStation[STATE_ESTIMATION]?.[MEASUREMENT_Q]?.value),
+        qMeasurementValidity: toModificationOperation(converterStation[STATE_ESTIMATION]?.[MEASUREMENT_Q]?.validity),
         minQ: toModificationOperation(
             isReactiveCapabilityCurveOn ? null : reactiveLimits[FieldConstants.MINIMUM_REACTIVE_POWER]
         ),
@@ -217,6 +229,7 @@ export function getConverterStationModificationFormEditData(
             [REACTIVE_POWER]: converterStation?.reactivePowerSetpoint?.value ?? null,
             [VOLTAGE_REGULATION_ON]: converterStation?.voltageRegulationOn?.value ?? null,
             [VOLTAGE]: converterStation?.voltageSetpoint?.value ?? null,
+            [STATE_ESTIMATION]: getInjectionActiveReactivePowerEditDataProperties(converterStation),
             ...getConnectivityFormData({
                 voltageLevelId: converterStation?.voltageLevelId?.value ?? null,
                 busbarSectionId: converterStation?.busOrBusbarSectionId?.value ?? null,

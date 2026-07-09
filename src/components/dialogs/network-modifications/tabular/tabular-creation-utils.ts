@@ -7,9 +7,11 @@
 
 import {
     CONNECTION_DIRECTIONS,
+    ENERGY_SOURCES,
     FieldConstants,
     MODIFICATION_TYPES,
     ReactiveCapabilityCurvePoints,
+    SHUNT_COMPENSATOR_TYPES,
 } from '@gridsuite/commons-ui';
 import {
     BUS_OR_BUSBAR_SECTION_ID,
@@ -55,12 +57,10 @@ import {
 } from 'components/utils/field-constants';
 import {
     BOOLEAN,
-    ENERGY_SOURCES,
     ENUM,
     LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
     REGULATING_TERMINAL_TYPES,
-    SHUNT_COMPENSATOR_TYPES,
 } from '../../../network/constants';
 import { convertReactiveCapabilityCurvePointsFromBackToFront, TabularField, TabularFields } from './tabular-common';
 

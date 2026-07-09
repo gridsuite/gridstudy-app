@@ -33,6 +33,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    APPLY_SEGMENTS_LIMITS,
     B1,
     B2,
     BUS_OR_BUSBAR_SECTION,
@@ -46,6 +47,7 @@ import {
     CONNECTIVITY_2,
     ENABLE_OLG_MODIFICATION,
     EQUIPMENT_NAME,
+    FINAL_CURRENT_LIMITS,
     G1,
     G2,
     LIMITS,
@@ -54,6 +56,7 @@ import {
     MEASUREMENT_P2,
     MEASUREMENT_Q1,
     MEASUREMENT_Q2,
+    NAME,
     OPERATIONAL_LIMITS_GROUPS,
     R,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
@@ -67,7 +70,7 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { FieldErrors } from 'react-hook-form';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     addModificationTypeToOpLimitsGroups,
@@ -103,9 +106,16 @@ import { useIntl } from 'react-intl';
 import { LineModificationFormSchema } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
+import {
+    OperationalLimitsGroupFormSchema,
+    OperationalLimitsGroupsFormSchema,
+} from '../../../limits/operational-limits-groups-types';
 import { ComputedLineCharacteristics } from '../../../line-types-catalog/line-catalog.type';
-import { convertToLineSegmentInfos, SegmentFormData } from '../../../line-types-catalog/segment-utils';
+import {
+    convertLimitsToOperationalLimitsGroupFormSchema,
+    convertToLineSegmentInfos,
+    SegmentFormData,
+} from '../../../line-types-catalog/segment-utils';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -173,7 +183,7 @@ const LineModificationDialog = ({
             [EQUIPMENT_NAME]: yup.string().nullable(),
             ...getCon1andCon2WithPositionValidationSchema(true),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
-            ...getLimitsValidationSchema(),
+            ...getLimitsValidationSchema(LIMITS, true),
             ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
         })
         .concat(modificationPropertiesSchema)
@@ -187,6 +197,15 @@ const LineModificationDialog = ({
     const { reset, setValue, getValues, watch } = formMethods;
 
     const editSegmentsValue = watch(LINE_SEGMENTS);
+    const applySegmentsLimits = watch(APPLY_SEGMENTS_LIMITS);
+
+    const editSegmentsData = useMemo(
+        () => ({
+            [LINE_SEGMENTS]: editSegmentsValue ?? [],
+            [APPLY_SEGMENTS_LIMITS]: applySegmentsLimits ?? true,
+        }),
+        [editSegmentsValue, applySegmentsLimits]
+    );
 
     const fromEditDataToFormValues = useCallback(
         (lineModification: LineModificationInfos) => {
@@ -222,6 +241,7 @@ const LineModificationDialog = ({
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
                 [LINE_SEGMENTS]: lineModification.lineSegments,
+                [APPLY_SEGMENTS_LIMITS]: lineModification.applySegmentsLimits ?? true,
             });
         },
         [reset]
@@ -240,7 +260,6 @@ const LineModificationDialog = ({
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
             const limits: OperationalLimitsGroupsFormSchema = line[LIMITS];
-            const segments = line[LINE_SEGMENTS];
             modifyLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -290,7 +309,8 @@ const LineModificationDialog = ({
                 p2MeasurementValidity: stateEstimationData[MEASUREMENT_P2][VALIDITY],
                 q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][FieldConstants.VALUE],
                 q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
-                lineSegments: segments,
+                lineSegments: line[LINE_SEGMENTS],
+                applySegmentsLimits: line[APPLY_SEGMENTS_LIMITS] ?? true,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'LineModificationError' });
             });
@@ -402,7 +422,8 @@ const LineModificationDialog = ({
 
     const handleLineSegmentsBuildSubmit = (
         data: ComputedLineCharacteristics,
-        lineSegments: DeepNullable<SegmentFormData | null>[]
+        lineSegments: DeepNullable<SegmentFormData | null>[],
+        applyLimits: boolean | null
     ) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
@@ -417,6 +438,23 @@ const LineModificationDialog = ({
             shouldDirty: true,
         });
         setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
+
+        const shouldApplyLimits = applyLimits ?? true;
+        setValue(APPLY_SEGMENTS_LIMITS, shouldApplyLimits);
+        if (shouldApplyLimits) {
+            const limitsFromSegments = convertLimitsToOperationalLimitsGroupFormSchema(data[FINAL_CURRENT_LIMITS]);
+            const actualLimits: OperationalLimitsGroupFormSchema[] =
+                getValues(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`) ?? [];
+            const mergedLimits = [
+                ...actualLimits.filter(
+                    (actualLimit) =>
+                        !limitsFromSegments.some((limitsFromSegment) => limitsFromSegment[NAME] === actualLimit[NAME])
+                ),
+                ...limitsFromSegments,
+            ];
+            setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, mergedLimits);
+            setValue(`${LIMITS}.${ENABLE_OLG_MODIFICATION}`, true);
+        }
     };
 
     const headerAndTabs = (
@@ -478,7 +516,8 @@ const LineModificationDialog = ({
                             open={isOpenLineTypesCatalogDialog}
                             onClose={handleCloseLineTypesCatalogDialog}
                             onSave={handleLineSegmentsBuildSubmit}
-                            editData={editSegmentsValue}
+                            editData={editSegmentsData}
+                            isModification
                         />
                     </>
                 )}

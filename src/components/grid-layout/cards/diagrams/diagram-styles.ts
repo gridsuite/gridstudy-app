@@ -33,6 +33,14 @@ export const styles = {
         '& .nad-pst-arrow': {
             strokeWidth: 3,
         },
+        '& .nad-lock': {
+            strokeWidth: 3,
+            fill: theme.palette.text.primary,
+        },
+        '& .nad-flash': {
+            strokeWidth: 3,
+            fill: theme.palette.text.primary,
+        },
     }),
     divSingleLineDiagram: (theme) => ({
         '& polyline': {
@@ -55,6 +63,15 @@ export const styles = {
         },
         '& .sld-pst-arrow': {
             stroke: theme.palette.text.primary,
+        },
+        '& .sld-feeder-info.sld-measurement-valid text': {
+            fill: 'black',
+        },
+        '& .sld-feeder-info.sld-measurement-invalid text': {
+            fill: 'red',
+        },
+        '& .sld-feeder-info.sld-measurement-critical text': {
+            fontWeight: 'bold',
         },
         '.legend-root': {
             display: 'inline-flex',

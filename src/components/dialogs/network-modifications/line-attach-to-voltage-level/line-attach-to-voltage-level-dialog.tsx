@@ -36,7 +36,7 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
 import {
@@ -292,6 +292,12 @@ const LineAttachToVoltageLevelDialog = ({
                 setAttachmentLine(preparedLine);
                 setValue(`${ATTACHMENT_LINE_ID}`, preparedLine.equipmentId, {
                     shouldValidate: true,
+                    shouldDirty: true,
+                });
+                // Force the form dirty when attachment line props change but ID does not.
+                // The value itself is never read — any non-empty string would work; we use the
+                // stringified line for parity with onAttachmentPointModificationDo and for debug visibility.
+                setValue('_dirtyTrigger', JSON.stringify(preparedLine), {
                     shouldDirty: true,
                 });
             });

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid2 as Grid } from '@mui/material';
 import {
     ATTACHMENT_LINE_ID,
     ATTACHMENT_POINT_ID,
@@ -27,13 +27,12 @@ import {
     TextInput,
     VoltageLevelOption,
 } from '@gridsuite/commons-ui';
-import { Box } from '@mui/material';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import { useWatch } from 'react-hook-form';
-import GridSection from '../../commons/grid-section';
-import GridItem from '../../commons/grid-item';
+import { GridSection } from '../../commons/grid-section';
+import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import {
@@ -197,7 +196,7 @@ const LineAttachToVoltageLevelForm = ({
                     />
                 </GridItem>
             </Grid>
-            <GridSection title="VOLTAGE_LEVEL" />
+            <GridSection title="AttachedVoltageLevelId" />
             <Grid container spacing={2}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
                 <GridItem>
@@ -211,8 +210,7 @@ const LineAttachToVoltageLevelForm = ({
             <GridSection title="AttachedLine" />
             <Grid container spacing={2}>
                 <GridItem>{lineToIdField}</GridItem>
-                <Box width="100%" />
-                <GridItem>
+                <GridItem size={12}>
                     <AddButton
                         onClick={openLineDialog}
                         mode={lineToEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
