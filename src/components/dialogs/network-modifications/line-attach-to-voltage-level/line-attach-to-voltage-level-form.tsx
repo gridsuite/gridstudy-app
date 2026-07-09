@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import {
     ATTACHMENT_LINE_ID,
     ATTACHMENT_POINT_ID,
@@ -210,8 +210,7 @@ const LineAttachToVoltageLevelForm = ({
             <GridSection title="AttachedLine" />
             <Grid container spacing={2}>
                 <GridItem>{lineToIdField}</GridItem>
-                <Box width="100%" />
-                <GridItem>
+                <GridItem size={12}>
                     <AddButton
                         onClick={openLineDialog}
                         mode={lineToEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
