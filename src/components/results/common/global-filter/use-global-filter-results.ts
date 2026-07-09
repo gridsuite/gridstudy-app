@@ -6,26 +6,15 @@
  */
 
 import type { NonEmptyTuple } from 'type-fest';
-import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { type BuildStatus, snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import { snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import type { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { evaluateGlobalFilter } from '../../../../services/study/filter';
 import type { AppState } from '../../../../redux/reducer.type';
 import type { FilterEquipmentType } from '../../../../types/filter-lib/filter';
 import { isStatusBuilt } from '../../../graph/util/model-functions';
 import { buildValidGlobalFilters } from './build-valid-global-filters';
-
-type EvaluationRequest = {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    rootNetworkUuid: UUID;
-    equipmentTypes: NonEmptyTuple<FilterEquipmentType>;
-    globalFilters: GlobalFilters;
-    // not sent to the backend, but part of the request identity: rebuilding the node invalidates the previous result
-    buildStatus: BuildStatus;
-};
 
 /* Because of ESLint react-hooks/rules-of-hooks, nullable value must be managed inside the hook, because
  * React hooks can't be called conditionally and/or different order. */
@@ -41,77 +30,46 @@ export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
-    const [evaluated, setEvaluated] = useState<{ key: string; ids: string[] }>();
+    const [filteredIds, setFilteredIds] = useState<string[]>();
+    const [isPending, setIsPending] = useState(false);
 
-    const buildStatus = currentNode?.data?.globalBuildStatus;
-
-    /* The key identifies the evaluation by its *content*: `filters` gets a new reference whenever any
-     * global filter option is added or refreshed in the store, but most of those changes leave the
-     * request untouched and must not trigger another evaluation. */
-    const evaluationKey = useMemo(() => {
-        if (!isTreeModelUpToDate || !studyUuid || !currentRootNetworkUuid || !currentNode?.id || !buildStatus) {
-            return undefined;
-        }
-        if (!isStatusBuilt(buildStatus)) {
-            return undefined;
-        }
-        const globalFilters = buildValidGlobalFilters(filters);
-        if (!globalFilters) {
-            return undefined;
-        }
-        const request: EvaluationRequest = {
-            studyUuid,
-            nodeUuid: currentNode.id,
-            rootNetworkUuid: currentRootNetworkUuid,
-            equipmentTypes,
-            globalFilters,
-            buildStatus,
-        };
-        return JSON.stringify(request);
-    }, [buildStatus, currentNode?.id, currentRootNetworkUuid, equipmentTypes, filters, isTreeModelUpToDate, studyUuid]);
-
-    // derived from the key so that it stays referentially stable as long as the content doesn't change
-    const evaluationRequest = useMemo(
-        () => (evaluationKey ? (JSON.parse(evaluationKey) as EvaluationRequest) : undefined),
-        [evaluationKey]
+    const nodeUuid = currentNode?.id;
+    const canEvaluate = Boolean(
+        isTreeModelUpToDate &&
+        studyUuid &&
+        currentRootNetworkUuid &&
+        nodeUuid &&
+        isStatusBuilt(currentNode?.data?.globalBuildStatus)
     );
 
-    // the evaluation is debounced, so several requests may be in flight: only the latest one is relevant
-    const latestKeyRef = useRef<string | undefined>(undefined);
+    const globalFilters = useMemo(() => buildValidGlobalFilters(filters), [filters]);
+    const shouldEvaluate = canEvaluate && globalFilters !== undefined;
 
     const fetchFilteredIds = useCallback(
-        (key: string, request: EvaluationRequest) => {
-            evaluateGlobalFilter(
-                request.studyUuid,
-                request.nodeUuid,
-                request.rootNetworkUuid,
-                request.equipmentTypes,
-                request.globalFilters
-            )
-                .then((ids) => {
-                    if (latestKeyRef.current === key) {
-                        setEvaluated({ key, ids });
-                    }
-                })
+        (globalFiltersParam: GlobalFilters, equipmentTypesParam: NonEmptyTuple<FilterEquipmentType>) => {
+            if (!studyUuid || !nodeUuid || !currentRootNetworkUuid) {
+                return;
+            }
+            evaluateGlobalFilter(studyUuid, nodeUuid, currentRootNetworkUuid, equipmentTypesParam, globalFiltersParam)
+                .then(setFilteredIds)
                 .catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'FilterEvaluationError' });
-                });
+                })
+                .finally(() => setIsPending(false));
         },
-        [snackError]
+        [currentRootNetworkUuid, nodeUuid, snackError, studyUuid]
     );
 
     const debouncedFetchFilteredIds = useDebounce(fetchFilteredIds);
 
     useEffect(() => {
-        latestKeyRef.current = evaluationKey;
-        if (evaluationKey && evaluationRequest) {
-            debouncedFetchFilteredIds(evaluationKey, evaluationRequest);
+        // pending from the moment the filter changes, until the debounced evaluation has resolved
+        setIsPending(shouldEvaluate);
+        if (shouldEvaluate && globalFilters) {
+            debouncedFetchFilteredIds(globalFilters, equipmentTypes);
         }
-    }, [debouncedFetchFilteredIds, evaluationKey, evaluationRequest]);
+    }, [debouncedFetchFilteredIds, equipmentTypes, globalFilters, shouldEvaluate]);
 
-    return {
-        // the previous result is kept while a new one is being evaluated, to avoid flickering the rows
-        filteredIds: evaluated?.ids,
-        isPending: evaluationKey !== undefined && evaluated?.key !== evaluationKey,
-    };
+    // the previous result is kept while a new one is being evaluated, to avoid flickering the rows
+    return { filteredIds, isPending };
 }
