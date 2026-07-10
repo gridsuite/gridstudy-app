@@ -245,7 +245,9 @@ const LineModificationDialog = ({
                 data[FieldConstants.FINAL_CURRENT_LIMITS]
             );
             const actualLimits: OperationalLimitsGroupFormSchema[] =
-                getValues(`${FieldConstants.LIMITS}.${FieldConstants.OPERATIONAL_LIMITS_GROUPS}`) ?? [];
+                (getValues(
+                    `${FieldConstants.LIMITS}.${FieldConstants.OPERATIONAL_LIMITS_GROUPS}`
+                ) as OperationalLimitsGroupFormSchema[]) ?? [];
             const mergedLimits = [
                 ...actualLimits.filter(
                     (actualLimit) =>
