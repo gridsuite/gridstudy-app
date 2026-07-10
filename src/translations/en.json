@@ -1501,5 +1501,7 @@
     "button.next": "Next",
     "button.previous": "Previous",
     "disconnectedLoadActivePower": "Load cut off (MW)",
-    "disconnectedGenerationActivePower": "Generation cut off (MW)"
+    "disconnectedGenerationActivePower": "Generation cut off (MW)",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied"
 } 
