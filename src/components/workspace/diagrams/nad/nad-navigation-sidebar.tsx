@@ -8,7 +8,7 @@
 import { memo, useCallback, useMemo } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import { History as HistoryIcon } from '@mui/icons-material';
-import { NominalVoltageIcon } from '@gridsuite/commons-ui';
+import { VoltageUnitIcon } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import {
@@ -86,7 +86,7 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
             },
             {
                 id: 'voltage',
-                icon: <NominalVoltageIcon fontSize="small" />,
+                icon: <VoltageUnitIcon fontSize="small" />,
                 titleId: 'nadVoltageFilter',
                 disabled: !hasNominalVoltages,
                 content: (
