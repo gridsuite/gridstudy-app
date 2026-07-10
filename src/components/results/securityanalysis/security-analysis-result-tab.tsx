@@ -38,6 +38,7 @@ import {
 } from './security-analysis-result-utils';
 import { PaginationType, SecurityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
+import { SecurityAnalysisCopyButton } from './security-analysis-copy-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
@@ -50,7 +51,7 @@ import { UUID } from 'node:crypto';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
-import { FilterType, isCriteriaFilterType } from '../common/utils';
+import { FilterType, isCriteriaFilterType, PERMANENT_LIMIT_NAME } from '../common/utils';
 import { setTableSort } from '../../../redux/actions';
 import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handler';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
@@ -68,6 +69,11 @@ const styles = {
     },
     resultContainer: {
         flexGrow: 1,
+    },
+    exportActions: {
+        display: 'flex',
+        justifySelf: 'end',
+        gap: 0.5,
     },
 } as const satisfies MuiStyles;
 
@@ -244,6 +250,33 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex);
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
+
+    const enumValueTranslations = useMemo(() => {
+        const returnedValue: Record<string, string> = {
+            [PERMANENT_LIMIT_NAME]: intl.formatMessage({
+                id: 'PermanentLimitName',
+            }),
+        };
+        const enumValuesToTranslate = [
+            'CURRENT',
+            'HIGH_VOLTAGE',
+            'LOW_VOLTAGE',
+            'ACTIVE_POWER',
+            'APPARENT_POWER',
+            'MAX_ITERATION_REACHED',
+            'OTHER',
+            'CONVERGED',
+            'FAILED',
+            'ONE',
+            'TWO',
+            'NO_CALCULATION',
+        ];
+        enumValuesToTranslate.forEach((value) => {
+            returnedValue[value] = intl.formatMessage({ id: value });
+        });
+        return returnedValue;
+    }, [intl]);
+
     const downloadZipResult = useCallback(
         (
             studyUuid: UUID,
@@ -342,12 +375,21 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             tableType={TableType.SecurityAnalysis}
                         />
                     </Box>
-                    <Box sx={{ justifySelf: 'end' }}>
+                    <Box sx={styles.exportActions}>
+                        <SecurityAnalysisCopyButton
+                            studyUuid={studyUuid}
+                            nodeUuid={nodeUuid}
+                            rootNetworkUuid={currentRootNetworkUuid}
+                            enumValueTranslations={enumValueTranslations}
+                            downloadZipResult={downloadZipResult}
+                            disabled={isExportButtonDisabled}
+                        />
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
                             rootNetworkUuid={currentRootNetworkUuid}
                             resultType={resultType}
+                            enumValueTranslations={enumValueTranslations}
                             downloadZipResult={downloadZipResult}
                             disabled={isExportButtonDisabled}
                         />
