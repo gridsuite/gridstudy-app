@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid, TableCell, TableRow } from '@mui/material';
+import { Box, Grid2 as Grid, TableCell, TableRow } from '@mui/material';
 import { VoltageLevelTooltipBusInfos } from '../equipment-popover-type';
 import { CellRender } from '../cell-render';
 import { formatValue, styles as genericStyles } from '../generic-equipment-popover-utils';
@@ -98,7 +98,7 @@ export const VoltageLevelPopoverBusInfos = ({
     );
 
     return (
-        <Grid item sx={genericStyles.grid}>
+        <Grid sx={genericStyles.grid}>
             <TableRow>
                 <CellRender isLabel={true} label="" colStyle={{ ...genericStyles.cell, fontWeight: 'bold' }} />
                 {buses?.map((b, index) => renderBusHeaderCell(b, index))}

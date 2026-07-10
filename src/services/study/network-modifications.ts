@@ -31,6 +31,8 @@ import {
     ShuntCompensatorModificationDto,
     BatteryCreationDto,
     BatteryModificationDto,
+    LineCreationDto,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '@gridsuite/commons-ui';
 import { getBaseNetworkModificationUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -47,7 +49,6 @@ import {
     GenerationDispatchModificationInfos,
     LCCCreationInfo,
     LccModificationInfos,
-    LineCreationInfos,
     LineModificationInfos,
     LinesAttachToSplitLinesInfo,
     MoveVoltageLevelFeederBaysInfos,
@@ -63,11 +64,7 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
-import {
-    ENABLE_OLG_MODIFICATION,
-    OLGS_MODIFICATION_TYPE,
-    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
-} from '../../components/utils/field-constants';
+import { ENABLE_OLG_MODIFICATION, OLGS_MODIFICATION_TYPE } from '../../components/utils/field-constants';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
@@ -625,7 +622,7 @@ export function createLine({
     isUpdate = false,
     modificationUuid,
 }: {
-    lineCreationInfos: LineCreationInfos;
+    lineCreationInfos: LineCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Table, TableBody, TableContainer, TableRow } from '@mui/material';
+import { Grid2 as Grid, Stack, Table, TableBody, TableContainer, TableRow } from '@mui/material';
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { LoadEquipmentInfos } from '../equipment-popover-type';
@@ -17,8 +17,8 @@ interface LoadPopoverContentProps {
 export const LoadPopoverContent: React.FC<LoadPopoverContentProps> = ({ equipmentInfos }) => {
     const typeAffineFixe = getPropertyValue(equipmentInfos?.properties, 'typeAffineFixe');
     return (
-        <Grid container direction="column" rowSpacing={2} alignItems="center">
-            <Grid item sx={styles.grid}>
+        <Stack spacing={2} alignItems="center">
+            <Grid sx={styles.grid}>
                 <TableContainer sx={styles.table}>
                     <Table size="small" sx={styles.layout}>
                         <TableBody>
@@ -46,7 +46,7 @@ export const LoadPopoverContent: React.FC<LoadPopoverContentProps> = ({ equipmen
                     </Table>
                 </TableContainer>
             </Grid>
-        </Grid>
+        </Stack>
     );
 };
 

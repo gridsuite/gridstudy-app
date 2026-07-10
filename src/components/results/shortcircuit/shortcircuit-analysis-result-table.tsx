@@ -27,9 +27,9 @@ import {
     OverflowableText,
     unitToKiloUnit,
 } from '@gridsuite/commons-ui';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
+import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
+import { CustomAggridAutocompleteFilter } from '@gridsuite/commons-ui';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import {
     ColumnContext,
