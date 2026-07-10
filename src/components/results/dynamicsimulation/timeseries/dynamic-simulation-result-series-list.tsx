@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, List, ListSubheader, Typography } from '@mui/material';
+import { Grid2 as Grid, List, ListSubheader, Typography } from '@mui/material';
 import { Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
 import { type MuiStyles } from '@gridsuite/commons-ui';
@@ -85,7 +85,7 @@ function DynamicSimulationResultSeriesList({
             <ListSubheader>
                 <Grid container>
                     {headers.map((header, index) => (
-                        <Grid item flexGrow={index === 1 ? 1 : 0} key={header}>
+                        <Grid flexGrow={index === 1 ? 1 : 0} key={header}>
                             <Typography sx={styles.headerItem} variant={'subtitle1'}>
                                 {header}
                             </Typography>

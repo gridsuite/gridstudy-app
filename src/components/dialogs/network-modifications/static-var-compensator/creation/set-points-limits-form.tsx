@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid2 as Grid } from '@mui/material';
 import {
     CHARACTERISTICS_CHOICE,
     MAX_Q_AT_NOMINAL_V,
@@ -33,8 +33,8 @@ import { useWatch } from 'react-hook-form';
 import { FunctionComponent, useCallback } from 'react';
 import type { UUID } from 'node:crypto';
 import { FormattedMessage } from 'react-intl';
-import GridSection from '../../../commons/grid-section';
-import GridItem from '../../../commons/grid-item';
+import { GridSection } from '../../../commons/grid-section';
+import { GridItem } from '../../../commons/grid-item';
 import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 
 export interface SetPointsLimitsFormProps {
@@ -116,7 +116,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             <GridSection title="ReactiveLimits" />
 
             <Grid container spacing={2} padding={1}>
-                <Grid item xs={4}>
+                <Grid size={4}>
                     <SelectInput
                         name={`${id}.${CHARACTERISTICS_CHOICE}`}
                         options={Object.values(CHARACTERISTICS_CHOICES)}
@@ -140,7 +140,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             </Grid>
             <GridSection title="Setpoints" />
             <Grid container spacing={2} padding={1}>
-                <Grid item xs={4}>
+                <Grid size={4}>
                     <SelectInput
                         name={`${id}.${VOLTAGE_REGULATION_MODE}`}
                         label="ModeAutomaton"
@@ -156,7 +156,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             </Grid>
             {watchRegulationType === REGULATION_TYPES.DISTANT.id && (
                 <Grid container spacing={2} padding={1}>
-                    <Grid item xs={4} alignItems={'center'}>
+                    <Grid size={4} sx={{ alignItems: 'center' }}>
                         <FormattedMessage id="RegulatingTerminalGenerator" />
                     </Grid>
                     <GridItem size={8}>{regulatingTerminalField}</GridItem>
