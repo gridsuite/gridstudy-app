@@ -164,6 +164,7 @@ const LineModificationDialog = ({
                                                       ),
                                               },
                                     },
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }),
                                 { keepDirty: true }
