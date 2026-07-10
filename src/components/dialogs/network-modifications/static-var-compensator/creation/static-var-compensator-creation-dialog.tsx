@@ -5,23 +5,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CHARACTERISTICS_CHOICES,
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    CustomFormProvider,
+    emptyProperties,
+    EquipmentType,
+    getPropertiesFromModification,
+    Property,
+    snackWithFallback,
+    toModificationProperties,
+    useSnackMessage,
+    DeepNullable,
+    sanitizeString,
+    FieldConstants,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityFormData,
+    getConnectivityWithPositionSchema,
+    REGULATION_TYPES,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import {
     ADD_STAND_BY_AUTOMATON,
-    ADDITIONAL_PROPERTIES,
     AUTOMATON,
     B0,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
     CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HIGH_VOLTAGE_SET_POINT,
@@ -41,35 +58,19 @@ import {
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
-import yup from 'components/utils/yup-config';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
 import { createStaticVarCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    Property,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import StaticVarCompensatorCreationDialogTabs from './static-var-compensator-creation-dialog-tabs';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import StaticVarCompensatorCreationForm from './static-var-compensator-creation-form';
 import StaticVarCompensatorCreationDialogHeader from './static-var-compensator-creation-dialog-header';
 import {
@@ -78,11 +79,12 @@ import {
     getReactiveFormValidationSchema,
 } from './set-points-limits-form-utils';
 import {
+    computeQ0,
     getStandbyAutomatonEmptyFormData,
     getStandbyAutomatonFormData,
     getStandbyAutomatonFormValidationSchema,
 } from './standby-automaton-form-utils';
-import { DeepNullable } from '../../../../utils/ts-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 
 export type StaticVarCompensatorCreationSchemaForm = {
@@ -103,13 +105,13 @@ export type StaticVarCompensatorCreationSchemaForm = {
         [MIN_Q_AT_NOMINAL_V]?: number;
         [CHARACTERISTICS_CHOICE]?: string;
         [VOLTAGE_REGULATION_MODE]?: string;
-        [VOLTAGE_REGULATION_TYPE]?: string;
-        [VOLTAGE_SET_POINT]?: number;
+        [FieldConstants.VOLTAGE_REGULATION_TYPE]?: string;
+        [FieldConstants.VOLTAGE_SET_POINT]?: number;
         [REACTIVE_POWER_SET_POINT]?: number;
         [VOLTAGE_LEVEL]?: {
             [ID]: string;
         };
-        [EQUIPMENT]?: {
+        [FieldConstants.EQUIPMENT]?: {
             [ID]: string;
             [TYPE]: string;
         };
@@ -126,7 +128,7 @@ export type StaticVarCompensatorCreationSchemaForm = {
         [Q0]?: number;
     };
     // Properties
-    [ADDITIONAL_PROPERTIES]?: Property[];
+    [FieldConstants.ADDITIONAL_PROPERTIES]?: Property[];
 };
 
 const emptyFormData = {
@@ -220,8 +222,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                         addStandbyAutomaton: !!staticCompensator.standbyAutomatonInfos,
                         standby: staticCompensator.standbyAutomatonInfos?.standby,
                         b0: staticCompensator.standbyAutomatonInfos?.b0,
-                        q0: null,
-                        nominalV: staticCompensator.nominalV,
+                        q0: computeQ0(staticCompensator.standbyAutomatonInfos?.b0, staticCompensator.nominalV),
                         lVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.lowVoltageSetpoint,
                         hVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.highVoltageSetpoint,
                         lVoltageThreshold: staticCompensator.standbyAutomatonInfos?.lowVoltageThreshold,
@@ -274,7 +275,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     standby: staticCompensator.standby,
                     b0: staticCompensator.b0 ?? null,
                     q0: staticCompensator.q0 ?? null,
-                    nominalV: null,
                     lVoltageSetpoint: staticCompensator.lowVoltageSetpoint ?? null,
                     hVoltageSetpoint: staticCompensator.highVoltageSetpoint ?? null,
                     lVoltageThreshold: staticCompensator.lowVoltageThreshold ?? null,
@@ -286,7 +286,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.STATIC_VAR_COMPENSATOR);
 
     useEffect(() => {
         if (editData) {
@@ -319,11 +319,11 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 [MIN_SUSCEPTANCE]: minSusceptance,
                 [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
                 [MIN_Q_AT_NOMINAL_V]: minQAtNominalV,
-                [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
+                [FieldConstants.VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
                 [VOLTAGE_REGULATION_MODE]: voltageRegulationMode,
-                [VOLTAGE_SET_POINT]: voltageSetpoint,
+                [FieldConstants.VOLTAGE_SET_POINT]: voltageSetpoint,
                 [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
-                [EQUIPMENT]: regulationEquipment,
+                [FieldConstants.EQUIPMENT]: regulationEquipment,
                 [VOLTAGE_LEVEL]: regulationVoltageLevel,
             } = setpointsLimits;
 
@@ -411,7 +411,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
             if (errors?.[AUTOMATON]) {
                 tabsInError.push(StaticVarCompensatorCreationDialogTab.AUTOMATON_TAB);
             }
-            if (errors?.[ADDITIONAL_PROPERTIES]) {
+            if (errors?.[FieldConstants.ADDITIONAL_PROPERTIES]) {
                 tabsInError.push(StaticVarCompensatorCreationDialogTab.ADDITIONAL_INFO_TAB);
             }
 
@@ -439,7 +439,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     );
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'md'}

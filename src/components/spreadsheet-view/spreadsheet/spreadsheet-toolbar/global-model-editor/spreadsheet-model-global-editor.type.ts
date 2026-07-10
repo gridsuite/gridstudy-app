@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { COLUMN_TYPES } from '../../../../../types/custom-aggrid-types';
 
 export type ColumnGlobalModel = {
     columnId: string;

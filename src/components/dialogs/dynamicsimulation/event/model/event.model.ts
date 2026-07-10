@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Event, EventDefinition, EventType, PrimitiveTypes } from '../types/event.type';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
-const BRANCH_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER];
+const BRANCH_EQUIPMENT_TYPES = [EquipmentType.LINE, EquipmentType.TWO_WINDINGS_TRANSFORMER];
 
 export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
     startTime: {
@@ -29,7 +29,7 @@ export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
                 id: 'TwoSides.TWO',
             },
         ],
-        acceptOnly: (equipmentType: EQUIPMENT_TYPES) => {
+        acceptOnly: (equipmentType: EquipmentType) => {
             return BRANCH_EQUIPMENT_TYPES.includes(equipmentType);
         },
         default: null, // TODO remove when corrected in rhf SelectInput
@@ -72,13 +72,13 @@ export const eventDefinitions = {
 export const getEventType = (equipmentType: string): EventType | undefined => {
     let eventType = undefined;
     switch (equipmentType) {
-        case EQUIPMENT_TYPES.LINE:
-        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-        case EQUIPMENT_TYPES.LOAD:
-        case EQUIPMENT_TYPES.GENERATOR:
+        case EquipmentType.LINE:
+        case EquipmentType.TWO_WINDINGS_TRANSFORMER:
+        case EquipmentType.LOAD:
+        case EquipmentType.GENERATOR:
             eventType = EventType.DISCONNECT;
             break;
-        case EQUIPMENT_TYPES.BUS:
+        case EquipmentType.BUS:
             eventType = EventType.NODE_FAULT;
             break;
         default:

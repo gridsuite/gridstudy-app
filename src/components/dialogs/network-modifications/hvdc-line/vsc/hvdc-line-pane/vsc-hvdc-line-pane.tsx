@@ -5,12 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import {
+    ActivePowerAdornment,
+    CheckboxNullableInput,
+    FieldConstants,
+    FloatInput,
+    OhmAdornment,
+    PropertiesForm,
+    SelectInput,
+    SwitchInput,
+    VoltageAdornment,
+} from '@gridsuite/commons-ui';
 import {
     ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTERS_MODE,
-    DROOP,
     MAX_P,
     NOMINAL_V,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
@@ -18,17 +27,14 @@ import {
     P0,
     R,
 } from '../../../../../utils/field-constants';
-import { ActivePowerAdornment, OhmAdornment, VoltageAdornment } from '../../../../dialog-utils';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
 import { FunctionComponent, useEffect } from 'react';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
-import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
-import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
-import GridSection from '../../../../commons/grid-section';
-import GridItem from '../../../../commons/grid-item';
+import { GridSection } from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
 
 interface VscHvdcLinePaneProps {
     id: string;
@@ -51,7 +57,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
     useEffect(() => {
         if (!angleDroopWatch) {
             trigger(`${id}.${P0}`);
-            trigger(`${id}.${DROOP}`);
+            trigger(`${id}.${FieldConstants.DROOP}`);
         }
     }, [angleDroopWatch, trigger, id]);
 
@@ -172,29 +178,29 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
 
     const droopField = (
         <FloatInput
-            name={`${id}.${DROOP}`}
+            name={`${id}.${FieldConstants.DROOP}`}
             label={'droopLabel'}
             previousValue={previousValues?.hvdcAngleDroopActivePowerControl?.droop}
         />
     );
 
     return (
-        <Grid container spacing={2}>
+        <>
             <GridSection title="Characteristics" />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem>{dcNominalVoltageField}</GridItem>
                 <GridItem>{dcResistanceField}</GridItem>
                 <GridItem>{maximumActivePowerField}</GridItem>
             </Grid>
 
             <GridSection title={'Limits'} />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem>{operatorActivePowerLimitSide1Field}</GridItem>
                 <GridItem>{operatorActivePowerLimitSide2Field}</GridItem>
             </Grid>
 
             <GridSection title={'Setpoints'} />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem>{converterModeField}</GridItem>
                 <GridItem>{activePowerField}</GridItem>
                 <GridItem size={12}>{AngleDroopActivePowerControl}</GridItem>
@@ -203,7 +209,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             </Grid>
 
             <PropertiesForm isModification={isEquipementModification} />
-        </Grid>
+        </>
     );
 };
 

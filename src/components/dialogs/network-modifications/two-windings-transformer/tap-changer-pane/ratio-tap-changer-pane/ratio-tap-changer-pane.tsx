@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import {
     ENABLED,
-    EQUIPMENT,
     LOAD_TAP_CHANGING_CAPABILITIES,
     RATIO_TAP_CHANGER,
     REGULATION_MODE,
@@ -21,24 +20,30 @@ import {
 import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { VoltageAdornment } from '../../../../dialog-utils';
-import { FloatInput, Identifiable, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import {
+    CheckboxNullableInput,
+    FieldConstants,
+    FloatInput,
+    Identifiable,
+    SelectInput,
+    SwitchInput,
+    VoltageAdornment,
+} from '@gridsuite/commons-ui';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import { RATIO_REGULATION_MODES } from 'components/network/constants';
-import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import {
     getComputedPreviousRatioRegulationType,
     getComputedRegulationModeId,
     getComputedRegulationTypeId,
     getComputedTapSideId,
 } from './ratio-tap-changer-pane-utils';
-import GridItem from '../../../../commons/grid-item';
-import GridSection from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
+import { GridSection } from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
 import {
-    TwoWindingsTransformerData,
-    RatioTapChangerData,
-    RatioTapChangerPaneProps,
+    TapChangerMapInfos,
+    TapChangerPaneProps,
+    TwoWindingsTransformerMapInfos,
 } from '../../two-windings-transformer.types';
 
 const RatioTapChangerPane = ({
@@ -50,7 +55,7 @@ const RatioTapChangerPane = ({
     previousValues,
     editData,
     isModification = false,
-}: RatioTapChangerPaneProps) => {
+}: TapChangerPaneProps) => {
     const { trigger, setValue, getValues } = useFormContext();
     const intl = useIntl();
 
@@ -64,7 +69,7 @@ const RatioTapChangerPane = ({
         return undefined;
     };
 
-    const getRatioTapChangerRegulationModeLabel = (ratioTapChangerFormValues?: RatioTapChangerData | null) => {
+    const getRatioTapChangerRegulationModeLabel = (ratioTapChangerFormValues?: TapChangerMapInfos | null) => {
         if (!ratioTapChangerFormValues) {
             return undefined;
         }
@@ -105,7 +110,7 @@ const RatioTapChangerPane = ({
     }, [previousValues, regulationTypeWatch]);
 
     const findAndSetVoltageLevelFromPrevious = useCallback(
-        (previousValues: TwoWindingsTransformerData | undefined, voltageLevelOptions: Identifiable[]) => {
+        (previousValues: TwoWindingsTransformerMapInfos | undefined, voltageLevelOptions: Identifiable[]) => {
             const prevVl = voltageLevelOptions.find(
                 (vl) => vl.id === previousValues?.ratioTapChanger?.regulatingTerminalVlId
             );
@@ -124,7 +129,7 @@ const RatioTapChangerPane = ({
     );
 
     const setEquipmentFromPrevious = useCallback(
-        (previousValues: TwoWindingsTransformerData | undefined) => {
+        (previousValues: TwoWindingsTransformerMapInfos | undefined) => {
             const prevEquipmentId = previousValues?.ratioTapChanger?.regulatingTerminalConnectableId;
             if (prevEquipmentId) {
                 const prevEquipmentType = previousValues?.ratioTapChanger?.regulatingTerminalConnectableType;
@@ -133,7 +138,7 @@ const RatioTapChangerPane = ({
                     label: prevEquipmentType,
                     type: prevEquipmentType,
                 };
-                setValue(`${id}.${EQUIPMENT}`, newEquipment);
+                setValue(`${id}.${FieldConstants.EQUIPMENT}`, newEquipment);
             }
         },
         [setValue, id]
@@ -165,7 +170,7 @@ const RatioTapChangerPane = ({
             if (curRatioTapChanger[VOLTAGE_LEVEL] === null) {
                 findAndSetVoltageLevelFromPrevious(previousValues, voltageLevelOptions);
             }
-            if (curRatioTapChanger[EQUIPMENT] === null) {
+            if (curRatioTapChanger[FieldConstants.EQUIPMENT] === null) {
                 setEquipmentFromPrevious(previousValues);
             }
         },
@@ -251,7 +256,7 @@ const RatioTapChangerPane = ({
                 <GridItem size={'auto'}></GridItem>
             </Grid>
             <GridSection title="RegulationSection" heading={4} />
-            <Grid item container spacing={1}>
+            <Grid container spacing={1}>
                 <GridItem size={4}>{regulationModeField}</GridItem>
                 <GridItem size={4}>{targetVoltage1Field}</GridItem>
                 <GridItem size={4}>{targetDeadbandField}</GridItem>
@@ -271,7 +276,7 @@ const RatioTapChangerPane = ({
             <RatioTapChangerPaneSteps
                 disabled={!ratioTapChangerEnabledWatcher}
                 previousValues={previousValues?.ratioTapChanger}
-                editData={editData?.ratioTapChanger as Record<string, unknown> | undefined}
+                editData={editData}
                 currentNode={currentNode}
                 isModification={isModification}
             />

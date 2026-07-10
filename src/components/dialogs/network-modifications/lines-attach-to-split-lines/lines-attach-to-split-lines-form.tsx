@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid } from '@mui/material';
-import { AutocompleteInput, EquipmentType, TextInput } from '@gridsuite/commons-ui';
+import { Box, Grid2 as Grid } from '@mui/material';
+import { AutocompleteInput, EquipmentType, TextInput, VoltageLevelConnectivityForm } from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -16,14 +16,14 @@ import {
     REPLACING_LINE_2_ID,
     REPLACING_LINE_2_NAME,
 } from 'components/utils/field-constants';
-import { useEffect, useState } from 'react';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import { useCallback, useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useVoltageLevelsListInfos from '../../../../hooks/use-voltage-levels-list-infos';
-import GridSection from '../../commons/grid-section';
-import GridItem from '../../commons/grid-item';
+import { GridSection } from '../../commons/grid-section';
+import { GridItem } from '../../commons/grid-item';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
 interface LinesAttachToSplitLinesFormProps {
     currentNode: CurrentTreeNode;
@@ -48,6 +48,17 @@ const LinesAttachToSplitLinesForm = ({
             }
         );
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
 
     const lineToAttachTo1Field = (
         <AutocompleteInput
@@ -83,14 +94,10 @@ const LinesAttachToSplitLinesForm = ({
     );
 
     const connectivityForm = (
-        <ConnectivityForm
+        <VoltageLevelConnectivityForm
             voltageLevelSelectLabel={'AttachedVoltageLevelId'}
             voltageLevelOptions={voltageLevelOptions}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-            withDirectionsInfos={false}
-            withPosition={false}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 
@@ -116,7 +123,7 @@ const LinesAttachToSplitLinesForm = ({
             <Grid container spacing={2} alignItems="center">
                 <GridItem size={5}>{attachedLineField}</GridItem>
             </Grid>
-            <GridSection title="VOLTAGE_LEVEL" />
+            <GridSection title="lineAttachedToSplitLineVoltageLevel" />
             <Grid container spacing={2}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>

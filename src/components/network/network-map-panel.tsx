@@ -19,11 +19,14 @@ import {
     type MapHvdcLine,
     type MapLine,
     type MapSubstation,
-    type MapTieLine,
     type MapVoltageLevel,
     NetworkMap,
     type NetworkMapProps,
     type NetworkMapRef,
+    MapLineWithType,
+    MapTieLineWithType,
+    MapHvdcLineWithType,
+    EQUIPMENT_TYPES,
 } from '@powsybl/network-viewer';
 import { type Color } from '@deck.gl/core';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -39,6 +42,7 @@ import {
     ExtendedEquipmentType,
     HvdcType,
     type MuiStyles,
+    newEquipmentDeletionDto,
     NotificationsUrlKeys,
     snackWithFallback,
     useNotificationsListener,
@@ -51,7 +55,6 @@ import { PanelType } from '../workspace/types/workspace.types';
 import { useWorkspacePanelActions } from '../workspace/hooks/use-workspace-panel-actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
-import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { deleteEquipment } from '../../services/study/network-modifications';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
@@ -59,9 +62,14 @@ import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { isReactFlowRootNodeData } from 'redux/utils';
-import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
+import {
+    isLoadflowResultNotification,
+    isRootNetworksUpdatedNotification,
+    parseEventData,
+    CommonStudyEventData,
+} from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
@@ -75,6 +83,7 @@ import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popov
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import { useBaseVoltages } from '../../hooks/use-base-voltages';
+import { mergeByIdKeepOrder } from 'components/utils/utils';
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -145,9 +154,9 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
         (state: AppState) => state.isNetworkModificationTreeModelUpToDate
     );
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
-    const lineFullPath = networkVisuParams.mapParameters.lineFullPath;
-    const lineParallelPath = networkVisuParams.mapParameters.lineParallelPath;
-    const lineFlowMode = networkVisuParams.mapParameters.lineFlowMode as LineFlowMode;
+    const lineFullPath = networkVisuParams?.mapParameters.lineFullPath;
+    const lineParallelPath = networkVisuParams?.mapParameters.lineParallelPath;
+    const lineFlowMode = networkVisuParams?.mapParameters.lineFlowMode as LineFlowMode;
     const isInDrawingMode = useStateBoolean(false);
     const theme = useTheme();
 
@@ -160,7 +169,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     const { showInSpreadsheet, openSLD } = useWorkspacePanelActions();
 
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] = useState(false);
-    const [isInitialized, setInitialized] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
     const mapBoxToken = useMapBoxToken();
 
     const { snackError } = useSnackMessage();
@@ -192,7 +201,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     const freezeMapUpdates = useSelector((state: AppState) => state.freezeMapUpdates);
     const isMapEquipmentsInitialized = useSelector((state: AppState) => state.isMapEquipmentsInitialized);
     const refIsMapManualRefreshEnabled = useRef<boolean>(null);
-    refIsMapManualRefreshEnabled.current = networkVisuParams.mapParameters.mapManualRefresh;
+    refIsMapManualRefreshEnabled.current = networkVisuParams?.mapParameters.mapManualRefresh ?? null;
     const [firstRendering, setFirstRendering] = useState<boolean>(true);
 
     const [choiceVoltageLevelsSubstationId, setChoiceVoltageLevelsSubstationId] = useState<string | null>(null);
@@ -201,9 +210,9 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     const currentNodeRef = useRef<CurrentTreeNode | null>(null);
     const currentRootNetworkUuidRef = useRef<UUID | null>(null);
 
-    const [updatedLines, setUpdatedLines] = useState<MapLine[]>([]);
-    const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLine[]>([]);
-    const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
+    const [updatedLines, setUpdatedLines] = useState<MapLineWithType[]>([]);
+    const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLineWithType[]>([]);
+    const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLineWithType[]>([]);
 
     const [shouldOpenSelectionCreationPanel, setShouldOpenSelectionCreationPanel] = useState(false);
     const [nominalVoltages, setNominalVoltages] = useState<number[]>([]);
@@ -262,17 +271,24 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     });
 
     const handleDeleteEquipment = useCallback(
-        (equipmentType: EquipmentType | null, equipmentId: string) => {
-            if (
-                equipmentType === EquipmentType.HVDC_LINE &&
-                mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === 'LCC'
-            ) {
-                // only hvdc line with LCC requires a Dialog (to select MCS)
-                handleOpenDeletionDialog(equipmentId, EQUIPMENT_TYPES.HVDC_LINE);
-            } else {
-                deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
-                });
+        (equipmentType: EquipmentType, equipmentId: string) => {
+            if (currentNode?.id) {
+                if (
+                    equipmentType === EquipmentType.HVDC_LINE &&
+                    mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === HvdcType.LCC
+                ) {
+                    // only hvdc line with LCC requires a Dialog (to select MCS)
+                    handleOpenDeletionDialog(equipmentId, EquipmentType.HVDC_LINE);
+                } else {
+                    deleteEquipment(
+                        studyUuid,
+                        currentNode.id,
+                        undefined,
+                        newEquipmentDeletionDto(equipmentType, equipmentId as UUID)
+                    ).catch((error) => {
+                        snackWithFallback(snackError, error, { headerId: 'UnableToDeleteEquipment' });
+                    });
+                }
             }
         },
         [studyUuid, currentNode?.id, snackError, handleOpenDeletionDialog, mapEquipments?.hvdcLinesById]
@@ -579,7 +595,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                 // trigger root node geodata fetching
                 loadRootNodeGeoData();
                 // set initialized to false to trigger "missing geo-data fetching"
-                setInitialized(false);
+                setIsInitialized(false);
                 // set isRootNodeGeoDataLoaded to false so "missing geo-data fetching" waits for root node geo-data to be fully fetched before triggering
                 setIsRootNodeGeoDataLoaded(false);
             }
@@ -645,19 +661,37 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             updatedLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                    setUpdatedLines(values);
+                    const lines: MapLineWithType[] = values.map((line) => ({
+                        ...line,
+                        equipmentType: EQUIPMENT_TYPES.LINE,
+                    }));
+                    setUpdatedLines((oldUpdatedLines) =>
+                        isFullReload ? [] : mergeByIdKeepOrder(oldUpdatedLines, lines)
+                    );
                 }
             });
             updatedTieLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateTieLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                    setUpdatedTieLines(values);
+                    const tieLines: MapTieLineWithType[] = values.map((tieLine) => ({
+                        ...tieLine,
+                        equipmentType: EQUIPMENT_TYPES.TIE_LINE,
+                    }));
+                    setUpdatedTieLines((oldUpdatedTieLines) =>
+                        isFullReload ? [] : mergeByIdKeepOrder(oldUpdatedTieLines, tieLines)
+                    );
                 }
             });
             updatedHvdcLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateHvdcLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                    setUpdatedHvdcLines(values);
+                    const hvdcLines: MapHvdcLineWithType[] = values.map((hvdcLine) => ({
+                        ...hvdcLine,
+                        equipmentType: EQUIPMENT_TYPES.HVDC_LINE,
+                    }));
+                    setUpdatedHvdcLines((oldUpdatedHvdcLines) =>
+                        isFullReload ? [] : mergeByIdKeepOrder(oldUpdatedHvdcLines, hvdcLines)
+                    );
                 }
             });
             return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(() => {
@@ -680,7 +714,10 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             const impactedMapEquipmentTypes = impactedElementTypes?.filter((type: string) => {
                 return mapEquipmentsTypes.includes(type as EquipmentType);
             });
-            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0;
+            const hasDeletedMapEquipments = deletedEquipments?.some((d) =>
+                mapEquipmentsTypes.includes(d.equipmentType as unknown as EquipmentType)
+            );
+            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0 || hasDeletedMapEquipments;
             const hasSubstationsImpacted = impactedSubstationsIds?.length > 0;
 
             // @TODO restore this optimization after refactoring
@@ -698,16 +735,19 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             dispatch(setReloadMapNeeded(false));
             resetImpactedElementTypes();
             resetImpactedSubstationsIds();
+            resetDeletedEquipments();
             return reloadMapEquipments(currentNodeAtReloadCalling, updatedSubstationsToSend).catch((error) =>
                 snackWithFallback(snackError, error)
             );
         },
         [
             impactedElementTypes,
+            deletedEquipments,
             impactedSubstationsIds,
             dispatch,
             resetImpactedElementTypes,
             resetImpactedSubstationsIds,
+            resetDeletedEquipments,
             reloadMapEquipments,
             snackError,
         ]
@@ -736,8 +776,8 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             if (!isInitialized) {
                 return;
             }
-            const eventData: unknown = JSON.parse(event.data);
-            if (isLoadflowResultNotification(eventData)) {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isLoadflowResultNotification(eventData)) {
                 const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
                 const nodeUuidFromNotification = eventData.headers.node;
                 if (
@@ -758,11 +798,11 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             if (!isInitialized) {
                 return;
             }
-            const eventData: unknown = JSON.parse(event.data);
-            if (isRootNetworksUpdatedNotification(eventData)) {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isRootNetworksUpdatedNotification(eventData)) {
                 const rootNetworkUuidsFromNotification = eventData.headers.rootNetworkUuids;
                 if (rootNetworkUuidsFromNotification.includes(currentRootNetworkUuid)) {
-                    setInitialized(false);
+                    setIsInitialized(false);
                     setIsRootNodeGeoDataLoaded(false);
                     dispatch(resetMapEquipment());
                 }
@@ -802,7 +842,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
         // when root network has just been changed, we reset map equipment and geo data, they will be loaded as if we were opening a new study
         // DO NOT BREAK AT FIRST LOADING (previousCurrentRootNetworkUuid=null)
         if (previousCurrentRootNetworkUuid && previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
-            setInitialized(false);
+            setIsInitialized(false);
             setIsRootNodeGeoDataLoaded(false);
             dispatch(resetMapEquipment());
             return;
@@ -876,7 +916,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     dispatch(setMapDataLoading(false));
                 });
             }
-            setInitialized(true);
+            setIsInitialized(true);
         }
     }, [
         handleFilteredNominalVoltagesChange,
@@ -891,7 +931,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     // Reload geo data (if necessary) when we switch on full path
     useEffect(() => {
         const prevLineFullPath = lineFullPathRef.current;
-        lineFullPathRef.current = lineFullPath;
+        lineFullPathRef.current = lineFullPath ?? null;
         if (isInitialized && lineFullPath && !prevLineFullPath) {
             loadGeoData();
         }
@@ -964,7 +1004,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                         <GenericPopoverContent
                             equipmentInfos={equipmentInfos}
                             loadFlowStatus={loadFlowStatus}
-                            equipmentType={EQUIPMENT_TYPES.LINE}
+                            equipmentType={EquipmentType.LINE}
                         />
                     )}
                 </GenericEquipmentPopover>
@@ -1058,7 +1098,6 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     ref={networkMapRef}
                     mapEquipments={mapEquipments}
                     geoData={geoData}
-                    // @ts-ignore
                     updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
                     displayOverlayLoader={!basicDataReady && mapDataLoading}
                     filteredNominalVoltages={filteredNominalVoltages}
@@ -1107,7 +1146,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     mapBoxToken={mapBoxToken}
                     centerOnSubstation={centerOnSubstation}
                     isManualRefreshBackdropDisplayed={
-                        networkVisuParams.mapParameters.mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
+                        networkVisuParams?.mapParameters.mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
                     }
                     // only 2 things need this to ensure the map keeps the correct size:
                     // - changing study display mode because it changes the map container size
@@ -1117,7 +1156,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     onManualRefreshClick={loadMapManually}
                     triggerMapResizeOnChange={triggerMapResizeOnChange}
                     renderPopover={renderLinePopover}
-                    mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
+                    mapLibrary={networkVisuParams?.mapParameters.mapBaseMap}
                     mapTheme={theme?.palette.mode}
                     areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
                     onDrawPolygonModeActive={handleDrawingModeChange}

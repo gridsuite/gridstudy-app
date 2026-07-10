@@ -55,24 +55,28 @@ function DynamicSimulationResultTab({
                             id: TAB_INDEX_TIME_SERIES,
                         })}
                         value={TAB_INDEX_TIME_SERIES}
+                        data-testid={'DynamicSimulationCurvesTab'}
                     />
                     <Tab
                         label={intl.formatMessage({
                             id: TAB_INDEX_TIMELINE,
                         })}
                         value={TAB_INDEX_TIMELINE}
+                        data-testid={'DynamicSimulationChronoTab'}
                     />
                     <Tab
                         label={intl.formatMessage({
                             id: TAB_INDEX_STATUS,
                         })}
                         value={TAB_INDEX_STATUS}
+                        data-testid={'DynamicSimulationStatusTab'}
                     />
                     <Tab
                         label={intl.formatMessage({
                             id: TAB_INDEX_LOGS,
                         })}
                         value={TAB_INDEX_LOGS}
+                        data-testid={'DynamicSimulationLogsTab'}
                     />
                 </Tabs>
             </Box>

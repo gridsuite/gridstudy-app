@@ -57,7 +57,11 @@ export const TreePanelContent = ({ panelId, studyUuid, currentRootNetworkUuid }:
 
     return (
         <Box ref={containerRef} sx={{ width: '100%', height: '100%' }}>
-            <NetworkModificationTreePane studyUuid={studyUuid} currentRootNetworkUuid={currentRootNetworkUuid} />
+            <NetworkModificationTreePane
+                panelId={panelId}
+                studyUuid={studyUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+            />
         </Box>
     );
 };

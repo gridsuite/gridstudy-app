@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid2 as Grid } from '@mui/material';
 import {
     CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
@@ -17,20 +16,26 @@ import {
     SETPOINTS_LIMITS,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
-import { ReactivePowerAdornment, SusceptanceAdornment, VoltageAdornment } from '../../../dialog-utils';
+import {
+    CHARACTERISTICS_CHOICES,
+    EquipmentType,
+    FieldConstants,
+    FloatInput,
+    ReactivePowerAdornment,
+    REGULATION_TYPES,
+    RegulatingTerminalForm,
+    SelectInput,
+    SusceptanceAdornment,
+    VoltageAdornment,
+} from '@gridsuite/commons-ui';
 import { useWatch } from 'react-hook-form';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import type { UUID } from 'node:crypto';
-import { REGULATION_TYPES } from '../../../../network/constants';
-import { RegulatingTerminalForm } from '../../../regulating-terminal/regulating-terminal-form';
 import { FormattedMessage } from 'react-intl';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
-import GridSection from '../../../commons/grid-section';
-import GridItem from '../../../commons/grid-item';
+import { GridSection } from '../../../commons/grid-section';
+import { GridItem } from '../../../commons/grid-item';
+import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 
 export interface SetPointsLimitsFormProps {
     studyUuid: UUID;
@@ -45,10 +50,15 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
     voltageLevelOptions,
 }) => {
     const id = SETPOINTS_LIMITS;
+    const fetchVoltageLevelEquipmentsCallback = useCallback(
+        (voltageLevelId: string) =>
+            fetchVoltageLevelEquipments(studyUuid, currentNode.id, currentRootNetworkUuid, voltageLevelId, true),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
     const watchCharacteristicsChoice = useWatch({ name: `${id}.${CHARACTERISTICS_CHOICE}` });
     // a tricky solution to rerender voltage/reactive setpoints field with label changed between required <-> optional
     useWatch({ name: `${id}.${VOLTAGE_REGULATION_MODE}` });
-    const watchRegulationType = useWatch({ name: `${id}.${VOLTAGE_REGULATION_TYPE}` });
+    const watchRegulationType = useWatch({ name: `${id}.${FieldConstants.VOLTAGE_REGULATION_TYPE}` });
     const minSusceptanceField = (
         <FloatInput name={`${id}.${MIN_SUSCEPTANCE}`} label={'minSusceptance'} adornment={SusceptanceAdornment} />
     );
@@ -64,7 +74,11 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
     );
 
     const voltageSetPointField = (
-        <FloatInput name={`${id}.${VOLTAGE_SET_POINT}`} label={'VoltageText'} adornment={VoltageAdornment} />
+        <FloatInput
+            name={`${id}.${FieldConstants.VOLTAGE_SET_POINT}`}
+            label={'VoltageText'}
+            adornment={VoltageAdornment}
+        />
     );
 
     const reactivePowerSetPointField = (
@@ -78,7 +92,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
     const voltageRegulationTypeField = (
         <SelectInput
             options={Object.values(REGULATION_TYPES)}
-            name={`${id}.${VOLTAGE_REGULATION_TYPE}`}
+            name={`${id}.${FieldConstants.VOLTAGE_REGULATION_TYPE}`}
             label={'RegulationTypeText'}
             size={'small'}
         />
@@ -89,11 +103,9 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             id={id}
             direction={undefined}
             disabled={false}
-            studyUuid={studyUuid}
-            currentNodeUuid={currentNode.id}
-            currentRootNetworkUuid={currentRootNetworkUuid}
+            fetchVoltageLevelEquipments={fetchVoltageLevelEquipmentsCallback}
             voltageLevelOptions={voltageLevelOptions}
-            equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR}
+            equipmentSectionTypeDefaultValue={EquipmentType.STATIC_VAR_COMPENSATOR}
             regulatingTerminalVlId={undefined}
             equipmentSectionType={undefined}
         />
@@ -104,7 +116,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             <GridSection title="ReactiveLimits" />
 
             <Grid container spacing={2} padding={1}>
-                <Grid item xs={4}>
+                <Grid size={4}>
                     <SelectInput
                         name={`${id}.${CHARACTERISTICS_CHOICE}`}
                         options={Object.values(CHARACTERISTICS_CHOICES)}
@@ -128,7 +140,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             </Grid>
             <GridSection title="Setpoints" />
             <Grid container spacing={2} padding={1}>
-                <Grid item xs={4}>
+                <Grid size={4}>
                     <SelectInput
                         name={`${id}.${VOLTAGE_REGULATION_MODE}`}
                         label="ModeAutomaton"
@@ -144,7 +156,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             </Grid>
             {watchRegulationType === REGULATION_TYPES.DISTANT.id && (
                 <Grid container spacing={2} padding={1}>
-                    <Grid item xs={4} alignItems={'center'}>
+                    <Grid size={4} sx={{ alignItems: 'center' }}>
                         <FormattedMessage id="RegulatingTerminalGenerator" />
                     </Grid>
                     <GridItem size={8}>{regulatingTerminalField}</GridItem>

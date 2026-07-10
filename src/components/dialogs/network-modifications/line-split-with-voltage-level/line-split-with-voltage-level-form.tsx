@@ -5,31 +5,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid2 as Grid } from '@mui/material';
 import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/field-constants';
-import { useMemo, useState } from 'react';
-import AddIcon from '@mui/icons-material/ControlPoint';
-import EditIcon from '@mui/icons-material/Edit';
-import { Identifiable, Option, TextInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
-import { Button, Typography } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { useCallback, useState } from 'react';
+import {
+    AddButton,
+    AddButtonMode,
+    VoltageLevelConnectivityForm,
+    TextInput,
+    VoltageLevelOption,
+} from '@gridsuite/commons-ui';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import { CONNECTIVITY, ID, VOLTAGE_LEVEL } from '../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import GridSection from '../../commons/grid-section';
-import GridItem from '../../commons/grid-item';
+import { GridSection } from '../../commons/grid-section';
+import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
 export interface ExtendedVoltageLevelFormInfos extends VoltageLevelFormInfos {
-    busbarSections?: Option[];
     sectionCount: number;
     busbarCount: number;
+    switchKinds?: string[];
 }
 
 interface LineSplitWithVoltageLevelFormProps {
@@ -39,7 +41,7 @@ interface LineSplitWithVoltageLevelFormProps {
     onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     voltageLevelToEdit: ExtendedVoltageLevelFormInfos | null;
     onVoltageLevelChange?: () => void;
-    allVoltageLevelOptions: Identifiable[];
+    allVoltageLevelOptions: VoltageLevelOption[];
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;
 }
@@ -55,6 +57,17 @@ const LineSplitWithVoltageLevelForm = ({
     editDataFetchStatus,
 }: LineSplitWithVoltageLevelFormProps) => {
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
 
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
@@ -87,20 +100,11 @@ const LineSplitWithVoltageLevelForm = ({
 
     const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
-    const busbarSectionOptions = useMemo<Option[]>(() => {
-        return isVoltageLevelEdit && voltageLevelToEdit?.busbarSections ? voltageLevelToEdit.busbarSections : [];
-    }, [isVoltageLevelEdit, voltageLevelToEdit]);
-
     const connectivityForm = (
-        <ConnectivityForm
+        <VoltageLevelConnectivityForm
             voltageLevelSelectLabel={'VoltageLevelToSplitAt'}
-            withPosition={false}
-            withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            newBusOrBusbarSectionOptions={busbarSectionOptions}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 
@@ -108,20 +112,15 @@ const LineSplitWithVoltageLevelForm = ({
         <>
             <GridSection title="LineToSplit" />
             <GridItem size={12}>{lineToSplitForm}</GridItem>
-            <GridSection title="VOLTAGE_LEVEL" />
+            <GridSection title="VoltageLevelToSplitAt" />
             <Grid container spacing={2}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
                 <GridItem>
-                    {
-                        <Button
-                            onClick={openVoltageLevelDialog}
-                            startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
-                        >
-                            <Typography align="left">
-                                <FormattedMessage id="NewVoltageLevel" />
-                            </Typography>
-                        </Button>
-                    }
+                    <AddButton
+                        label="NewVoltageLevel"
+                        onClick={openVoltageLevelDialog}
+                        mode={isVoltageLevelEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
+                    />
                 </GridItem>
             </Grid>
             <GridSection title="Line1" />

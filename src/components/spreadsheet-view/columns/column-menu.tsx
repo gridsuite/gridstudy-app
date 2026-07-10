@@ -16,7 +16,7 @@ import { DialogMenuProps } from '../../custom-aggrid/custom-aggrid-menu';
 import type { UUID } from 'node:crypto';
 import { SpreadsheetTabDefinition } from 'components/spreadsheet-view/types/spreadsheet.type';
 import ColumnCreationDialog from './column-creation-dialog';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { deleteSpreadsheetColumn, duplicateSpreadsheetColumn } from 'services/study/study-config';
 
 const UPDATE = 'UPDATE';
@@ -151,6 +151,7 @@ export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
                         },
                         { columnName: columnDefinition?.name }
                     )}
+                    isTranslationNeeded={false}
                     openConfirmationPopup={confirmationDialogOpen}
                     setOpenConfirmationPopup={setConfirmationDialogOpen}
                     handlePopupConfirmation={handleValidate}

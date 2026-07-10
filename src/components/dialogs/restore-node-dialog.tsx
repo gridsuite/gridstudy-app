@@ -6,7 +6,7 @@
  */
 import { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Button, Box, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { deleteStashedNodes, fetchStashedNodes, restoreStashedNodes } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { CancelButton, CheckBoxList } from '@gridsuite/commons-ui';
@@ -78,13 +78,6 @@ export function RestoreNodesDialog({ open, onClose, anchorNodeId, studyUuid }: R
                 })}
             </DialogTitle>
             <DialogContent>
-                <Box sx={{ padding: 1 }}>
-                    <DialogContentText>
-                        {intl.formatMessage({
-                            id: 'restoreNodesText',
-                        })}
-                    </DialogContentText>
-                </Box>
                 {isLoading && (
                     <LoaderWithOverlay
                         color="inherit"

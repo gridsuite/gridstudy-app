@@ -6,10 +6,10 @@
  */
 
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { AppState } from '../../../redux/reducer';
-import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
+import { AppState } from '../../../redux/reducer.type';
+import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import {
     downloadSecurityAnalysisResultZippedCsv,
     fetchSecurityAnalysisResult,
@@ -17,57 +17,51 @@ import {
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType, GsLangUser, type MuiStyles, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentType,
+    GsLangUser,
+    MuiStyles,
+    NmkType,
+    PARAM_DEVELOPER_MODE,
+    SecurityAnalysisResultNmk,
+} from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
-import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
+import { RESULT_TYPE, SecurityAnalysisQueryParams, SecurityAnalysisTabProps } from './security-analysis.type';
 import {
     convertFilterValues,
     getStoreFields,
     mappingColumnToField,
-    NMK_TYPE,
-    RESULT_TYPE,
+    NMK_SUBTABS,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
-import {
-    FilterType as AgGridFilterType,
-    PaginationType,
-    SecurityAnalysisTab,
-} from '../../../types/custom-aggrid-types';
+import { PaginationType, SecurityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { UUID } from 'node:crypto';
+import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import { FilterType, isCriteriaFilterType } from '../common/utils';
+import { setTableSort } from '../../../redux/actions';
+import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handler';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 const styles = {
-    tabsAndToolboxContainer: {
-        display: 'flex',
-        position: 'relative',
-        justifyContent: 'space-between',
-    },
-    toolboxContainer: {
-        display: 'flex',
-        gap: 2,
-    },
-    tabs: {
-        position: 'relative',
-        top: 0,
-        left: 0,
-    },
-    nmkResultSelect: {
-        position: 'absolute',
-        right: '16px',
+    toolbarRow: {
+        display: 'grid',
+        gridTemplateColumns: '1fr auto 1fr',
+        alignItems: 'center',
+        width: '100%',
+        mb: 1,
     },
     loader: {
         height: '4px',
@@ -87,13 +81,18 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     currentRootNetworkUuid,
 }) => {
     const intl = useIntl();
+    const resultStatusMessages = useIntlResultStatusMessages(intl);
+
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [tabIndex, setTabIndex] = useState(isDeveloperMode ? N_RESULTS_TAB_INDEX : NMK_RESULTS_TAB_INDEX);
     const tabIndexRef = useRef<number>(null);
     tabIndexRef.current = tabIndex;
-    const [nmkType, setNmkType] = useState(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
+    const [nmkType, setNmkType] = useState(NmkType.CONSTRAINTS_FROM_CONTINGENCIES);
     const [count, setCount] = useState<number>(0);
-
+    const isNmkTab = tabIndex === NMK_RESULTS_TAB_INDEX;
+    const isNTabDev = tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode;
+    const showResultsToolbar = isNmkTab || isNTabDev;
+    const dispatch = useDispatch();
     useEffect(() => {
         if (!isDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
             // handle tabIndex when dev mode is disabled
@@ -107,10 +106,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const resultType = useMemo(() => {
         if (isDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
             return RESULT_TYPE.N;
-        } else if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
-            return RESULT_TYPE.NMK_CONTINGENCIES;
-        } else {
-            return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
+        }
+        switch (nmkType) {
+            case NmkType.CONSTRAINTS_FROM_CONTINGENCIES:
+                return RESULT_TYPE.NMK_CONTINGENCIES;
+            case NmkType.CONTINGENCIES_FROM_CONSTRAINTS:
+                return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
+            case NmkType.CUT_OFF_POWER_FROM_CONSTRAINTS:
+                return RESULT_TYPE.NMK_CUT_OFF_POWER;
         }
     }, [tabIndex, nmkType, isDeveloperMode]);
 
@@ -118,23 +121,21 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         (state: AppState) => state.tableSort[SECURITY_ANALYSIS_RESULT_SORT_STORE][getStoreFields(tabIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
     const { pagination, dispatchPagination } = usePaginationSelector(
         PaginationType.SecurityAnalysis,
         getStoreFields(tabIndex) as SecurityAnalysisTab
     );
     const { page, rowsPerPage } = pagination;
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
-    const globalFilterOptions = useMemo(
-        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
-        [voltageLevelsFilter, countriesFilter, propertiesFilter]
-    );
+    const { filters } = useComputationColumnFilters(TableType.SecurityAnalysis, getStoreFields(tabIndex));
 
-    const memoizedSetPageCallback = useCallback(() => {
-        dispatchPagination({ ...pagination, page: 0 });
-    }, [pagination, dispatchPagination]);
+    const resetPaginationIfNKResults = useCallback(() => {
+        if (tabIndex === NMK_RESULTS_TAB_INDEX) {
+            dispatchPagination({ page: 0, rowsPerPage });
+        }
+    }, [dispatchPagination, tabIndex, rowsPerPage]);
+
+    const globalFiltersFromState = useComputationGlobalFilters(TableType.SecurityAnalysis, resetPaginationIfNKResults);
 
     const queryParams: SecurityAnalysisQueryParams = useMemo(() => {
         const params: SecurityAnalysisQueryParams = {
@@ -154,16 +155,19 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         }
 
         if (filters) {
-            const updatedFilters = convertFilterValues(intl, filters);
             const columnToFieldMapping = mappingColumnToField(resultType);
-            params['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
+            const relevantFilters = filters.filter((f) => columnToFieldMapping[f.column] != null);
+            if (relevantFilters.length) {
+                const updatedFilters = convertFilterValues(intl, relevantFilters);
+                params['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
+            }
         }
-
-        if (isGlobalFilterParameter(globalFilters)) {
+        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
+        if (globalFilters) {
             params['globalFilters'] = globalFilters;
         }
         return params;
-    }, [tabIndex, resultType, sortConfig, filters, globalFilters, page, rowsPerPage, intl]);
+    }, [resultType, tabIndex, sortConfig, filters, globalFiltersFromState, page, rowsPerPage, intl]);
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
@@ -192,14 +196,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         setCount(0);
     }, [setResult]);
 
-    const handleChangeNmkType = () => {
+    const handleChangeNmkType = (_event: SyntheticEvent, newValue: NmkType) => {
         dispatchPagination({ page: 0, rowsPerPage });
         resetResultStates();
-        setNmkType(
-            nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                ? NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS
-                : NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
+        dispatch(
+            setTableSort(SECURITY_ANALYSIS_RESULT_SORT_STORE, getStoreFields(tabIndex), [
+                { colId: 'contingencyId', sort: SortWay.ASC },
+            ])
         );
+        setNmkType(newValue);
     };
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
@@ -236,7 +241,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex, memoizedSetPageCallback);
+    const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex);
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
     const downloadZipResult = useCallback(
@@ -270,52 +275,74 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         // empty array result
         result.length === 0;
 
-    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
+    const filterableEquipmentTypes: EquipmentType[] = useMemo(() => {
         if (tabIndex === NMK_RESULTS_TAB_INDEX) {
-            return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+            return [
+                EquipmentType.LINE,
+                EquipmentType.TWO_WINDINGS_TRANSFORMER,
+                EquipmentType.THREE_WINDINGS_TRANSFORMER,
+                EquipmentType.BATTERY,
+                EquipmentType.GENERATOR,
+                EquipmentType.LOAD,
+                EquipmentType.SHUNT_COMPENSATOR,
+                EquipmentType.STATIC_VAR_COMPENSATOR,
+                EquipmentType.BOUNDARY_LINE,
+                EquipmentType.HVDC_LINE,
+                EquipmentType.VSC_CONVERTER_STATION,
+            ];
         }
         return [];
     }, [tabIndex]);
 
+    const filterTypes: FilterType[] = useMemo(() => {
+        const allFilterTypes = Object.values(FilterType);
+        if (tabIndex === N_RESULTS_TAB_INDEX) {
+            // in this case we disable generic filters
+            return allFilterTypes.filter((filterType) => !isCriteriaFilterType(filterType));
+        }
+        return allFilterTypes;
+    }, [tabIndex]);
+
+    const computationSubType = getStoreFields(tabIndex);
+    const onGridReady = useAgGridInitialColumnFilters(TableType.SecurityAnalysis, computationSubType);
+
     return (
         <>
-            <Box sx={styles.tabsAndToolboxContainer}>
-                <Box sx={styles.tabs}>
+            <Box sx={styles.toolbarRow}>
+                <Box>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
-                        {isDeveloperMode && <Tab label="N" value={N_RESULTS_TAB_INDEX} />}
-                        <Tab label="N-K" value={NMK_RESULTS_TAB_INDEX} />
-                        <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} value={LOGS_TAB_INDEX} />
+                        {isDeveloperMode && (
+                            <Tab label="N" value={N_RESULTS_TAB_INDEX} data-testid={'SecurityAnalysisNTab'} />
+                        )}
+                        <Tab label="N-K" value={NMK_RESULTS_TAB_INDEX} data-testid={'SecurityAnalysisN-KTab'} />
+                        <Tab
+                            label={<FormattedMessage id={'ComputationResultsLogs'} />}
+                            value={LOGS_TAB_INDEX}
+                            data-testid={'SecurityAnalysisLogsTab'}
+                        />
                     </Tabs>
                 </Box>
-                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
-                    <Box sx={{ display: 'flex', flexGrow: 0 }}>
+            </Box>
+            {showResultsToolbar && (
+                <Box sx={styles.toolbarRow}>
+                    <Box sx={{ justifySelf: 'start' }}>
+                        {isNmkTab && (
+                            <Tabs value={nmkType} onChange={handleChangeNmkType}>
+                                {NMK_SUBTABS.map(({ messageId, value }) => (
+                                    <Tab key={value} label={<FormattedMessage id={messageId} />} value={value} />
+                                ))}
+                            </Tabs>
+                        )}
+                    </Box>
+                    <Box sx={{ justifySelf: 'center', position: 'relative' }}>
                         <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
-                            filters={globalFilterOptions}
+                            filterCategories={filterTypes}
                             filterableEquipmentTypes={filterableEquipmentTypes}
-                            disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}
                             genericFiltersStrictMode={true}
+                            tableType={TableType.SecurityAnalysis}
                         />
                     </Box>
-                )}
-                <Box sx={styles.toolboxContainer}>
-                    {tabIndex === NMK_RESULTS_TAB_INDEX && (
-                        <Select
-                            labelId="nmk-type-label"
-                            value={nmkType}
-                            onChange={handleChangeNmkType}
-                            autoWidth={true}
-                            size="small"
-                        >
-                            <MenuItem value={NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}>
-                                <FormattedMessage id="ConstraintsFromContingencies" />
-                            </MenuItem>
-                            <MenuItem value={NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS}>
-                                <FormattedMessage id="ContingenciesFromConstraints" />
-                            </MenuItem>
-                        </Select>
-                    )}
-                    {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode)) && (
+                    <Box sx={{ justifySelf: 'end' }}>
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
@@ -324,23 +351,29 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             downloadZipResult={downloadZipResult}
                             disabled={isExportButtonDisabled}
                         />
-                    )}
+                    </Box>
                 </Box>
-            </Box>
+            )}
             <Box sx={styles.loader}>{shouldOpenLoader && <LinearProgress />}</Box>
             <Box sx={styles.resultContainer}>
-                {tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode && (
+                {isNTabDev && (
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
+                        onGridReady={onGridReady}
                         columnDefs={columnDefs}
+                        resultStatusMessages={resultStatusMessages}
+                        securityAnalysisStatus={securityAnalysisStatus}
                     />
                 )}
-                {tabIndex === NMK_RESULTS_TAB_INDEX && (
+                {isNmkTab && (
                     <SecurityAnalysisResultNmk
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
-                        isFromContingency={nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}
+                        onGridReady={onGridReady}
+                        nmkType={nmkType}
+                        resultStatusMessages={resultStatusMessages}
+                        securityAnalysisStatus={securityAnalysisStatus}
                         paginationProps={{
                             count,
                             rowsPerPage: rowsPerPage as number,

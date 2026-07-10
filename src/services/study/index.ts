@@ -13,25 +13,29 @@ import {
     backendFetchJson,
     backendFetchText,
     ComputingType,
+    ContingencyCount,
     EquipmentType,
     ExtendedEquipmentType,
     Parameter,
+    safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
-import { NetworkModificationCopyInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import {
+    CompositeModificationAction,
+    NetworkModificationCopyInfos,
+} from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 
-export function safeEncodeURIComponent(value: string | null | undefined): string {
-    return value != null ? encodeURIComponent(value) : '';
-}
-
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
+export const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';
+
+export const getBaseNetworkModificationUrl = () => `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1`;
 
 export const getStudyUrl = (studyUuid: UUID | null) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}`;
 
 export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (
     studyUuid: string | null | undefined,
-    nodeUuid: string | undefined,
+    nodeUuid: string | null | undefined,
     rootNetworkUuid: string | undefined | null
 ) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/root-networks/${safeEncodeURIComponent(
@@ -200,16 +204,17 @@ export function searchEquipmentsInfos(
 }
 
 export function fetchContingencyCount(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    contingencyListNames: string[]
-): Promise<number> {
+    studyUuid: UUID | null,
+    currentNodeUuid: UUID | null,
+    currentRootNetworkUuid: UUID | null,
+    contingencyListIds: UUID[] | null,
+    abortSignal: AbortSignal
+): Promise<ContingencyCount> {
     console.info(
-        `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
+        `Fetching contingency count for ${contingencyListIds} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
 
-    const contingencyListNamesParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
+    const contingencyListNamesParams = getRequestParamFromList(contingencyListIds ?? [], 'contingencyListIds');
     const urlSearchParams = new URLSearchParams(contingencyListNamesParams);
 
     const url =
@@ -218,7 +223,37 @@ export function fetchContingencyCount(
         urlSearchParams;
 
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchJson(url, { signal: abortSignal });
+}
+
+export function executeCompositeModificationAction(
+    studyUuid: UUID,
+    targetNodeId: UUID,
+    compositeModificationsToInsert: {
+        first: UUID;
+        second: string; // composite modification name (if needed)
+    }[],
+    compositeModificationAction: CompositeModificationAction
+) {
+    const url =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        safeEncodeURIComponent(studyUuid) +
+        '/nodes/' +
+        safeEncodeURIComponent(targetNodeId) +
+        '/composite-modifications?' +
+        new URLSearchParams({
+            action: compositeModificationAction.toString(),
+        });
+
+    return backendFetch(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(compositeModificationsToInsert),
+    });
 }
 
 export function copyOrMoveModifications(
@@ -250,6 +285,31 @@ export function copyOrMoveModifications(
         body: JSON.stringify(modificationToCutUuidList),
     });
 }
+
+export interface ModificationPair {
+    first: UUID;
+    second: string;
+}
+
+export const insertCompositeModifications = (
+    studyUuid: string,
+    nodeUuid: string,
+    modifications: ModificationPair[],
+    action: CompositeModificationAction
+): Promise<void> => {
+    const urlSearchParams = new URLSearchParams({ action });
+    return backendFetch(`${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modifications?${urlSearchParams}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(modifications),
+    }).then((response) => {
+        if (!response.ok) {
+            return response.json().then((err) => {
+                throw err;
+            });
+        }
+    });
+};
 
 export interface ExportFormatProperties {
     formatName: string;

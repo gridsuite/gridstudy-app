@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SelectChangeEvent, MenuItem, Select } from '@mui/material';
+import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { FormattedMessage } from 'react-intl';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer.type';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
 import type { UUID } from 'node:crypto';
 

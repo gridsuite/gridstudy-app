@@ -6,7 +6,7 @@
  */
 
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppState } from '../../../redux/reducer';
+import type { AppState } from '../../../redux/reducer.type';
 import { useEffect, useRef } from 'react';
 import { resetEquipments } from '../../../redux/actions';
 

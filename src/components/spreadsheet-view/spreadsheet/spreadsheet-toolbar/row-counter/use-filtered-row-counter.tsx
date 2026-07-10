@@ -11,8 +11,11 @@ import { type ReactElement, type RefObject, useCallback, useEffect, useMemo, use
 import { useIntl } from 'react-intl';
 import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer.type';
+import { TableType } from '../../../../../types/custom-aggrid-types';
 import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
+import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
+import { isCriteriaFilterType } from '../../../../results/common/utils';
 
 type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact | null>;
@@ -43,11 +46,9 @@ export function useFilteredRowCounterInfo({
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const globalFilterSpreadsheetState = useSelector(
-        (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
-    );
+    const globalFilterSpreadsheetState = useSelectedGlobalFilters(tableDefinition.uuid);
     const spreadsheetColumnsFiltersState = useSelector(
-        (state: AppState) => state.spreadsheetFilter[tableDefinition?.uuid]
+        (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet]?.[tableDefinition?.uuid]
     );
 
     // Update is debounced to avoid displayed row count falsely set to 0 because of AG Grid internal behaviour which briefly set row count to 0 in between filters
@@ -126,7 +127,9 @@ export function useFilteredRowCounterInfo({
         if (Object.keys(gsFilterByType)?.length > 0) {
             lines.push(`${intl.formatMessage({ id: 'ExternalFilters' })} : `);
             for (const [filterType, labels] of Object.entries(gsFilterByType)) {
-                const formattedLabels = labels.map((label) => intl.formatMessage({ id: label })).join(', ');
+                const formattedLabels = labels
+                    .map((label) => (isCriteriaFilterType(filterType) ? label : intl.formatMessage({ id: label })))
+                    .join(', ');
                 lines.push(`- ${intl.formatMessage({ id: filterType })} : "${formattedLabels}"`);
             }
         }

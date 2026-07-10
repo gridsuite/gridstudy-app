@@ -10,6 +10,7 @@ import {
     MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
+    DeepNullable,
 } from '@gridsuite/commons-ui';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useCallback, useEffect, useState } from 'react';
@@ -31,7 +32,7 @@ import {
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import { FetchStatus } from 'services/utils';
 import { EquipmentIdSelector } from 'components/dialogs/equipment-id/equipment-id-selector';
 import { CreateVoltageLevelSectionForm } from './create-voltage-level-section-form';
@@ -39,7 +40,6 @@ import { BusBarSections, CreateVoltageLevelSectionDialogSchemaForm } from './vol
 import { CreateVoltageLevelSectionInfos } from '../../../../../services/network-modification-types';
 import { createVoltageLevelSection } from '../../../../../services/study/network-modifications';
 import { fetchVoltageLevelBusBarSectionsInfos } from '../../../../../services/study/network';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { BusBarSectionsInfos } from '../../../../../services/study/network-map.type';
 
 const getBusBarIndexValue = ({ busbarIndex, allBusbars }: { busbarIndex: string | null; allBusbars: boolean }) => {
@@ -290,9 +290,7 @@ export default function CreateVoltageLevelSectionDialog({
                         busBarSectionInfos={busBarSectionInfos}
                         voltageLevelId={selectedId}
                         allBusbarSectionsList={allBusbarSectionsList}
-                        studyUuid={studyUuid}
                         currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         isUpdate={isUpdate}
                         isSymmetricalNbBusBarSections={isSymmetricalNbBusBarSections}
                         isNotFoundOrNotSupported={isExtensionNotFoundOrNotSupportedTopology}

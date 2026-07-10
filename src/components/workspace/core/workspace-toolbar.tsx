@@ -30,7 +30,6 @@ import {
     PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from '../../top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useParameterState } from '../../dialogs/parameters/use-parameters-state';
 import { useSelector } from 'react-redux';
 import { PanelType } from '../types/workspace.types';
@@ -248,7 +247,7 @@ export const WorkspaceToolbar = () => {
                 open={isLoadSelectorOpen}
                 onClose={selectElement}
                 types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
-                equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                equipmentTypes={[EquipmentType.VOLTAGE_LEVEL]}
                 title={intl.formatMessage({
                     id: 'elementSelection',
                 })}

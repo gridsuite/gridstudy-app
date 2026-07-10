@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, TextInput } from '@gridsuite/commons-ui';
+import { ConnectivityForm, FloatInput, PercentageAdornment, TextInput } from '@gridsuite/commons-ui';
 import {
     CONNECTIVITY,
     CONVERTER_STATION_ID,
@@ -13,19 +13,19 @@ import {
     LOSS_FACTOR,
     POWER_FACTOR,
 } from '../../../../../utils/field-constants';
-import { percentageTextField } from '../../../../dialog-utils';
 import type { UUID } from 'node:crypto';
-import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import GridSection from '../../../../commons/grid-section';
-import GridItem from '../../../../commons/grid-item';
+import { GridSection } from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
 
 import FiltersShuntCompensatorTable from '../creation/filters-shunt-compensator-table';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 import { LccConverterStationFormInfos } from './lcc-type';
 import ModificationFiltersShuntCompensatorTable from '../modification/filter-shunt-compensator-table-modification';
 import { useCallback } from 'react';
+import PositionDiagramPane from '../../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../../services/study/network';
 
 interface LccConverterStationProps {
     id: string;
@@ -48,6 +48,17 @@ export default function LccConverterStation({
 }: Readonly<LccConverterStationProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
+
     const stationNameField = (
         <TextInput
             name={`${id}.${CONVERTER_STATION_NAME}`}
@@ -59,12 +70,10 @@ export default function LccConverterStation({
     const connectivityForm = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
-            voltageLevelOptions={voltageLevelOptions}
-            withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
             previousValues={undefined}
+            voltageLevelOptions={voltageLevelOptions}
+            PositionDiagramPane={PositionDiagramPane}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
     );
 
@@ -100,9 +109,9 @@ export default function LccConverterStation({
     );
 
     return (
-        <Grid container spacing={2}>
+        <Grid container>
             <GridSection title={stationLabel} />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <GridItem size={4}>
                     <TextInput
                         name={`${id}.${CONVERTER_STATION_ID}`}
@@ -114,13 +123,13 @@ export default function LccConverterStation({
             </Grid>
             {!isModification && connectivitySection}
             <GridSection title="Characteristics" />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <GridItem size={4}>
                     {' '}
                     <FloatInput
                         name={`${id}.${LOSS_FACTOR}`}
                         label={'lossFactorLabel'}
-                        adornment={percentageTextField}
+                        adornment={PercentageAdornment}
                         previousValue={previousValues?.lossFactor}
                         clearable={isModification}
                     />

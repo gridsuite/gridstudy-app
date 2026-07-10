@@ -11,7 +11,7 @@ import RootNetworkPanelHeader from './root-network-panel-header';
 import RootNetworkNodeEditor from './root-network-node-editor';
 import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useRootNetworkNotifications } from './use-root-network-notifications';
 import RootNetworkSearchPanel from './root-network-panel-search';
 

@@ -5,12 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Box, Stack } from '@mui/material';
 import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
-import GridSection from '../../../../commons/grid-section';
-import GridItem from '../../../../commons/grid-item';
+import { GridSection } from '../../../../commons/grid-section';
 import {
     RATIO_TAP_CHANGER_STATUS,
     PHASE_TAP_CHANGER_STATUS,
@@ -18,6 +16,7 @@ import {
     TO_BE_ESTIMATED,
 } from '../../../../../utils/field-constants';
 import { ToBeEstimatedProps } from './to-be-estimated.type';
+import { CheckboxNullableInput } from '@gridsuite/commons-ui';
 
 export const ToBeEstimatedForm: FunctionComponent<ToBeEstimatedProps> = ({ toBeEstimated }) => {
     const intl = useIntl();
@@ -61,10 +60,10 @@ export const ToBeEstimatedForm: FunctionComponent<ToBeEstimatedProps> = ({ toBeE
     return (
         <>
             <GridSection title="EstimateTapPositionSection" />
-            <Grid container spacing={2} direction={'column'}>
-                <GridItem size={6}>{ratioTapChangerStatusField}</GridItem>
-                <GridItem size={6}>{phaseTapChangerStatusField}</GridItem>
-            </Grid>
+            <Stack spacing={2}>
+                <Box sx={{ width: '50%' }}>{ratioTapChangerStatusField}</Box>
+                <Box sx={{ width: '50%' }}>{phaseTapChangerStatusField}</Box>
+            </Stack>
         </>
     );
 };

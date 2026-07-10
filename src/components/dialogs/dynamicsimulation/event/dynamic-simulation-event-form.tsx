@@ -4,17 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Grid, TextField } from '@mui/material';
-import { filledTextField } from '../../dialog-utils';
+import { Grid2 as Grid, TextField } from '@mui/material';
 import { Event, EventDefinition, EventPropertyName } from './types/event.type';
 import { makeComponentFor } from './util/event-rhf';
 import { useIntl } from 'react-intl';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import GridItem from '../../commons/grid-item';
+import { GridItem } from '../../commons/grid-item';
+import { EquipmentType, filledTextField } from '@gridsuite/commons-ui';
 
 export type DynamicSimulationBasicEventFormProps = {
     equipmentId: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     eventDefinition?: EventDefinition;
     event?: Event;
 };
@@ -44,11 +43,11 @@ export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFor
 
     return (
         <Grid container rowSpacing={2} spacing={2} paddingTop={2}>
-            <Grid container item spacing={2}>
+            <Grid container spacing={2} size={12}>
                 <GridItem size={12}>{EquipmentIdField}</GridItem>
             </Grid>
             {/* event's properties defined in the eventDefinition   */}
-            <Grid container item spacing={2}>
+            <Grid container spacing={2} size={12}>
                 {propertyNames.map((propertyName) => {
                     const propertyDefinition = eventDefinition ? eventDefinition[propertyName] : undefined;
 

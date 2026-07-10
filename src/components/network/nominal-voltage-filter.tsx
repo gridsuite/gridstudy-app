@@ -57,10 +57,16 @@ export default function NominalVoltageFilter({
     disabled,
 }: Readonly<NominalVoltageFilterProps>) {
     const { baseVoltages, getBaseVoltageInterval } = useBaseVoltages();
-    const voltageLevelIntervals: VoltageLevelValuesInterval[] = baseVoltages.map((interval) => {
-        const vlListValues = nominalVoltages.filter((vnom) => getBaseVoltageInterval(vnom)?.name === interval.name);
-        return { ...interval, vlListValues };
-    });
+    const voltageLevelIntervals: VoltageLevelValuesInterval[] = useMemo(() => {
+        return (
+            baseVoltages?.map((interval) => {
+                const vlListValues = nominalVoltages.filter(
+                    (vnom) => getBaseVoltageInterval(vnom)?.name === interval.name
+                );
+                return { ...interval, vlListValues };
+            }) ?? []
+        );
+    }, [baseVoltages, getBaseVoltageInterval, nominalVoltages]);
 
     const handleToggle = useCallback(
         (interval: VoltageLevelValuesInterval) => {

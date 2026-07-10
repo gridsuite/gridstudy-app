@@ -6,7 +6,7 @@
  */
 
 import { VoltageLevelTooltipInfos } from '../equipment-popover-type';
-import { Grid } from '@mui/material';
+import { Stack } from '@mui/material';
 import { VoltageLevelPopoverInfos } from './voltage-level-popover-infos';
 import { VoltageLevelPopoverBusInfos } from './voltage-level-popover-bus-infos';
 
@@ -16,9 +16,12 @@ export interface VoltageLevelPopoverContent {
 
 export const VoltageLevelPopoverContent = ({ equipmentInfos }: VoltageLevelPopoverContent) => {
     return (
-        <Grid container direction="column" rowSpacing={2} alignItems="center">
-            <VoltageLevelPopoverBusInfos buses={equipmentInfos?.busInfos} />
+        <Stack spacing={2} alignItems="center">
+            <VoltageLevelPopoverBusInfos
+                buses={equipmentInfos?.busInfos}
+                fallbackVoltage={equipmentInfos?.umin ?? equipmentInfos?.umax}
+            />
             <VoltageLevelPopoverInfos equipmentInfos={equipmentInfos} />
-        </Grid>
+        </Stack>
     );
 };

@@ -9,7 +9,7 @@ import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import { Badge, Box, Chip, Stack } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 
 const styles = {
     panel: (theme) => ({

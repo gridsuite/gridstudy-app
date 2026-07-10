@@ -7,12 +7,11 @@
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { Box, Grid, TextField, Tooltip } from '@mui/material';
-import { filledTextField } from '../../../dialog-utils';
+import { Box, Grid2 as Grid, Stack, TextField, Tooltip } from '@mui/material';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import HeaderWithTooltip from '../topology-modification/header-with-tooltip';
-import { AutocompleteInput, CustomAGGrid, TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomAGGrid, filledTextField, TextInput } from '@gridsuite/commons-ui';
 import {
     BUSBAR_SECTION_ID,
     BUSBAR_SECTION_IDS,
@@ -24,10 +23,9 @@ import {
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
 } from '../../../../utils/field-constants';
 import FeederBayDirectionCellRenderer from './feeder-bay-direction-cell-render';
-import GridItem from '../../../commons/grid-item';
+import { GridItem } from '../../../commons/grid-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
-import type { UUID } from 'node:crypto';
 import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import SeparatorCellRenderer from '../topology-modification/separator-cell-renderer';
@@ -45,8 +43,6 @@ interface MoveVoltageLevelFeederBaysFormProps {
     currentNode: CurrentTreeNode;
     selectedId: string;
     isUpdate: boolean;
-    currentRootNetworkUuid: UUID;
-    studyUuid: UUID;
     isReady: boolean;
     feederBaysPreviousValues: FeederBays;
 }
@@ -55,8 +51,6 @@ export function MoveVoltageLevelFeederBaysForm({
     currentNode,
     selectedId,
     isUpdate,
-    currentRootNetworkUuid,
-    studyUuid,
     feederBaysPreviousValues,
     isReady = false,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
@@ -333,11 +327,9 @@ export function MoveVoltageLevelFeederBaysForm({
     );
 
     return (
-        <Grid container sx={{ height: '100%', width: 'auto' }} direction="column">
-            <Grid container item spacing={2}>
-                <Grid item xs={4}>
-                    {voltageLevelIdField}
-                </Grid>
+        <Stack sx={{ height: '100%', width: 'auto' }}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
+                <Grid size={4}>{voltageLevelIdField}</Grid>
                 {isNodeBuiltValue && (
                     <GridItem size={3}>
                         <Button onClick={handleClickOpenDiagramPane} variant="outlined">
@@ -347,10 +339,10 @@ export function MoveVoltageLevelFeederBaysForm({
                     </GridItem>
                 )}
             </Grid>
-            <Grid item spacing={2} paddingTop={2}>
+            <Grid paddingTop={2}>
                 <FormattedMessage id={'moveFeederBaysSections'} />
             </Grid>
-            <Grid item xs paddingTop={1}>
+            <Box sx={{ pt: 1, flex: 1, minHeight: 0 }}>
                 <CustomAGGrid
                     rowData={groupedRowData}
                     defaultColDef={defaultColDef}
@@ -372,17 +364,14 @@ export function MoveVoltageLevelFeederBaysForm({
                     }}
                     fullWidthCellRenderer={renderGroupCell}
                 />
-            </Grid>
+            </Box>
             <Box>
                 <PositionDiagramPane
-                    studyUuid={studyUuid}
                     open={isDiagramPaneOpen}
                     onClose={handleCloseDiagramPane}
                     voltageLevelId={selectedId}
-                    currentNodeUuid={currentNode?.id}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Box>
-        </Grid>
+        </Stack>
     );
 }

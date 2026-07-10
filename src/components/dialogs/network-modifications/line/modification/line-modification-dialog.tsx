@@ -9,15 +9,49 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     convertInputValue,
     convertOutputValue,
+    createConnectivityData,
     CustomFormProvider,
+    DeepNullable,
+    emptyProperties,
     EquipmentType,
+    FieldConstants,
     FieldType,
+    getBranchActiveReactivePowerEditData,
+    getBranchActiveReactivePowerEmptyFormData,
+    getBranchActiveReactivePowerValidationSchema,
+    getLineCharacteristicsFormData,
+    getCon1andCon2WithPositionValidationSchema,
+    getConcatenatedProperties,
+    getConnectivityFormData,
+    getCont1Cont2WithPositionEmptyFormData,
+    getPropertiesFromModification,
+    modificationPropertiesSchema,
+    OperationalLimitsGroupsFormSchema,
+    sanitizeString,
     snackWithFallback,
+    toModificationOperation,
+    toModificationProperties,
     useSnackMessage,
+    addModificationTypeToOpLimitsGroups,
+    addOperationTypeToSelectedOpLG,
+    getLimitsEmptyFormData,
+    getLineCharacteristicsEmptyFormData,
+    getLineCharacteristicsValidationSchemaProps,
+    getLimitsValidationSchema,
+    formatOpLimitGroupsToFormInfos,
+    convertToOperationalLimitsGroupFormSchema,
+    OperationalLimitsGroupFormSchema,
+    getAllLimitsFormData,
+    BranchInfos,
+    ComputedLineCharacteristics,
+    convertToLineSegmentInfos,
+    convertLimitsToOperationalLimitsGroupFormSchema,
+    SegmentFormData,
+    LineSegmentsFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    ADDITIONAL_PROPERTIES,
+    APPLY_SEGMENTS_LIMITS,
     B1,
     B2,
     BUS_OR_BUSBAR_SECTION,
@@ -31,13 +65,16 @@ import {
     CONNECTIVITY_2,
     ENABLE_OLG_MODIFICATION,
     EQUIPMENT_NAME,
+    FINAL_CURRENT_LIMITS,
     G1,
     G2,
     LIMITS,
+    LINE_SEGMENTS,
     MEASUREMENT_P1,
     MEASUREMENT_P2,
     MEASUREMENT_Q1,
     MEASUREMENT_Q2,
+    NAME,
     OPERATIONAL_LIMITS_GROUPS,
     R,
     SELECTED_OPERATIONAL_LIMITS_GROUP_ID1,
@@ -47,29 +84,12 @@ import {
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
     VALIDITY,
-    VALUE,
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
 import { FieldErrors } from 'react-hook-form';
-import { sanitizeString } from 'components/dialogs/dialog-utils';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import {
-    addModificationTypeToOpLimitsGroups,
-    addOperationTypeToSelectedOpLG,
-    convertToOperationalLimitsGroupFormSchema,
-    formatOpLimitGroupsToFormInfos,
-    getAllLimitsFormData,
-    getLimitsEmptyFormData,
-    getLimitsValidationSchema,
-    getOpLimitsGroupInfosFromBranchModification,
-} from '../../../limits/limits-pane-utils';
-import {
-    getCharacteristicsEmptyFormData,
-    getCharacteristicsValidationSchema,
-    getCharacteristicsWithOutConnectivityFormData,
-} from '../characteristics-pane/line-characteristics-pane-utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -80,36 +100,14 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    emptyProperties,
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
-import {
-    createConnectivityData,
-    getCon1andCon2WithPositionValidationSchema,
-    getConnectivityFormData,
-    getCont1Cont2WithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils';
-import {
-    getBranchActiveReactivePowerEditData,
-    getBranchActiveReactivePowerEmptyFormData,
-    getBranchActiveReactivePowerValidationSchema,
-} from '../../common/measurements/branch-active-reactive-power-form-utils';
-import { LineModificationDialogTab } from '../line-utils';
+import { LineModificationDialogTab } from './line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
 import { LineModificationFormSchema } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
-import { toModificationOperation } from '../../../../utils/utils';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import { OperationalLimitsGroupsFormSchema } from '../../../limits/operational-limits-groups-types';
-import { ComputedLineCharacteristics } from '../../../line-types-catalog/line-catalog.type';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -119,7 +117,6 @@ export interface LineModificationDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    displayConnectivity?: boolean;
     isUpdate: boolean;
     editDataFetchStatus?: string;
     open?: boolean;
@@ -134,7 +131,6 @@ export interface LineModificationDialogProps {
  * @param currentNode
  * @param currentRootNetworkUuid
  * @param editData the data to edit, contains data when we try to edit an existing hypothesis from the current node's list
- * @param displayConnectivity to display connectivity section or not
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param isUpdate check if edition form
  * @param editDataFetchStatus indicates the status of fetching EditData
@@ -145,7 +141,6 @@ const LineModificationDialog = ({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
-    displayConnectivity = false,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -159,16 +154,17 @@ const LineModificationDialog = ({
     const [lineToModify, setLineToModify] = useState<BranchInfos | null>(null);
     const [tabIndex, setTabIndex] = useState<number>(LineModificationDialogTab.CONNECTIVITY_TAB);
     const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
+
     const emptyFormData: any = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
             ...getCont1Cont2WithPositionEmptyFormData(true),
-            ...getCharacteristicsEmptyFormData(CHARACTERISTICS, displayConnectivity),
+            ...getLineCharacteristicsEmptyFormData(),
             ...getLimitsEmptyFormData(),
             ...getBranchActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
             ...emptyProperties,
         }),
-        [displayConnectivity]
+        []
     );
 
     const formSchema = yup
@@ -176,8 +172,8 @@ const LineModificationDialog = ({
         .shape({
             [EQUIPMENT_NAME]: yup.string().nullable(),
             ...getCon1andCon2WithPositionValidationSchema(true),
-            ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
-            ...getLimitsValidationSchema(),
+            [CHARACTERISTICS]: getLineCharacteristicsValidationSchemaProps(true),
+            ...getLimitsValidationSchema(LIMITS, true),
             ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
         })
         .concat(modificationPropertiesSchema)
@@ -188,7 +184,18 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, getValues } = formMethods;
+    const { reset, setValue, getValues, watch } = formMethods;
+
+    const editSegmentsValue = watch(LINE_SEGMENTS);
+    const applySegmentsLimits = watch(APPLY_SEGMENTS_LIMITS);
+
+    const editSegmentsData = useMemo(
+        () => ({
+            [LINE_SEGMENTS]: editSegmentsValue ?? [],
+            [APPLY_SEGMENTS_LIMITS]: applySegmentsLimits ?? true,
+        }),
+        [editSegmentsValue, applySegmentsLimits]
+    );
 
     const fromEditDataToFormValues = useCallback(
         (lineModification: LineModificationInfos) => {
@@ -198,11 +205,17 @@ const LineModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: lineModification.equipmentName?.value ?? '',
                 [CONNECTIVITY]: {
-                    ...getConnectivityFormData(createConnectivityData(lineModification, 1), CONNECTIVITY_1),
-                    ...getConnectivityFormData(createConnectivityData(lineModification, 2), CONNECTIVITY_2),
+                    ...getConnectivityFormData(
+                        createConnectivityData(lineModification, 1),
+                        FieldConstants.CONNECTIVITY_1
+                    ),
+                    ...getConnectivityFormData(
+                        createConnectivityData(lineModification, 2),
+                        FieldConstants.CONNECTIVITY_2
+                    ),
                 },
                 ...getBranchActiveReactivePowerEditData(STATE_ESTIMATION, lineModification),
-                ...getCharacteristicsWithOutConnectivityFormData({
+                ...getLineCharacteristicsFormData({
                     r: lineModification.r?.value ?? null,
                     x: lineModification.x?.value ?? null,
                     g1: convertInputValue(FieldType.G1, lineModification.g1?.value ?? null),
@@ -217,6 +230,8 @@ const LineModificationDialog = ({
                     lineModification[ENABLE_OLG_MODIFICATION]
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
+                [LINE_SEGMENTS]: lineModification.lineSegments,
+                [APPLY_SEGMENTS_LIMITS]: lineModification.applySegmentsLimits ?? true,
             });
         },
         [reset]
@@ -276,14 +291,16 @@ const LineModificationDialog = ({
                 connected1: connectivity1[CONNECTED],
                 connected2: connectivity2[CONNECTED],
                 properties: toModificationProperties(line),
-                p1MeasurementValue: stateEstimationData[MEASUREMENT_P1][VALUE],
+                p1MeasurementValue: stateEstimationData[MEASUREMENT_P1][FieldConstants.VALUE],
                 p1MeasurementValidity: stateEstimationData[MEASUREMENT_P1][VALIDITY],
-                q1MeasurementValue: stateEstimationData[MEASUREMENT_Q1][VALUE],
+                q1MeasurementValue: stateEstimationData[MEASUREMENT_Q1][FieldConstants.VALUE],
                 q1MeasurementValidity: stateEstimationData[MEASUREMENT_Q1][VALIDITY],
-                p2MeasurementValue: stateEstimationData[MEASUREMENT_P2][VALUE],
+                p2MeasurementValue: stateEstimationData[MEASUREMENT_P2][FieldConstants.VALUE],
                 p2MeasurementValidity: stateEstimationData[MEASUREMENT_P2][VALIDITY],
-                q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][VALUE],
+                q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][FieldConstants.VALUE],
                 q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
+                lineSegments: line[LINE_SEGMENTS],
+                applySegmentsLimits: line[APPLY_SEGMENTS_LIMITS] ?? true,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'LineModificationError' });
             });
@@ -291,9 +308,9 @@ const LineModificationDialog = ({
         [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError]
     );
 
-    const clear = useCallback(() => {
+    const clear = () => {
         reset(emptyFormData);
-    }, [emptyFormData, reset]);
+    };
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: string) => {
@@ -319,7 +336,7 @@ const LineModificationDialog = ({
                                             ? {
                                                   [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
                                                   [OPERATIONAL_LIMITS_GROUPS]:
-                                                      getOpLimitsGroupInfosFromBranchModification(formValues),
+                                                      formValues.limits?.operationalLimitsGroups ?? [],
                                               }
                                             : {
                                                   [ENABLE_OLG_MODIFICATION]: false,
@@ -329,7 +346,7 @@ const LineModificationDialog = ({
                                                       ),
                                               },
                                     },
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }),
                                 { keepDirty: true }
                             );
@@ -393,7 +410,11 @@ const LineModificationDialog = ({
         setIsOpenLineTypesCatalogDialog(false);
     };
 
-    const handleLineSegmentsBuildSubmit = (data: ComputedLineCharacteristics) => {
+    const handleLineSegmentsBuildSubmit = (
+        data: ComputedLineCharacteristics,
+        lineSegments: DeepNullable<SegmentFormData | null>[],
+        applyLimits: boolean | null
+    ) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
@@ -406,6 +427,24 @@ const LineModificationDialog = ({
         setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
+        setValue(LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments as LineSegmentsFormData));
+
+        const shouldApplyLimits = applyLimits ?? true;
+        setValue(APPLY_SEGMENTS_LIMITS, shouldApplyLimits);
+        if (shouldApplyLimits) {
+            const limitsFromSegments = convertLimitsToOperationalLimitsGroupFormSchema(data[FINAL_CURRENT_LIMITS]);
+            const actualLimits: OperationalLimitsGroupFormSchema[] =
+                getValues(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`) ?? [];
+            const mergedLimits = [
+                ...actualLimits.filter(
+                    (actualLimit) =>
+                        !limitsFromSegments.some((limitsFromSegment) => limitsFromSegment[NAME] === actualLimit[NAME])
+                ),
+                ...limitsFromSegments,
+            ];
+            setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, mergedLimits);
+            setValue(`${LIMITS}.${ENABLE_OLG_MODIFICATION}`, true);
+        }
     };
 
     const headerAndTabs = (
@@ -454,7 +493,7 @@ const LineModificationDialog = ({
                         equipmentType={EquipmentType.LINE}
                     />
                 )}
-                {selectedId != null && (
+                {selectedId != null && ( // TODO when moving to commons-ui, use generic <LineForm>
                     <>
                         <LineModificationDialogTabs
                             studyUuid={studyUuid}
@@ -466,7 +505,8 @@ const LineModificationDialog = ({
                         <LineTypeSegmentDialog
                             open={isOpenLineTypesCatalogDialog}
                             onClose={handleCloseLineTypesCatalogDialog}
-                            onSave={handleLineSegmentsBuildSubmit}
+                            onSaveModificationCase={handleLineSegmentsBuildSubmit}
+                            editDataModificationCase={editSegmentsData}
                         />
                     </>
                 )}

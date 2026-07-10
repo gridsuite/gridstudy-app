@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
+import { Table, TableHead, TableRow, TableBody, TableContainer, Grid2 as Grid } from '@mui/material';
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { TwtEquipmentInfos } from '../equipment-popover-type';
@@ -25,7 +25,7 @@ export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristics
     if (ratioTapChanger) {
         rows.push({
             tap: ratioTapChanger.tapPosition,
-            rho: ratioTapChanger.steps[ratioTapChanger.tapPosition - ratioTapChanger.lowTapPosition].rho,
+            rho: ratioTapChanger.steps[ratioTapChanger.tapPosition].rho,
             alpha: '-',
             mode: getComputedRegulationMode(equipmentInfos)?.label,
         });
@@ -35,7 +35,7 @@ export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristics
         rows.push({
             tap: phaseTapChanger.tapPosition ?? '-',
             rho: '-',
-            alpha: phaseTapChanger.steps[phaseTapChanger.tapPosition - phaseTapChanger.lowTapPosition].alpha,
+            alpha: phaseTapChanger.steps[phaseTapChanger.tapPosition].alpha,
             mode: getComputedPhaseTapChangerRegulationMode(phaseTapChanger)?.label,
         });
     }
@@ -49,7 +49,7 @@ export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristics
         });
     }
     return (
-        <Grid item sx={styles.grid}>
+        <Grid sx={styles.grid}>
             <TableContainer sx={styles.table}>
                 <Table size="small" sx={styles.layout}>
                     <TableHead>

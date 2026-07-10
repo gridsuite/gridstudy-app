@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import ReportViewer from './report-viewer/report-viewer';
+import { ReportViewer } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
@@ -23,6 +23,7 @@ import { Paper, Switch } from '@mui/material';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import { isStudyNotification } from '../types/notification-types';
 import { NodeType } from './graph/tree-node.type';
+import { ReportViewerProvider } from './report-viewer/report-viewer-provider';
 
 const styles = {
     div: {
@@ -131,7 +132,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
 
     return (
         <>
-            {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
+            {disabled && <AlertCustomMessageNode message={{ descriptor: { id: 'InvalidNode' } }} />}
             {!disabled && !!report && (
                 <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
                     <Paper sx={styles.container}>
@@ -151,12 +152,14 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                                 id: 'LogOnlySingleNode',
                             })}
                         />
-                        <ReportViewer
-                            report={report}
-                            reportType={COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION}
-                            severities={severities}
-                            resetFilters={resetFilters}
-                        />
+                        <ReportViewerProvider reportType={COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION}>
+                            <ReportViewer
+                                report={report}
+                                reportType={COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION}
+                                severities={severities}
+                                resetFilters={resetFilters}
+                            />
+                        </ReportViewerProvider>
                     </Paper>
                 </WaitingLoader>
             )}

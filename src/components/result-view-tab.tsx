@@ -15,7 +15,7 @@ import { VoltageInitResultTab } from './voltage-init-result-tab';
 import { computingTypeToRootTabRedirection, ResultTabIndexRedirection, useResultsTab } from './results/use-results-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
@@ -29,6 +29,7 @@ import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { IService } from './result-view-tab.type';
 import { CurrentTreeNode } from './graph/tree-node.type';
 import { PccMinResultTab } from './results/pccmin/pcc-min-result-tab';
+import DynamicMarginCalculationResultTab from './results/dynamic-margin-calculation/dynamic-margin-calculation-result-tab';
 
 const styles = {
     table: {
@@ -77,6 +78,9 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
+    const dynamicMarginCalculationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.DynamicMarginCalculation
+    );
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
@@ -166,6 +170,18 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
+    const renderDynamicMarginCalculationResult = useMemo(() => {
+        return (
+            <Paper sx={styles.analysisResult}>
+                <DynamicMarginCalculationResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
+            </Paper>
+        );
+    }, [studyUuid, currentNode, currentRootNetworkUuid]);
+
     const renderStateEstimationResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
@@ -229,6 +245,12 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 renderResult: renderDynamicSecurityAnalysisResult,
             },
             {
+                id: 'DynamicMarginCalculation',
+                computingType: [ComputingType.DYNAMIC_MARGIN_CALCULATION],
+                displayed: isDeveloperMode && dynamicMarginCalculationAvailability === OptionalServicesStatus.Up,
+                renderResult: renderDynamicMarginCalculationResult,
+            },
+            {
                 id: 'VoltageInit',
                 computingType: [ComputingType.VOLTAGE_INITIALIZATION],
                 displayed: voltageInitAvailability === OptionalServicesStatus.Up,
@@ -260,6 +282,8 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         renderDynamicSimulationResult,
         dynamicSecurityAnalysisAvailability,
         renderDynamicSecurityAnalysisResult,
+        dynamicMarginCalculationAvailability,
+        renderDynamicMarginCalculationResult,
         voltageInitAvailability,
         renderVoltageInitResult,
         stateEstimationAvailability,
@@ -285,6 +309,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     id: service.id,
                 })}
                 disabled={disabled}
+                data-testid={service.id + 'ResTab'}
             />
         );
     };
@@ -318,7 +343,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <Tabs value={tabIndex} variant="scrollable" onChange={handleChangeTab} TabIndicatorProps={{}}>
                     {services.map((service) => renderTab(service))}
                 </Tabs>
-                {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
+                {disabled && <AlertCustomMessageNode message={{ descriptor: { id: 'InvalidNode' } }} />}
             </Box>
             {services.map((service, index) => renderTabPanelLazy(service, index))}
         </Paper>

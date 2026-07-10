@@ -6,12 +6,10 @@
  */
 
 import { EQUIPMENT_NAME } from 'components/utils/field-constants';
-import { Box, Grid, TextField } from '@mui/material';
-import { filledTextField } from 'components/dialogs/dialog-utils';
-import LineDialogTabs from '../line-dialog-tabs';
-import { TextInput } from '@gridsuite/commons-ui';
-import GridItem from '../../../commons/grid-item';
-import { BranchInfos } from '../../../../../services/study/network-map.type';
+import { Box, Grid2 as Grid, TextField } from '@mui/material';
+import LineDialogTabs from './line-dialog-tabs';
+import { BranchInfos, filledTextField, TextInput } from '@gridsuite/commons-ui';
+import { GridItem } from '../../../commons/grid-item';
 
 export interface LineModificationDialogHeaderProps {
     lineToModify: BranchInfos | null;
@@ -60,16 +58,11 @@ const LineModificationDialogHeader = ({
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{lineIdField}</GridItem>
                 <GridItem size={4}>{lineNameField}</GridItem>
             </Grid>
-            <LineDialogTabs
-                tabIndex={tabIndex}
-                tabIndexesWithError={tabIndexesWithError}
-                setTabIndex={setTabIndex}
-                isModification={true}
-            />
+            <LineDialogTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>
     );
 };

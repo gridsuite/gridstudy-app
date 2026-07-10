@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback } from 'react';
 import { Box } from '@mui/material';
 import type { DiagramAdditionalMetadata } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import NetworkAreaDiagramContent from '../../../../grid-layout/cards/diagrams/networkAreaDiagram/network-area-diagram-content';
@@ -13,7 +13,6 @@ import { DiagramMetadata } from '@powsybl/network-viewer';
 import type { UUID } from 'node:crypto';
 import { useNadDiagram } from '../../../diagrams/nad/use-nad-diagram';
 import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
-import type { DiagramConfigPosition } from '../../../../../services/explore';
 import { NadNavigationSidebar } from '../../../diagrams/nad/nad-navigation-sidebar';
 import { NadAssociatedPanelsContainer } from './nad-associated-panels-container';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
@@ -32,16 +31,15 @@ export const NadPanelContent = memo(function NadPanelContent({
     currentNodeId,
     currentRootNetworkUuid,
 }: NadPanelContentProps) {
-    const [isDraggingSld, setIsDraggingSld] = useState(false);
-
     const { addToNadNavigationHistory, associateVoltageLevelWithNad } = useWorkspacePanelActions();
 
-    const { diagram, loading, globalError, updateDiagram, handleSaveNad, replaceNadConfig } = useNadDiagram({
-        panelId,
-        studyUuid,
-        currentNodeId,
-        currentRootNetworkUuid,
-    });
+    const { diagram, loading, globalError, updateDiagram, handleSaveNad, replaceNadConfig, moveNode, moveTextNode } =
+        useNadDiagram({
+            panelId,
+            studyUuid,
+            currentNodeId,
+            currentRootNetworkUuid,
+        });
 
     const { handleShowInSpreadsheet } = useDiagramNavigation();
 
@@ -68,14 +66,6 @@ export const NadPanelContent = memo(function NadPanelContent({
         [updateDiagram]
     );
 
-    // Update positions in local state only - no Redux dispatch, no fetch
-    const handleUpdatePositions = useCallback(
-        (positions: DiagramConfigPosition[]) => {
-            updateDiagram({ positions }, false);
-        },
-        [updateDiagram]
-    );
-
     const handleReplaceNad = useCallback(
         (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
             replaceNadConfig(name, nadConfigUuid, filterUuid);
@@ -90,7 +80,6 @@ export const NadPanelContent = memo(function NadPanelContent({
                     flex: 1,
                     overflow: 'hidden',
                     position: 'relative',
-                    pointerEvents: isDraggingSld ? 'none' : 'auto',
                 }}
             >
                 <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
@@ -98,7 +87,6 @@ export const NadPanelContent = memo(function NadPanelContent({
                         voltageLevelIds={diagram.voltageLevelIds || []}
                         voltageLevelToExpandIds={diagram.voltageLevelToExpandIds || []}
                         voltageLevelToOmitIds={diagram.voltageLevelToOmitIds || []}
-                        positions={diagram.positions || []}
                         showInSpreadsheet={handleShowInSpreadsheet}
                         svg={diagram.svg?.svg ?? undefined}
                         svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
@@ -110,13 +98,14 @@ export const NadPanelContent = memo(function NadPanelContent({
                         onVoltageLevelClick={handleVoltageLevelClick}
                         onUpdateVoltageLevels={handleUpdateVoltageLevels}
                         onUpdateVoltageLevelsFromFilter={handleUpdateVoltageLevelsFromFilter}
-                        onUpdatePositions={handleUpdatePositions}
+                        onMoveNode={moveNode}
+                        onMoveTextNode={moveTextNode}
                         onReplaceNad={handleReplaceNad}
                         onSaveNad={handleSaveNad}
                         nadPanelId={panelId}
                     />
                 </DiagramWrapper>
-                <NadAssociatedPanelsContainer nadPanelId={panelId} onDragStateChange={setIsDraggingSld} />
+                <NadAssociatedPanelsContainer nadPanelId={panelId} />
             </Box>
             {!globalError && <NadNavigationSidebar nadPanelId={panelId} />}
         </Box>

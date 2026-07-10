@@ -5,37 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback, useEffect } from 'react';
-import { Box, Button } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import { Box, Button, Grid2 as Grid } from '@mui/material';
 import {
     CustomFormProvider,
     Equipment,
     EquipmentType,
     fetchDirectoryElementPath,
     Identifiable,
+    Nullable,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
-    NAME,
-    EQUIPMENT_TYPE_FIELD,
-    SELECTION_TYPE,
     DESTINATION_FOLDER,
+    EQUIPMENT_TYPE_FIELD,
     FOLDER_ID,
     FOLDER_NAME,
+    NAME,
+    SELECTION_TYPE,
 } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
-import { Nullable } from 'components/utils/ts-utils';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { SelectionCreationPanelForm } from './selection-creation-panel-form';
 import {
+    getSelectionCreationSchema,
     SelectionCreationPaneFields,
     SelectionCreationPanelFormSchema,
-    getSelectionCreationSchema,
 } from './selection-creation-schema';
 import { VoltageLevel } from '../../utils/equipment-types';
 import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';

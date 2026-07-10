@@ -10,59 +10,30 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import {
+    copyEquipmentPropertiesForCreation,
     CustomFormProvider,
     EquipmentType,
     fetchDefaultCountry,
     snackWithFallback,
+    SubstationCreationDto,
+    substationCreationEmptyFormData,
+    SubstationCreationForm,
+    SubstationCreationFormData,
+    substationCreationFormSchema,
     useSnackMessage,
+    DeepNullable,
+    substationCreationDtoToForm,
+    substationCreationFormToDto,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
-import SubstationCreationForm from './substation-creation-form';
-import { sanitizeString } from '../../../dialog-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { createSubstation } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    getPropertiesFromModification,
-    Property,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { DeepNullable } from 'components/utils/ts-utils';
 import { SubstationInfos } from '../substation-dialog.type';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [COUNTRY]: yup.string().nullable(),
-    })
-    .concat(creationPropertiesSchema);
-
-export type SubstationCreationFormData = yup.InferType<typeof formSchema>;
-
-const emptyFormData: SubstationCreationFormData = {
-    [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
-    [COUNTRY]: null,
-    [ADDITIONAL_PROPERTIES]: [],
-};
-
-interface SubstationCreationEditData {
-    uuid?: UUID;
-    equipmentId: string;
-    equipmentName?: string;
-    country: string | null;
-    properties?: Property[] | null;
-}
 
 interface SubstationCreationDialogProps {
     studyUuid: UUID;
@@ -70,7 +41,7 @@ interface SubstationCreationDialogProps {
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
     editDataFetchStatus?: string;
-    editData?: SubstationCreationEditData;
+    editData?: SubstationCreationDto & { uuid: UUID };
 }
 
 /**
@@ -96,8 +67,8 @@ const SubstationCreationDialog = ({
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm<DeepNullable<SubstationCreationFormData>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<SubstationCreationFormData>>(formSchema),
+        defaultValues: substationCreationEmptyFormData,
+        resolver: yupResolver<DeepNullable<SubstationCreationFormData>>(substationCreationFormSchema),
     });
 
     const { reset, getValues } = formMethods;
@@ -105,9 +76,9 @@ const SubstationCreationDialog = ({
     const fromSearchCopyToFormValues = (substation: SubstationInfos) => {
         reset(
             {
-                [EQUIPMENT_ID]: substation.id + '(1)',
-                [EQUIPMENT_NAME]: substation.name ?? '',
-                [COUNTRY]: substation.country,
+                equipmentID: substation.id + '(1)',
+                equipmentName: substation.name ?? '',
+                country: substation.country,
                 ...copyEquipmentPropertiesForCreation(substation),
             },
             { keepDefaultValues: true }
@@ -118,12 +89,7 @@ const SubstationCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            reset({
-                [EQUIPMENT_ID]: editData.equipmentId,
-                [EQUIPMENT_NAME]: editData.equipmentName ?? '',
-                [COUNTRY]: editData.country,
-                ...getPropertiesFromModification(editData.properties),
-            });
+            reset(substationCreationDtoToForm(editData));
         }
     }, [reset, editData]);
 
@@ -134,7 +100,7 @@ const SubstationCreationDialog = ({
                 if (country) {
                     reset({
                         ...getValues(),
-                        [COUNTRY]: country,
+                        country,
                     });
                 }
             });
@@ -142,25 +108,17 @@ const SubstationCreationDialog = ({
     }, [reset, getValues, isUpdate]);
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset();
     }, [reset]);
 
     const onSubmit = useCallback(
-        (substation: SubstationCreationFormData) => {
-            createSubstation({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                substationId: substation[EQUIPMENT_ID],
-                substationName: sanitizeString(substation[EQUIPMENT_NAME]),
-                country: substation[COUNTRY] ?? null,
-                isUpdate: !!editData,
-                modificationUuid: editData ? editData.uuid : undefined,
-                properties: toModificationProperties(substation),
-            }).catch((error) => {
+        (substationForm: SubstationCreationFormData) => {
+            const dto = substationCreationFormToDto(substationForm);
+            createSubstation(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: unknown) => {
                 snackWithFallback(snackError, error, { headerId: 'SubstationCreationError' });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData?.uuid, snackError, studyUuid]
     );
 
     const open = useOpenShortWaitFetching({
@@ -170,7 +128,7 @@ const SubstationCreationDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={substationCreationFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

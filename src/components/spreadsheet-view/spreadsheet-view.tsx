@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Alert, Paper } from '@mui/material';
 import SpreadsheetTabs from './spreadsheet-tabs/spreadsheet-tabs';
-import { AppState } from '../../redux/reducer';
+import { AppState } from '../../redux/reducer.type';
 import type { RootState } from '../../redux/store';
 import { selectPanelTargetEquipment } from '../../redux/slices/workspace-selectors';
 import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './types/spreadsheet.type';
@@ -163,6 +163,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({ panel
                     message={intl.formatMessage({
                         id: 'spreadsheet/create_new_spreadsheet/replace_collection_confirmation',
                     })}
+                    isTranslationNeeded={false}
                     openConfirmationPopup={resetConfirmationDialogOpen}
                     setOpenConfirmationPopup={setResetConfirmationDialogOpen}
                     handlePopupConfirmation={resetSpreadsheetCollection}

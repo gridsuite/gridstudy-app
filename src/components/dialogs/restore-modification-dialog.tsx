@@ -6,44 +6,20 @@
  */
 import { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import {
     CancelButton,
     CheckBoxList,
-    type MuiStyles,
+    NetworkModificationMetadata,
     snackWithFallback,
     useModificationLabelComputer,
     useSnackMessage,
-    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { toggleElementFromList } from 'components/utils/utils';
-
-const styles = {
-    text: (theme) => ({
-        padding: theme.spacing(1),
-    }),
-    listContainer: (theme) => ({
-        overflowY: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        paddingBottom: theme.spacing(8),
-    }),
-    selectAll: (theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(3),
-        paddingBottom: theme.spacing(1),
-    }),
-    list: (theme) => ({
-        paddingTop: theme.spacing(0),
-        flexGrow: 1,
-    }),
-} as const satisfies MuiStyles;
 
 interface RestoreModificationDialogProps {
     open: boolean;
@@ -121,11 +97,6 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
                 <FormattedMessage id="RestoreModifications" />
             </DialogTitle>
             <DialogContent>
-                <Box sx={styles.text}>
-                    <DialogContentText>
-                        <FormattedMessage id="RestoreModificationText" />
-                    </DialogContentText>
-                </Box>
                 <CheckBoxList
                     items={stashedModifications}
                     selectedItems={selectedItems}

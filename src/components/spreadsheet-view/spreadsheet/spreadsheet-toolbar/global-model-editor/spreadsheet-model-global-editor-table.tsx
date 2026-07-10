@@ -11,20 +11,20 @@ import { AutocompleteInput, DndColumn, DndColumnType, DndTable } from '@gridsuit
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import {
+    COLUMN_DEPENDENCIES,
+    COLUMN_FORMULA,
     COLUMN_ID,
     COLUMN_NAME,
-    COLUMNS_MODEL,
-    COLUMN_TYPE,
     COLUMN_PRECISION,
-    COLUMN_FORMULA,
-    COLUMN_DEPENDENCIES,
+    COLUMN_TYPE,
     COLUMN_VISIBLE,
+    COLUMNS_MODEL,
 } from './spreadsheet-model-global-editor.utils';
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { ColumnGlobalModel } from './spreadsheet-model-global-editor.type';
 import DependenciesEditor from './dependencies-editor';
 import FormulaEditor from './formula-editor';
 import ColumnNameEditor from './columnName-editor';
+import { COLUMN_TYPES } from '../../../../../types/custom-aggrid-types';
 
 export function SpreadsheetModelGlobalEditorTable() {
     const intl = useIntl();
@@ -43,7 +43,7 @@ export function SpreadsheetModelGlobalEditorTable() {
         [getValues]
     );
 
-    const COLUMNS_MODEL_DEFINITIONS: (DndColumn & { initialValue?: string | null | string[] })[] = useMemo(() => {
+    const COLUMNS_MODEL_DEFINITIONS = useMemo<DndColumn[]>(() => {
         return [
             {
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_name' }),
@@ -74,7 +74,6 @@ export function SpreadsheetModelGlobalEditorTable() {
                 type: DndColumnType.TEXT,
                 editable: true,
                 initialValue: '',
-                showErrorMsg: true,
                 width: '20%',
                 maxWidth: '20%',
             },
@@ -136,7 +135,7 @@ export function SpreadsheetModelGlobalEditorTable() {
                         dependencies: getAvailableDependencies(getValues(`${COLUMNS_MODEL}[${rowIndex}].${COLUMN_ID}`)),
                     }),
             },
-        ];
+        ] satisfies DndColumn[];
     }, [intl, getAvailableDependencies, getValues, setValue]);
 
     const newColumnRowData = useMemo(() => {
@@ -157,13 +156,11 @@ export function SpreadsheetModelGlobalEditorTable() {
 
     return (
         <DndTable
-            arrayFormName={`${COLUMNS_MODEL}`}
+            name={`${COLUMNS_MODEL}`}
             columnsDefinition={COLUMNS_MODEL_DEFINITIONS}
             useFieldArrayOutput={useColumnsModelFieldArrayOutput}
             createRows={createColumnRows}
             withAddRowsDialog={false}
-            disableDragAndDrop={false}
-            showMoveArrow={false}
             tableHeight={450}
         />
     );

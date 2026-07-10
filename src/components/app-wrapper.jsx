@@ -26,6 +26,8 @@ import {
     commonButtonFr,
     componentsEn,
     componentsFr,
+    csvEn,
+    csvFr,
     directoryItemsInputEn,
     directoryItemsInputFr,
     dndTableEn,
@@ -40,6 +42,8 @@ import {
     equipmentShortFr,
     equipmentTagEn,
     equipmentTagFr,
+    equipmentTypesEn,
+    equipmentTypesFr,
     errorsEn,
     errorsFr,
     exportParamsEn,
@@ -87,7 +91,7 @@ import { Provider, useSelector } from 'react-redux';
 import { store } from '../redux/store';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import messages_plugins from '../plugins/translations';
+import messages_plugins from '../plugins/translations/index.ts';
 import { grid_en } from '../translations/grid-en';
 import { grid_fr } from '../translations/grid-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
@@ -217,6 +221,9 @@ const lightTheme = createTheme({
         },
         highlightColor: '#1976D214',
     },
+    agGridBackground: {
+        color: 'white',
+    },
     networkModificationPanel: {
         backgroundColor: 'white',
         border: 'solid 1px #babfc7',
@@ -333,6 +340,9 @@ const darkTheme = createTheme({
         },
         highlightColor: '#90CAF929',
     },
+    agGridBackground: {
+        color: '#383838',
+    },
     networkModificationPanel: {
         backgroundColor: '#252525',
         border: 'solid 1px #68686e',
@@ -405,12 +415,14 @@ const messages = {
         ...equipmentSearchEn,
         ...equipmentShortEn,
         ...equipmentTagEn,
+        ...equipmentTypesEn,
         ...directoryItemsInputEn,
         ...cardErrorBoundaryEn,
         ...flatParametersEn,
         ...multipleSelectionDialogEn,
         ...commonButtonEn,
         ...componentsEn,
+        ...csvEn,
         ...descriptionEn,
         ...dndTableEn,
         ...equipmentsEn,
@@ -447,12 +459,14 @@ const messages = {
         ...equipmentSearchFr,
         ...equipmentShortFr,
         ...equipmentTagFr,
+        ...equipmentTypesFr,
         ...directoryItemsInputFr,
         ...cardErrorBoundaryFr,
         ...flatParametersFr,
         ...multipleSelectionDialogFr,
         ...commonButtonFr,
         ...componentsFr,
+        ...csvFr,
         ...dndTableFr,
         ...equipmentsFr,
         ...descriptionFr,

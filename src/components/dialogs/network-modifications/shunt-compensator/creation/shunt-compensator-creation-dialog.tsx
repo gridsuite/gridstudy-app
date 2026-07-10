@@ -6,89 +6,46 @@
  */
 
 import {
+    copyEquipmentPropertiesForCreation,
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
-    MODIFICATION_TYPES,
+    FieldConstants,
+    getCharacteristicsCreateFormDataFromSearchCopy,
+    getConnectivityFormData,
+    ShuntCompensatorCreationDto,
+    shuntCompensatorCreationDtoToForm,
+    shuntCompensatorCreationEmptyFormData,
+    ShuntCompensatorCreationForm,
+    ShuntCompensatorCreationFormData,
+    shuntCompensatorCreationFormSchema,
+    shuntCompensatorCreationFormToDto,
+    ShuntCompensatorFormInfos,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import {
-    BUS_OR_BUSBAR_SECTION,
-    CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    ID,
-    MAX_Q_AT_NOMINAL_V,
-    MAX_SUSCEPTANCE,
-    MAXIMUM_SECTION_COUNT,
-    SECTION_COUNT,
-    SHUNT_COMPENSATOR_TYPE,
-    VOLTAGE_LEVEL,
-} from 'components/utils/field-constants';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
-import yup from 'components/utils/yup-config';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../connectivity/connectivity-form-utils';
-import {
-    getCharacteristicsCreateFormDataFromSearchCopy,
-    getCharacteristicsEmptyFormData,
-    getCharacteristicsFormData,
-    getCharacteristicsFormValidationSchema,
-} from '../characteristics-pane/characteristics-form-utils';
-import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
 import { createShuntCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { ShuntCompensatorCreationDialogSchemaForm, ShuntCompensatorFormInfos } from '../shunt-compensator-dialog.type';
-import { DeepNullable } from '../../../../utils/ts-utils';
-import { ShuntCompensatorCreationInfos } from '../../../../../services/network-modification-types';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 
-const emptyFormData = {
-    [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
-    ...getConnectivityWithPositionEmptyFormData(),
-    ...getCharacteristicsEmptyFormData(),
-    ...emptyProperties,
+export type ShuntCompensatorCreationDialogProps = NetworkModificationDialogProps & {
+    editData: ShuntCompensatorCreationDto;
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(),
-        ...getCharacteristicsFormValidationSchema(false),
-    })
-    .concat(creationPropertiesSchema)
-    .required();
 
 /**
  * Dialog to create a shunt compensator in the network
- * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
@@ -96,11 +53,6 @@ const formSchema = yup
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
-
-export type ShuntCompensatorCreationDialogProps = NetworkModificationDialogProps & {
-    editData: ShuntCompensatorCreationInfos;
-};
-
 export default function ShuntCompensatorCreationDialog({
     studyUuid,
     currentNode,
@@ -114,9 +66,22 @@ export default function ShuntCompensatorCreationDialog({
 
     const { snackError, snackWarning } = useSnackMessage();
 
-    const formMethods = useForm<DeepNullable<ShuntCompensatorCreationDialogSchemaForm>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<ShuntCompensatorCreationDialogSchemaForm>>(formSchema),
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
+
+    const formMethods = useForm<DeepNullable<ShuntCompensatorCreationFormData>>({
+        defaultValues: shuntCompensatorCreationEmptyFormData,
+        resolver: yupResolver<DeepNullable<ShuntCompensatorCreationFormData>>(shuntCompensatorCreationFormSchema),
     });
 
     const { reset } = formMethods;
@@ -125,8 +90,8 @@ export default function ShuntCompensatorCreationDialog({
         (shuntCompensator: ShuntCompensatorFormInfos) => {
             reset(
                 {
-                    [EQUIPMENT_ID]: shuntCompensator.id + '(1)',
-                    [EQUIPMENT_NAME]: shuntCompensator.name ?? '',
+                    [FieldConstants.EQUIPMENT_ID]: `${shuntCompensator.id}(1)`,
+                    [FieldConstants.EQUIPMENT_NAME]: shuntCompensator.name ?? '',
                     ...getConnectivityFormData({
                         busbarSectionId: shuntCompensator.busOrBusbarSectionId,
                         connectionDirection: shuntCompensator.connectablePosition.connectionDirection,
@@ -157,61 +122,15 @@ export default function ShuntCompensatorCreationDialog({
 
     useEffect(() => {
         if (editData) {
-            reset({
-                [EQUIPMENT_ID]: editData.equipmentId,
-                [EQUIPMENT_NAME]: editData.equipmentName ?? '',
-                ...getConnectivityFormData({
-                    voltageLevelId: editData.voltageLevelId,
-                    busbarSectionId: editData.busOrBusbarSectionId,
-                    connectionDirection: editData.connectionDirection,
-                    connectionName: editData.connectionName,
-                    connectionPosition: editData.connectionPosition,
-                    terminalConnected: editData.terminalConnected,
-                }),
-                ...getCharacteristicsFormData({
-                    maxSusceptance: editData.maxSusceptance ?? null,
-                    maxQAtNominalV: editData.maxQAtNominalV ?? null,
-                    shuntCompensatorType: editData.shuntCompensatorType,
-                    sectionCount: editData.sectionCount,
-                    maximumSectionCount: editData.maximumSectionCount,
-                }),
-                ...getPropertiesFromModification(editData.properties),
-            });
+            reset(shuntCompensatorCreationDtoToForm(editData));
         }
     }, [reset, editData]);
 
     const onSubmit = useCallback(
-        (shuntCompensator: ShuntCompensatorCreationDialogSchemaForm) => {
-            const shuntCompensatorCreationInfos = {
-                type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
-                equipmentId: shuntCompensator[EQUIPMENT_ID],
-                equipmentName: sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
-                maxSusceptance:
-                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                        ? (shuntCompensator[MAX_SUSCEPTANCE] ?? null)
-                        : null,
-                maxQAtNominalV:
-                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                        ? (shuntCompensator[MAX_Q_AT_NOMINAL_V] ?? null)
-                        : null,
-                shuntCompensatorType:
-                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                        ? (shuntCompensator[SHUNT_COMPENSATOR_TYPE] ?? null)
-                        : null,
-                sectionCount: shuntCompensator[SECTION_COUNT] ?? null,
-                maximumSectionCount: shuntCompensator[MAXIMUM_SECTION_COUNT] ?? null,
-                voltageLevelId: shuntCompensator[CONNECTIVITY][VOLTAGE_LEVEL][ID] ?? null,
-                busOrBusbarSectionId: shuntCompensator[CONNECTIVITY][BUS_OR_BUSBAR_SECTION][ID] ?? null,
-                connectionDirection:
-                    shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-                connectionName: sanitizeString(shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]),
-                connectionPosition: shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null,
-                terminalConnected: shuntCompensator[CONNECTIVITY]?.[CONNECTED] ?? null,
-                properties: toModificationProperties(shuntCompensator),
-            } satisfies ShuntCompensatorCreationInfos;
-
+        (shuntCompensator: ShuntCompensatorCreationFormData) => {
+            const dto = shuntCompensatorCreationFormToDto(shuntCompensator);
             createShuntCompensator({
-                shuntCompensatorCreationInfos: shuntCompensatorCreationInfos,
+                shuntCompensatorCreationInfos: dto,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid,
@@ -224,7 +143,7 @@ export default function ShuntCompensatorCreationDialog({
     );
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(shuntCompensatorCreationEmptyFormData);
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
@@ -233,7 +152,11 @@ export default function ShuntCompensatorCreationDialog({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            validationSchema={shuntCompensatorCreationFormSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -246,9 +169,9 @@ export default function ShuntCompensatorCreationDialog({
                 {...dialogProps}
             >
                 <ShuntCompensatorCreationForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    voltageLevelOptions={voltageLevelOptions}
+                    PositionDiagramPane={PositionDiagramPane}
+                    fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

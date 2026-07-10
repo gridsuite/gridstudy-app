@@ -13,7 +13,7 @@ import {
     removeNodeData,
     removeSpreadsheetLoadedNodesIds,
 } from 'redux/actions';
-import { type AppState } from 'redux/reducer';
+import { type AppState } from 'redux/reducer.type';
 import { useOptionalLoadingParametersForEquipments } from '../spreadsheet/spreadsheet-content/hooks/use-optional-loading-parameters-for-equipments';
 import { useFetchEquipment } from 'components/spreadsheet-view/hooks/use-fetch-equipment';
 import { useBuiltNodesIds } from './use-built-nodes-ids';
@@ -37,14 +37,14 @@ export const useSpreadsheetEquipments = () => {
 
     const applyToAllTypes = useCallback(
         (callback: (type: SpreadsheetEquipmentType) => void) => {
-            tablesDefinitions.map((tableDefinition) => tableDefinition.type).forEach((type) => callback(type));
+            new Set(tablesDefinitions.map((tableDefinition) => tableDefinition.type)).forEach((type) => callback(type));
         },
         [tablesDefinitions]
     );
 
     useEffect(() => {
         applyToAllTypes((type) => {
-            if (cleanOptional[type] && Object.keys(equipments[type].equipmentsByNodeId).length !== 0) {
+            if (cleanOptional[type] && equipments[type].isInitialized) {
                 dispatch(cleanEquipments(type));
                 equipmentsWithLoadingOptionsCleaned(type);
             }
@@ -75,7 +75,7 @@ export const useSpreadsheetEquipments = () => {
         if (nodesIdsToRemove.size > 0) {
             dispatch(removeSpreadsheetLoadedNodesIds([...nodesIdsToRemove]));
             applyToAllTypes((type) => {
-                if (Object.keys(equipments[type].equipmentsByNodeId).length !== 0) {
+                if (equipments[type].isInitialized) {
                     dispatch(removeNodeData(type, [...nodesIdsToRemove]));
                 }
             });
@@ -89,13 +89,13 @@ export const useSpreadsheetEquipments = () => {
         if (nodesIdsToFetch.size > 0) {
             dispatch(addSpreadsheetLoadedNodesIds([...nodesIdsToFetch]));
             applyToAllTypes((type) => {
-                if (Object.keys(equipments[type].equipmentsByNodeId).length !== 0) {
+                if (equipments[type].isInitialized) {
                     fetchNodesEquipmentData(type, nodesIdsToFetch);
                 }
             });
         } else {
             applyToAllTypes((type) => {
-                if (loadOptional[type] && Object.keys(equipments[type].equipmentsByNodeId).length !== 0) {
+                if (loadOptional[type] && equipments[type].isInitialized) {
                     fetchNodesEquipmentData(type, builtNodesIds);
                     equipmentsWithLoadingOptionsLoaded(type);
                 }

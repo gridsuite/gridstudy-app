@@ -14,7 +14,7 @@ import { QualityCriterionResult, StateEstimationTabProps } from './state-estimat
 import { StateEstimationStatusResult } from './state-estimation-status-result';
 import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
 import RunningStatus from 'components/utils/running-status';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { StateEstimationQualityResult } from './state-estimation-quality-result';
@@ -82,7 +82,9 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     };
 
     const result = useMemo(() => {
-        if (stateEstimationStatus !== RunningStatus.SUCCEED || !stateEstimationResult) {
+        const isProcessing =
+            stateEstimationStatus !== RunningStatus.SUCCEED && stateEstimationStatus !== RunningStatus.FAILED;
+        if (isProcessing || !stateEstimationResult) {
             return {};
         }
         return {

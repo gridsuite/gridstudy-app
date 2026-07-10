@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppState } from 'redux/reducer';
+import type { AppState } from 'redux/reducer.type';
 import AddSpreadsheetButton from '../add-spreadsheet/add-spreadsheet-button';
 import type { AppDispatch } from 'redux/store';
 import {
@@ -287,11 +287,11 @@ export default function SpreadsheetTabs({
 
     return (
         <>
-            <Grid container direction="row" wrap="nowrap" item>
-                <Grid item padding={1} xs="auto">
+            <Grid container direction="row" wrap="nowrap">
+                <Grid padding={1} size="auto">
                     <AddSpreadsheetButton disabled={disabled} />
                 </Grid>
-                <Grid item xs sx={{ overflow: 'hidden' }}>
+                <Grid size="grow" sx={{ overflow: 'hidden' }}>
                     <DroppableTabs
                         id="equipment-tabs"
                         value={selectedTabIndex}
@@ -307,7 +307,7 @@ export default function SpreadsheetTabs({
                 </Grid>
                 <SpreadsheetTabsToolbar
                     padding={1}
-                    xs="auto"
+                    size="auto"
                     selectedTabIndex={selectedTabIndex}
                     disabled={disabled}
                     onSaveClick={saveCollectionDialogOpen.setTrue}
@@ -320,6 +320,7 @@ export default function SpreadsheetTabs({
                         { id: 'spreadsheet/remove_spreadsheet_confirmation' },
                         { spreadsheetName: tabActionInProgressName }
                     )}
+                    isTranslationNeeded={false}
                     openConfirmationPopup={confirmationDialogOpen}
                     setOpenConfirmationPopup={setConfirmationDialogOpen}
                     handlePopupConfirmation={handleRemoveTab}

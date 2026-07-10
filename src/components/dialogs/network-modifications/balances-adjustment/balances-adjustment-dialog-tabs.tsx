@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Grid2 as Grid, Tab, Tabs } from '@mui/material';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import { FormattedMessage } from 'react-intl';
 import { BalancesAdjustmentTab } from './balances-adjustment.constants';
@@ -21,7 +21,7 @@ export default function BalancesAdjustmentDialogTabs({
     setTabIndex,
 }: BalancesAdjustmentDialogTabsProps) {
     return (
-        <Grid container>
+        <Grid container sx={{ width: '100%' }}>
             <Tabs
                 value={tabIndex}
                 variant="scrollable"

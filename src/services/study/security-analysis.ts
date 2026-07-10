@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
-import { getRequestParamFromList } from '../utils';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import type { UUID } from 'node:crypto';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, GsLangUser } from '@gridsuite/commons-ui';
 import { SecurityAnalysisQueryParams } from '../../components/results/securityanalysis/security-analysis.type';
@@ -14,21 +13,17 @@ import { SecurityAnalysisQueryParams } from '../../components/results/securityan
 export function startSecurityAnalysis(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    contingencyListUuids: UUID[]
+    currentRootNetworkUuid: UUID
 ): Promise<Response> {
     console.info(
         `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
-    // Add params to Url
-    const contingencyListsQueryParams = getRequestParamFromList(contingencyListUuids, 'contingencyListName');
-    const urlSearchParams = new URLSearchParams(contingencyListsQueryParams);
 
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/security-analysis/run?${urlSearchParams}`;
+    )}/security-analysis/run`;
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
@@ -112,48 +107,6 @@ export function fetchSecurityAnalysisStatus(studyUuid: UUID, currentNodeUuid: UU
         '/security-analysis/status';
     console.debug(url);
     return backendFetchText(url);
-}
-
-export function updateSecurityAnalysisProvider(studyUuid: UUID, newProvider: string) {
-    console.info('update security analysis provider');
-    const url = getStudyUrl(studyUuid) + '/security-analysis/provider';
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newProvider,
-    });
-}
-
-export function fetchDefaultSecurityAnalysisProvider() {
-    console.info('fetch default security analysis provider');
-    const url = PREFIX_STUDY_QUERIES + '/v1/security-analysis-default-provider';
-    console.debug(url);
-    return backendFetchText(url);
-}
-
-export function getSecurityAnalysisParameters(studyUuid: UUID) {
-    console.info('get security analysis parameters');
-    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function setSecurityAnalysisParameters(studyUuid: UUID, newParams: any) {
-    console.info('set security analysis parameters');
-    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newParams ? JSON.stringify(newParams) : null,
-    });
 }
 
 function getSecurityAnalysisQueryParams(queryParams: SecurityAnalysisQueryParams) {

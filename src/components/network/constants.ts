@@ -4,43 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { LOAD_TYPES, UNDEFINED_LOAD_TYPE } from '@gridsuite/commons-ui';
 
 export const FORM_LOADING_DELAY = 200;
 export const RESULTS_LOADING_DELAY = 500;
-
-// Relevant LoadType Powsybl enum values
-export const LOAD_TYPES = [
-    { id: 'AUXILIARY', label: 'Auxiliary' },
-    { id: 'FICTITIOUS', label: 'Fictitious' },
-];
-// and the undefined/default one (not displayed)
-export const UNDEFINED_LOAD_TYPE = 'UNDEFINED';
 
 // For load tabular creations/modifications, we allow the UNDEFINED value
 export const LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION = [
     ...LOAD_TYPES,
     { id: UNDEFINED_LOAD_TYPE, label: 'Undefined' },
 ] as const;
-
-// Relevant EnergySource Powsybl enum values
-export const ENERGY_SOURCES = [
-    { id: 'HYDRO', label: 'Hydro' },
-    { id: 'NUCLEAR', label: 'Nuclear' },
-    { id: 'WIND', label: 'Wind' },
-    { id: 'THERMAL', label: 'Thermal' },
-    { id: 'SOLAR', label: 'Solar' },
-    { id: 'OTHER', label: 'Other' },
-] as const;
-
-export const SHUNT_COMPENSATOR_TYPES = {
-    REACTOR: { id: 'REACTOR', label: 'Reactor' },
-    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
-} as const;
-
-export const REGULATION_TYPES = {
-    DISTANT: { id: 'DISTANT', label: 'Distant' },
-    LOCAL: { id: 'LOCAL', label: 'Local' },
-} as const;
 
 export const PHASE_REGULATION_MODES = {
     CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
@@ -70,36 +43,6 @@ export const SIDE = {
     SIDE2: { id: 'SIDE2', label: 'RegulatedSide2' },
 } as const;
 
-export const APPLICABILITY = {
-    EQUIPMENT: { id: 'EQUIPMENT', label: 'BothSides' },
-    SIDE1: { id: 'SIDE1', label: 'Side1' },
-    SIDE2: { id: 'SIDE2', label: 'Side2' },
-};
-
-export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
-// Relevant ConnectablePosition.Direction Powsybl enum values
-export const CONNECTION_DIRECTIONS = [
-    { id: 'TOP', label: 'Top' },
-    { id: 'BOTTOM', label: 'Bottom' },
-    { id: UNDEFINED_CONNECTION_DIRECTION, label: 'Undefined' },
-] as const;
-
-export function getEnergySourceLabel(energySourceId?: string) {
-    return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
-}
-
-export function getConnectionDirectionLabel(connectionDirectionId: string | null | undefined) {
-    if (connectionDirectionId === UNDEFINED_CONNECTION_DIRECTION) {
-        return 'Undefined';
-    }
-    return CONNECTION_DIRECTIONS.find(({ id }) => id === connectionDirectionId)?.label;
-}
-
-export const REACTIVE_LIMIT_TYPES = [
-    { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
-    { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
-] as const;
-
 const PROPORTIONAL = { id: 'PROPORTIONAL', label: 'Proportional' } as const;
 const REGULAR_DISTRIBUTION = {
     id: 'REGULAR_DISTRIBUTION',
@@ -128,10 +71,6 @@ export const REACTIVE_VARIATION_MODES = {
     TAN_PHI_FIXED: { id: 'TAN_PHI_FIXED', label: 'TanPhiFixed' },
 } as const;
 
-export function getLoadTypeLabel(loadTypeId: string) {
-    return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
-}
-
 export const SLD_DISPLAY_MODE = {
     FEEDER_POSITION: 'FEEDER_POSITION',
     STATE_VARIABLE: 'STATE_VARIABLE',
@@ -154,14 +93,6 @@ export const VARIATION_TYPES = {
     DELTA_P: { id: 'DELTA_P', label: 'DeltaP' },
     TARGET_P: { id: 'TARGET_P', label: 'TargetPText' },
 } as const;
-
-export enum BUILD_STATUS {
-    NOT_BUILT = 'NOT_BUILT',
-    BUILDING = 'BUILDING',
-    BUILT = 'BUILT',
-    BUILT_WITH_WARNING = 'BUILT_WITH_WARNING',
-    BUILT_WITH_ERROR = 'BUILT_WITH_ERROR',
-}
 
 export const SWITCH_TYPE = {
     BREAKER: { id: 'BREAKER', label: 'Breaker' },
@@ -202,7 +133,7 @@ export const REGULATING_TERMINAL_TYPES = [
     'BATTERY',
     'SHUNT_COMPENSATOR',
     'STATIC_VAR_COMPENSATOR',
-    'DANGLING_LINE',
+    'BOUNDARY_LINE',
     'HVDC_CONVERTER_STATION',
     'BUSBAR_SECTION',
 ];

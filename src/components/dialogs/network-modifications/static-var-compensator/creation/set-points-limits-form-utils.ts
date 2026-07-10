@@ -7,8 +7,6 @@
 
 import {
     CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
-    EQUIPMENT,
     ID,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
@@ -20,11 +18,9 @@ import {
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import yup from '../../../../utils/yup-config';
-import { REGULATION_TYPES } from '../../../../network/constants';
+import { CHARACTERISTICS_CHOICES, FieldConstants, REGULATION_TYPES } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { Schema } from 'yup';
 
 export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
@@ -33,18 +29,18 @@ export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
         [MIN_SUSCEPTANCE]: null,
         [MAX_Q_AT_NOMINAL_V]: null,
         [MIN_Q_AT_NOMINAL_V]: null,
-        [VOLTAGE_SET_POINT]: null,
+        [FieldConstants.VOLTAGE_SET_POINT]: null,
         [REACTIVE_POWER_SET_POINT]: null,
         [CHARACTERISTICS_CHOICE]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [VOLTAGE_REGULATION_MODE]: VOLTAGE_REGULATION_MODES.OFF.id,
-        [VOLTAGE_REGULATION_TYPE]: REGULATION_TYPES.LOCAL.id,
+        [FieldConstants.VOLTAGE_REGULATION_TYPE]: REGULATION_TYPES.LOCAL.id,
         [VOLTAGE_LEVEL]: null,
-        [EQUIPMENT]: null,
+        [FieldConstants.EQUIPMENT]: null,
     },
 });
 
 const requiredWhenDistantVoltageMode = (schema: Schema) =>
-    schema.when([VOLTAGE_REGULATION_MODE, VOLTAGE_REGULATION_TYPE], {
+    schema.when([VOLTAGE_REGULATION_MODE, FieldConstants.VOLTAGE_REGULATION_TYPE], {
         is: (voltageRegulationMode: string, voltageRegulationType: string) =>
             voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id &&
             voltageRegulationType === REGULATION_TYPES.DISTANT.id,
@@ -71,7 +67,7 @@ export const getReactiveFormValidationSchema = () =>
         [MIN_SUSCEPTANCE]: requiredWhenSusceptanceChoice(yup.number().nullable()),
         [MAX_Q_AT_NOMINAL_V]: requiredWhenQatNominalVChoice(yup.number().nullable()),
         [MIN_Q_AT_NOMINAL_V]: requiredWhenQatNominalVChoice(yup.number().nullable()),
-        [VOLTAGE_SET_POINT]: yup
+        [FieldConstants.VOLTAGE_SET_POINT]: yup
             .number()
             .nullable()
             .min(0, 'mustBeGreaterOrEqualToZero')
@@ -91,7 +87,7 @@ export const getReactiveFormValidationSchema = () =>
             }),
         [CHARACTERISTICS_CHOICE]: yup.string().required(),
         [VOLTAGE_REGULATION_MODE]: yup.string().required(),
-        [VOLTAGE_REGULATION_TYPE]: yup.string().required(),
+        [FieldConstants.VOLTAGE_REGULATION_TYPE]: yup.string().required(),
 
         [VOLTAGE_LEVEL]: requiredWhenDistantVoltageMode(
             yup
@@ -101,7 +97,7 @@ export const getReactiveFormValidationSchema = () =>
                     [ID]: yup.string().required(),
                 })
         ),
-        [EQUIPMENT]: requiredWhenDistantVoltageMode(
+        [FieldConstants.EQUIPMENT]: requiredWhenDistantVoltageMode(
             yup
                 .object()
                 .nullable()
@@ -151,11 +147,11 @@ export const getReactiveFormData = ({
             nominalV !== null && maxSusceptance !== null ? maxSusceptance * Math.pow(nominalV, 2) : maxQAtNominalV,
         [MIN_Q_AT_NOMINAL_V]:
             nominalV !== null && minSusceptance !== null ? minSusceptance * Math.pow(nominalV, 2) : minQAtNominalV,
-        [VOLTAGE_SET_POINT]: voltageSetpoint,
+        [FieldConstants.VOLTAGE_SET_POINT]: voltageSetpoint,
         [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
-        [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
+        [FieldConstants.VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
         [VOLTAGE_LEVEL]: voltageLevelId ? { [ID]: voltageLevelId } : null,
-        [EQUIPMENT]: equipmentId
+        [FieldConstants.EQUIPMENT]: equipmentId
             ? {
                   [ID]: equipmentId,
                   [TYPE]: equipmentType,

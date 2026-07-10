@@ -7,57 +7,35 @@
 
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    getConcatenatedProperties,
+    snackWithFallback,
+    useSnackMessage,
+    DeepNullable,
+    FieldConstants,
+    SubstationModificationForm,
+    SubstationModificationFormData,
+    substationModificationEmptyFormData,
+    substationModificationFormSchema,
+    SubstationModificationInfos,
+    SubstationModificationDto,
+    substationModificationDtoToForm,
+    substationModificationFormToDto,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
-import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
-import SubstationModificationForm from './substation-modification-form';
-import { sanitizeString } from '../../../dialog-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifySubstation } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import {
-    getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
-    Property,
-    toModificationProperties,
-} from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { AttributeModification } from 'services/network-modification-types';
 import { useForm } from 'react-hook-form';
-import { DeepNullable } from '../../../../utils/ts-utils';
-import { SubstationInfos } from '../substation-dialog.type';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [COUNTRY]: yup.string().nullable(),
-    })
-    .concat(modificationPropertiesSchema);
-
-export type SubstationModificationFormData = yup.InferType<typeof formSchema>;
-
-const emptyFormData: SubstationModificationFormData = {
-    [EQUIPMENT_NAME]: '',
-    [COUNTRY]: null,
-    [ADDITIONAL_PROPERTIES]: [],
-};
-
-interface SubstationModificationEditData {
-    uuid?: UUID;
-    equipmentId: string;
-    equipmentName?: AttributeModification<string> | null;
-    country: AttributeModification<string> | null;
-    properties?: Property[] | null;
-}
 
 interface SubstationModificationDialogProps {
     studyUuid: UUID;
@@ -65,7 +43,7 @@ interface SubstationModificationDialogProps {
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
     editDataFetchStatus?: string;
-    editData?: SubstationModificationEditData;
+    editData?: SubstationModificationDto;
     defaultIdValue?: string;
 }
 
@@ -93,12 +71,12 @@ const SubstationModificationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
-    const [substationToModify, setSubstationToModify] = useState<SubstationInfos>();
+    const [substationToModify, setSubstationToModify] = useState<SubstationModificationInfos>();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     const formMethods = useForm<DeepNullable<SubstationModificationFormData>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<SubstationModificationFormData>>(formSchema),
+        defaultValues: substationModificationEmptyFormData,
+        resolver: yupResolver<DeepNullable<SubstationModificationFormData>>(substationModificationFormSchema),
     });
     const { reset, getValues } = formMethods;
 
@@ -107,16 +85,12 @@ const SubstationModificationDialog = ({
             if (editData?.equipmentId) {
                 setSelectedId(editData.equipmentId);
             }
-            reset({
-                [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
-                [COUNTRY]: editData.country?.value ?? null,
-                ...getPropertiesFromModification(editData?.properties ?? undefined),
-            });
+            reset(substationModificationDtoToForm(editData));
         }
     }, [reset, editData]);
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(substationModificationEmptyFormData);
     }, [reset]);
 
     const onEquipmentIdChange = useCallback(
@@ -127,18 +101,22 @@ const SubstationModificationDialog = ({
                     studyUuid,
                     currentNodeUuid,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.SUBSTATION,
+                    EquipmentType.SUBSTATION,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )
-                    .then((substation: SubstationInfos) => {
+                    .then((substation: SubstationModificationInfos) => {
                         if (substation) {
                             setSubstationToModify(substation);
                             reset(
                                 (formValues) => ({
                                     ...formValues,
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(substation, getValues),
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
+                                    [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
+                                        substation,
+                                        getValues
+                                    ),
                                 }),
                                 { keepDirty: true }
                             );
@@ -147,13 +125,16 @@ const SubstationModificationDialog = ({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                         if (editData?.equipmentId !== equipmentId) {
                             setSubstationToModify(undefined);
                         }
                     });
             } else {
                 setSubstationToModify(undefined);
-                reset(emptyFormData, { keepDefaultValues: true });
+                reset(substationModificationEmptyFormData, { keepDefaultValues: true });
             }
         },
         [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, editData]
@@ -166,20 +147,13 @@ const SubstationModificationDialog = ({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (substation: SubstationModificationFormData) => {
-            modifySubstation({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
-                id: selectedId,
-                name: sanitizeString(substation[EQUIPMENT_NAME]),
-                country: substation[COUNTRY] ?? null,
-                properties: toModificationProperties(substation),
-            }).catch((error) => {
+        (substationForm: SubstationModificationFormData) => {
+            const dto = substationModificationFormToDto(substationForm);
+            modifySubstation(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: unknown) => {
                 snackWithFallback(snackError, error, { headerId: 'SubstationModificationError' });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid, selectedId]
+        [currentNodeUuid, editData?.uuid, snackError, studyUuid]
     );
 
     const open = useOpenShortWaitFetching({
@@ -192,7 +166,7 @@ const SubstationModificationDialog = ({
 
     return (
         <CustomFormProvider
-            validationSchema={formSchema}
+            validationSchema={substationModificationFormSchema}
             {...formMethods}
             removeOptional={true}
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -219,9 +193,7 @@ const SubstationModificationDialog = ({
                         fillerHeight={5}
                     />
                 )}
-                {selectedId != null && (
-                    <SubstationModificationForm substationToModify={substationToModify} equipmentId={selectedId} />
-                )}
+                {selectedId != null && <SubstationModificationForm substationToModify={substationToModify} />}
             </ModificationDialog>
         </CustomFormProvider>
     );

@@ -6,7 +6,6 @@
  */
 
 import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
-import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import {
     getComputedRegulationTypeId,
     getComputedTapSideId,
@@ -17,7 +16,7 @@ import {
     getComputedPhaseTapChangerRegulationMode,
     getPhaseTapRegulationSideId,
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
-import { type Identifiable } from '@gridsuite/commons-ui';
+import { type Identifiable, REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from '@gridsuite/commons-ui';
 import { SpreadsheetEquipmentType } from '../components/spreadsheet-view/types/spreadsheet.type';
 
 /*
@@ -74,16 +73,6 @@ export const mapPhaseTapChanger = (twt: any) => {
 
 export const mapTwtDataForTable = (twt: any) => mapPhaseTapChanger(mapRatioTapChanger(twt));
 
-export const mapGeneratorDataForTable = (generator: any) => {
-    const formattedGenerator = { ...generator };
-    const hasDistantRegulation =
-        formattedGenerator.regulatingTerminalVlId || formattedGenerator.regulatingTerminalConnectableId;
-    formattedGenerator.RegulationTypeText =
-        formattedGenerator.RegulationTypeText ||
-        (hasDistantRegulation ? REGULATION_TYPES.DISTANT.id : REGULATION_TYPES.LOCAL.id);
-    return formattedGenerator;
-};
-
 export const mapShuntCompensatorDataForTable = (shuntCompensator: any) => {
     const formattedCompensator = { ...shuntCompensator };
 
@@ -102,8 +91,6 @@ const mapSpreadsheetEquipment = (equipmentType: SpreadsheetEquipmentType, equipm
         case SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER:
         case SpreadsheetEquipmentType.BRANCH: // can do it because mappers test if field present before modifying
             return mapTwtDataForTable(equipment);
-        case SpreadsheetEquipmentType.GENERATOR:
-            return mapGeneratorDataForTable(equipment);
         case SpreadsheetEquipmentType.SHUNT_COMPENSATOR:
             return mapShuntCompensatorDataForTable(equipment);
         default:

@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../../utils/yup-config';
-import { COLUMN_TYPES } from '../../../../custom-aggrid/custom-aggrid-header.type';
+import * as yup from 'yup';
 import { TestContext } from 'yup';
+import { COLUMN_TYPES } from '../../../../../types/custom-aggrid-types';
 
 export const COLUMNS_MODEL = 'columnsModel';
 export const COLUMN_ID = 'columnId';

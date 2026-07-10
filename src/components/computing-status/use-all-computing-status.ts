@@ -7,6 +7,7 @@
 
 import { useComputingStatus } from './use-computing-status';
 import {
+    getDynamicMarginCalculationRunningStatus,
     getDynamicSecurityAnalysisRunningStatus,
     getDynamicSimulationRunningStatus,
     getLoadFlowRunningStatus,
@@ -28,13 +29,17 @@ import {
     fetchShortCircuitAnalysisStatus,
 } from '../../services/study/short-circuit-analysis';
 import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
-import { fetchLoadFlowStatus, fetchLoadFlowComputationInfos } from '../../services/study/loadflow';
+import { fetchLoadFlowComputationInfos, fetchLoadFlowStatus } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 import { fetchStateEstimationStatus } from '../../services/study/state-estimation';
 import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic-security-analysis';
+import { fetchDynamicMarginCalculationStatus } from '../../services/study/dynamic-margin-calculation';
 import { NotificationType } from 'types/notification-types';
 import { fetchPccMinStatus } from 'services/study/pcc-min';
+import { fetchAllComputationStatus } from '../../services/study/study';
+import { useAllComputingStatusAtOnce } from './use-computing-status-at-once';
+import { useMemo } from 'react';
 
 // status invalidations
 const loadFlowStatusInvalidations = [NotificationType.LOADFLOW_STATUS, NotificationType.LOADFLOW_FAILED];
@@ -61,6 +66,10 @@ const dynamicSimulationStatusInvalidations = [
 const dynamicSecurityAnalysisStatusInvalidations = [
     NotificationType.DYNAMIC_SECURITY_ANALYSIS_STATUS,
     NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED,
+];
+const dynamicMarginCalculationStatusInvalidations = [
+    NotificationType.DYNAMIC_MARGIN_CALCULATION_STATUS,
+    NotificationType.DYNAMIC_MARGIN_CALCULATION_FAILED,
 ];
 const voltageInitStatusInvalidations = [NotificationType.VOLTAGE_INIT_STATUS, NotificationType.VOLTAGE_INIT_FAILED];
 const stateEstimationStatusInvalidations = [
@@ -95,6 +104,10 @@ const dynamicSecurityAnalysisStatusCompletions = [
     NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT,
     NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED,
 ];
+const dynamicMarginCalculationStatusCompletions = [
+    NotificationType.DYNAMIC_MARGIN_CALCULATION_RESULT,
+    NotificationType.DYNAMIC_MARGIN_CALCULATION_FAILED,
+];
 const voltageInitStatusCompletions = [NotificationType.VOLTAGE_INIT_RESULT, NotificationType.VOLTAGE_INIT_FAILED];
 const stateEstimationStatusCompletions = [
     NotificationType.STATE_ESTIMATION_RESULT,
@@ -107,6 +120,7 @@ export const loadflowResultInvalidations = [NotificationType.LOADFLOW_RESULT];
 export const securityAnalysisResultInvalidations = [NotificationType.SECURITY_ANALYSIS_RESULT];
 export const dynamicSimulationResultInvalidations = [NotificationType.DYNAMIC_SIMULATION_RESULT];
 export const dynamicSecurityAnalysisResultInvalidations = [NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT];
+export const dynamicMarginCalculationResultInvalidations = [NotificationType.DYNAMIC_MARGIN_CALCULATION_RESULT];
 export const voltageInitResultInvalidations = [NotificationType.VOLTAGE_INIT_RESULT];
 export const stateEstimationResultInvalidations = [NotificationType.STATE_ESTIMATION_RESULT];
 export const pccMinResultInvalidations = [NotificationType.PCC_MIN_RESULT];
@@ -117,6 +131,9 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
+    const dynamicMarginCalculationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.DynamicMarginCalculation
+    );
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
@@ -216,6 +233,19 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid,
+        fetchDynamicMarginCalculationStatus,
+        dynamicMarginCalculationStatusInvalidations,
+        dynamicMarginCalculationStatusCompletions,
+        getDynamicMarginCalculationRunningStatus,
+        ComputingType.DYNAMIC_MARGIN_CALCULATION,
+        undefined,
+        dynamicMarginCalculationAvailability
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
         fetchVoltageInitStatus,
         voltageInitStatusInvalidations,
         voltageInitStatusCompletions,
@@ -249,5 +279,22 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         ComputingType.PCC_MIN,
         undefined,
         pccMinAvailability
+    );
+
+    const fetchLoadFlowComputationInfosMap = useMemo(
+        () =>
+            new Map<
+                ComputingType,
+                (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>
+            >([[ComputingType.LOAD_FLOW, fetchLoadFlowComputationInfos]]),
+        []
+    );
+
+    useAllComputingStatusAtOnce(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        fetchAllComputationStatus,
+        fetchLoadFlowComputationInfosMap
     );
 };

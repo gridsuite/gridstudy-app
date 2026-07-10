@@ -8,7 +8,7 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { Identifiable } from '@gridsuite/commons-ui';
 
 export const useNameOrId = () => {

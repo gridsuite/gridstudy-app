@@ -7,15 +7,14 @@
 
 import { RunningStatus } from 'components/utils/running-status';
 import type { UUID } from 'node:crypto';
-import { RefObject, useCallback, useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ComputingType } from '@gridsuite/commons-ui';
-import { AppState, StudyUpdated } from 'redux/reducer';
+import { RefObject, useCallback, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { ComputingType, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
 import { isParameterizedComputingType, toComputingStatusParameters } from './computing-status-utils';
-import { StudyUpdatedEventData } from 'types/notification-types';
+import { parseEventData, StudyUpdatedEventData } from '../../types/notification-types';
 
 interface UseComputingStatusProps {
     (
@@ -41,42 +40,42 @@ interface UseComputingStatusProps {
 }
 
 interface LastUpdateProps {
-    studyUpdatedForce: StudyUpdated;
+    eventData: StudyUpdatedEventData | null;
     computingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>;
 }
 
 function isWorthUpdate(
-    studyUpdatedForce: StudyUpdated,
+    eventData: StudyUpdatedEventData | null,
     computingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
     lastUpdateRef: RefObject<LastUpdateProps | null>,
-    nodeUuidRef: RefObject<UUID | null>,
-    rootNetworkUuidRef: RefObject<UUID | null>,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     invalidations: string[]
 ): boolean {
-    const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData; // TODO narrowing by predicate
-    const headers = studyUpdatedEventData?.headers;
+    const headers = eventData?.headers;
     const updateType = headers?.updateType;
     const node = headers?.node;
     const nodes = headers?.nodes;
     const rootNetworkUuidFromNotification = headers?.rootNetworkUuid;
-    if (nodeUuidRef.current !== nodeUuid) {
-        return true;
-    }
-    if (rootNetworkUuidRef.current !== currentRootNetworkUuid) {
-        return true;
-    }
     if (rootNetworkUuidFromNotification && rootNetworkUuidFromNotification !== currentRootNetworkUuid) {
         return false;
     }
     if (computingStatusFetcher && lastUpdateRef.current?.computingStatusFetcher !== computingStatusFetcher) {
         return true;
     }
-    if (studyUpdatedForce && lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce) {
+    if (eventData && lastUpdateRef.current?.eventData === eventData) {
         return false;
     }
     if (!updateType) {
+        return false;
+    }
+    // if node is updated with 'all status' notification it is done in use-computating-status-at-once
+    if (
+        updateType === 'nodeBuildStatusUpdated' ||
+        updateType === 'buildCompleted' ||
+        updateType === 'all_computation_status' ||
+        updateType === 'all_computation_status_without_loadflow'
+    ) {
         return false;
     }
     if (invalidations.indexOf(updateType) <= -1) {
@@ -108,8 +107,10 @@ const shouldRequestBeCanceled = (
  *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
  * @param studyUuid current study uuid
  * @param nodeUuid current node uuid
+ * @param currentRootNetworkUuid
  * @param computingStatusFetcher method fetching current <computingType> state
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
+ * @param completions
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
  * @param computingStatusParametersFetcher method fetching status infos
@@ -129,17 +130,19 @@ export const useComputingStatus: UseComputingStatusProps = (
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);
-
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch<AppDispatch>();
 
     //the callback crosschecks the computation status and the content of the last update reference
     //in order to determine which computation just ended
     const isComputationCompleted = useCallback(
-        (status: RunningStatus) =>
-            [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(status) &&
-            completions.includes(lastUpdateRef.current?.studyUpdatedForce.eventData?.headers?.updateType ?? ''),
+        (status: RunningStatus) => {
+            const eventData = lastUpdateRef.current?.eventData;
+            return (
+                [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(status) &&
+                completions.includes(eventData?.headers?.updateType ?? '')
+            );
+        },
         [completions]
     );
 
@@ -237,38 +240,42 @@ export const useComputingStatus: UseComputingStatusProps = (
         isComputationCompleted,
     ]);
 
-    /* initial fetch and update */
-    useEffect(() => {
-        if (
-            !studyUuid ||
-            !nodeUuid ||
-            !currentRootNetworkUuid ||
-            optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up
-        ) {
-            return;
-        }
-        const isUpdateForUs = isWorthUpdate(
-            studyUpdatedForce,
+    const evaluateUpdate = useCallback(
+        (event?: MessageEvent) => {
+            if (
+                !studyUuid ||
+                !nodeUuid ||
+                !currentRootNetworkUuid ||
+                optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up
+            ) {
+                return;
+            }
+            const eventData = parseEventData<StudyUpdatedEventData>(event ?? null);
+            const isUpdateForUs = isWorthUpdate(
+                eventData,
+                computingStatusFetcher,
+                lastUpdateRef,
+                nodeUuid,
+                currentRootNetworkUuid,
+                invalidations
+            );
+            lastUpdateRef.current = { eventData, computingStatusFetcher };
+            if (isUpdateForUs) {
+                update();
+            }
+        },
+        [
             computingStatusFetcher,
-            lastUpdateRef,
-            nodeUuidRef,
-            rootNetworkUuidRef,
-            nodeUuid,
             currentRootNetworkUuid,
-            invalidations
-        );
-        lastUpdateRef.current = { studyUpdatedForce, computingStatusFetcher };
-        if (isUpdateForUs) {
-            update();
-        }
-    }, [
-        update,
-        computingStatusFetcher,
-        nodeUuid,
-        invalidations,
-        currentRootNetworkUuid,
-        studyUpdatedForce,
-        studyUuid,
-        optionalServiceAvailabilityStatus,
-    ]);
+            invalidations,
+            nodeUuid,
+            optionalServiceAvailabilityStatus,
+            studyUuid,
+            update,
+        ]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: evaluateUpdate,
+    });
 };

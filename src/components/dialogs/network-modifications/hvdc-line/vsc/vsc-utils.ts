@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const VSC_CREATION_TABS = {
+export const VSC_TABS = {
     HVDC_LINE_TAB: 0,
     CONVERTER_STATION_1: 1,
     CONVERTER_STATION_2: 2,
+    STATE_ESTIMATION: 3,
 };

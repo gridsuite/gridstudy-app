@@ -6,88 +6,25 @@
  */
 
 import * as React from 'react';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
-import { AgGridReactProps } from 'ag-grid-react';
+import { ColDef, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
-import { TablePaginationProps } from '@mui/material';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
-import { Page } from '../common/utils';
-import { RESULT_TYPE } from './security-analysis-result-utils';
-
-export interface LimitViolation {
-    subjectId?: string;
-    acceptableDuration?: number;
-    upcomingAcceptableDuration?: number;
-    limit?: number;
-    patlLimit?: number;
-    limitName?: string;
-    nextLimitName?: string;
-    limitReduction?: number;
-    limitType?: string;
-    loading?: number;
-    patlLoading?: number;
-    side?: string;
-    value?: number;
-    locationId?: string;
-}
-
-interface Element {
-    elementType?: string;
-    id?: string;
-}
-
-export interface ContingencyItem {
-    status?: string;
-    contingencyId?: string;
-    elements?: Element[];
-}
-
-export interface Contingency {
-    contingency?: ContingencyItem;
-    limitViolation?: LimitViolation;
-}
-
-export interface SecurityAnalysisNmkTableRow {
-    subjectId?: string;
-    locationId?: string;
-    acceptableDuration?: number | null;
-    upcomingAcceptableDuration?: number | null;
-    status?: string;
-    contingencyEquipmentsIds?: (string | undefined)[];
-    contingencyId?: string;
-    limit?: number;
-    patlLimit?: number;
-    limitName?: string | null;
-    nextLimitName?: string | null;
-    limitType?: string;
-    linkedElementId?: string;
-    loading?: number;
-    patlLoading?: number;
-    side?: string;
-    value?: number;
-    violationCount?: number;
-}
-
-export interface Constraint {
-    limitViolation?: LimitViolation;
-    subjectId?: string;
-}
-
-export interface ContingenciesFromConstraintItem {
-    subjectId?: string;
-    contingencies?: Contingency[];
-}
-
-export interface ConstraintsFromContingencyItem {
-    subjectLimitViolations?: Constraint[];
-    contingency?: ContingencyItem;
-}
+import { RunningStatusMessage } from '../../utils/aggrid-rows-handler';
+import RunningStatus from '../../utils/running-status';
+import { LimitViolation } from '@gridsuite/commons-ui';
 
 export interface PreContingencyResult {
     subjectId?: string;
     status: string;
     limitViolation?: LimitViolation;
+}
+
+export enum RESULT_TYPE {
+    N = 'N',
+    NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
+    NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
+    NMK_CUT_OFF_POWER = 'NMK_CUT_OFF_POWER',
 }
 
 export type SecurityAnalysisQueryParams = {
@@ -101,10 +38,6 @@ export type SecurityAnalysisQueryParams = {
 
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
-export type SecurityAnalysisNmkResult = Page<
-    ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | null
->;
-
 // Components props interfaces
 export interface SecurityAnalysisTabProps {
     studyUuid: UUID;
@@ -115,15 +48,10 @@ export interface SecurityAnalysisTabProps {
 export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult[];
     isLoadingResult: boolean;
-    columnDefs: ColDef<any>[];
-}
-
-export interface SecurityAnalysisResultNmkProps {
-    result?: SecurityAnalysisNmkResult;
-    columnDefs: ColDef<any>[];
-    isLoadingResult: boolean;
-    isFromContingency: boolean;
-    paginationProps: TablePaginationProps;
+    columnDefs: ColDef[];
+    resultStatusMessages: RunningStatusMessage;
+    securityAnalysisStatus: RunningStatus;
+    onGridReady: (params: GridReadyEvent) => void;
 }
 
 export interface SecurityAnalysisNTableRow {
@@ -140,11 +68,4 @@ export interface SecurityAnalysisNTableRow {
     acceptableDuration?: number | null;
     upcomingAcceptableDuration?: number | null;
     side?: string;
-}
-
-export interface SecurityAnalysisResultProps {
-    rows: SecurityAnalysisNTableRow[] | SecurityAnalysisNmkTableRow[];
-    columnDefs: ColDef[];
-    isLoadingResult: boolean;
-    agGridProps?: AgGridReactProps;
 }

@@ -4,8 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
-import { createPropertyModification, Property } from '../common/properties/property-utils';
 import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from './properties/property-utils';
 import {
     CSV_FILENAME,
@@ -27,13 +25,17 @@ import {
 import { BOOLEAN, ENUM, NUMBER } from '../../../network/constants';
 import { IntlShape } from 'react-intl';
 import {
+    createPropertyModification,
     EquipmentType,
     equipmentTypesForPredefinedPropertiesMapper,
+    getCsvDelimiter,
     LANG_FRENCH,
     ModificationType,
     PredefinedProperties,
+    Property,
+    ReactiveCapabilityCurvePoints,
 } from '@gridsuite/commons-ui';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import type { UUID } from 'node:crypto';
 
 export type TabularModificationEditDataType = {
@@ -85,9 +87,7 @@ export interface TabularField {
     requiredIf?: { id: string };
 }
 
-export interface TabularFields {
-    [key: string]: TabularField[];
-}
+export type TabularFields = Partial<Record<EquipmentType, TabularField[]>>;
 
 export const formatModification = (modification: Modification) => {
     //exclude type, date and uuid from the modification object
@@ -252,6 +252,24 @@ export const isFieldTypeOk = (value: any, fieldDefinition: { type?: string; opti
     return true;
 };
 
+/**
+ * Sanitize a CSV cell value before injecting it into the table:
+ * - a mandatory boolean (checkbox) cell with no/invalid value defaults to `false`
+ *   (an empty checkbox cannot be distinguished from `false`),
+ * - any other value with a wrong format is dropped (replaced by `null`) so invalid data
+ *   is never injected,
+ * - otherwise the value is kept as-is (including non-typed `property_*` columns).
+ */
+export const sanitizeRowValue = (value: any, fieldDefinition: TabularField | undefined): any => {
+    if (fieldDefinition?.type === BOOLEAN && fieldDefinition.required && typeof value !== 'boolean') {
+        return false;
+    }
+    if (!isFieldTypeOk(value, fieldDefinition)) {
+        return null;
+    }
+    return value;
+};
+
 export const transformIfFrenchNumber = (value: string, language: string): string => {
     value = value.trim();
     // Only transform if we're in French mode and the value is a number that has a comma
@@ -291,9 +309,9 @@ export const generateCommentLines = ({
         ?.concat(selectedProperties);
 
     if (csvTranslatedColumns) {
-        const separator = language === LANG_FRENCH ? ';' : ',';
+        const separator = getCsvDelimiter(language);
         // First comment line contains header translation
-        commentData.push(['#' + csvTranslatedColumns.join(separator)]);
+        commentData.push(csvTranslatedColumns.map((column, index) => (index === 0 ? `#${column}` : column)));
 
         // Check for optional second comment line from the translation file
         let secondCommentLine: string = '';
@@ -322,7 +340,7 @@ export const generateCommentLines = ({
             }
         }
         if (secondCommentLine.length > 0 && secondCommentLine.replaceAll(separator, '').length > 0) {
-            commentData.push([secondCommentLine]);
+            commentData.push(secondCommentLine.split(separator));
         }
     }
     return commentData;

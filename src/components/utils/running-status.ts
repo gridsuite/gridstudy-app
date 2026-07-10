@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { ComputingType } from '@gridsuite/commons-ui';
 
 export enum RunningStatus {
     SUCCEED = 'SUCCEED',
@@ -106,6 +107,21 @@ export function getDynamicSecurityAnalysisRunningStatus(dynamicSecurityAnalysisS
     }
 }
 
+export function getDynamicMarginCalculationRunningStatus(dynamicMarginCalculationStatus: string | null): RunningStatus {
+    switch (dynamicMarginCalculationStatus) {
+        case 'SUCCEED':
+            return RunningStatus.SUCCEED;
+        case 'FAILED':
+            return RunningStatus.FAILED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
 export function getVoltageInitRunningStatus(voltageInitStatus: string | null): RunningStatus {
     switch (voltageInitStatus) {
         case 'OK':
@@ -129,6 +145,8 @@ export function getStateEstimationRunningStatus(stateEstimationStatus: string | 
             return RunningStatus.RUNNING;
         case 'NOT_DONE':
             return RunningStatus.IDLE;
+        case 'DIVERGED':
+            return RunningStatus.FAILED;
         default:
             return RunningStatus.IDLE;
     }
@@ -142,6 +160,37 @@ export function getPccMinRunningStatus(pccMinStatus: string | null): RunningStat
             return RunningStatus.RUNNING;
         case 'NOT_DONE':
             return RunningStatus.IDLE;
+        case 'FAILED':
+            return RunningStatus.FAILED;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
+export function getComputationRunningStatus(statusValue: string, computingType: ComputingType): RunningStatus {
+    switch (computingType) {
+        case ComputingType.PCC_MIN:
+            return getPccMinRunningStatus(statusValue);
+        case ComputingType.LOAD_FLOW:
+            return getLoadFlowRunningStatus(statusValue);
+        case ComputingType.SECURITY_ANALYSIS:
+            return getSecurityAnalysisRunningStatus(statusValue);
+        case ComputingType.SENSITIVITY_ANALYSIS:
+            return getSensitivityAnalysisRunningStatus(statusValue);
+        case ComputingType.SHORT_CIRCUIT:
+            return getShortCircuitAnalysisRunningStatus(statusValue);
+        case ComputingType.SHORT_CIRCUIT_ONE_BUS:
+            return getShortCircuitAnalysisRunningStatus(statusValue);
+        case ComputingType.DYNAMIC_SIMULATION:
+            return getDynamicSimulationRunningStatus(statusValue);
+        case ComputingType.DYNAMIC_SECURITY_ANALYSIS:
+            return getDynamicSecurityAnalysisRunningStatus(statusValue);
+        case ComputingType.DYNAMIC_MARGIN_CALCULATION:
+            return getDynamicMarginCalculationRunningStatus(statusValue);
+        case ComputingType.VOLTAGE_INITIALIZATION:
+            return getVoltageInitRunningStatus(statusValue);
+        case ComputingType.STATE_ESTIMATION:
+            return getStateEstimationRunningStatus(statusValue);
         default:
             return RunningStatus.IDLE;
     }

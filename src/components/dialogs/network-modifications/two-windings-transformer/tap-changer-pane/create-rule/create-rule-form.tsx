@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DialogContent, DialogTitle, Grid } from '@mui/material';
+import { Box, DialogContent, DialogTitle, Stack } from '@mui/material';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
-import GridItem from '../../../../commons/grid-item';
 import { PHASE_TAP, RATIO_TAP, RuleType } from '../../two-windings-transformer.types';
 
 const TAP_LABELS = {
@@ -40,14 +39,14 @@ const CreateRuleForm = ({ ruleType }: CreateRuleFormProps) => {
                 <FormattedMessage id={labels.title} />
             </DialogTitle>
             <DialogContent>
-                <Grid container spacing={2} direction={'column'} style={DIALOG_CONTENT_STYLE}>
-                    <GridItem>
+                <Stack spacing={2} sx={DIALOG_CONTENT_STYLE}>
+                    <Box>
                         <FloatInput label={labels.low} name={LOW_TAP_POSITION} />
-                    </GridItem>
-                    <GridItem>
+                    </Box>
+                    <Box>
                         <FloatInput label={labels.high} name={HIGH_TAP_POSITION} />
-                    </GridItem>
-                </Grid>
+                    </Box>
+                </Stack>
             </DialogContent>
         </>
     );

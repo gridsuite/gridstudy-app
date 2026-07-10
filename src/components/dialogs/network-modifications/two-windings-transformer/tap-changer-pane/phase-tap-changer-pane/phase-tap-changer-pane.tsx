@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import {
     CURRENT_LIMITER_REGULATING_VALUE,
     ENABLED,
@@ -17,19 +17,18 @@ import {
 } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { ActivePowerAdornment, AmpereAdornment } from '../../../../dialog-utils';
 import { PHASE_REGULATION_MODES } from 'components/network/constants';
-import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
+import { ActivePowerAdornment, AmpereAdornment, FloatInput, SelectInput } from '@gridsuite/commons-ui';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import {
     getComputedPhaseTapChangerRegulationMode,
     getComputedPreviousPhaseRegulationType,
 } from './phase-tap-changer-pane-utils';
 import { useMemo } from 'react';
-import GridItem from '../../../../commons/grid-item';
-import GridSection from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
+import { GridSection } from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
-import { PhaseTapChangerData, PhaseTapChangerPaneProps } from '../../two-windings-transformer.types';
+import { TapChangerMapInfos, TapChangerPaneProps } from '../../two-windings-transformer.types';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -40,7 +39,7 @@ const PhaseTapChangerPane = ({
     previousValues,
     editData,
     isModification = false,
-}: PhaseTapChangerPaneProps) => {
+}: TapChangerPaneProps) => {
     const intl = useIntl();
 
     const phaseTapChangerEnabledWatch = useWatch({
@@ -55,7 +54,7 @@ const PhaseTapChangerPane = ({
         name: `${id}.${REGULATION_TYPE}`,
     });
 
-    const getPhaseTapChangerRegulationModeLabel = (phaseTapChangerFormValues?: PhaseTapChangerData | null) => {
+    const getPhaseTapChangerRegulationModeLabel = (phaseTapChangerFormValues?: TapChangerMapInfos | null) => {
         const computedRegulationMode = getComputedPhaseTapChangerRegulationMode(phaseTapChangerFormValues ?? undefined);
         if (computedRegulationMode) {
             return intl.formatMessage({
@@ -64,7 +63,7 @@ const PhaseTapChangerPane = ({
         }
     };
 
-    const getRegulatingPreviousValue = (field: string, tap?: PhaseTapChangerData) => {
+    const getRegulatingPreviousValue = (field: string, tap?: TapChangerMapInfos) => {
         if (
             (tap?.[REGULATION_MODE] === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                 field === FLOW_SET_POINT_REGULATING_VALUE) ||
@@ -142,7 +141,7 @@ const PhaseTapChangerPane = ({
     return (
         <>
             <GridSection title="RegulationSection" heading={4} />
-            <Grid item container spacing={1}>
+            <Grid container spacing={1}>
                 <GridItem size={4}>{regulationModeField}</GridItem>
                 {regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id && (
                     <>

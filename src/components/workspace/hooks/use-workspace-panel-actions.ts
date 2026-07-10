@@ -8,32 +8,37 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { updatePanels, deletePanels as deletePanelsRedux } from '../../../redux/slices/workspace-slice';
+import { deletePanels as deletePanelsRedux, updatePanels } from '../../../redux/slices/workspace-slice';
 import {
-    selectFocusedPanelId,
     selectActiveWorkspaceId,
+    selectAssociatedPanels,
+    selectExistingSLD,
+    selectFocusedPanelId,
     selectPanel,
     selectPanelByType,
-    selectExistingSLD,
-    selectAssociatedPanels,
     selectPanels,
 } from '../../../redux/slices/workspace-selectors';
+import type { PanelState, PersistentNADFields, SpreadsheetPanel } from '../types/workspace.types';
 import { PanelType } from '../types/workspace.types';
-import type { PanelState, SpreadsheetPanel, PersistentNADFields } from '../types/workspace.types';
-import { store, type AppDispatch } from '../../../redux/store';
+import { type AppDispatch, store } from '../../../redux/store';
 import { EquipmentType } from '@gridsuite/commons-ui';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
+    createNADPanel,
+    createPanelBase,
+    createSLDPanel,
     getDefaultAssociatedSldPositionAndSize,
     isNADPanel,
     isSLDVoltageLevelPanel,
     updateNavigationHistory,
-    createPanelBase,
-    createSLDPanel,
-    createNADPanel,
 } from './workspace-panel-utils';
 import { getPanelConfig } from '../constants/workspace.constants';
 import { panelBackendManager } from '../utils/panel-backend-manager';
+import {
+    deleteLocalStoragePanelStates,
+    saveLocalStoragePanelZIndex,
+    saveLocalStoragePanelsZIndex,
+} from '../../../redux/session-storage/workspace-local-storage';
 
 // compute the next available zIndex value
 const getNextZIndex = (panels: PanelState[]): number => {
@@ -61,6 +66,7 @@ export const useWorkspacePanelActions = () => {
             dispatch(deletePanelsRedux(panelIds));
             if (workspaceId) {
                 panelBackendManager.debounceDelete(studyUuid as UUID, workspaceId, panelIds);
+                deleteLocalStoragePanelStates(studyUuid as UUID, workspaceId, panelIds);
             }
         },
         [dispatch, studyUuid, workspaceId]
@@ -75,9 +81,12 @@ export const useWorkspacePanelActions = () => {
                 const nextZ = getNextZIndex(allPanels);
                 const syncToBackend = panel.minimized === true;
                 savePanels([{ ...panel, minimized: false, zIndex: nextZ }], syncToBackend);
+                if (studyUuid && workspaceId) {
+                    saveLocalStoragePanelZIndex(studyUuid, workspaceId, panel.id, panel.type, nextZ);
+                }
             }
         },
-        [savePanels]
+        [savePanels, studyUuid, workspaceId]
     );
 
     const saveAndFocusPanel = useCallback(
@@ -85,8 +94,11 @@ export const useWorkspacePanelActions = () => {
             const allPanels = selectPanels(store.getState());
             const nextZ = getNextZIndex(allPanels);
             savePanels([{ ...panel, minimized: false, zIndex: nextZ }], syncToBackend);
+            if (studyUuid && workspaceId) {
+                saveLocalStoragePanelZIndex(studyUuid, workspaceId, panel.id, panel.type, nextZ);
+            }
         },
-        [savePanels]
+        [savePanels, studyUuid, workspaceId]
     );
 
     const deletePanel = useCallback(
@@ -399,9 +411,12 @@ export const useWorkspacePanelActions = () => {
                     zIndex: nextZ++,
                 }));
                 savePanels(panelsWithZIndex);
+                if (studyUuid && workspaceId) {
+                    saveLocalStoragePanelsZIndex(studyUuid, workspaceId, panelsWithZIndex);
+                }
             }
         },
-        [savePanels]
+        [savePanels, studyUuid, workspaceId]
     );
 
     // Spreadsheet operations

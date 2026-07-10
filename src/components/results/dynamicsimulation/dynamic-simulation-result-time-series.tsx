@@ -7,7 +7,7 @@
 
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { Box, Grid, LinearProgress } from '@mui/material';
+import { Box, Grid2 as Grid, LinearProgress } from '@mui/material';
 import DynamicSimulationResultChart from './timeseries/dynamic-simulation-result-chart';
 import { memo, SyntheticEvent, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -21,7 +21,7 @@ import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import Overlay from '../common/Overlay';
 import type { UUID } from 'node:crypto';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer.type';
 import { DropResult } from '@hello-pangea/dnd';
 
 const styles = {

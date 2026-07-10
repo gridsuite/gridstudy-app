@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Equipment, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { useCallback, useState } from 'react';
+import { Equipment, fetchAppsMetadata, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { SELECTION_TYPES } from './selection-types';
 import { createMapContingencyList, createMapFilter } from '../../../services/study/network-map';
 import { DestinationFolder, SelectionCreationPanelNotNadFields } from './selection-creation-schema';
@@ -30,6 +30,14 @@ export const useSaveMap = (): UseSaveMapOutput => {
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [pendingState, setPendingState] = useState(false);
+    const [busbarIdAsContingencyName, setBusbarIdAsContingencyName] = useState(false);
+
+    useEffect(() => {
+        fetchAppsMetadata().then((res) => {
+            const metadata = res.find((item) => item.name === 'Study');
+            setBusbarIdAsContingencyName(!!metadata?.useBusbarIdAsContingencyNameForPolygonCreation);
+        });
+    }, []);
 
     const onSaveSelection = useCallback(
         async (
@@ -83,7 +91,8 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         currentNodeUuid,
                         currentRootNetworkUuid,
                         equipments,
-                        nominalVoltages
+                        nominalVoltages,
+                        busbarIdAsContingencyName
                     );
                     snackInfo({
                         messageTxt: intl.formatMessage({
@@ -107,7 +116,16 @@ export const useSaveMap = (): UseSaveMapOutput => {
             }
             return true; // success
         },
-        [currentNodeUuid, currentRootNetworkUuid, intl, snackError, snackInfo, snackWarning, studyUuid]
+        [
+            busbarIdAsContingencyName,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            intl,
+            snackError,
+            snackInfo,
+            snackWarning,
+            studyUuid,
+        ]
     );
 
     return { pendingState, onSaveSelection };

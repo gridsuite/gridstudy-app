@@ -12,31 +12,28 @@ import {
 } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
 
 interface ShortCircuitAnalysisAllBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
-    globalFilters?: GlobalFilters;
 }
 
 export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitAnalysisAllBusResultProps> = ({
     onGridColumnsChanged,
     onRowDataUpdated,
-    globalFilters,
 }) => {
     const allBusesShortCircuitAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
-    const [result, setResult] = useState<SCAFaultResult[]>([]);
+    const [result, setResult] = useState<SCAFaultResult[] | undefined>(undefined);
 
     const updateResult = useCallback((results: SCAFaultResult[] | SCAFeederResult[] | null) => {
-        setResult((results as SCAFaultResult[]) ?? []);
+        setResult((results as SCAFaultResult[]) ?? undefined);
     }, []);
 
     return (
@@ -50,7 +47,6 @@ export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitA
             }}
             onGridColumnsChanged={onGridColumnsChanged}
             onRowDataUpdated={onRowDataUpdated}
-            globalFilters={globalFilters}
         />
     );
 };

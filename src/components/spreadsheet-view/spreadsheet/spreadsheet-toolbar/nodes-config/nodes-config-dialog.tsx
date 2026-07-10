@@ -6,12 +6,12 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { CustomFormProvider, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import NodeConfigTable from './node-config-table';
 import type { UUID } from 'node:crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';

@@ -9,19 +9,18 @@ import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 're
 import { ExportCsvButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import {
-    ShortCircuitCsvExportParams,
     downloadShortCircuitResultZippedCsv,
+    ShortCircuitCsvExportParams,
 } from '../../../services/study/short-circuit-analysis';
 import { downloadZipFile } from '../../../services/utils';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import type { UUID } from 'node:crypto';
 import { BranchSide } from 'components/utils/constants';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useSelector } from 'react-redux';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { FilterType } from '../../../types/custom-aggrid-types';
+import { TableType } from '../../../types/custom-aggrid-types';
+import { getColumnFiltersFromStore } from '../../../redux/selectors/filter-store-selectors';
 import {
     convertFilterValues,
     FROM_COLUMN_TO_FIELD,
@@ -30,6 +29,9 @@ import {
 } from './shortcircuit-analysis-result-content';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
 
 interface ShortCircuitExportButtonProps {
     studyUuid: UUID;
@@ -38,19 +40,10 @@ interface ShortCircuitExportButtonProps {
     csvHeader: string[];
     analysisType: number;
     disabled?: boolean;
-    globalFilters?: GlobalFilters;
 }
 
 export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButtonProps> = (props) => {
-    const {
-        studyUuid,
-        nodeUuid,
-        currentRootNetworkUuid,
-        csvHeader,
-        disabled = false,
-        analysisType,
-        globalFilters,
-    } = props;
+    const { studyUuid, nodeUuid, currentRootNetworkUuid, csvHeader, disabled = false, analysisType } = props;
     const { snackError } = useSnackMessage();
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
@@ -60,7 +53,6 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
     const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
-    const { filters } = useFilterSelector(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(analysisType)]
     );
@@ -112,6 +104,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));
 
+        const filters = getColumnFiltersFromStore(TableType.ShortcircuitAnalysis, mappingTabs(analysisType));
         const updatedFilters = filters
             ? mapFieldsToColumnsFilter(convertFilterValues(filters), fromFrontColumnToBackKeys)
             : null;
@@ -132,7 +125,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
             currentNodeUuid: nodeUuid,
             currentRootNetworkUuid,
             type: analysisType,
-            globalFilters,
+            globalFilters: buildValidGlobalFilters(getSelectedGlobalFilters(TableType.ShortcircuitAnalysis)),
             selector,
             csvParams: exportParams,
         })
@@ -149,7 +142,6 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
             .finally(() => setIsCsvExportLoading(false));
     }, [
         sortConfig,
-        filters,
         analysisType,
         csvHeader,
         enumValueTranslations,
@@ -157,7 +149,6 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
-        globalFilters,
         snackError,
     ]);
 

@@ -9,11 +9,12 @@ import { Box, CircularProgress } from '@mui/material';
 import { ReactNode } from 'react';
 import AlertCustomMessageNode from '../../utils/alert-custom-message-node';
 import { cardStyles } from '../../grid-layout/cards/card-styles';
+import { ErrorMessageDescriptor } from '@gridsuite/commons-ui';
 
 interface DiagramWrapperProps {
     loading: boolean;
     hasSvg: boolean;
-    globalError?: string;
+    globalError?: ErrorMessageDescriptor;
     children: ReactNode;
 }
 

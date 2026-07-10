@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
     type EquipmentType,
     type ExtendedEquipmentType,
@@ -58,7 +58,7 @@ const withEquipmentMenu =
         );
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
-            (equipmentId: string, equipmentType: EquipmentType | null, dialogTitle: string) => {
+            (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {
                 if (onOpenDynamicSimulationEventDialog) {
                     handleClose();
                     onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);

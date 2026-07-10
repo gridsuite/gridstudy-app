@@ -10,7 +10,7 @@ import { BranchEquipmentInfos, CommonBranchEquipmentInfos } from '../equipment-p
 import { CellRender } from '../cell-render';
 import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
 import RunningStatus from 'components/utils/running-status';
-import { CurrentLimitsData, TemporaryLimitsData } from '../../../services/study/network-map.type';
+import { CurrentLimitsData, TemporaryLimitsData } from '@gridsuite/commons-ui';
 
 /**
  * Render common characteristics Table

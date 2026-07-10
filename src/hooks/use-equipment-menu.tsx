@@ -36,11 +36,11 @@ interface UseEquipmentMenuProps {
     studyUuid: UUID;
     disabled: boolean;
     onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => void;
-    onDeleteEquipment: (equipmentType: EquipmentType | null, equipmentId: string) => void;
-    onOpenModificationDialog: (id: string, type: EquipmentType | null, subtype: ExtendedEquipmentType | null) => void;
+    onDeleteEquipment: (equipmentType: EquipmentType, equipmentId: string) => void;
+    onOpenModificationDialog: (id: string, type: EquipmentType, subtype: ExtendedEquipmentType | null) => void;
     onOpenDynamicSimulationEventDialog?: (
         equipmentId: string,
-        equipmentType: EquipmentType | null,
+        equipmentType: EquipmentType,
         dialogTitle: string
     ) => void;
     modificationInProgress?: boolean;
@@ -67,7 +67,7 @@ export const useEquipmentMenu = ({
         MenuVoltageLevel,
         MenuLoad,
         MenuBattery,
-        MenuDanglingLine,
+        MenuBoundaryLine,
         MenuGenerator,
         MenuStaticVarCompensator,
         MenuShuntCompensator,
@@ -85,11 +85,11 @@ export const useEquipmentMenu = ({
             ),
             MenuLoad: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.LOAD, null, 'load-menus'),
             MenuBattery: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.BATTERY, null, 'battery-menus'),
-            MenuDanglingLine: withEquipmentMenu(
+            MenuBoundaryLine: withEquipmentMenu(
                 BaseEquipmentMenu,
-                EquipmentType.DANGLING_LINE,
+                EquipmentType.BOUNDARY_LINE,
                 null,
-                'dangling-line-menus'
+                'boundary-line-menus'
             ),
             MenuGenerator: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.GENERATOR, null, 'generator-menus'),
             MenuStaticVarCompensator: withEquipmentMenu(
@@ -152,7 +152,7 @@ export const useEquipmentMenu = ({
     );
 
     const handleDeleteEquipment = useCallback(
-        (equipmentType: EquipmentType | null, equipmentId: string) => {
+        (equipmentType: EquipmentType, equipmentId: string) => {
             onDeleteEquipment(equipmentType, equipmentId);
             closeEquipmentMenu();
         },
@@ -160,7 +160,7 @@ export const useEquipmentMenu = ({
     );
 
     const handleOpenModificationDialog = useCallback(
-        (id: string, type: EquipmentType | null, subtype: ExtendedEquipmentType | null) => {
+        (id: string, type: EquipmentType, subtype: ExtendedEquipmentType | null) => {
             onOpenModificationDialog(id, type, subtype);
             closeEquipmentMenu();
         },
@@ -168,7 +168,7 @@ export const useEquipmentMenu = ({
     );
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
-        (equipmentId: string, equipmentType: EquipmentType | null, dialogTitle: string) => {
+        (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {
             if (onOpenDynamicSimulationEventDialog) {
                 onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);
             }
@@ -236,7 +236,7 @@ export const useEquipmentMenu = ({
 
                 {equipmentMenu.equipmentType === EquipmentType.LOAD && withEquipment(MenuLoad, null)}
                 {equipmentMenu.equipmentType === EquipmentType.BATTERY && withEquipment(MenuBattery, null)}
-                {equipmentMenu.equipmentType === EquipmentType.DANGLING_LINE && withEquipment(MenuDanglingLine, null)}
+                {equipmentMenu.equipmentType === EquipmentType.BOUNDARY_LINE && withEquipment(MenuBoundaryLine, null)}
                 {equipmentMenu.equipmentType === EquipmentType.GENERATOR && withEquipment(MenuGenerator, null)}
                 {equipmentMenu.equipmentType === EquipmentType.STATIC_VAR_COMPENSATOR &&
                     withEquipment(MenuStaticVarCompensator, null)}
@@ -257,7 +257,7 @@ export const useEquipmentMenu = ({
         MenuVoltageLevel,
         MenuLoad,
         MenuBattery,
-        MenuDanglingLine,
+        MenuBoundaryLine,
         MenuGenerator,
         MenuStaticVarCompensator,
         MenuShuntCompensator,

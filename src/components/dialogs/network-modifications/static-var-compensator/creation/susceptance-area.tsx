@@ -10,7 +10,6 @@ import {
     B0,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICE_AUTOMATON,
-    CHARACTERISTICS_CHOICES,
     MAX_Q_AT_NOMINAL_V,
     MAX_Q_AUTOMATON,
     MAX_S_AUTOMATON,
@@ -22,13 +21,17 @@ import {
     Q0,
     SETPOINTS_LIMITS,
 } from 'components/utils/field-constants';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';
+import {
+    CHARACTERISTICS_CHOICES,
+    FloatInput,
+    ReactivePowerAdornment,
+    SusceptanceAdornment,
+} from '@gridsuite/commons-ui';
 import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { InputAdornment, Grid, TextField } from '@mui/material';
+import { InputAdornment, Grid2 as Grid, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import GridItem from '../../../commons/grid-item';
+import { GridItem } from '../../../commons/grid-item';
 
 export const SusceptanceArea = () => {
     const id = AUTOMATON;
@@ -102,7 +105,7 @@ export const SusceptanceArea = () => {
     );
 
     return (
-        <Grid container spacing={2} padding={2}>
+        <Grid container spacing={2}>
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                 <>
                     <GridItem size={4}>{minSusceptanceField}</GridItem>

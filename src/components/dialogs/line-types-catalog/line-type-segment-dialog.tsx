@@ -7,14 +7,21 @@
 
 import { useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../commons/modificationDialog';
 import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
-import { CustomFormProvider } from '@gridsuite/commons-ui';
-import { ComputedLineCharacteristics } from './line-catalog.type';
-import { SegmentSchema } from './segment-utils';
 import {
+    ComputedLineCharacteristics,
+    CustomFormProvider,
+    DeepNullable,
+    SegmentSchema,
+    LineSegmentsFormData,
+    SegmentFormData,
+    SegmentsFormData,
+} from '@gridsuite/commons-ui';
+import {
+    APPLY_SEGMENTS_LIMITS,
     FINAL_CURRENT_LIMITS,
     SEGMENTS,
     TOTAL_REACTANCE,
@@ -22,7 +29,6 @@ import {
     TOTAL_SUSCEPTANCE,
 } from '../../utils/field-constants';
 import { InferType } from 'yup';
-import { DeepNullable } from '../../utils/ts-utils';
 
 const LineTypeSegmentSchema = yup
     .object()
@@ -30,15 +36,17 @@ const LineTypeSegmentSchema = yup
         [TOTAL_RESISTANCE]: yup.number().required(),
         [TOTAL_REACTANCE]: yup.number().required(),
         [TOTAL_SUSCEPTANCE]: yup.number().required(),
+        [APPLY_SEGMENTS_LIMITS]: yup.boolean().required().default(true),
         [FINAL_CURRENT_LIMITS]: yup.array(),
         [SEGMENTS]: yup.array().of(SegmentSchema).required().min(1, 'AtLeastOneSegmentNeeded'),
     })
     .required();
 
 const emptyFormData = {
-    [TOTAL_RESISTANCE]: 0.0,
-    [TOTAL_REACTANCE]: 0.0,
-    [TOTAL_SUSCEPTANCE]: 0.0,
+    [TOTAL_RESISTANCE]: 0,
+    [TOTAL_REACTANCE]: 0,
+    [TOTAL_SUSCEPTANCE]: 0,
+    [APPLY_SEGMENTS_LIMITS]: true,
     [FINAL_CURRENT_LIMITS]: [],
     [SEGMENTS]: [],
 };
@@ -46,22 +54,48 @@ const emptyFormData = {
 export interface LineTypeSegmentDialogProps {
     open: boolean;
     onClose: () => void;
-    onSave: (data: ComputedLineCharacteristics) => void;
+    onSaveCreationCase?: (data: ComputedLineCharacteristics, lineSegments: LineSegmentsFormData) => void;
+    editDataCreationCase?: LineSegmentsFormData | null;
+    onSaveModificationCase?: (
+        data: ComputedLineCharacteristics,
+        lineSegments: DeepNullable<SegmentFormData | null>[],
+        applyLimits: boolean | null
+    ) => void;
+    editDataModificationCase?: SegmentsFormData;
 }
 
 export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
 
-export default function LineTypeSegmentDialog({ open, onSave, onClose }: Readonly<LineTypeSegmentDialogProps>) {
+export default function LineTypeSegmentDialog({
+    open,
+    onSaveCreationCase,
+    onSaveModificationCase,
+    onClose,
+    editDataCreationCase,
+    editDataModificationCase,
+}: Readonly<LineTypeSegmentDialogProps>) {
     const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LineTypeSegmentDialogSchemaForm>>(LineTypeSegmentSchema),
     });
 
     const { reset } = formMethods;
-
+    const { getValues } = formMethods;
     const handleClear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
+
+    const onSubmit = useCallback(
+        (data: ComputedLineCharacteristics) => {
+            if (onSaveModificationCase) {
+                onSaveModificationCase(data, getValues(`${SEGMENTS}`) ?? [], getValues(APPLY_SEGMENTS_LIMITS));
+            }
+            if (onSaveCreationCase) {
+                onSaveCreationCase(data, (getValues(`${SEGMENTS}`) as LineSegmentsFormData) ?? []);
+            }
+        },
+        [getValues, onSaveCreationCase, onSaveModificationCase]
+    );
 
     return (
         <CustomFormProvider validationSchema={LineTypeSegmentSchema} {...formMethods}>
@@ -72,9 +106,13 @@ export default function LineTypeSegmentDialog({ open, onSave, onClose }: Readonl
                 titleId="LineTypesCatalogDialogTitle"
                 open={open}
                 onClose={onClose}
-                onSave={onSave}
+                onSave={onSubmit}
             >
-                <LineTypeSegmentForm />
+                <LineTypeSegmentForm
+                    editDataCreationCase={editDataCreationCase}
+                    editDataModificationCase={editDataModificationCase}
+                    isModification={!!onSaveModificationCase}
+                />
             </ModificationDialog>
         </CustomFormProvider>
     );

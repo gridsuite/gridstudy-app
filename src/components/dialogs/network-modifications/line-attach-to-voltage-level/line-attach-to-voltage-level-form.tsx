@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid2 as Grid } from '@mui/material';
 import {
     ATTACHMENT_LINE_ID,
     ATTACHMENT_POINT_ID,
@@ -20,39 +20,41 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
-import { Identifiable, TextInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
-import { Box, Button, Typography } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
-import AddIcon from '@mui/icons-material/ControlPoint';
-import EditIcon from '@mui/icons-material/Edit';
+import {
+    AddButton,
+    AddButtonMode,
+    VoltageLevelConnectivityForm,
+    TextInput,
+    VoltageLevelOption,
+    LineCreationDto,
+} from '@gridsuite/commons-ui';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import { useWatch } from 'react-hook-form';
-import GridSection from '../../commons/grid-section';
-import GridItem from '../../commons/grid-item';
+import { GridSection } from '../../commons/grid-section';
+import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import {
     ExtendedVoltageLevelCreationInfo,
-    LineCreationInfos,
     VoltageLevelCreationInfo,
 } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
 interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationInfos }) => Promise<string>;
-    lineToEdit?: LineCreationInfos;
+    onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationDto }) => Promise<string>;
+    lineToEdit?: LineCreationDto;
     onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     voltageLevelToEdit?: ExtendedVoltageLevelCreationInfo;
     onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     attachmentPoint: ExtendedVoltageLevelCreationInfo;
     setAttachmentPoint: Dispatch<SetStateAction<ExtendedVoltageLevelCreationInfo>>;
-    allVoltageLevelOptions: Identifiable[];
+    allVoltageLevelOptions: VoltageLevelOption[];
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;
 }
@@ -78,6 +80,17 @@ const LineAttachToVoltageLevelForm = ({
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
     });
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
 
     const onLineDialogClose = () => {
         setLineDialogOpen(false);
@@ -152,25 +165,19 @@ const LineAttachToVoltageLevelForm = ({
 
     const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
-    const busbarSectionOptions = useMemo(() => {
-        if (isVoltageLevelEdit && voltageLevelToEdit?.busbarSections) {
-            return voltageLevelToEdit.busbarSections;
-        } else {
-            return [];
-        }
-    }, [isVoltageLevelEdit, voltageLevelToEdit]);
-
     const connectivityForm = (
-        <ConnectivityForm
+        <VoltageLevelConnectivityForm
             voltageLevelSelectLabel={'AttachedVoltageLevelId'}
-            withPosition={false}
-            withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            newBusOrBusbarSectionOptions={busbarSectionOptions}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
+            fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
         />
+    );
+
+    // as equipmentId and equipmentName are synchronized to check if the icon is add or edit
+    // other attributes than id and name must be present
+    const hasSubstationCreation = useMemo(
+        () => attachmentPoint != null && Object.keys(attachmentPoint).some((key) => key === SUBSTATION_CREATION),
+        [attachmentPoint]
     );
 
     return (
@@ -182,55 +189,33 @@ const LineAttachToVoltageLevelForm = ({
                 <GridItem>{attachmentPointIdField}</GridItem>
                 <GridItem>{attachmentPointNameField}</GridItem>
                 <GridItem>
-                    {
-                        <Button
-                            onClick={openAttachmentPointDialog}
-                            // as equipmentId and equipmentName are synchronized to check if the icon is add or edit
-                            // other attributes than id and name must be present
-                            startIcon={
-                                attachmentPoint != null &&
-                                Object.keys(attachmentPoint).some((key) => key === SUBSTATION_CREATION) ? (
-                                    <EditIcon />
-                                ) : (
-                                    <AddIcon />
-                                )
-                            }
-                        >
-                            <Typography align="left">
-                                <FormattedMessage id="SpecifyAttachmentPoint" />
-                            </Typography>
-                        </Button>
-                    }
+                    <AddButton
+                        onClick={openAttachmentPointDialog}
+                        mode={hasSubstationCreation ? AddButtonMode.EDIT : AddButtonMode.ADD}
+                        label="SpecifyAttachmentPoint"
+                    />
                 </GridItem>
             </Grid>
-            <GridSection title="VOLTAGE_LEVEL" />
+            <GridSection title="AttachedVoltageLevelId" />
             <Grid container spacing={2}>
                 <GridItem size={12}>{connectivityForm}</GridItem>
                 <GridItem>
-                    {
-                        <Button
-                            onClick={openVoltageLevelDialog}
-                            startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
-                        >
-                            <Typography align="left">
-                                <FormattedMessage id="NewVoltageLevel" />
-                            </Typography>
-                        </Button>
-                    }
+                    <AddButton
+                        onClick={openVoltageLevelDialog}
+                        mode={isVoltageLevelEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
+                        label="NewVoltageLevel"
+                    />
                 </GridItem>
             </Grid>
             <GridSection title="AttachedLine" />
             <Grid container spacing={2}>
                 <GridItem>{lineToIdField}</GridItem>
-                <Box width="100%" />
-                <GridItem>
-                    {
-                        <Button onClick={openLineDialog} startIcon={lineToEdit ? <EditIcon /> : <AddIcon />}>
-                            <Typography align="left">
-                                <FormattedMessage id="AttachedLine" />
-                            </Typography>
-                        </Button>
-                    }
+                <GridItem size={12}>
+                    <AddButton
+                        onClick={openLineDialog}
+                        mode={lineToEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
+                        label="AttachedLine"
+                    />
                 </GridItem>
             </Grid>
             <GridSection title="Line1" />

@@ -5,14 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, RefObject, useCallback } from 'react';
-import { ColDef, GridReadyEvent, RowClassParams, RowStyle } from 'ag-grid-community';
-import { CustomAGGrid, CsvExport, type MuiStyles } from '@gridsuite/commons-ui';
+import { FunctionComponent, RefObject, useCallback, useEffect } from 'react';
+import { ColDef, RowClassParams, RowStyle } from 'ag-grid-community';
+import { CsvExport, CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { Box, LinearProgress } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer';
+import { AppState } from '../../redux/reducer.type';
+import { TableType } from '../../types/custom-aggrid-types';
+import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
+import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 const styles = {
     gridContainer: {
@@ -40,6 +43,8 @@ interface RenderTableAndExportCsvProps {
     getRowStyle?: (params: RowClassParams) => RowStyle | undefined;
     overlayNoRowsTemplate: string | undefined;
     skipColumnHeaders: boolean;
+    computationType: TableType;
+    computationSubType: string;
 }
 
 export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvProps> = ({
@@ -50,6 +55,8 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     rows,
     getRowStyle,
     overlayNoRowsTemplate,
+    computationType,
+    computationSubType,
     skipColumnHeaders = false,
     showLinearProgress = false,
 }) => {
@@ -60,9 +67,13 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
             params.api.sizeColumnsToFit();
         }
     }, []);
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
+    const onGridReady = useAgGridInitialColumnFilters(computationType, computationSubType);
+    const columnFilters = useSelector(
+        (state: AppState) => state.tableFilters.columnsFilters?.[computationType]?.[computationSubType]
+    );
+    useEffect(() => {
+        updateAgGridFilters(gridRef.current?.api, columnFilters);
+    }, [columnFilters, gridRef]);
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>

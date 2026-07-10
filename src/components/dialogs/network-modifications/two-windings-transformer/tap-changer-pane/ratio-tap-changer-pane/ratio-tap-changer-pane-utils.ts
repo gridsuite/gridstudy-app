@@ -4,10 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
+import * as yup from 'yup';
 import {
     ENABLED,
-    EQUIPMENT,
     HIGH_TAP_POSITION,
     ID,
     LOAD_TAP_CHANGING_CAPABILITIES,
@@ -35,14 +34,15 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { areArrayElementsUnique, areNumbersOrdered } from 'components/utils/utils';
-import yup from 'components/utils/yup-config';
+import { RATIO_REGULATION_MODES, SIDE } from 'components/network/constants';
+import { TapChangerStep, TwoWindingsTransformerMapInfos } from '../../two-windings-transformer.types';
+import { TwtEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import {
+    FieldConstants,
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
-} from '../../../../regulating-terminal/regulating-terminal-form-utils';
-import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { TapChangerStep, TwoWindingsTransformerData } from '../../two-windings-transformer.types';
-import { TwtEquipmentInfos } from 'components/tooltips/equipment-popover-type';
+    REGULATION_TYPES,
+} from '@gridsuite/commons-ui';
 
 const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -60,7 +60,7 @@ const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
                 enabled && hasLoadTapChangingCapabilities && regulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
-    [EQUIPMENT]: yup
+    [FieldConstants.EQUIPMENT]: yup
         .object()
         .nullable()
         .shape({
@@ -183,6 +183,10 @@ const ratioTapChangerValidationSchema = (isModification: boolean, id: string) =>
     }),
 });
 
+export type RatioTapChangerFormSchema = yup.InferType<
+    ReturnType<typeof ratioTapChangerValidationSchema>[typeof RATIO_TAP_CHANGER]
+>;
+
 export const getRatioTapChangerValidationSchema = (isModification = false, id = RATIO_TAP_CHANGER) => {
     return ratioTapChangerValidationSchema(isModification, id);
 };
@@ -264,7 +268,7 @@ export const getRatioTapChangerFormData = (
     },
 });
 
-export const getComputedRegulationType = (twt: TwoWindingsTransformerData) => {
+export const getComputedRegulationType = (twt: TwoWindingsTransformerMapInfos) => {
     if (
         !twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES] ||
         !twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId
@@ -278,12 +282,12 @@ export const getComputedRegulationType = (twt: TwoWindingsTransformerData) => {
     }
 };
 
-export const getComputedRegulationTypeId = (twt: TwoWindingsTransformerData) => {
+export const getComputedRegulationTypeId = (twt: TwoWindingsTransformerMapInfos) => {
     const regulationType = getComputedRegulationType(twt);
     return regulationType?.id || null;
 };
 
-export const getComputedRegulationMode = (twt: TwoWindingsTransformerData | TwtEquipmentInfos) => {
+export const getComputedRegulationMode = (twt: TwoWindingsTransformerMapInfos | TwtEquipmentInfos) => {
     const ratioTapChangerValues = twt?.ratioTapChanger;
     if (!ratioTapChangerValues) {
         return null;
@@ -295,7 +299,7 @@ export const getComputedRegulationMode = (twt: TwoWindingsTransformerData | TwtE
     }
 };
 
-export const getInitialTwtRatioRegulationModeId = (twt: TwoWindingsTransformerData) => {
+export const getInitialTwtRatioRegulationModeId = (twt: TwoWindingsTransformerMapInfos) => {
     // if onLoadTapChangingCapabilities is set to false or undefined, we set the regulation mode to null
     if (!twt?.ratioTapChanger?.hasLoadTapChangingCapabilities) {
         return null;
@@ -305,16 +309,16 @@ export const getInitialTwtRatioRegulationModeId = (twt: TwoWindingsTransformerDa
     return computedRegulationMode?.id || null;
 };
 
-export const getComputedRegulationModeId = (twt: TwoWindingsTransformerData) => {
+export const getComputedRegulationModeId = (twt: TwoWindingsTransformerMapInfos) => {
     return getComputedRegulationMode(twt)?.id || null;
 };
 
-export const getComputedPreviousRatioRegulationType = (previousValues: TwoWindingsTransformerData) => {
+export const getComputedPreviousRatioRegulationType = (previousValues: TwoWindingsTransformerMapInfos) => {
     const previousRegulationType = getComputedRegulationType(previousValues);
     return previousRegulationType?.id || null;
 };
 
-export const getComputedTapSide = (twt: TwoWindingsTransformerData) => {
+export const getComputedTapSide = (twt: TwoWindingsTransformerMapInfos) => {
     const ratioTapChangerValues = twt?.ratioTapChanger;
     if (!ratioTapChangerValues || !twt) {
         return null;
@@ -326,6 +330,6 @@ export const getComputedTapSide = (twt: TwoWindingsTransformerData) => {
     }
 };
 
-export const getComputedTapSideId = (twt: TwoWindingsTransformerData) => {
+export const getComputedTapSideId = (twt: TwoWindingsTransformerMapInfos) => {
     return getComputedTapSide(twt)?.id || null;
 };

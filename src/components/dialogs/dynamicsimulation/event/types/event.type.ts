@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 export enum EventType {
     DISCONNECT = 'Disconnect',
@@ -36,7 +36,7 @@ export type EventPropertyDefinition = {
         label: string;
     }[];
     unit?: string;
-    acceptOnly?: (equipmentType: EQUIPMENT_TYPES) => boolean;
+    acceptOnly?: (equipmentType: EquipmentType) => boolean;
 };
 
 export type EventDefinition = {
@@ -54,7 +54,7 @@ export interface Event {
     uuid?: string;
     nodeId: string;
     equipmentId: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     eventType?: EventType;
     properties: EventProperty[];
 }

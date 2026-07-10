@@ -10,7 +10,6 @@ import {
     AUTOMATON,
     B0,
     CHARACTERISTICS_CHOICE_AUTOMATON,
-    CHARACTERISTICS_CHOICES,
     HIGH_VOLTAGE_SET_POINT,
     HIGH_VOLTAGE_THRESHOLD,
     LOW_VOLTAGE_SET_POINT,
@@ -24,7 +23,8 @@ import {
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
-import yup from '../../../../utils/yup-config';
+import { CHARACTERISTICS_CHOICES } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 
 export const getStandbyAutomatonEmptyFormData = (id = AUTOMATON) => ({
     [id]: {
@@ -91,12 +91,15 @@ export const getStandbyAutomatonFormValidationSchema = () =>
         [Q0]: requiredWhenQatNominalVChoice(yup.number().nullable()),
     });
 
+export const computeQ0 = (b0?: number | null, nominalV?: number | null): number | undefined => {
+    return b0 != null && nominalV != null ? b0 * Math.pow(nominalV, 2) : undefined;
+};
+
 export const getStandbyAutomatonFormData = ({
     addStandbyAutomaton,
     standby,
     b0,
     q0,
-    nominalV,
     lVoltageSetpoint,
     hVoltageSetpoint,
     lVoltageThreshold,
@@ -106,7 +109,6 @@ export const getStandbyAutomatonFormData = ({
     standby: any;
     b0: any;
     q0?: any;
-    nominalV?: any;
     lVoltageSetpoint: any;
     hVoltageSetpoint: any;
     lVoltageThreshold: any;
@@ -120,6 +122,6 @@ export const getStandbyAutomatonFormData = ({
         [LOW_VOLTAGE_THRESHOLD]: lVoltageThreshold,
         [HIGH_VOLTAGE_THRESHOLD]: hVoltageThreshold,
         [B0]: b0,
-        [Q0]: q0 === null && nominalV !== null && b0 !== null ? b0 * Math.pow(nominalV, 2) : q0,
+        [Q0]: q0,
     },
 });

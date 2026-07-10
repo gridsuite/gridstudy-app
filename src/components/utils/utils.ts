@@ -7,26 +7,19 @@
 
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
-import { AttributeModification, OperationType, TemporaryLimit } from 'services/network-modification-types';
-import { VoltageLevel } from './equipment-types';
-import { Option } from '@gridsuite/commons-ui';
 import {
-    APPLICABILITY_FIELD,
-    CURRENT_LIMITS,
-    ID,
-    LIMITS_PROPERTIES,
-    NAME,
-    SELECTED,
-    TEMPORARY_LIMIT_DURATION,
-    TEMPORARY_LIMIT_NAME,
-    TEMPORARY_LIMIT_VALUE,
-} from './field-constants';
-import {
+    AttributeModification,
+    CurrentLimitsData,
+    Identifiable,
     OperationalLimitsGroupFormSchema,
-    TemporaryLimitFormSchema,
-} from '../dialogs/limits/operational-limits-groups-types';
-import { CurrentLimitsData, TemporaryLimitsData } from '../../services/study/network-map.type';
-import { TapChangerStep } from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
+    OperationType,
+    VoltageLevelOption,
+} from '@gridsuite/commons-ui';
+import { APPLICABILITY_FIELD, CURRENT_LIMITS, ID, LIMITS_PROPERTIES, NAME, SELECTED } from './field-constants';
+import {
+    TapChangerStep,
+    TapChangerStepMapInfos,
+} from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -84,37 +77,28 @@ export const areNumbersOrdered = (array?: unknown) => {
     return true;
 };
 
-export const areIdsEqual = (val1: Option, val2: Option) => {
-    if (typeof val1 !== 'string' && typeof val2 !== 'string') {
-        return val1.id === val2.id;
-    } else {
-        return val1 === val2;
+export function mergeByIdKeepOrder<T extends { id: string }>(array1: T[], array2: T[]): T[] {
+    if (array2.length === 0) {
+        return array1;
     }
-};
-
-export const getObjectId = (object: string | { id: string }) => {
-    return typeof object === 'string' ? object : (object?.id ?? null);
-};
-
-export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
-    const newBusbarSections: Option[] = [];
-    for (let i = 0; i < busbarCount; i++) {
-        for (let j = 0; j < sectionCount; j++) {
-            newBusbarSections.push({
-                id: equipmentId + '_' + (i + 1) + '_' + (j + 1),
-                label: '',
-            });
-        }
+    if (array1.length === 0) {
+        return array2;
     }
-    return newBusbarSections;
-};
 
-export function toModificationOperation<T>(
-    value: T
-): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
-    return value === 0 || value === false || value
-        ? { value: value as Exclude<Exclude<T, null>, undefined>, op: OperationType.SET }
-        : null;
+    const array2ById = new Map<string, T>();
+    for (const x of array2) array2ById.set(x.id, x);
+
+    const result: T[] = [];
+
+    // keep array1 order; replace when id exists in array2
+    for (const x of array1) {
+        result.push(array2ById.get(x.id) ?? x);
+        array2ById.delete(x.id); // remaining are “new” ids
+    }
+
+    // append new items from array2 in array2 order
+    result.push(...array2ById.values());
+    return result;
 }
 
 export function toModificationUnsetOperation<T>(
@@ -128,28 +112,6 @@ export function toModificationUnsetOperation<T>(
         : { op: OperationType.UNSET };
 }
 
-export const formatTemporaryLimitsModificationToFormSchema = (
-    temporaryLimits: TemporaryLimit[]
-): TemporaryLimitFormSchema[] =>
-    temporaryLimits?.map((limit: TemporaryLimit) => {
-        return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME]?.value ?? '',
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE]?.value ?? null,
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION]?.value ?? null,
-        };
-    });
-
-export const formatMapInfosToTemporaryLimitsFormSchema = (
-    temporaryLimits: TemporaryLimitsData[]
-): TemporaryLimitFormSchema[] =>
-    temporaryLimits?.map((limit: TemporaryLimitsData) => {
-        return {
-            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
-            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
-            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-        };
-    });
-
 export const formatCompleteCurrentLimit = (
     completeLimitsGroups: CurrentLimitsData[]
 ): OperationalLimitsGroupFormSchema[] => {
@@ -160,10 +122,10 @@ export const formatCompleteCurrentLimit = (
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id + elt.applicability,
                     [NAME]: elt.id,
-                    [APPLICABILITY_FIELD]: elt.applicability,
+                    [APPLICABILITY_FIELD]: elt.applicability ?? '',
                     [LIMITS_PROPERTIES]: elt.limitsProperties,
                     [CURRENT_LIMITS]: {
-                        permanentLimit: elt.permanentLimit,
+                        permanentLimit: elt.permanentLimit ?? 0,
                         temporaryLimits: addSelectedFieldToRows(elt.temporaryLimits),
                     },
                 });
@@ -175,8 +137,8 @@ export const formatCompleteCurrentLimit = (
 
 export const richTypeEquals = (a: unknown, b: unknown) => a === b;
 
-export const computeHighTapPosition = (steps: TapChangerStep[]) => {
-    const values = steps?.map((step) => step['index']).filter((v): v is number => v !== undefined);
+export const computeHighTapPosition = (steps: Record<number, TapChangerStepMapInfos>) => {
+    const values = steps ? Object.keys(steps)?.map(Number) : [];
     return values?.length > 0 ? Math.max(...values) : null;
 };
 
@@ -231,14 +193,6 @@ export function calculateReactance(distance: number, linearReactance: number) {
     return Number(distance) * Number(linearReactance);
 }
 
-export const computeSwitchedOnValue = (
-    sectionCount: number,
-    maximumSectionCount: number,
-    linkedSwitchedOnValue: number
-) => {
-    return (linkedSwitchedOnValue / maximumSectionCount) * sectionCount;
-};
-
 export const computeQAtNominalV = (susceptance: number, nominalVoltage: number) => {
     return Math.abs(susceptance * Math.pow(nominalVoltage, 2));
 };
@@ -258,10 +212,10 @@ export function calculateSusceptance(distance: number, linearCapacity: number) {
     return Number(distance) * Number(linearCapacity) * 2 * Math.PI * 50 * Math.pow(10, 6);
 }
 
-export function getNewVoltageLevelOptions(
-    formattedVoltageLevel: VoltageLevel,
+export function getNewVoltageLevelOptions<T extends Identifiable>(
+    formattedVoltageLevel: T,
     oldVoltageLevelId: string | undefined,
-    voltageLevelOptions: VoltageLevel[]
+    voltageLevelOptions: T[]
 ) {
     const newVoltageLevelOptions =
         formattedVoltageLevel.id === oldVoltageLevelId
@@ -270,6 +224,14 @@ export function getNewVoltageLevelOptions(
     newVoltageLevelOptions.push(formattedVoltageLevel);
 
     return newVoltageLevelOptions;
+}
+
+export function mergeVoltageLevelOptions(
+    existingVl: Identifiable[],
+    currentOptions: VoltageLevelOption[]
+): VoltageLevelOption[] {
+    const nonExistingVl = currentOptions.filter((opt) => opt.exist === false);
+    return [...existingVl.toSorted((a, b) => a?.id?.localeCompare(b?.id)), ...nonExistingVl] as VoltageLevelOption[];
 }
 
 // remove elementToToggle from list, or add it if it does not exist yet
@@ -294,10 +256,12 @@ export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
     return Array.from({ length }, (_, index) => start + index * step);
 }
 
-export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
-    return rows?.map((row) => {
-        return { ...row, [SELECTED]: false };
-    });
+export const addSelectedFieldToRows = <T>(rows?: T[]): (T & { selected: boolean })[] => {
+    return (
+        rows?.map((row) => {
+            return { ...row, [SELECTED]: false };
+        }) ?? []
+    );
 };
 
 //Escapes regex special characters to avoid misinterpreting user prompts

@@ -8,7 +8,7 @@
 import IconButton from '@mui/material/IconButton';
 import { NodeProps, Position } from '@xyflow/react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { RootNode as RootNodeType } from 'components/graph/tree-node.type';
 import { Box } from '@mui/material';
 import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
@@ -79,7 +79,7 @@ const styles = {
         justifyContent: 'flex-end',
         marginTop: theme.spacing(-5),
         marginRight: theme.spacing(0),
-        height: '35%',
+        height: '28%',
     }),
 } as const satisfies MuiStyles;
 

@@ -7,7 +7,7 @@
 
 import { SetStateAction, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import {
     NotificationsUrlKeys,
     snackWithFallback,
@@ -21,6 +21,8 @@ import {
     isRootNetworkDeletionStartedNotification,
     isRootNetworksUpdatedNotification,
     isRootNetworkUpdateFailedNotification,
+    parseEventData,
+    CommonStudyEventData,
 } from 'types/notification-types';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
@@ -59,8 +61,8 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
 
     const rootNetworksUpdatedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const eventData: unknown = JSON.parse(event.data);
-            if (isRootNetworksUpdatedNotification(eventData)) {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isRootNetworksUpdatedNotification(eventData)) {
                 doFetchRootNetworks();
             }
         },
@@ -69,8 +71,8 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
 
     const rootNetworksUpdateFailedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const eventData: unknown = JSON.parse(event.data);
-            if (isRootNetworkUpdateFailedNotification(eventData)) {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isRootNetworkUpdateFailedNotification(eventData)) {
                 doFetchRootNetworks();
                 snackError({
                     messageId: 'importCaseFailure',
@@ -80,10 +82,11 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
         },
         [doFetchRootNetworks, snackError]
     );
+
     const rootNetworkDeletionStartedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const eventData: unknown = JSON.parse(event.data);
-            if (isRootNetworkDeletionStartedNotification(eventData)) {
+            const eventData = parseEventData<CommonStudyEventData>(event);
+            if (eventData && isRootNetworkDeletionStartedNotification(eventData)) {
                 if (!rootNetworks) {
                     return;
                 }

@@ -6,7 +6,7 @@
  */
 
 import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     getPercentageAreaData,
     getPercentageAreaEmptyFormData,

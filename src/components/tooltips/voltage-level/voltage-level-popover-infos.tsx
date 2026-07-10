@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Table, TableBody, TableContainer, TableRow } from '@mui/material';
+import { Grid2 as Grid, Table, TableBody, TableContainer, TableRow } from '@mui/material';
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { VoltageLevelTooltipInfos } from '../equipment-popover-type';
 
 export const VoltageLevelPopoverInfos = ({ equipmentInfos }: { equipmentInfos?: VoltageLevelTooltipInfos }) => {
     return (
-        <Grid item sx={styles.grid}>
+        <Grid sx={styles.grid}>
             <TableContainer>
                 <Table size="small" sx={styles.layout}>
                     <TableBody>

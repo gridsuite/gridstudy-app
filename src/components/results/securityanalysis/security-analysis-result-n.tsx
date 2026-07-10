@@ -12,28 +12,31 @@ import {
     SecurityAnalysisResultNProps,
 } from './security-analysis.type';
 import { IntlShape, useIntl } from 'react-intl';
-import { SecurityAnalysisTable } from './security-analysis-table';
-import { convertSide } from '../loadflow/load-flow-result-utils';
 import { translateLimitNameBackToFront } from '../common/utils';
 import { MAX_INT32 } from 'services/utils';
+import { SecurityAnalysisTable } from '@gridsuite/commons-ui';
+import { getNoRowsMessage } from '../../utils/aggrid-rows-handler';
 
 export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNProps> = ({
     result,
     isLoadingResult,
     columnDefs,
+    resultStatusMessages,
+    securityAnalysisStatus,
+    onGridReady,
 }) => {
     const intl: IntlShape = useIntl();
 
     const rows = useMemo(() => {
-        return result?.length // check if it's not Page object
-            ? (result?.map((preContingencyResult: PreContingencyResult) => {
+        // Defensive guard: the N tab expects an array; a stale paginated result
+        // ({ content, totalElements }) from the N-K tab must not reach result.map.
+        return Array.isArray(result)
+            ? result.map((preContingencyResult: PreContingencyResult) => {
                   const { limitViolation, subjectId } = preContingencyResult;
                   return {
                       subjectId: subjectId,
                       locationId: limitViolation?.locationId,
-                      limitType: intl.formatMessage({
-                          id: limitViolation?.limitType,
-                      }),
+                      limitType: limitViolation?.limitType,
                       // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                       acceptableDuration:
                           limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
@@ -41,7 +44,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                       limit: limitViolation?.limit,
                       value: limitViolation?.value,
                       loading: limitViolation?.loading,
-                      side: convertSide(limitViolation?.side || '', intl),
+                      side: limitViolation?.side,
                       patlLoading: limitViolation?.patlLoading,
                       patlLimit: limitViolation?.patlLimit,
                       nextLimitName: translateLimitNameBackToFront(limitViolation?.nextLimitName, intl),
@@ -50,9 +53,23 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                               ? null
                               : limitViolation?.upcomingAcceptableDuration,
                   } as SecurityAnalysisNTableRow;
-              }) ?? [])
-            : [];
+              })
+            : undefined;
     }, [intl, result]);
 
-    return <SecurityAnalysisTable rows={rows} columnDefs={columnDefs} isLoadingResult={isLoadingResult} />;
+    const overlayNoRowsTemplate = getNoRowsMessage(
+        resultStatusMessages,
+        rows,
+        securityAnalysisStatus,
+        !isLoadingResult
+    );
+
+    return (
+        <SecurityAnalysisTable
+            rowData={rows}
+            columnDefs={columnDefs}
+            onGridReady={onGridReady}
+            overlayNoRowsTemplate={overlayNoRowsTemplate}
+        />
+    );
 };

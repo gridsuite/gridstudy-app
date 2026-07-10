@@ -18,6 +18,7 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
+    DialogContentText,
     DialogActions,
     TextField,
     Button,
@@ -59,6 +60,14 @@ import { getWorkspace, renameWorkspace, deletePanels, replaceWorkspace } from '.
 import { saveWorkspaceConfig, updateWorkspaceConfig } from '../../../services/explore';
 import type { UUID } from 'node:crypto';
 import { RootState } from 'redux/store';
+import { setDirtyComputationParameters } from 'redux/actions';
+import { SelectOptionsDialog } from 'utils/dialogs';
+import { AppState } from 'redux/reducer.type';
+import {
+    getLocalStoragePanelStates,
+    clearLocalStorageWorkspaceState,
+    saveLocalStorageActiveWorkspaceId,
+} from '../../../redux/session-storage/workspace-local-storage';
 
 enum WorkspaceAction {
     RENAME = 'rename',
@@ -127,18 +136,48 @@ export const WorkspaceSwitcher = memo(() => {
     const workspaces = useSelector(selectWorkspaces);
     const activeWorkspaceId = useSelector(selectActiveWorkspaceId);
     const studyUuid = useSelector((state: RootState) => state.studyUuid);
+    const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [workspaceAction, setWorkspaceAction] = useState<WorkspaceActionState>(null);
+    const [pendingSwitchWorkspaceId, setPendingSwitchWorkspaceId] = useState<UUID | null>(null);
     const { snackInfo, snackError } = useSnackMessage();
+
+    const doSwitchWorkspace = useCallback(
+        async (workspaceId: UUID) => {
+            if (!studyUuid) return;
+            const workspace = await getWorkspace(studyUuid, workspaceId);
+            const savedPanels = getLocalStoragePanelStates(studyUuid, workspaceId);
+            workspace.panels.forEach((panel, index) => {
+                panel.zIndex = savedPanels[panel.id]?.zIndex ?? index + 1;
+            });
+            globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace', { detail: workspaceId }));
+            dispatch(setActiveWorkspace(workspace));
+            saveLocalStorageActiveWorkspaceId(studyUuid, workspaceId);
+        },
+        [studyUuid, dispatch]
+    );
 
     const switchToWorkspace = async (workspaceId: UUID) => {
         if (!studyUuid) return;
-
-        globalThis.dispatchEvent(new CustomEvent('workspace:switchWorkspace'));
-        const workspace = await getWorkspace(studyUuid, workspaceId);
-        dispatch(setActiveWorkspace(workspace));
+        if (isDirtyComputationParameters) {
+            setPendingSwitchWorkspaceId(workspaceId);
+        } else {
+            await doSwitchWorkspace(workspaceId);
+        }
     };
+
+    const handleConfirmSwitchWorkspace = useCallback(async () => {
+        if (pendingSwitchWorkspaceId) {
+            await doSwitchWorkspace(pendingSwitchWorkspaceId);
+            dispatch(setDirtyComputationParameters(false));
+        }
+        setPendingSwitchWorkspaceId(null);
+    }, [pendingSwitchWorkspaceId, doSwitchWorkspace, dispatch]);
+
+    const handleCancelSwitchWorkspace = useCallback(() => {
+        setPendingSwitchWorkspaceId(null);
+    }, []);
 
     const handleWorkspaceChange = async (_event: React.MouseEvent<HTMLElement>, workspaceId: string | null) => {
         if (workspaceId && workspaceId !== activeWorkspaceId && workspaceId !== WORKSPACE_MENU_VALUE) {
@@ -176,7 +215,10 @@ export const WorkspaceSwitcher = memo(() => {
     const handleConfirmReset = useCallback(() => {
         if (workspaceAction?.action === WorkspaceAction.RESET && studyUuid) {
             deletePanels(studyUuid, workspaceAction.workspaceId)
-                .then(() => dispatch(clearWorkspaceAction()))
+                .then(() => {
+                    clearLocalStorageWorkspaceState(studyUuid, workspaceAction.workspaceId);
+                    dispatch(clearWorkspaceAction());
+                })
                 .catch((error) => console.error('Failed to reset workspace:', error));
         }
         setWorkspaceAction(null);
@@ -242,6 +284,8 @@ export const WorkspaceSwitcher = memo(() => {
                     snackInfo({
                         messageTxt: intl.formatMessage({ id: 'workspaceReplaceSuccess' }),
                     });
+
+                    clearLocalStorageWorkspaceState(studyUuid, workspaceAction.workspaceId);
 
                     // Reload the workspace if it's the active one
                     if (workspaceAction.workspaceId === activeWorkspaceId) {
@@ -416,6 +460,7 @@ export const WorkspaceSwitcher = memo(() => {
             {workspaceAction?.action === WorkspaceAction.RESET && (
                 <PopupConfirmationDialog
                     message={intl.formatMessage({ id: 'resetWorkspaceConfirmation' })}
+                    isTranslationNeeded={false}
                     openConfirmationPopup
                     setOpenConfirmationPopup={() => setWorkspaceAction(null)}
                     handlePopupConfirmation={handleConfirmReset}
@@ -449,6 +494,19 @@ export const WorkspaceSwitcher = memo(() => {
                     updateLabelId="replaceWorkspaceLabel"
                 />
             )}
+            {/* Confirm workspace switch with unsaved params */}
+            <SelectOptionsDialog
+                title={''}
+                open={pendingSwitchWorkspaceId !== null}
+                onClose={handleCancelSwitchWorkspace}
+                onClick={handleConfirmSwitchWorkspace}
+                child={
+                    <DialogContentText>
+                        <FormattedMessage id="genericConfirmQuestion" />
+                    </DialogContentText>
+                }
+                validateKey={'dialog.button.leave'}
+            />
         </Box>
     );
 });

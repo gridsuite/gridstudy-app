@@ -16,19 +16,24 @@ import {
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
-import { Box, Button, Grid, Slider, TextField, Tooltip, Typography } from '@mui/material';
-import { filledTextField } from '../../../dialog-utils';
+import { Box, Button, Grid2 as Grid, Slider, TextField, Tooltip, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { AutocompleteInput, Option, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
-import GridSection from '../../../commons/grid-section';
+import {
+    areIdsEqual,
+    AutocompleteInput,
+    filledTextField,
+    getObjectId,
+    Option,
+    SelectInput,
+    SwitchInput,
+} from '@gridsuite/commons-ui';
+import { GridSection } from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from 'components/grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
-import type { UUID } from 'node:crypto';
 import { POSITION_NEW_SECTION_SIDE, SWITCH_TYPE } from '../../../../network/constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { areIdsEqual, getObjectId } from '../../../../utils/utils';
 import { BusBarSections } from './voltage-level-section.type';
 
 const getArrayPosition = (data: BusBarSections, selectedOptionId: string) => {
@@ -53,9 +58,7 @@ interface VoltageLevelSectionsCreationFormProps {
     busBarSectionInfos?: BusBarSections;
     voltageLevelId: string;
     allBusbarSectionsList: string[];
-    studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
     isSymmetricalNbBusBarSections: boolean;
     isNotFoundOrNotSupported: boolean;
@@ -65,9 +68,7 @@ export function CreateVoltageLevelSectionForm({
     busBarSectionInfos,
     voltageLevelId,
     allBusbarSectionsList,
-    studyUuid,
     currentNode,
-    currentRootNetworkUuid,
     isUpdate,
     isSymmetricalNbBusBarSections,
     isNotFoundOrNotSupported,
@@ -328,13 +329,11 @@ export function CreateVoltageLevelSectionForm({
     return (
         <Box sx={{ p: 2 }}>
             <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid size={12}>
                     <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} md={6}>
-                            {voltageLevelIdField}
-                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>{voltageLevelIdField}</Grid>
                         {isNodeBuilt(currentNode) && (
-                            <Grid item xs={12} md={3}>
+                            <Grid size={{ xs: 12, md: 3 }}>
                                 <Button onClick={handleClickOpenDiagramPane} variant="outlined" size="small">
                                     <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
                                 </Button>
@@ -344,50 +343,33 @@ export function CreateVoltageLevelSectionForm({
                     </Grid>
                 </Grid>
                 {isNotFoundOrNotSupported && (
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                         <Typography variant="body1" color="red">
                             <FormattedMessage id={'notValidVoltageLevel'} />
                         </Typography>
                     </Grid>
                 )}
-                <Grid item xs={12}>
+                <Grid size={12}>
                     <GridSection title="SectionPosition" />
                 </Grid>
 
-                <Grid item xs={4}>
-                    {busbarCountField}
-                </Grid>
-                <Grid item xs={4}>
-                    {busbarSectionsField}
-                </Grid>
-                <Grid item xs={4}>
-                    {positionSideNewSectionField}
-                </Grid>
+                <Grid size={4}>{busbarCountField}</Grid>
+                <Grid size={4}>{busbarSectionsField}</Grid>
+                <Grid size={4}>{positionSideNewSectionField}</Grid>
 
-                <Grid item xs={12}>
+                <Grid size={12}>
                     <GridSection title="Switch" />
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
-                    {switchBeforeField}
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                    {newSectionField}
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                    {switchAfterField}
-                </Grid>
-                <Grid item xs={12}>
-                    {newSwitchState}
-                </Grid>
+                <Grid size={{ xs: 12, sm: 4 }}>{switchBeforeField}</Grid>
+                <Grid size={{ xs: 12, sm: 4 }}>{newSectionField}</Grid>
+                <Grid size={{ xs: 12, sm: 4 }}>{switchAfterField}</Grid>
+                <Grid size={12}>{newSwitchState}</Grid>
             </Grid>
             <PositionDiagramPane
-                studyUuid={studyUuid}
                 open={isDiagramPaneOpen}
                 onClose={handleCloseDiagramPane}
                 voltageLevelId={voltageLevelId}
-                currentNodeUuid={currentNode?.id}
-                currentRootNetworkUuid={currentRootNetworkUuid}
             />
         </Box>
     );

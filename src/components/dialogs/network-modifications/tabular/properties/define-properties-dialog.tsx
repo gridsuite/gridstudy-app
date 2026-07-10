@@ -6,7 +6,7 @@
  */
 
 import { useEffect } from 'react';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import {
     CustomFormProvider,
     type EquipmentType,

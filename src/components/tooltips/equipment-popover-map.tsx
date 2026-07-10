@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 import BranchPopoverContent from './branch/branch-popover-content';
 import LoadPopoverContent from './load/load-popover-content';
 import { VoltageLevelPopoverContent } from './voltage-level/voltage-level-popover-content';
 import GeneratorPopoverContent from './generator/generator-popover-content';
 
 export const EquipmentPopoverMap: Record<string, React.FC<any>> = {
-    [EQUIPMENT_TYPES.LINE]: BranchPopoverContent,
-    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: BranchPopoverContent,
-    [EQUIPMENT_TYPES.LOAD]: LoadPopoverContent,
-    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: VoltageLevelPopoverContent,
-    [EQUIPMENT_TYPES.GENERATOR]: GeneratorPopoverContent,
+    [EquipmentType.LINE]: BranchPopoverContent,
+    [EquipmentType.TWO_WINDINGS_TRANSFORMER]: BranchPopoverContent,
+    [EquipmentType.LOAD]: LoadPopoverContent,
+    [EquipmentType.VOLTAGE_LEVEL]: VoltageLevelPopoverContent,
+    [EquipmentType.GENERATOR]: GeneratorPopoverContent,
 };

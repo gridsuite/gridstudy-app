@@ -9,64 +9,63 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    EquipmentDeletionDto,
     EquipmentInfos,
-    EquipmentType,
+    LoadCreationDto,
+    LoadModificationDto,
     MODIFICATION_TYPES,
     ModificationType,
+    safeEncodeURIComponent,
+    toModificationOperation,
+    SubstationCreationDto,
+    SubstationModificationDto,
     NetworkModificationMetadata,
+    VoltageLevelModificationDto,
+    ByFilterDeletionDto,
+    EquipmentType,
+    ExcludedNetworkModifications,
+    ModificationByAssignmentDto,
+    GeneratorCreationDto,
+    GeneratorModificationDto,
+    ShuntCompensatorCreationDto,
+    ShuntCompensatorModificationDto,
+    BatteryCreationDto,
+    BatteryModificationDto,
+    LineCreationDto,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
 } from '@gridsuite/commons-ui';
-import { toModificationOperation } from '../../components/utils/utils';
-import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
-import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
+import { getBaseNetworkModificationUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
-    Assignment,
     AttachLineInfo,
     BalancesAdjustmentInfos,
-    BatteryCreationInfos,
-    BatteryModificationInfos,
+    ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
     CreateVoltageLevelSectionInfos,
     CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
-    GeneratorCreationInfos,
-    GeneratorModificationInfos,
     LCCCreationInfo,
     LccModificationInfos,
-    LineCreationInfos,
     LineModificationInfos,
     LinesAttachToSplitLinesInfo,
-    LoadCreationInfo,
-    LoadModificationInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    ShuntCompensatorCreationInfos,
-    ShuntCompensatorModificationInfos,
     StaticVarCompensatorCreationInfo,
-    SubstationCreationInfo,
-    SubstationModificationInfo,
     TopologyVoltageLevelModificationInfos,
     TwoWindingsTransformerCreationInfo,
     TwoWindingsTransformerModificationInfo,
     Variations,
     VariationType,
     VoltageLevelCreationInfo,
-    VoltageLeveModificationInfo,
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
-import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
-import {
-    ENABLE_OLG_MODIFICATION,
-    OLGS_MODIFICATION_TYPE,
-    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
-} from '../../components/utils/field-constants';
+import { ENABLE_OLG_MODIFICATION, OLGS_MODIFICATION_TYPE } from '../../components/utils/field-constants';
+import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -89,6 +88,43 @@ export function changeNetworkModificationOrder(
     return backendFetch(url, { method: 'put' });
 }
 
+/**
+ * Move a composite sub-modification within or between composites, or between a composite and the group root.
+ *
+ * The four scenarios are encoded by the nullable sourceCompositeUuid / targetCompositeUuid:
+ *  - both present  → sub-to-sub (same composite = reorder, different = cross-composite move)
+ *  - source only   → extract from composite to root level
+ *  - target only   → embed root-level modification into a composite
+ *
+ * @param studyUuid
+ * @param nodeUuid
+ * @param modificationUuid
+ * @param sourceCompositeUuid  UUID of the composite that currently owns the modification; null if at root
+ * @param targetCompositeUuid  UUID of the target composite; null to place at root level
+ * @param beforeUuid           insert before this UUID in the target collection; null to append at end
+ */
+export function changeCompositeSubModificationOrder(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuid: UUID,
+    sourceCompositeUuid: UUID | null,
+    targetCompositeUuid: UUID | null,
+    beforeUuid: UUID | null
+) {
+    console.info('move composite sub-modification ' + modificationUuid + ' in node ' + nodeUuid);
+    const params = new URLSearchParams();
+    if (sourceCompositeUuid) params.set('sourceCompositeUuid', sourceCompositeUuid);
+    if (targetCompositeUuid) params.set('targetCompositeUuid', targetCompositeUuid);
+    if (beforeUuid) params.set('beforeUuid', beforeUuid);
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/composite-sub-modification/' +
+        modificationUuid +
+        (params.toString() ? '?' + params.toString() : '');
+    console.debug(url);
+    return backendFetch(url, { method: 'put' });
+}
+
 export function stashModifications(studyUuid: UUID | null, nodeUuid: UUID | undefined, modificationUuids: UUID[]) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('stashed', String(true));
@@ -96,46 +132,6 @@ export function stashModifications(studyUuid: UUID | null, nodeUuid: UUID | unde
     const modificationDeleteUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
-        method: 'PUT',
-    });
-}
-
-export function setModificationMetadata(
-    studyUuid: UUID | null,
-    nodeUuid: UUID | undefined,
-    modificationUuid: UUID,
-    metadata: Partial<NetworkModificationMetadata>
-): Promise<Response> {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('uuids', String([modificationUuid]));
-    const modificationUpdateUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
-    return backendFetch(modificationUpdateUrl, {
-        method: 'PUT',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(metadata),
-    });
-}
-
-export function updateModificationStatusByRootNetwork(
-    studyUuid: UUID,
-    nodeUuid: UUID,
-    rootNetworkUuid: UUID,
-    modificationUuid: UUID,
-    activated: boolean
-) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('activated', String(activated));
-    urlSearchParams.append('uuids', String([modificationUuid]));
-    const modificationUpdateActiveUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
-        '/network-modifications' +
-        '?' +
-        urlSearchParams.toString();
-    console.debug(modificationUpdateActiveUrl);
-    return backendFetch(modificationUpdateActiveUrl, {
         method: 'PUT',
     });
 }
@@ -333,19 +329,12 @@ export function generatorScaling(
     );
 }
 
-export function createBattery({
-    batteryCreationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    batteryCreationInfos: BatteryCreationInfos;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: string | null;
-    isUpdate: boolean;
-}) {
+export function createBattery(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: BatteryCreationDto
+) {
     let createBatteryUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
@@ -354,28 +343,21 @@ export function createBattery({
         console.info('Creating battery creation');
     }
     return backendFetchText(createBatteryUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(batteryCreationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
-export function modifyBattery({
-    batteryModificationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    batteryModificationInfos: BatteryModificationInfos;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid: string | null;
-    isUpdate: boolean;
-}) {
+export function modifyBattery(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: BatteryModificationDto
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -384,36 +366,19 @@ export function modifyBattery({
         console.info('Creating battery modification');
     }
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(batteryModificationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
-export function createLoad({
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    loadType,
-    p0,
-    q0,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    isUpdate,
-    modificationUuid,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties,
-}: LoadCreationInfo) {
+export function createLoad(studyUuid: UUID, nodeUuid: UUID, modificationUuid: UUID | undefined, dto: LoadCreationDto) {
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
+    if (modificationUuid) {
         createLoadUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating load creation');
     } else {
@@ -421,54 +386,23 @@ export function createLoad({
     }
 
     return backendFetchText(createLoadUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LOAD_CREATION.type,
-            equipmentId: id,
-            equipmentName: name,
-            loadType: loadType,
-            p0: p0,
-            q0: q0,
-            voltageLevelId: voltageLevelId,
-            busOrBusbarSectionId: busOrBusbarSectionId,
-            connectionDirection: connectionDirection,
-            connectionName: connectionName,
-            connectionPosition: connectionPosition,
-            terminalConnected: terminalConnected,
-            properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
-export function modifyLoad({
-    studyUuid,
-    nodeUuid,
-    modificationUuid = undefined,
-    id,
-    name,
-    loadType,
-    p0,
-    q0,
-    voltageLevelId = undefined,
-    busOrBusbarSectionId = undefined,
-    connectionName = undefined,
-    connectionDirection = undefined,
-    connectionPosition = undefined,
-    terminalConnected = undefined,
-    pMeasurementValue,
-    pMeasurementValidity,
-    qMeasurementValue,
-    qMeasurementValidity,
-    properties,
-}: LoadModificationInfo) {
+export function modifyLoad(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: LoadModificationDto
+) {
     let modifyLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
+    if (modificationUuid) {
         modifyLoadUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating load modification');
     } else {
@@ -476,46 +410,21 @@ export function modifyLoad({
     }
 
     return backendFetchText(modifyLoadUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
-            equipmentId: id,
-            equipmentName: toModificationOperation(name),
-            loadType: toModificationOperation(loadType),
-            connectionName: toModificationOperation(connectionName),
-            connectionDirection: toModificationOperation(connectionDirection),
-            connectionPosition: toModificationOperation(connectionPosition),
-            terminalConnected: toModificationOperation(terminalConnected),
-            p0: toModificationOperation(p0),
-            q0: toModificationOperation(q0),
-            voltageLevelId: toModificationOperation(voltageLevelId),
-            busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
-            pMeasurementValue: toModificationOperation(pMeasurementValue),
-            pMeasurementValidity: toModificationOperation(pMeasurementValidity),
-            qMeasurementValue: toModificationOperation(qMeasurementValue),
-            qMeasurementValidity: toModificationOperation(qMeasurementValidity),
-            properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
-export function modifyGenerator({
-    generatorModificationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    generatorModificationInfos: GeneratorModificationInfos;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid: string | null;
-    isUpdate: boolean;
-}) {
+export function modifyGenerator(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: GeneratorModificationDto
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
@@ -525,28 +434,21 @@ export function modifyGenerator({
         console.info('Creating generator modification');
     }
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorModificationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
-export function createGenerator({
-    generatorCreationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    generatorCreationInfos: GeneratorCreationInfos;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: string | null;
-    isUpdate: boolean;
-}) {
+export function createGenerator(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: GeneratorCreationDto
+) {
     let createGeneratorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         createGeneratorUrl += '/' + encodeURIComponent(modificationUuid);
@@ -555,12 +457,12 @@ export function createGenerator({
         console.info('Creating generator creation');
     }
     return backendFetchText(createGeneratorUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorCreationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -571,7 +473,7 @@ export function createShuntCompensator({
     modificationUuid,
     isUpdate,
 }: {
-    shuntCompensatorCreationInfos: ShuntCompensatorCreationInfos;
+    shuntCompensatorCreationInfos: ShuntCompensatorCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string;
@@ -596,13 +498,13 @@ export function createShuntCompensator({
 }
 
 export function modifyShuntCompensator({
-    shuntCompensatorModificationInfos,
+    shuntCompensatorModificationDto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    shuntCompensatorModificationInfos: ShuntCompensatorModificationInfos;
+    shuntCompensatorModificationDto: ShuntCompensatorModificationDto;
     studyUuid: UUID;
     nodeUuid?: UUID;
     modificationUuid: string | null;
@@ -623,7 +525,7 @@ export function modifyShuntCompensator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(shuntCompensatorModificationInfos),
+        body: JSON.stringify(shuntCompensatorModificationDto),
     });
 }
 
@@ -720,7 +622,7 @@ export function createLine({
     isUpdate = false,
     modificationUuid,
 }: {
-    lineCreationInfos: LineCreationInfos;
+    lineCreationInfos: LineCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
@@ -782,6 +684,7 @@ export function modifyLine({
     p2MeasurementValidity,
     q2MeasurementValue,
     q2MeasurementValidity,
+    lineSegments,
 }: LineModificationInfos) {
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
@@ -836,6 +739,7 @@ export function modifyLine({
             p2MeasurementValidity: toModificationOperation(p2MeasurementValidity),
             q2MeasurementValue: toModificationOperation(q2MeasurementValue),
             q2MeasurementValidity: toModificationOperation(q2MeasurementValidity),
+            lineSegments: lineSegments,
         }),
     });
 }
@@ -843,8 +747,8 @@ export function modifyLine({
 export function createTwoWindingsTransformer({
     studyUuid,
     nodeUuid,
-    twoWindingsTransformerId,
-    twoWindingsTransformerName,
+    equipmentId,
+    equipmentName,
     r,
     x,
     g,
@@ -852,9 +756,9 @@ export function createTwoWindingsTransformer({
     ratedS,
     ratedU1,
     ratedU2,
-    limitsGroups,
-    selectedLimitsGroup1,
-    selectedLimitsGroup2,
+    operationalLimitsGroups,
+    selectedOperationalLimitsGroupId1,
+    selectedOperationalLimitsGroupId2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -862,7 +766,7 @@ export function createTwoWindingsTransformer({
     ratioTapChanger,
     phaseTapChanger,
     isUpdate,
-    modificationUuid,
+    uuid,
     connectionName1,
     connectionDirection1,
     connectionName2,
@@ -876,7 +780,7 @@ export function createTwoWindingsTransformer({
     let createTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
-        createTwoWindingsTransformerUrl += '/' + encodeURIComponent(modificationUuid);
+        createTwoWindingsTransformerUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating two windings transformer creation');
     } else {
         console.info('Creating two windings transformer creation');
@@ -890,8 +794,8 @@ export function createTwoWindingsTransformer({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION.type,
-            equipmentId: twoWindingsTransformerId,
-            equipmentName: twoWindingsTransformerName,
+            equipmentId,
+            equipmentName,
             r: r,
             x: x,
             g: g,
@@ -899,9 +803,9 @@ export function createTwoWindingsTransformer({
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            operationalLimitsGroups: limitsGroups,
-            selectedOperationalLimitsGroupId1: selectedLimitsGroup1,
-            selectedOperationalLimitsGroupId2: selectedLimitsGroup2,
+            operationalLimitsGroups,
+            selectedOperationalLimitsGroupId1,
+            selectedOperationalLimitsGroupId2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
@@ -925,8 +829,8 @@ export function modifyTwoWindingsTransformer({
     studyUuid,
     nodeUuid,
     modificationUuid = undefined,
-    twoWindingsTransformerId,
-    twoWindingsTransformerName,
+    equipmentId,
+    equipmentName,
     r,
     x,
     g,
@@ -935,8 +839,8 @@ export function modifyTwoWindingsTransformer({
     ratedU1,
     ratedU2,
     operationalLimitsGroups,
-    selectedLimitsGroup1,
-    selectedLimitsGroup2,
+    selectedOperationalLimitsGroupId1,
+    selectedOperationalLimitsGroupId2,
     enableOLGModification,
     ratioTapChanger,
     phaseTapChanger,
@@ -950,8 +854,8 @@ export function modifyTwoWindingsTransformer({
     connectionDirection2 = undefined,
     connectionPosition1 = undefined,
     connectionPosition2 = undefined,
-    connected1 = undefined,
-    connected2 = undefined,
+    terminal1Connected = undefined,
+    terminal2Connected = undefined,
     properties: propertiesForBackend,
     p1MeasurementValue,
     p1MeasurementValidity,
@@ -982,8 +886,8 @@ export function modifyTwoWindingsTransformer({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
-            equipmentId: twoWindingsTransformerId,
-            equipmentName: twoWindingsTransformerName,
+            equipmentId,
+            equipmentName,
             r: r,
             x: x,
             g: g,
@@ -992,8 +896,8 @@ export function modifyTwoWindingsTransformer({
             ratedU1: ratedU1,
             ratedU2: ratedU2,
             operationalLimitsGroups: operationalLimitsGroups,
-            selectedOperationalLimitsGroupId1: selectedLimitsGroup1,
-            selectedOperationalLimitsGroupId2: selectedLimitsGroup2,
+            selectedOperationalLimitsGroupId1,
+            selectedOperationalLimitsGroupId2,
             [ENABLE_OLG_MODIFICATION]: enableOLGModification,
             [OLGS_MODIFICATION_TYPE]: enableOLGModification
                 ? OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE
@@ -1010,8 +914,8 @@ export function modifyTwoWindingsTransformer({
             connectionDirection2: toModificationOperation(connectionDirection2),
             connectionPosition1: toModificationOperation(connectionPosition1),
             connectionPosition2: toModificationOperation(connectionPosition2),
-            terminal1Connected: toModificationOperation(connected1),
-            terminal2Connected: toModificationOperation(connected2),
+            terminal1Connected: toModificationOperation(terminal1Connected),
+            terminal2Connected: toModificationOperation(terminal2Connected),
             properties: propertiesForBackend,
             p1MeasurementValue: toModificationOperation(p1MeasurementValue),
             p1MeasurementValidity: toModificationOperation(p1MeasurementValidity),
@@ -1076,26 +980,14 @@ export function createTabularModification({
     });
 }
 
-export function createSubstation({
-    studyUuid,
-    nodeUuid,
-    substationId,
-    substationName,
-    country,
-    isUpdate = false,
-    modificationUuid,
-    properties,
-}: SubstationCreationInfo) {
+export function createSubstation(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: SubstationCreationDto
+) {
+    const body = JSON.stringify(dto);
     let url = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
-        equipmentId: substationId,
-        equipmentName: substationName,
-        country: country === '' ? null : country,
-        properties,
-    });
-
     if (modificationUuid) {
         url += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating substation creation', { url, body });
@@ -1104,12 +996,12 @@ export function createSubstation({
     }
 
     return backendFetchText(url, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body,
     });
 }
 
@@ -1128,35 +1020,35 @@ export function formatPropertiesForBackend(previousProperties: any, newPropertie
     const newPropertiesArray = Object.entries(newProperties).map(([name, value]) => ({ name, value }));
 
     const propertiesModifications: any = [];
-    previousPropertiesArray.forEach((previousPropertiePair) => {
-        const updatedProperty = newPropertiesArray.find((updatedObj) => updatedObj.name === previousPropertiePair.name);
+    previousPropertiesArray.forEach((previousPropertyPair) => {
+        const updatedProperty = newPropertiesArray.find((updatedObj) => updatedObj.name === previousPropertyPair.name);
 
         if (!updatedProperty) {
             // The property has been deleted (does not exist in the new properties array)
             propertiesModifications.push({
-                ...previousPropertiePair,
-                previousValue: previousPropertiePair.value,
+                ...previousPropertyPair,
+                previousValue: previousPropertyPair.value,
                 value: null,
                 deletionMark: true,
             });
-        } else if (updatedProperty.value !== previousPropertiePair.value) {
+        } else if (updatedProperty.value !== previousPropertyPair.value) {
             // the property exist in both the previous and the new properties array but has been modified
             propertiesModifications.push({
                 ...updatedProperty,
                 added: false,
                 deletionMark: false,
-                previousValue: previousPropertiePair.value,
+                previousValue: previousPropertyPair.value,
             });
         }
     });
 
-    newPropertiesArray.forEach((newPropertie) => {
+    newPropertiesArray.forEach((newProperty) => {
         // The property has been added
-        const previousPropertie = previousPropertiesArray.find((oldObj) => oldObj.name === newPropertie.name);
+        const previousProperty = previousPropertiesArray.find((oldObj) => oldObj.name === newProperty.name);
         //the propertie is new ( does not exist in the previous properties array)
-        if (!previousPropertie) {
+        if (!previousProperty) {
             propertiesModifications.push({
-                ...newPropertie,
+                ...newProperty,
                 added: true,
                 deletionMark: false,
             });
@@ -1165,19 +1057,15 @@ export function formatPropertiesForBackend(previousProperties: any, newPropertie
     return propertiesModifications;
 }
 
-export function modifySubstation({
-    studyUuid,
-    nodeUuid,
-    modificationUuid = undefined,
-    id,
-    name,
-    country,
-    properties,
-}: SubstationModificationInfo) {
+export function modifySubstation(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: SubstationModificationDto
+) {
     let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
+    if (modificationUuid) {
         modifyUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating substation modification');
     } else {
@@ -1185,18 +1073,12 @@ export function modifySubstation({
     }
 
     return backendFetchText(modifyUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
-            equipmentId: id,
-            equipmentName: toModificationOperation(name),
-            country: toModificationOperation(country),
-            properties: properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -1260,16 +1142,13 @@ export function createVoltageLevel({
 export function modifyVoltageLevel({
     studyUuid,
     nodeUuid,
-    modificationUuid = undefined,
-    equipmentId,
-    equipmentName,
-    nominalV,
-    lowVoltageLimit,
-    highVoltageLimit,
-    lowShortCircuitCurrentLimit,
-    highShortCircuitCurrentLimit,
-    properties,
-}: VoltageLeveModificationInfo) {
+    modificationUuid,
+    ...dto
+}: {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: UUID;
+} & VoltageLevelModificationDto) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -1286,17 +1165,7 @@ export function modifyVoltageLevel({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
-            equipmentId,
-            equipmentName: toModificationOperation(equipmentName),
-            nominalV: toModificationOperation(nominalV),
-            lowVoltageLimit: toModificationOperation(lowVoltageLimit),
-            highVoltageLimit: toModificationOperation(highVoltageLimit),
-            ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
-            ipMax: toModificationOperation(highShortCircuitCurrentLimit),
-            properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -1611,15 +1480,12 @@ export function deleteAttachingLine({
 }
 
 export function deleteEquipment(
-    studyUuid: string,
-    nodeUuid: UUID | undefined,
-    equipmentType: EquipmentType | string | null,
-    equipmentId: string,
+    studyUuid: UUID,
+    nodeUuid: UUID,
     modificationUuid: UUID | undefined,
-    equipmentInfos: any = undefined
+    dto: EquipmentDeletionDto
 ) {
     let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
     if (modificationUuid) {
         deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating equipment deletion');
@@ -1627,27 +1493,21 @@ export function deleteEquipment(
         console.info('Creating equipment deletion');
     }
 
-    return backendFetch(deleteEquipmentUrl, {
+    return backendFetchText(deleteEquipmentUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
-            equipmentId: equipmentId,
-            equipmentType: equipmentType,
-            equipmentInfos: equipmentInfos,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
 export function deleteEquipmentByFilter(
     studyUuid: string,
     nodeUuid: string,
-    equipmentType: keyof typeof EQUIPMENT_TYPES | null,
-    filters: Filter[],
-    modificationUuid: string
+    modificationUuid: string | undefined,
+    dto: ByFilterDeletionDto
 ) {
     let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1664,11 +1524,7 @@ export function deleteEquipmentByFilter(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
-            filters: filters,
-            equipmentType: equipmentType,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
@@ -1682,6 +1538,13 @@ export function fetchNetworkModifications(
     urlSearchParams.append('onlyStashed', onlyStashed.toString());
     urlSearchParams.append('onlyMetadata', 'true');
     const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    console.debug(modificationsGetUrl);
+    return backendFetchJson(modificationsGetUrl);
+}
+
+export function fetchNetworkModificationsToExport(studyUuid: UUID | null, nodeUuid: string) {
+    console.info('Fetching network modifications to export for nodeUuid : ', nodeUuid);
+    const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '/export';
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
@@ -1710,7 +1573,7 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
-            equipmentType: EQUIPMENT_TYPES.SWITCH,
+            equipmentType: EquipmentType.SWITCH,
             equipmentId: switchId,
             equipmentAttributeName: 'open',
             equipmentAttributeValue: open,
@@ -1888,66 +1751,50 @@ export function modifyVsc({
 export function modifyByFormula(
     studyUuid: string,
     nodeUuid: UUID,
-    equipmentType: string,
-    formulas: any,
-    isUpdate: boolean,
-    modificationUuid: UUID
+    byFormulaModificationInfos: ByFormulaModificationInfos,
+    uuid?: UUID
 ) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
-        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        modificationUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating by formula modification');
     } else {
         console.info('Creating by formula modification');
     }
 
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
-        identifiableType: equipmentType,
-        formulaInfosList: formulas,
-    });
-
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body: JSON.stringify(byFormulaModificationInfos),
     });
 }
 
 export function modifyByAssignment(
     studyUuid: string,
     nodeUuid: UUID,
-    equipmentType: string,
-    assignmentsList: Assignment[],
-    isUpdate: boolean,
-    modificationUuid: UUID | null
+    modificationUuid: string | undefined,
+    dto: ModificationByAssignmentDto
 ) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
+    if (modificationUuid) {
         modificationUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating modification by assignment');
     } else {
         console.info('Creating modification by assignment');
     }
 
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
-        equipmentType: equipmentType,
-        assignmentInfosList: assignmentsList,
-    });
-
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body: JSON.stringify(dto),
     });
 }
 
@@ -2072,4 +1919,35 @@ export function moveVoltageLevelFeederBays({
         },
         body: JSON.stringify(moveVoltageLevelFeederBaysInfos),
     });
+}
+
+export function assembleModificationsIntoComposite(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuids: UUID[]
+): Promise<UUID> {
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/composite-modification`;
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(modificationUuids),
+    });
+}
+
+export function getNetworkModificationsFromComposite(
+    compositeModificationUuids: string[],
+    onlyMetadata: boolean = true
+): Promise<Record<UUID, NetworkModificationMetadata[]>> {
+    const urlSearchParams = new URLSearchParams();
+    compositeModificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
+    urlSearchParams.append('onlyMetadata', String(onlyMetadata));
+    const url =
+        getBaseNetworkModificationUrl() +
+        '/network-composite-modifications/network-modifications?' +
+        urlSearchParams.toString();
+    console.debug(url);
+    return backendFetchJson(url);
 }

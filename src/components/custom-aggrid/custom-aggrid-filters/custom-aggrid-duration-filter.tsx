@@ -5,14 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import { Grid2 as Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
+import { CustomAggridComparatorSelector } from '@gridsuite/commons-ui';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
-import { CustomAggridFilterParams } from './custom-aggrid-filter.type';
+import { useCustomAggridColumnFilter } from '@gridsuite/commons-ui';
+
+import { CustomAggridFilterParams } from '../../../types/custom-aggrid-types';
 
 const styles = {
     containerStyle: {
@@ -36,11 +37,11 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({ api, colId, filterParams }) => {
+const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({ colId, filterParams }) => {
     const intl = useIntl();
 
     const { selectedFilterData, selectedFilterComparator, handleChangeFilterValue, handleChangeComparator } =
-        useCustomAggridFilter(api, colId, filterParams);
+        useCustomAggridColumnFilter(colId, filterParams);
 
     const {
         comparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
@@ -134,14 +135,14 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
     }, [handleClearFilter]);
 
     return (
-        <Grid container direction={'column'} gap={0.8} sx={{ padding: '8px' }}>
+        <Stack gap={0.8} sx={{ padding: '8px' }}>
             <CustomAggridComparatorSelector
                 value={selectedFilterComparator}
                 onChange={handleFilterComparatorChange}
                 options={comparators}
             />
-            <Grid item container columns={12} sx={styles.containerStyle}>
-                <Grid item flex={1}>
+            <Grid container columns={12} sx={styles.containerStyle}>
+                <Grid flex={1}>
                     <TextField
                         fullWidth
                         size="small"
@@ -156,10 +157,10 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                         sx={styles.noArrows}
                     />
                 </Grid>
-                <Grid item xs={1} sx={styles.flexCenter}>
+                <Grid size={1} sx={styles.flexCenter}>
                     <Typography variant="body1">:</Typography>
                 </Grid>
-                <Grid item flex={1}>
+                <Grid flex={1}>
                     <TextField
                         fullWidth
                         size="small"
@@ -175,7 +176,7 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                     />
                 </Grid>
                 {selectedFilterData !== undefined && selectedFilterData !== '' && (
-                    <Grid item xs={1} sx={styles.flexCenter} ml={0.5}>
+                    <Grid size={1} sx={styles.flexCenter} ml={0.5}>
                         <IconButton
                             onClick={clearValue}
                             sx={styles.iconStyle}
@@ -188,7 +189,7 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                     </Grid>
                 )}
             </Grid>
-        </Grid>
+        </Stack>
     );
 };
 

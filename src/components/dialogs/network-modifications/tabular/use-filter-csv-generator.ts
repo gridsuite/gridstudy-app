@@ -6,19 +6,20 @@
  */
 import { useCallback, useMemo } from 'react';
 import {
-    FilterType,
-    FILTER_EQUIPMENTS_ATTRIBUTES,
+    EquipmentsFilter,
     fetchElementsInfos,
-    TreeViewFinderNodeProps,
-    LANG_FRENCH,
-    useSnackMessage,
+    FILTER_EQUIPMENTS_ATTRIBUTES,
+    FilterType,
+    getCsvDelimiter,
     snackWithFallback,
+    TreeViewFinderNodeProps,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { EquipmentsFilter, evaluateFilters } from 'services/study/filter';
+import { evaluateFilters } from 'services/study/filter';
 import { EQUIPMENT_ID } from 'components/utils/field-constants';
 import { TabularModificationType } from './tabular-common';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 
 interface FileDownloadParams {
@@ -46,7 +47,7 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const delimiter = useMemo(() => (language === LANG_FRENCH ? ';' : ','), [language]);
+    const delimiter = useMemo(() => getCsvDelimiter(language), [language]);
 
     /**
      * Extracts equipment IDs from explicit naming filter
@@ -115,7 +116,7 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
             // 2. Add comment lines
             commentLines.forEach((commentLineArray) => {
                 if (Array.isArray(commentLineArray)) {
-                    csvRows.push(...commentLineArray);
+                    csvRows.push(commentLineArray.join(delimiter));
                 }
             });
 

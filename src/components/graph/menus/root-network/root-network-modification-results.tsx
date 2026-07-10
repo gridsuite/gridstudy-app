@@ -10,7 +10,7 @@ import { useCallback } from 'react';
 import { Modification } from './root-network.types';
 import { Box, Theme, Typography } from '@mui/material';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer.type';
 import { useDispatch, useSelector } from 'react-redux';
 import { setHighlightModification } from 'redux/actions';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';

@@ -8,7 +8,7 @@ import { useCallback, useEffect } from 'react';
 import { BaseVoltage, fetchBaseVoltages } from '@gridsuite/commons-ui';
 import { setBaseVoltageList } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
+import { AppState } from '../redux/reducer.type';
 
 export const useBaseVoltages = () => {
     const dispatch = useDispatch();
@@ -24,9 +24,11 @@ export const useBaseVoltages = () => {
 
     const getBaseVoltageInterval = useCallback(
         (voltageValue: number): BaseVoltage | undefined => {
-            for (let interval of baseVoltages) {
-                if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
-                    return interval;
+            if (baseVoltages) {
+                for (let interval of baseVoltages) {
+                    if (voltageValue >= interval.minValue && voltageValue < interval.maxValue) {
+                        return interval;
+                    }
                 }
             }
         },

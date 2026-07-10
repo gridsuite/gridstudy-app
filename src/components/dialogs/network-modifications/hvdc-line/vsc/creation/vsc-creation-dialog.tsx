@@ -7,12 +7,21 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
     CustomFormProvider,
+    emptyProperties,
     ExtendedEquipmentType,
+    getPropertiesFromModification,
     MODIFICATION_TYPES,
     snackWithFallback,
     TextInput,
+    toModificationProperties,
     useSnackMessage,
+    DeepNullable,
+    filledTextField,
+    sanitizeString,
+    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -22,7 +31,6 @@ import {
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTERS_MODE,
-    DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
@@ -33,10 +41,9 @@ import {
     P0,
     R,
 } from '../../../../../utils/field-constants';
-import { Box, Grid } from '@mui/material';
-import { filledTextField, sanitizeString } from '../../../../dialog-utils';
+import { Box, Grid2 as Grid } from '@mui/material';
 import VscTabs from '../vsc-tabs';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
@@ -45,18 +52,11 @@ import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../../services/study/network-modifications';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    toModificationProperties,
-} from '../../../common/properties/property-utils';
-import GridItem from '../../../../commons/grid-item';
-import { VSC_CREATION_TABS } from '../vsc-utils';
+import { GridItem } from '../../../../commons/grid-item';
+import { VSC_TABS } from '../vsc-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { VscCreationInfos } from '../../../../../../services/network-modification-types';
-import { DeepNullable } from '../../../../../utils/ts-utils';
 import { VscCreationDialogSchemaForm, VscFormInfos } from '../vsc-dialog.type';
 import {
     getVscHvdcLinePaneEmptyFormData,
@@ -107,7 +107,7 @@ export default function VscCreationDialog({
 }: Readonly<VscCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const [tabIndex, setTabIndex] = useState(VSC_CREATION_TABS.HVDC_LINE_TAB);
+    const [tabIndex, setTabIndex] = useState(VSC_TABS.HVDC_LINE_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
 
     const formMethods = useForm<DeepNullable<VscCreationDialogSchemaForm>>({
@@ -151,11 +151,16 @@ export default function VscCreationDialog({
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{generatorIdField}</GridItem>
                 <GridItem size={4}>{generatorNameField}</GridItem>
             </Grid>
-            <VscTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
+            <VscTabs
+                tabIndex={tabIndex}
+                tabIndexesWithError={tabIndexesWithError}
+                setTabIndex={setTabIndex}
+                isModification={false}
+            />
         </Box>
     );
 
@@ -181,14 +186,14 @@ export default function VscCreationDialog({
     const onValidationError = (errors: FieldErrors) => {
         let tabsInError = [];
         if (errors?.[HVDC_LINE_TAB] !== undefined) {
-            tabsInError.push(VSC_CREATION_TABS.HVDC_LINE_TAB);
+            tabsInError.push(VSC_TABS.HVDC_LINE_TAB);
         }
         if (errors?.[CONVERTER_STATION_1] !== undefined) {
-            tabsInError.push(VSC_CREATION_TABS.CONVERTER_STATION_1);
+            tabsInError.push(VSC_TABS.CONVERTER_STATION_1);
         }
 
         if (errors?.[CONVERTER_STATION_2] !== undefined) {
-            tabsInError.push(VSC_CREATION_TABS.CONVERTER_STATION_2);
+            tabsInError.push(VSC_TABS.CONVERTER_STATION_2);
         }
 
         if (tabsInError.length > 0) {
@@ -214,7 +219,7 @@ export default function VscCreationDialog({
                 activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
                 angleDroopActivePowerControl: hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL] ?? null,
                 p0: hvdcLineTab[P0] ?? null,
-                droop: hvdcLineTab[DROOP] ?? null,
+                droop: hvdcLineTab[FieldConstants.DROOP] ?? null,
                 converterStation1: getConverterStationCreationData(hvdcLine[CONVERTER_STATION_1]),
                 converterStation2: getConverterStationCreationData(hvdcLine[CONVERTER_STATION_2]),
                 properties: toModificationProperties(hvdcLine),
@@ -233,7 +238,7 @@ export default function VscCreationDialog({
     );
 
     return (
-        <CustomFormProvider {...formMethods} validationSchema={formSchema}>
+        <CustomFormProvider {...formMethods} validationSchema={formSchema} isNodeBuilt={isNodeBuilt(currentNode)}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

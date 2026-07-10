@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    EQUIPMENT_NAME,
-    COUNTRY,
     NOMINAL_V,
     LOW_VOLTAGE_LIMIT,
     HIGH_VOLTAGE_LIMIT,
@@ -40,8 +38,6 @@ import {
     CONNECTION_POSITION,
     MIN_P,
     MAX_P,
-    MIN_Q,
-    MAX_Q,
     REACTIVE_CAPABILITY_CURVE,
     TARGET_P,
     TARGET_Q,
@@ -50,15 +46,8 @@ import {
     REGULATING_TERMINAL_ID,
     REGULATING_TERMINAL_TYPE,
     REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
-    Q_PERCENT,
     PARTICIPATE,
-    DROOP,
-    TRANSIENT_REACTANCE,
     STEP_UP_TRANSFORMER_REACTANCE,
-    PLANNED_ACTIVE_POWER_SET_POINT,
-    MARGINAL_COST,
-    PLANNED_OUTAGE_RATE,
-    FORCED_OUTAGE_RATE,
     LOAD_TYPE,
     P0,
     Q0,
@@ -75,7 +64,9 @@ import {
     REACTIVE_CAPABILITY_CURVE_P_MAX,
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
     REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX,
+    REGULATION_TYPE,
 } from 'components/utils/field-constants';
+import { FieldConstants } from '@gridsuite/commons-ui';
 
 /**
  * Represents a group of pre-fillable columns
@@ -93,21 +84,21 @@ export interface PrefilledColumnGroup {
 export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = {
     SUBSTATION: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
-            labelId: COUNTRY,
-            csvColumns: [COUNTRY],
+            labelId: FieldConstants.COUNTRY,
+            csvColumns: [FieldConstants.COUNTRY],
             networkFields: ['country'],
         },
     ],
 
     VOLTAGE_LEVEL: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -139,8 +130,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
 
     LINE: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -191,8 +182,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
 
     TWO_WINDINGS_TRANSFORMER: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -263,8 +254,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
 
     GENERATOR: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -298,7 +289,7 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
         },
         {
             labelId: 'PrefilledColumn.ReactivePowerLimits',
-            csvColumns: [MIN_Q, MAX_Q],
+            csvColumns: [FieldConstants.MIN_Q, FieldConstants.MAX_Q],
             networkFields: ['minMaxReactiveLimits.minQ', 'minMaxReactiveLimits.maxQ'],
         },
         {
@@ -349,6 +340,11 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['targetV'],
         },
         {
+            labelId: REGULATION_TYPE,
+            csvColumns: [REGULATION_TYPE],
+            networkFields: ['regulationType'],
+        },
+        {
             labelId: REGULATING_TERMINAL_ID,
             csvColumns: [REGULATING_TERMINAL_ID],
             networkFields: ['regulatingTerminalConnectableId'],
@@ -364,8 +360,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['regulatingTerminalVlId'],
         },
         {
-            labelId: Q_PERCENT,
-            csvColumns: [Q_PERCENT],
+            labelId: FieldConstants.Q_PERCENT,
+            csvColumns: [FieldConstants.Q_PERCENT],
             networkFields: ['coordinatedReactiveControl.qPercent'],
         },
         {
@@ -374,13 +370,13 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['activePowerControl.participate'],
         },
         {
-            labelId: DROOP,
-            csvColumns: [DROOP],
+            labelId: FieldConstants.DROOP,
+            csvColumns: [FieldConstants.DROOP],
             networkFields: ['activePowerControl.droop'],
         },
         {
             labelId: 'withoutunit.directTransX',
-            csvColumns: [TRANSIENT_REACTANCE],
+            csvColumns: [FieldConstants.TRANSIENT_REACTANCE],
             networkFields: ['generatorShortCircuit.directTransX'],
         },
         {
@@ -390,30 +386,30 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
         },
         {
             labelId: 'withoutunit.plannedActivePowerSetPoint',
-            csvColumns: [PLANNED_ACTIVE_POWER_SET_POINT],
+            csvColumns: [FieldConstants.PLANNED_ACTIVE_POWER_SET_POINT],
             networkFields: ['generatorStartup.plannedActivePowerSetPoint'],
         },
         {
-            labelId: MARGINAL_COST,
-            csvColumns: [MARGINAL_COST],
+            labelId: FieldConstants.MARGINAL_COST,
+            csvColumns: [FieldConstants.MARGINAL_COST],
             networkFields: ['generatorStartup.marginalCost'],
         },
         {
-            labelId: PLANNED_OUTAGE_RATE,
-            csvColumns: [PLANNED_OUTAGE_RATE],
+            labelId: FieldConstants.PLANNED_OUTAGE_RATE,
+            csvColumns: [FieldConstants.PLANNED_OUTAGE_RATE],
             networkFields: ['generatorStartup.plannedOutageRate'],
         },
         {
-            labelId: FORCED_OUTAGE_RATE,
-            csvColumns: [FORCED_OUTAGE_RATE],
+            labelId: FieldConstants.FORCED_OUTAGE_RATE,
+            csvColumns: [FieldConstants.FORCED_OUTAGE_RATE],
             networkFields: ['generatorStartup.forcedOutageRate'],
         },
     ],
 
     LOAD: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -449,8 +445,8 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
 
     BATTERY: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {
@@ -474,7 +470,7 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
         },
         {
             labelId: 'PrefilledColumn.ReactivePowerLimits',
-            csvColumns: [MIN_Q, MAX_Q],
+            csvColumns: [FieldConstants.MIN_Q, FieldConstants.MAX_Q],
             networkFields: ['minMaxReactiveLimits.minQ', 'minMaxReactiveLimits.maxQ'],
         },
         {
@@ -520,16 +516,16 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             networkFields: ['activePowerControl.participate'],
         },
         {
-            labelId: DROOP,
-            csvColumns: [DROOP],
+            labelId: FieldConstants.DROOP,
+            csvColumns: [FieldConstants.DROOP],
             networkFields: ['activePowerControl.droop'],
         },
     ],
 
     SHUNT_COMPENSATOR: [
         {
-            labelId: EQUIPMENT_NAME,
-            csvColumns: [EQUIPMENT_NAME],
+            labelId: FieldConstants.EQUIPMENT_NAME,
+            csvColumns: [FieldConstants.EQUIPMENT_NAME],
             networkFields: ['name'],
         },
         {

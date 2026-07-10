@@ -6,10 +6,10 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useSnackMessage, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
-import { AppState } from '../../../../redux/reducer';
+import { ErrorMessageDescriptor, extractErrorMessageDescriptor, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
+import { AppState } from '../../../../redux/reducer.type';
 import { Diagram, DiagramType } from '../../../grid-layout/cards/diagrams/diagram.type';
 import { fetchSvg } from '../../../../services/study';
 import {
@@ -41,7 +41,6 @@ export const useSldDiagram = ({
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
-    const { snackError } = useSnackMessage();
 
     const [diagram, setDiagram] = useState<Diagram>(
         () =>
@@ -52,7 +51,13 @@ export const useSldDiagram = ({
             }) as Diagram
     );
     const [loading, setLoading] = useState(false);
-    const [globalError, setGlobalError] = useState<string | undefined>();
+    const [globalError, setGlobalError] = useState<ErrorMessageDescriptor | undefined>();
+
+    // Keep ref synced to check node build status in async callbacks (avoids stale closures)
+    const currentNodeRef = useRef(currentNode);
+    useEffect(() => {
+        currentNodeRef.current = currentNode;
+    }, [currentNode]);
 
     // Helper to process SVG data - extracted to reduce nesting
     const processSvgData = useCallback((svgData: any) => {
@@ -61,29 +66,9 @@ export const useSldDiagram = ({
         }
     }, []);
 
-    const handleFetchError = useCallback(
-        (error: any) => {
-            console.error('Error fetching SLD diagram:', error);
-            let errorMessage: string;
-            if (error?.status === 404) {
-                setDiagram((current) => {
-                    errorMessage =
-                        current.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
-                    setGlobalError(errorMessage);
-                    return current;
-                });
-            } else if (error?.status === 403) {
-                errorMessage = error.message || 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
-                setGlobalError(errorMessage);
-            } else {
-                errorMessage = 'svgLoadingFail';
-                snackError({ headerId: errorMessage });
-                setGlobalError(errorMessage);
-            }
-        },
-        [snackError]
-    );
+    const handleFetchError = useCallback((error: any) => {
+        setGlobalError(extractErrorMessageDescriptor(error, ''));
+    }, []);
 
     const handleFetchComplete = useCallback(() => {
         setLoading(false);
@@ -112,9 +97,11 @@ export const useSldDiagram = ({
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             useName: paramUseName,
-                            centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-                            diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                            componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                            centerLabel: networkVisuParams?.singleLineDiagramParameters.centerLabel,
+                            diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
+                            componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
+                            useStateEstimationVisualisation:
+                                networkVisuParams?.singleLineDiagramParameters.stateEstimation,
                             sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
                             topologicalColoring: true,
                             language,
@@ -132,10 +119,12 @@ export const useSldDiagram = ({
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             useName: paramUseName,
-                            centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-                            diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                            substationLayout: networkVisuParams.singleLineDiagramParameters.substationLayout,
-                            componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                            centerLabel: networkVisuParams?.singleLineDiagramParameters.centerLabel,
+                            diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
+                            substationLayout: networkVisuParams?.singleLineDiagramParameters.substationLayout,
+                            componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
+                            useStateEstimationVisualisation:
+                                networkVisuParams?.singleLineDiagramParameters.stateEstimation,
                             topologicalColoring: true,
                             language,
                         }),
@@ -175,7 +164,7 @@ export const useSldDiagram = ({
         if (!currentNode?.id) return;
 
         if (currentNode.type !== NodeType.ROOT && !isStatusBuilt(currentNode?.data?.globalBuildStatus)) {
-            setGlobalError('InvalidNode');
+            setGlobalError({ descriptor: { id: 'InvalidNode' } });
             return;
         }
 
@@ -198,6 +187,7 @@ export const useSldDiagram = ({
         currentNodeId,
         currentNode?.id,
         currentNode?.type,
+        language,
         currentNode?.data?.globalBuildStatus,
         currentRootNetworkUuid,
         equipmentId,

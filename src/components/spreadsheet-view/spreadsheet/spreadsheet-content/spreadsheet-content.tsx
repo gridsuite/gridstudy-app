@@ -8,7 +8,6 @@
 import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { EquipmentTable } from './equipment-table';
 import { type Identifiable, type MuiStyles } from '@gridsuite/commons-ui';
-import { type CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
@@ -16,21 +15,23 @@ import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
-import { useFilterSelector } from 'hooks/use-filter-selector';
-import { FilterType } from 'types/custom-aggrid-types';
-import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { CustomColDef, FilterConfig, TableType } from 'types/custom-aggrid-types';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useNodeAliases } from '../../hooks/use-node-aliases';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer.type';
 import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
 import type { RootState } from '../../../../redux/store';
 import { selectPanelTargetEquipment } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import { useWorkspacePanelActions } from '../../../workspace/hooks/use-workspace-panel-actions';
+import { updateAgGridFilters } from '../../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { getColumnFiltersFromState } from '../../../../redux/selectors/filter-selectors';
+
+import { SPREADSHEET_INVALID_CELL_CLASS } from '../../columns/utils/column-mapper';
 
 const styles = {
     table: (theme) => ({
@@ -40,6 +41,9 @@ const styles = {
         // Hide the vertical scrollbar for pinned bottom rows
         '.ag-floating-bottom.ag-selectable': {
             overflowY: 'hidden !important',
+        },
+        [`.ag-cell.${SPREADSHEET_INVALID_CELL_CLASS}`]: {
+            color: theme.palette.text.disabled,
         },
     }),
     invalidNode: {
@@ -77,14 +81,39 @@ export const SpreadsheetContent = memo(
         const { openSLD, clearTargetEquipment } = useWorkspacePanelActions();
         const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
         const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
-        const { fetchNodesEquipmentData } = useFetchEquipment();
+        const { fetchNodesEquipmentData, fetchFailed, resetFetchFailed } = useFetchEquipment();
+
+        // Reset isGridReady when the grid is unmounted (disabled=true), so a fresh
+        // false → true transition on remount re-triggers effects depending on it.
+        useEffect(() => {
+            if (disabled) {
+                setIsGridReady(false);
+            }
+        }, [disabled]);
 
         // Initial data loading for this type when the tab is opened
         useEffect(() => {
-            if (active && nodesIds.length > 0 && Object.keys(equipments.equipmentsByNodeId).length === 0) {
+            // fetchFailed is there because in case of failure we don't want to retry the fetch indefinitely
+            if (active && nodesIds.length > 0 && !equipments.isInitialized && !equipments.isFetching && !fetchFailed) {
                 fetchNodesEquipmentData(tableDefinition?.type, new Set(nodesIds));
             }
-        }, [active, nodesIds, equipments.equipmentsByNodeId, fetchNodesEquipmentData, tableDefinition?.type]);
+        }, [
+            active,
+            nodesIds,
+            equipments.isInitialized,
+            fetchNodesEquipmentData,
+            tableDefinition?.type,
+            equipments.isFetching,
+            fetchFailed,
+        ]);
+
+        // this is needed to reset the failed fetch state when we switch tabs
+        // so that we at least try to fetch again once when the user reopens the tab
+        useEffect(() => {
+            if (active) {
+                resetFetchFailed();
+            }
+        }, [active, resetFetchFailed]);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
@@ -167,7 +196,9 @@ export const SpreadsheetContent = memo(
             }
         }, [transformedRowData, gridRef, isGridReady]);
 
-        const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
+        const filters = useSelector<AppState, FilterConfig[] | undefined>((state) =>
+            getColumnFiltersFromState(state, TableType.Spreadsheet, tableDefinition?.uuid)
+        );
 
         useEffect(() => {
             const api = gridRef.current?.api;
@@ -183,7 +214,7 @@ export const SpreadsheetContent = memo(
             if (!api || !isGridReady) {
                 return;
             }
-            updateFilters(api, filters);
+            updateAgGridFilters(api, filters);
         }, [filters, gridRef, isGridReady, equipments, tableDefinition?.columns]);
 
         const handleModify = useCallback(
