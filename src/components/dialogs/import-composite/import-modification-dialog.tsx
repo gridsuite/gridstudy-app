@@ -7,25 +7,26 @@
 
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    CheckboxInput,
     CustomFormProvider,
     DirectoryItemSelector,
     DndColumn,
     DndColumnType,
     DndTable,
     ElementType,
+    PARAM_DEVELOPER_MODE,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { insertCompositeModifications, type ModificationPair } from '../../services/study';
+import { type CompositesToBeInserted, insertCompositeModifications } from '../../../services/study';
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer.type';
-import { CompositeModificationAction } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { AppState } from '../../../redux/reducer.type';
+import { CompositeModificationAction } from '../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     Box,
     Button,
-    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
@@ -33,29 +34,20 @@ import {
     Divider,
     FormControl,
     FormControlLabel,
-    FormHelperText,
     Radio,
     RadioGroup,
     Step,
     StepLabel,
     Stepper,
-    TextField,
     Typography,
 } from '@mui/material';
-
-import {
-    Controller,
-    useController,
-    useFieldArray,
-    useForm,
-    UseFieldArrayReturn,
-    useFormContext,
-    useWatch,
-} from 'react-hook-form';
+import { useController, useFieldArray, UseFieldArrayReturn, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ACTION, SELECTED_MODIFICATIONS } from 'components/utils/field-constants';
+import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from '../../utils/field-constants';
 import * as yup from 'yup';
 import { UUID } from 'node:crypto';
+import InsertNameCell from './insert-name-cell';
+import { useParameterState } from '../parameters/use-parameters-state';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -92,47 +84,16 @@ const emptyFormData: FormData = {
 
 interface SharedCellProps {
     rowIndex: number;
+    disabled: boolean;
 }
 
-function SharedCell({ rowIndex }: Readonly<SharedCellProps>) {
-    const isShared: boolean = useWatch({
-        name: `${SELECTED_MODIFICATIONS}.${rowIndex}.isShared`,
-    });
-
+function SharedCell({ rowIndex, disabled }: Readonly<SharedCellProps>) {
     return (
-        <FormControlLabel
-            control={<Checkbox size="small" disabled checked={isShared} sx={{ p: 0, ml: 1 }} />}
-            label={
-                <Typography variant="body2" color="text.disabled" sx={{ ml: 0.5 }}>
-                    <FormattedMessage id="importComposites.shared" />
-                </Typography>
-            }
-            sx={{ mr: 0, alignItems: 'center' }}
+        <CheckboxInput
+            name={`${SELECTED_MODIFICATIONS}.${rowIndex}.${IS_SHARED}`}
+            label={'importComposites.shared'}
+            formProps={{ disabled }}
         />
-    );
-}
-
-interface InsertNameCellProps {
-    rowIndex: number;
-}
-
-function InsertNameCell({ rowIndex }: Readonly<InsertNameCellProps>) {
-    const { control } = useFormContext();
-    const originalName: string = useWatch({
-        name: `${SELECTED_MODIFICATIONS}.${rowIndex}.originalName`,
-    });
-
-    return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <Controller
-                name={`${SELECTED_MODIFICATIONS}.${rowIndex}.name`}
-                control={control}
-                render={({ field, fieldState }) => (
-                    <TextField {...field} size="small" fullWidth error={!!fieldState.error} />
-                )}
-            />
-            <FormHelperText sx={{ px: 1, mt: 0.25 }}> {originalName}</FormHelperText>
-        </Box>
     );
 }
 
@@ -192,10 +153,11 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
     const { field: actionField } = useController({ name: ACTION, control });
 
-    const action = watch(ACTION);
-    const selectedModifications = watch(SELECTED_MODIFICATIONS);
+    const action: CompositeModificationAction = watch(ACTION);
+    const selectedModifications: SelectedComposite[] = watch(SELECTED_MODIFICATIONS);
     const isInsertMode = action === CompositeModificationAction.INSERT;
     const isNextDisabled = selectedModifications.length === 0;
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     // useFieldArray — consumed by DndTable
     const useFieldArrayOutput = useFieldArray({
@@ -207,17 +169,17 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const sharedColumn: DndColumn = useMemo(
         () => ({
             label: '',
-            dataKey: 'isShared',
+            dataKey: IS_SHARED,
             initialValue: false,
             editable: true,
             width: '25%',
             type: DndColumnType.CUSTOM,
-            component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} />,
+            component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} disabled={!isDeveloperMode} />,
         }),
-        []
+        [isDeveloperMode]
     );
 
-    // SPLIT mode — name is read-only, drag-and-drop only
+    // SPLIT mode — name is read-only, drag-and-drop only, cannot be shared
     const splitColumnsDefinition: DndColumn[] = useMemo(
         () => [
             {
@@ -228,9 +190,8 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 width: '75%',
                 type: DndColumnType.TEXT,
             },
-            sharedColumn,
         ],
-        [sharedColumn]
+        []
     );
 
     // INSERT mode — name is editable with original name shown below
@@ -268,7 +229,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 id: e.id as UUID,
                 name: e.name,
                 originalName: e.name,
-                isShared: false,
+                [IS_SHARED]: false,
             }));
             setValue(SELECTED_MODIFICATIONS, newRows, {
                 shouldValidate: true,
@@ -276,32 +237,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             });
         },
         [setValue]
-    );
-
-    const handleSelectModification = useCallback(
-        (selectedElements: TreeViewFinderNodeProps[]) => {
-            setIsSelectorOpen(false);
-
-            if (!selectedElements.length) {
-                if (selectedModifications.length === 0) {
-                    onClose();
-                }
-                return;
-            }
-
-            const newRows: SelectedComposite[] = selectedElements.map((e) => ({
-                id: e.id as UUID,
-                name: e.name,
-                originalName: e.name,
-                isShared: false, // currently always false, to be computed later when shared modifications are added
-            }));
-
-            setValue(SELECTED_MODIFICATIONS, newRows, {
-                shouldValidate: true,
-                shouldDirty: true,
-            });
-        },
-        [setValue, selectedModifications.length, onClose]
     );
 
     const handleNext = useCallback(() => {
@@ -324,9 +259,12 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const handleSave = useCallback(() => {
         if (!studyUuid || !currentNode || !isValid) return;
 
-        const modificationsToInsert: ModificationPair[] = selectedModifications.map((m) => ({
-            first: m.id,
-            second: action === CompositeModificationAction.SPLIT ? m.originalName : m.name,
+        const modificationsToInsert: CompositesToBeInserted[] = selectedModifications.map((m: SelectedComposite) => ({
+            id: m.id,
+            // only inserted non shared composites may be renamed
+            name: action === CompositeModificationAction.SPLIT || m.isShared ? m.originalName : m.name,
+            // SPLIT modifications are never shared
+            isShared: action === CompositeModificationAction.INSERT ? m.isShared : false,
         }));
 
         insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, action).catch((error) =>
@@ -338,11 +276,10 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth PaperProps={{ sx: { p: 1 } }}>
+            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
                 <DialogTitle>
                     <FormattedMessage id="importComposites.title" />
                 </DialogTitle>
-
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: 490 }}>
                     <Stepper
                         activeStep={activeStep}
@@ -378,7 +315,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                     >
                         <DirectoryItemSelector
                             open={isSelectorOpen}
-                            onClose={handleSelectModification}
+                            onClose={() => setIsSelectorOpen(false)}
                             types={[ElementType.MODIFICATION]}
                             multiSelect
                             inline

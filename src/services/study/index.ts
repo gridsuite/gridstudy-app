@@ -286,15 +286,16 @@ export function copyOrMoveModifications(
     });
 }
 
-export interface ModificationPair {
-    first: UUID;
-    second: string;
+export interface CompositesToBeInserted {
+    id: UUID;
+    name: string;
+    isShared: boolean;
 }
 
 export const insertCompositeModifications = (
     studyUuid: string,
     nodeUuid: string,
-    modifications: ModificationPair[],
+    modifications: CompositesToBeInserted[],
     action: CompositeModificationAction
 ): Promise<void> => {
     const urlSearchParams = new URLSearchParams({ action });
