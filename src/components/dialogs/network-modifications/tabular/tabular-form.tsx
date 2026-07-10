@@ -534,84 +534,83 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     return (
         <Stack spacing={2} paddingTop={1} sx={{ height: '100%' }}>
             <Grid sx={{ width: 400, maxWidth: '100%' }}>{equipmentTypeField}</Grid>
-            <Grid container justifyContent="space-between" alignItems="center">
-                <Grid container alignItems="center">
-                    <Grid>
-                        <Button
-                            variant="contained"
-                            disabled={!equipmentType}
-                            onClick={() => {
-                                propertiesDialogOpen.setTrue();
-                            }}
-                        >
-                            <FormattedMessage id="DefinePropertiesButton" />
-                        </Button>
+            {equipmentType && (
+                <>
+                    <Grid container spacing={2} justifyContent="space-between" alignItems="center">
+                        <Grid container alignItems="center">
+                            <Grid>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => {
+                                        propertiesDialogOpen.setTrue();
+                                    }}
+                                >
+                                    <FormattedMessage id="DefinePropertiesButton" />
+                                </Button>
+                            </Grid>
+                            <Grid>
+                                <CsvDownloadButton
+                                    data={getTemplateData}
+                                    fileName={csvProps.fileName}
+                                    language={language}
+                                    labelId="GenerateCSV"
+                                    variant="contained"
+                                />
+                            </Grid>
+                            {dialogMode === TabularModificationType.MODIFICATION && (
+                                <Grid>
+                                    <Button variant="contained" onClick={() => prefilledModelDialogOpen.setTrue()}>
+                                        <FormattedMessage id="GeneratePrefilledModel" />
+                                    </Button>
+                                </Grid>
+                            )}
+                        </Grid>
+                        <Grid sx={{ flex: 1, minWidth: 0 }}>
+                            <CsvPicker<Record<string, unknown>>
+                                label="UploadCSV"
+                                header={csvColumns}
+                                language={language}
+                                parseConfig={parseConfig}
+                                selectedFile={selectedFile}
+                                onFileChange={setSelectedFile}
+                                onFileError={setFileErrorMessage}
+                                getTableData={() => getValues(MODIFICATIONS_TABLE)}
+                                onReplace={(results, file) =>
+                                    tableRef.current?.replace(getDataFromCsvFile(results, file))
+                                }
+                                onAppend={(results, file) =>
+                                    tableRef.current?.append(getDataFromCsvFile(results, file))
+                                }
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid>
-                        <CsvDownloadButton
-                            data={getTemplateData}
-                            fileName={csvProps.fileName}
-                            language={language}
-                            labelId="GenerateCSV"
-                            variant="contained"
-                            disabled={!equipmentType}
-                        />
-                    </Grid>
-                    {dialogMode === TabularModificationType.MODIFICATION && (
+                    {fileErrorMessage && (
                         <Grid>
-                            <Button
-                                variant="contained"
-                                onClick={() => prefilledModelDialogOpen.setTrue()}
-                                disabled={!equipmentType}
-                            >
-                                <FormattedMessage id="GeneratePrefilledModel" />
-                            </Button>
+                            <Alert severity="error">{fileErrorMessage}</Alert>
                         </Grid>
                     )}
-                </Grid>
-                <Grid sx={{ flex: 1, minWidth: 0 }}>
-                    <CsvPicker<Record<string, unknown>>
-                        label="UploadCSV"
-                        header={csvColumns}
-                        disabled={!equipmentType}
-                        language={language}
-                        parseConfig={parseConfig}
-                        selectedFile={selectedFile}
-                        onFileChange={setSelectedFile}
-                        onFileError={setFileErrorMessage}
-                        getTableData={() => getValues(MODIFICATIONS_TABLE)}
-                        onReplace={(results, file) => tableRef.current?.replace(getDataFromCsvFile(results, file))}
-                        onAppend={(results, file) => tableRef.current?.append(getDataFromCsvFile(results, file))}
-                    />
-                </Grid>
-            </Grid>
-            {fileErrorMessage && (
-                <Grid>
-                    <Alert severity="error">{fileErrorMessage}</Alert>
-                </Grid>
-            )}
-            {fileWarningMessage && (
-                <Grid>
-                    <Alert severity="warning">{fileWarningMessage}</Alert>
-                </Grid>
-            )}
-            {equipmentType && (
-                <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-                    <CustomAgGridTable
-                        ref={tableRef}
-                        name={MODIFICATIONS_TABLE}
-                        columnDefs={columnDefs}
-                        defaultColDef={defaultColDef}
-                        makeDefaultRowData={makeDefaultRowData}
-                        loading={isFetching}
-                        pagination
-                        rowSelection={{
-                            mode: 'multiRow',
-                        }}
-                        overrideLocales={AGGRID_LOCALES}
-                        csvProps={csvProps}
-                    />
-                </Grid>
+                    {fileWarningMessage && (
+                        <Grid>
+                            <Alert severity="warning">{fileWarningMessage}</Alert>
+                        </Grid>
+                    )}
+                    <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                        <CustomAgGridTable
+                            ref={tableRef}
+                            name={MODIFICATIONS_TABLE}
+                            columnDefs={columnDefs}
+                            defaultColDef={defaultColDef}
+                            makeDefaultRowData={makeDefaultRowData}
+                            loading={isFetching}
+                            pagination
+                            rowSelection={{
+                                mode: 'multiRow',
+                            }}
+                            overrideLocales={AGGRID_LOCALES}
+                            csvProps={csvProps}
+                        />
+                    </Grid>
+                </>
             )}
             <DefinePropertiesDialog
                 open={propertiesDialogOpen}
