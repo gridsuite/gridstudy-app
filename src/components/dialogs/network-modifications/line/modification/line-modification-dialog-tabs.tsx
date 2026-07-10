@@ -6,14 +6,17 @@
  */
 
 import { Box } from '@mui/material';
-import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
-import { LineModificationDialogTab } from '../line-utils';
-import { LimitsPane } from '../../../limits/limits-pane';
+import { LineModificationDialogTab } from './line-utils';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { JSX, useCallback } from 'react';
-import { BranchActiveReactivePowerMeasurementsForm, BranchConnectivityForm } from '@gridsuite/commons-ui';
+import {
+    BranchActiveReactivePowerMeasurementsForm,
+    BranchConnectivityForm,
+    BranchInfos,
+    LimitsPane,
+    LineCharacteristicsPane,
+} from '@gridsuite/commons-ui';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
@@ -57,19 +60,11 @@ const LineModificationDialogTabs = ({
                 />
             </Box>
             <Box hidden={tabIndex !== LineModificationDialogTab.CHARACTERISTICS_TAB} p={1}>
-                <LineCharacteristicsPane
-                    displayConnectivity={false}
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                    lineToModify={lineToModify}
-                    clearableFields={true}
-                    isModification={true}
-                />
+                <LineCharacteristicsPane lineToModify={lineToModify} isModification={true} />
             </Box>
 
             <Box hidden={tabIndex !== LineModificationDialogTab.LIMITS_TAB} p={1}>
-                <LimitsPane currentNode={currentNode} equipmentToModify={lineToModify} clearableFields={true} />
+                <LimitsPane equipmentToModify={lineToModify} clearableFields={true} />
             </Box>
 
             <Box hidden={tabIndex !== LineModificationDialogTab.STATE_ESTIMATION_TAB} p={1}>
