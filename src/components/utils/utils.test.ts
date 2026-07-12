@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { areArrayElementsUnique, areNumbersOrdered } from './utils';
+import { areArrayElementsUnique, areNumbersOrdered, mergeByIdKeepOrder } from './utils';
 
 test('utils.areArrayElementsUnique', () => {
     expect(areArrayElementsUnique([1, 2, 3])).toBeTruthy();
@@ -52,4 +52,52 @@ test('utils.areNumbersOrdered', () => {
     expect(areNumbersOrdered()).toBeFalsy();
     expect(areNumbersOrdered({})).toBeFalsy();
     expect(areNumbersOrdered({ length: 1 })).toBeFalsy();
+});
+
+test('utils.mergeByIdKeepOrder with empty second array returns first array', () => {
+    const first = [
+        { id: 'a', value: 1 },
+        { id: 'b', value: 2 },
+    ];
+    const merged = mergeByIdKeepOrder(first, []);
+
+    expect(merged).toBe(first);
+    expect(merged).toEqual(first);
+});
+
+test('utils.mergeByIdKeepOrder with same elements returns a new array', () => {
+    const first = [
+        { id: 'a', value: 1 },
+        { id: 'b', value: 2 },
+    ];
+    const second = [
+        { id: 'a', value: 1 },
+        { id: 'b', value: 2 },
+    ];
+    const merged = mergeByIdKeepOrder(first, second);
+
+    expect(merged).not.toBe(first);
+    expect(merged).not.toBe(second);
+    expect(merged).toEqual(first);
+    expect(merged).toEqual(second);
+});
+
+test('utils.mergeByIdKeepOrder merges and preserves order when second array has updates and new ids', () => {
+    const first = [
+        { id: 'a', value: 1 },
+        { id: 'b', value: 2 },
+    ];
+    const second = [
+        { id: 'b', value: 20 },
+        { id: 'c', value: 3 },
+    ];
+    const merged = mergeByIdKeepOrder(first, second);
+
+    expect(merged).not.toBe(first);
+    expect(merged).not.toBe(second);
+    expect(merged).toEqual([
+        { id: 'a', value: 1 },
+        { id: 'b', value: 20 },
+        { id: 'c', value: 3 },
+    ]);
 });

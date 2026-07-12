@@ -83,7 +83,8 @@ import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-m
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
 import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
-import ImportModificationDialog from '../../../dialogs/import-modification-dialog';
+
+import ImportModificationDialog from '../../../dialogs/import-composite/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
@@ -178,7 +179,7 @@ const NetworkModificationNodeEditor = () => {
         []
     );
 
-    // TODO : this is temporary, until copy/paste/save is done for the shared modifications :
+    // TODO : this is temporary, until copy/paste/save is done for the shared modifications in GRD-4785 :
     const selectionContainsShared: boolean = useMemo(() => {
         return selectedNetworkModifications.some(
             (modification: ComposedModificationMetadata) =>
@@ -1128,8 +1129,12 @@ const NetworkModificationNodeEditor = () => {
     }, [notificationIdList, currentNode?.id]);
 
     const isModificationClickable = useCallback(
-        (modification: NetworkModificationMetadata) =>
-            !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
+        (modification: ComposedModificationMetadata) =>
+            !isAnyNodeBuilding &&
+            !mapDataLoading &&
+            !isDragging &&
+            isEditableModification(modification) &&
+            !modification.isSharedChild,
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
 
@@ -1218,7 +1223,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleCellClick = useCallback(
-        (modification: NetworkModificationMetadata) => {
+        (modification: ComposedModificationMetadata) => {
             if (isModificationClickable(modification)) {
                 // Check if the clicked column is the 'modificationName' column
                 doEditModification(modification.uuid, modification.type);

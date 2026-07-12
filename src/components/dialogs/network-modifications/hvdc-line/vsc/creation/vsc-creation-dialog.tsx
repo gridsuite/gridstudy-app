@@ -41,7 +41,7 @@ import {
     P0,
     R,
 } from '../../../../../utils/field-constants';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import VscTabs from '../vsc-tabs';
 import * as yup from 'yup';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
@@ -52,7 +52,7 @@ import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../../services/study/network-modifications';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
-import GridItem from '../../../../commons/grid-item';
+import { GridItem } from '../../../../commons/grid-item';
 import { VSC_TABS } from '../vsc-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -151,7 +151,7 @@ export default function VscCreationDialog({
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{generatorIdField}</GridItem>
                 <GridItem size={4}>{generatorNameField}</GridItem>
             </Grid>

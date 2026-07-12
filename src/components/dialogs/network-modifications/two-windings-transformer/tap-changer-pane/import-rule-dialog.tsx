@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid2 as Grid } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid2 as Grid, Stack } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton, CsvPicker, getCsvDelimiter, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
@@ -15,6 +15,9 @@ import { useSelector } from 'react-redux';
 import { PHASE_TAP, RuleType } from '../two-windings-transformer.types';
 import { AppState } from 'redux/reducer.type';
 import { transformIfFrenchNumber } from '../../tabular/tabular-common';
+
+// Tap-changer rule imports treat every column as optional: no column is required.
+const NO_REQUIRED_COLUMNS: string[] = [];
 
 export interface ImportRuleDialogProps {
     ruleType: RuleType;
@@ -70,7 +73,7 @@ export const ImportRuleDialog = ({
                 <FormattedMessage id={ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule'} />
             </DialogTitle>
             <DialogContent>
-                <Grid container spacing={2} direction={'column'}>
+                <Stack spacing={2}>
                     <Grid>
                         <CSVDownloader
                             data={[csvColumns]}
@@ -85,7 +88,7 @@ export const ImportRuleDialog = ({
                     <Grid>
                         <CsvPicker<Record<string, string>>
                             label={ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule'}
-                            header={csvColumns}
+                            requiredColumns={NO_REQUIRED_COLUMNS}
                             maxLineNumber={MAX_ROWS_NUMBER}
                             language={language}
                             parseConfig={parseConfig}
@@ -100,7 +103,7 @@ export const ImportRuleDialog = ({
                             <Alert severity="error">{fileErrorMessage}</Alert>
                         </Grid>
                     )}
-                </Grid>
+                </Stack>
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleCloseDialog} />

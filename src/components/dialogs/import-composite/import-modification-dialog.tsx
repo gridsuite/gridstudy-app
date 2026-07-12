@@ -14,15 +14,16 @@ import {
     DndColumnType,
     DndTable,
     ElementType,
+    PARAM_DEVELOPER_MODE,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { type CompositesToBeInserted, insertCompositeModifications } from '../../services/study';
+import { type CompositesToBeInserted, insertCompositeModifications } from '../../../services/study';
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer.type';
-import { CompositeModificationAction } from '../graph/menus/network-modifications/network-modification-menu.type';
+import { AppState } from '../../../redux/reducer.type';
+import { CompositeModificationAction } from '../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     Box,
     Button,
@@ -42,10 +43,12 @@ import {
 } from '@mui/material';
 import { useController, useFieldArray, UseFieldArrayReturn, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from '../utils/field-constants';
+
+import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from '../../utils/field-constants';
 import * as yup from 'yup';
 import { UUID } from 'node:crypto';
-import InsertNameCell from './import-composite/insert-name-cell';
+import InsertNameCell from './insert-name-cell';
+import { useParameterState } from '../parameters/use-parameters-state';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -82,11 +85,16 @@ const emptyFormData: FormData = {
 
 interface SharedCellProps {
     rowIndex: number;
+    disabled: boolean;
 }
 
-function SharedCell({ rowIndex }: Readonly<SharedCellProps>) {
+function SharedCell({ rowIndex, disabled }: Readonly<SharedCellProps>) {
     return (
-        <CheckboxInput name={`${SELECTED_MODIFICATIONS}.${rowIndex}.${IS_SHARED}`} label={'importComposites.shared'} />
+        <CheckboxInput
+            name={`${SELECTED_MODIFICATIONS}.${rowIndex}.${IS_SHARED}`}
+            label={'importComposites.shared'}
+            formProps={{ disabled }}
+        />
     );
 }
 
@@ -150,6 +158,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const selectedModifications: SelectedComposite[] = watch(SELECTED_MODIFICATIONS);
     const isInsertMode = action === CompositeModificationAction.INSERT;
     const isNextDisabled = selectedModifications.length === 0;
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     // useFieldArray — consumed by DndTable
     const useFieldArrayOutput = useFieldArray({
@@ -166,9 +175,9 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             editable: true,
             width: '25%',
             type: DndColumnType.CUSTOM,
-            component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} />,
+            component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} disabled={!isDeveloperMode} />,
         }),
-        []
+        [isDeveloperMode]
     );
 
     // SPLIT mode — name is read-only, drag-and-drop only, cannot be shared
@@ -253,7 +262,8 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
         const modificationsToInsert: CompositesToBeInserted[] = selectedModifications.map((m: SelectedComposite) => ({
             id: m.id,
-            // only INSERTed non shared composites may be renamed
+
+            // only inserted non shared composites may be renamed
             name: action === CompositeModificationAction.SPLIT || m.isShared ? m.originalName : m.name,
             // SPLIT modifications are never shared
             isShared: action === CompositeModificationAction.INSERT ? m.isShared : false,
