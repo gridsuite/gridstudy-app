@@ -1454,7 +1454,7 @@
     "nadInfoFilter": "Information",
     "nadInfoActivePowerValue": "P values",
     "nadInfoReactivePowerValue": "Q values",
-    "nadInfoPermanentLimitPercentage": "% IST",
+    "nadInfoPermanentLimitPercentage": "% PATL",
     "nadInfoActivePowerArrow": "P arrows",
     "nadInfoReactivePowerArrow": "Q arrows",
     "nadInfoVoltageLevelName": "Voltage level names",
