@@ -1445,6 +1445,7 @@
     "workspaceUpdateError": "Erreur lors de la mise à jour de l'espace de travail",
     "reset": "Réinitialiser",
     "history": "Historique",
+    "nadVoltageFilter": "Tension",
 
     "gridExplore": "GridExplore",
     "myComputer": "Mon ordinateur",
