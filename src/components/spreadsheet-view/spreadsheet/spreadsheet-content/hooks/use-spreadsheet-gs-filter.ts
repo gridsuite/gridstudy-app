@@ -39,9 +39,6 @@ export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
         selectedGlobalFilters,
         equipmentTypes
     );
-    useEffect(() => {
-        gridRef.current?.api?.onFilterChanged();
-    }, [filteredEquipmentIds, isPending, gridRef]);
     // Check if the equipment of the row belongs to the filtered equipments
     const doesFormulaFilteringPass = useCallback<NonNullable<GridOptions<TData>['doesExternalFilterPass']>>(
         (node) => {
@@ -57,5 +54,8 @@ export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
         const globalFilters = buildValidGlobalFilters(selectedGlobalFilters);
         return globalFilters != null;
     }, [selectedGlobalFilters]);
+    useEffect(() => {
+        gridRef.current?.api?.onFilterChanged();
+    }, [filteredEquipmentIds, isPending, isExternalFilterPresent, gridRef]);
     return { doesFormulaFilteringPass, isExternalFilterPresent, isGlobalFilterPending: isPending };
 }

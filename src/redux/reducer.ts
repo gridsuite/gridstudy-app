@@ -359,6 +359,8 @@ function buildSortedRecents(filters: GlobalFilter[]): RecentGlobalFilter[] {
  * Stores the full filter objects in globalFilterOptions, so that the ids kept in
  * tableFilters.globalFilters can be resolved right away — without waiting for the asynchronous
  * option fetches of useGlobalFilterOptions (countries, substation properties, base voltages).
+ * Existing options are left untouched: the ones fetched from the network are the source of truth, and
+ * ADD_TO_GLOBAL_FILTER_OPTIONS overwrites by id anything registered here from a stale collection.
  */
 function registerGlobalFilterOptions(globalFilterOptions: GlobalFilter[], filters: GlobalFilter[]) {
     filters.forEach((filter) => {

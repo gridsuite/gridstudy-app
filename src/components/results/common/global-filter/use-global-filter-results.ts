@@ -33,7 +33,10 @@ export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: 
     const [filteredIds, setFilteredIds] = useState<string[]>();
     const [isPending, setIsPending] = useState(false);
 
+    const globalFilters = useMemo(() => buildValidGlobalFilters(filters), [filters]);
+
     const nodeUuid = currentNode?.id;
+
     const canEvaluate = Boolean(
         isTreeModelUpToDate &&
         studyUuid &&
@@ -41,9 +44,6 @@ export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: 
         nodeUuid &&
         isStatusBuilt(currentNode?.data?.globalBuildStatus)
     );
-
-    const globalFilters = useMemo(() => buildValidGlobalFilters(filters), [filters]);
-    const shouldEvaluate = canEvaluate && globalFilters !== undefined;
 
     const fetchFilteredIds = useCallback(
         (globalFiltersParam: GlobalFilters, equipmentTypesParam: NonEmptyTuple<FilterEquipmentType>) => {
@@ -63,12 +63,15 @@ export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: 
     const debouncedFetchFilteredIds = useDebounce(fetchFilteredIds);
 
     useEffect(() => {
-        // pending from the moment the filter changes, until the debounced evaluation has resolved
-        setIsPending(shouldEvaluate);
-        if (shouldEvaluate && globalFilters) {
-            debouncedFetchFilteredIds(globalFilters, equipmentTypes);
+        if (!canEvaluate || !globalFilters) {
+            setIsPending(false);
+            setFilteredIds(undefined);
+            return;
         }
-    }, [debouncedFetchFilteredIds, equipmentTypes, globalFilters, shouldEvaluate]);
+        // pending from the moment the filter changes, until the debounced evaluation has resolved
+        setIsPending(true);
+        debouncedFetchFilteredIds(globalFilters, equipmentTypes);
+    }, [canEvaluate, debouncedFetchFilteredIds, equipmentTypes, globalFilters]);
 
     // the previous result is kept while a new one is being evaluated, to avoid flickering the rows
     return { filteredIds, isPending };
