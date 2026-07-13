@@ -46,7 +46,7 @@ export default function NadInfoFilter({ selectedInfos, onToggle, disabled }: Rea
             {INFO_ROWS.map(({ key, labelId }) => (
                 <ListItem sx={styles.item} key={key}>
                     <ListItemButton dense onClick={() => onToggle(key)} disabled={disabled}>
-                        <Switch size="small" checked={selectedInfos[key]} edge="start" />
+                        <Switch size="small" checked={selectedInfos[key]} edge="start" disabled={disabled} />
                         <ListItemText sx={styles.text} disableTypography primary={<FormattedMessage id={labelId} />} />
                     </ListItemButton>
                 </ListItem>
