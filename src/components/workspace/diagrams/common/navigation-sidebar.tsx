@@ -88,11 +88,14 @@ const styles = {
         display: 'flex',
         color: disabled ? theme.palette.text.disabled : theme.palette.text.primary,
     }),
-    section: {
+    // When the sidebar is too short, only an expanded section gives up space (its content scrolls):
+    // a collapsed section would otherwise be squeezed below its header, which would then overlap.
+    section: (expanded: boolean) => ({
         display: 'flex',
         flexDirection: 'column',
         minHeight: 0,
-    },
+        flexShrink: expanded ? 1 : 0,
+    }),
     sectionContent: {
         flex: 1,
         overflow: 'auto',
@@ -141,7 +144,7 @@ export const NavigationSidebar = memo(function NavigationSidebar({
                   ))
                 : // Expanded: each section shows its header, and its content when open.
                   sections.map((section) => (
-                      <Box key={section.id} sx={styles.section}>
+                      <Box key={section.id} sx={styles.section(isExpanded(section))}>
                           <Box sx={styles.headerContainer}>
                               <Box
                                   onClick={section.disabled ? undefined : () => toggleExpand(section.id)}
