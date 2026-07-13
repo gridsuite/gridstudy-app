@@ -164,6 +164,14 @@ export const styles = {
             opacity: INVALID_COMPUTATION_OPACITY,
         },
     },
+    // The hover highlight materializes the link between a voltage level name and its bus nodes:
+    // pointless, and distracting while dragging, once the names are hidden.
+    disableBusNodeHighlight: {
+        '& .nad-busnode-highlight': {
+            filter: 'unset !important',
+            transform: 'unset !important',
+        },
+    },
     nadEditModeCursors: {
         '& .nad-label-box, & .nad-vl-nodes .nad-busnode': {
             cursor: 'grab',

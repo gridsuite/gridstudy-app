@@ -72,6 +72,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svgVoltageLevels?: string[];
     readonly hiddenVoltageBands?: string[];
     readonly hiddenInfoSelectors?: string[];
+    readonly areVoltageLevelNamesHidden?: boolean;
     readonly loadingState: boolean;
     readonly isNadCreationFromFilter: boolean;
     readonly visible: boolean;
@@ -107,6 +108,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         svgVoltageLevels,
         hiddenVoltageBands,
         hiddenInfoSelectors,
+        areVoltageLevelNamesHidden,
         loadingState,
         isNadCreationFromFilter,
         showInSpreadsheet,
@@ -588,6 +590,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     styles.divNetworkAreaDiagram,
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramLoadflowInvalid : undefined,
                     isEditNadMode ? styles.nadEditModeCursors : undefined,
+                    areVoltageLevelNamesHidden ? styles.disableBusNodeHighlight : undefined,
                     hiddenVoltagesSx,
                     hiddenInfosSx
                 )}
