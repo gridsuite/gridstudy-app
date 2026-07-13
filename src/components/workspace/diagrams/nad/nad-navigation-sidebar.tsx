@@ -5,8 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
+import { History as HistoryIcon } from '@mui/icons-material';
+import { VoltageUnitIcon } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import {
@@ -15,19 +17,30 @@ import {
 } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import type { RootState } from '../../../../redux/store';
-import { NavigationSidebar } from '../common/navigation-sidebar';
+import { NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
+import { HistorySectionContent } from '../common/history-section-content';
 import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
+import NominalVoltageFilter, { type NominalVoltageFilterStyles } from '../../../network/nominal-voltage-filter';
+
+// Flatten NominalVoltageFilter so it blends into the sidebar instead of floating like the map overlay.
+const voltageFilterStyles: NominalVoltageFilterStyles = {
+    root: { boxShadow: 'none', backgroundColor: 'transparent', borderRadius: 0 },
+    nominalVoltageZone: { maxHeight: 'none', minWidth: 0, width: '100%', py: 0 },
+};
 
 interface NadNavigationSidebarProps {
     readonly nadPanelId: UUID;
-    readonly onCollapseChange?: (collapsed: boolean) => void;
+    readonly allNominalVoltages: number[];
+    readonly selectedNominalVoltages: number[];
+    readonly onNominalVoltagesChange: (checkedNominalVoltages: number[]) => void;
 }
 
 export const NadNavigationSidebar = memo(function NadNavigationSidebar({
     nadPanelId,
-    onCollapseChange,
+    allNominalVoltages,
+    selectedNominalVoltages,
+    onNominalVoltagesChange,
 }: NadNavigationSidebarProps) {
-    const [isExpanded, setIsExpanded] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isBuilt = isNodeBuilt(currentNode);
 
@@ -53,24 +66,52 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
     const reversedHistory = useMemo(() => [...(navigationHistory || [])].reverse(), [navigationHistory]);
 
     const hasHistory = reversedHistory.length > 0;
-    const shouldBeCollapsed = !isExpanded || !hasHistory;
+    const hasNominalVoltages = allNominalVoltages.length > 0;
 
-    const handleToggleExpand = () => {
-        if (hasHistory) {
-            const newExpanded = !isExpanded;
-            setIsExpanded(newExpanded);
-            onCollapseChange?.(!newExpanded || !hasHistory);
-        }
-    };
-
-    return (
-        <NavigationSidebar
-            navigationHistory={reversedHistory}
-            isCollapsed={shouldBeCollapsed}
-            isDisabled={!isBuilt}
-            isItemSelected={(id) => associatedVoltageLevelIds.includes(id)}
-            onToggleCollapse={handleToggleExpand}
-            onNavigate={handleNavigationSidebarClick}
-        />
+    const sections = useMemo<SidebarSection[]>(
+        () => [
+            {
+                id: 'history',
+                icon: <HistoryIcon fontSize="small" />,
+                titleId: 'history',
+                disabled: !hasHistory,
+                content: (
+                    <HistorySectionContent
+                        navigationHistory={reversedHistory}
+                        disabled={!isBuilt}
+                        isItemSelected={(id) => associatedVoltageLevelIds.includes(id)}
+                        onNavigate={handleNavigationSidebarClick}
+                    />
+                ),
+            },
+            {
+                id: 'voltage',
+                icon: <VoltageUnitIcon fontSize="small" />,
+                titleId: 'nadVoltageFilter',
+                disabled: !hasNominalVoltages,
+                content: (
+                    <NominalVoltageFilter
+                        nominalVoltages={allNominalVoltages}
+                        filteredNominalVoltages={selectedNominalVoltages}
+                        onChange={onNominalVoltagesChange}
+                        disabled={!isBuilt}
+                        styles={voltageFilterStyles}
+                    />
+                ),
+            },
+        ],
+        [
+            hasHistory,
+            reversedHistory,
+            isBuilt,
+            associatedVoltageLevelIds,
+            handleNavigationSidebarClick,
+            hasNominalVoltages,
+            allNominalVoltages,
+            selectedNominalVoltages,
+            onNominalVoltagesChange,
+        ]
     );
+
+    return <NavigationSidebar sections={sections} />;
 });
