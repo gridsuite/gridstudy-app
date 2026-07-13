@@ -58,6 +58,7 @@ export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: 
 
     useEffect(() => {
         if (!canEvaluate || !globalFilters) {
+            debouncedFetchFilteredIds.clear();
             setIsPending(false);
             setFilteredIds(undefined);
             return;
