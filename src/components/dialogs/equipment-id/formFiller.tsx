@@ -6,7 +6,7 @@
  */
 
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { ReactNode } from 'react';
 
@@ -30,11 +30,9 @@ export function FormFiller({ size = 12, lineHeight, children }: Readonly<FormFil
     return (
         <Grid container spacing={2} sx={{ height: lineHeight ? undefined : 'calc(100% - 32px)' }}>
             <Grid
-                item
-                xs={size}
+                size={size}
                 sx={{
                     marginTop: theme.spacing(2),
-                    align: 'start',
                 }}
             >
                 <Box

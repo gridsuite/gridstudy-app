@@ -38,3 +38,7 @@ Notes :
     - `@mapbox/jsonlint-lines-primitives@2.0.2` is a special license
     - `cartocolor@4.0.2` is Creative Commons but not correctly described in the package
     - `rw@0.1.4` is a BSD but not correctly described in the package ("BSD*")
+
+## Technical description of main components
+
+[Spreadsheet view](/src/components/spreadsheet-view/README.md)

@@ -118,8 +118,7 @@ export function TabularDialog({
                     }
                 }
                 modification = addPropertiesFromBack(modification, modif?.[TABULAR_PROPERTIES]);
-                modification[FieldConstants.AG_GRID_ROW_UUID] = uuid4();
-                return modification;
+                return { [FieldConstants.AG_GRID_ROW_UUID]: uuid4(), ...modification };
             });
             reset({
                 [TYPE]: getEquipmentTypeFromModificationType(modificationType),
@@ -135,8 +134,8 @@ export function TabularDialog({
         (editData: TabularModificationEditDataType) => {
             const equipmentType = getEquipmentTypeFromCreationType(editData?.modificationType);
             const creations = convertCreations(editData?.modifications).map((creation) => ({
-                ...creation,
                 [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
+                ...creation,
             }));
             reset({
                 [TYPE]: equipmentType,
@@ -252,7 +251,7 @@ export function TabularDialog({
                 titleId={dialogMode === TabularModificationType.CREATION ? 'TabularCreation' : 'TabularModification'}
                 open={open}
                 isDataFetching={dataFetching}
-                slotProps={{ paper: { sx: { height: '83vh' } } }}
+                slotProps={{ paper: { sx: { height: '95vh' } } }}
                 {...dialogProps}
             >
                 <TabularForm dataFetching={dataFetching} dialogMode={dialogMode} />

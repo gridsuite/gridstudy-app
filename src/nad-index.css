@@ -148,13 +148,6 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
     animation: node-under-blink 0.75s infinite steps(1, start);
 }
 
-/* NETWORK AREA DIAGRAM LEVEL OF DETAIL */
-.nad-edge-infos .nad-active,
-.nad-edge-infos .nad-reactive,
-.nad-edge-infos .nad-permanent-limit-percentage {
-    display:none;
-}
-
 /* Makes the nodes' edges thicker when zooming a lot */
 .nad-zoom-0 {
     :is(
@@ -288,13 +281,6 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
     transition: font-size 0.2s ease, stroke-width 0.2s ease;
 }
 
-:is(.nad-zoom-6000, .nad-zoom-5000, .nad-zoom-3500, .nad-zoom-2500, .nad-zoom-1000, .nad-zoom-500, .nad-zoom-0) :is(.nad-active, .nad-permanent-limit-percentage) {
-   display: inline;
-}
-:is(.nad-zoom-1000, .nad-zoom-500, .nad-zoom-0) :is(.nad-reactive) {
-   display: inline;
-}
-
 .nad-zoom-0 .nad-edge-infos text { font-size: 20px; stroke-width: 5px; }
 .nad-zoom-500 .nad-edge-infos text { font-size: 20px; stroke-width: 5px; }
 .nad-zoom-1000 .nad-edge-infos text { font-size: 30px; stroke-width: 5.5px; }
@@ -308,26 +294,20 @@ g.nad-disconnected > .nad-disconnected.nad-edge-path {
 :is(.nad-zoom-6000) .nad-text-nodes {
     font-size: 60px;
 }
-:is(.nad-zoom-3500) .nad-text-nodes {
+:is(.nad-zoom-3000, .nad-zoom-3500) .nad-text-nodes {
     font-size: 45px;
 }
 :is(.nad-zoom-2500) .nad-text-nodes {
     font-size: 35px;
 }
-:is( .nad-zoom-3500, .nad-zoom-5000, .nad-zoom-6000) .nad-bus-descr {
+:is(.nad-zoom-3000, .nad-zoom-3500, .nad-zoom-5000, .nad-zoom-6000) .nad-bus-descr {
     display: none;
-}
-:is( .nad-zoom-5000) .nad-permanent-limit-percentage {
-    display: none;
-}
-:is(.nad-zoom-2500, .nad-zoom-3500, .nad-zoom-5000) .nad-arrow-out.nad-permanent-limit-percentage {
-    display: inline;
 }
 /* Make arrows scale with zoom */
 :is(.nad-zoom-2500) .nad-edge-infos path {
     stroke-width: 2px;
 }
-:is(.nad-zoom-3500) .nad-edge-infos path {
+:is(.nad-zoom-3000, .nad-zoom-3500) .nad-edge-infos path {
     stroke-width: 8px;
 }
 .nad-zoom-5000 .nad-edge-infos path {

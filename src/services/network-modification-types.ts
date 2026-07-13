@@ -12,20 +12,16 @@ import {
     AssignmentDataType,
     AssignmentFieldValue,
     AttributeModification,
+    LineCreationDto,
+    LineSegmentInfos,
     ModificationType,
+    OperationalLimitsGroup,
+    OperationalLimitsGroupModificationInfos,
     Property,
     ReactiveCapabilityCurvePoints,
 } from '@gridsuite/commons-ui';
-import {
-    AREA,
-    ENABLE_OLG_MODIFICATION,
-    SEGMENT_DISTANCE_VALUE,
-    SEGMENT_TYPE_ID,
-    SHAPE_FACTOR,
-    TEMPERATURE,
-} from '../components/utils/field-constants';
+import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
-import { OperationalLimitsGroupFormSchema } from '../components/dialogs/limits/operational-limits-groups-types';
 
 export interface WithModificationId {
     uuid: UUID;
@@ -122,27 +118,6 @@ export interface PhaseTapChangerModificationInfos extends TapChangerModification
     regulationValue: AttributeModification<number> | null;
 }
 
-export interface CurrentTemporaryLimitModificationInfos {
-    name: AttributeModification<string> | null;
-    value: AttributeModification<number> | null;
-    acceptableDuration: AttributeModification<number> | null;
-    modificationType: string | null;
-}
-
-export interface CurrentLimitsModificationInfos {
-    permanentLimit: number | null;
-    temporaryLimits: CurrentTemporaryLimitModificationInfos[] | null;
-}
-
-export interface OperationalLimitsGroupModificationInfos {
-    id: string;
-    currentLimits: CurrentLimitsModificationInfos | null;
-    modificationType?: string | null;
-    temporaryLimitsModificationType?: string | null;
-    limitsProperties?: LimitsPropertyInfos[] | null;
-    applicability: string | null;
-}
-
 export interface TwoWindingsTransformerModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
@@ -189,37 +164,6 @@ export interface TwoWindingsTransformerModificationInfo {
     phaseTapChanger: PhaseTapChangerModificationInfos | null;
     uuid?: string;
     activated?: boolean | null;
-}
-
-export interface OperationalLimitsGroup {
-    id: string;
-    name: string;
-    applicability?: string;
-    limitsProperties?: LimitsProperty[];
-    currentLimits: CurrentLimits;
-    modificationType?: string | null; // only needed when the data is used for a branch modification
-}
-
-export interface Limit {
-    name: AttributeModification<string> | null;
-    acceptableDuration: AttributeModification<number> | null;
-    value: AttributeModification<number> | null;
-}
-
-export interface TemporaryLimit extends Limit {
-    modificationType: string | null;
-    selected?: boolean;
-}
-
-export interface LimitsProperty {
-    name: string;
-    value: string;
-}
-
-export interface CurrentLimits {
-    id?: string;
-    permanentLimit: number | null;
-    temporaryLimits: TemporaryLimit[];
 }
 
 export enum SwitchKind {
@@ -347,44 +291,6 @@ export interface Assignment {
     filters: Filter[];
     editedField: string;
     propertyName?: string;
-}
-
-export interface LineSegmentInfos {
-    [SEGMENT_TYPE_ID]: string; //used to fetch LineTypeInfo
-    [SEGMENT_DISTANCE_VALUE]: number;
-    [AREA]: string | null;
-    [TEMPERATURE]: string;
-    [SHAPE_FACTOR]: number | null;
-}
-
-export interface LineCreationInfos {
-    type: ModificationType;
-    uuid?: string | null;
-    equipmentId: string;
-    equipmentName: string | null;
-    r: number | null;
-    x: number | null;
-    g1: number | null;
-    b1: number | null;
-    g2: number | null;
-    b2: number | null;
-    voltageLevelId1: string | null;
-    busOrBusbarSectionId1: string | null;
-    voltageLevelId2: string | null;
-    busOrBusbarSectionId2: string | null;
-    operationalLimitsGroups: OperationalLimitsGroupFormSchema[];
-    selectedOperationalLimitsGroupId1?: string | null;
-    selectedOperationalLimitsGroupId2?: string | null;
-    connectionName1: string | null;
-    connectionDirection1: string | null;
-    connectionName2: string | null;
-    connectionDirection2: string | null;
-    connectionPosition1: number | null;
-    connectionPosition2: number | null;
-    connected1: boolean | null;
-    connected2: boolean | null;
-    properties: Property[] | null;
-    lineSegments?: LineSegmentInfos[];
 }
 
 export interface LineModificationInfos {
@@ -558,7 +464,7 @@ export interface AttachLineInfo {
     mayNewVoltageLevelInfos?: ExtendedVoltageLevelCreationInfo;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
-    attachmentLine: LineCreationInfos;
+    attachmentLine: LineCreationDto;
     newLine1Id: string;
     newLine1Name: string | null;
     newLine2Id: string;

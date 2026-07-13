@@ -9,11 +9,16 @@ import {
     CSV_FILENAME,
     MODIFICATIONS_TABLE,
     OLGS_MODIFICATION_TYPE,
-    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     TYPE,
 } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
-import { CustomFormProvider, ModificationType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    ModificationType,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -138,6 +143,7 @@ export function LimitSetsModificationDialog({
                 open={open}
                 isDataFetching={dataFetching}
                 disabledSave={disableSave}
+                slotProps={{ paper: { sx: { height: '95vh' } } }}
                 {...dialogProps}
             >
                 <LimitSetsTabularModificationForm dataFetching={dataFetching} />

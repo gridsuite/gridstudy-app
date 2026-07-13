@@ -13,11 +13,11 @@ import { DiagramMetadata } from '@powsybl/network-viewer';
 import type { UUID } from 'node:crypto';
 import { useNadDiagram } from '../../../diagrams/nad/use-nad-diagram';
 import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
-import type { DiagramConfigPosition } from '../../../../../services/explore';
 import { NadNavigationSidebar } from '../../../diagrams/nad/nad-navigation-sidebar';
 import { NadAssociatedPanelsContainer } from './nad-associated-panels-container';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
+import { useNadVoltageLevelFilter } from '../../../diagrams/nad/use-nad-voltage-level-filter';
 
 interface NadPanelContentProps {
     panelId: UUID;
@@ -34,14 +34,22 @@ export const NadPanelContent = memo(function NadPanelContent({
 }: NadPanelContentProps) {
     const { addToNadNavigationHistory, associateVoltageLevelWithNad } = useWorkspacePanelActions();
 
-    const { diagram, loading, globalError, updateDiagram, handleSaveNad, replaceNadConfig } = useNadDiagram({
-        panelId,
-        studyUuid,
-        currentNodeId,
-        currentRootNetworkUuid,
-    });
+    const { diagram, loading, globalError, updateDiagram, handleSaveNad, replaceNadConfig, moveNode, moveTextNode } =
+        useNadDiagram({
+            panelId,
+            studyUuid,
+            currentNodeId,
+            currentRootNetworkUuid,
+        });
 
     const { handleShowInSpreadsheet } = useDiagramNavigation();
+
+    // Voltage-level band filtering using CSS classes. The context key changes only when a different NAD
+    // is loaded (nadConfigUuid), which resets the filter. Changing the filter, the node or the root
+    // network keeps the current selection.
+    const filterContextKey = diagram.nadConfigUuid ?? '';
+    const { presentNominalVoltages, selectedNominalVoltages, setSelectedNominalVoltages, unselectedVlNames } =
+        useNadVoltageLevelFilter(diagram.svg?.metadata as DiagramMetadata | null | undefined, filterContextKey);
 
     // Handle voltage level click in NAD: add to history + open/associate SLD
     const handleVoltageLevelClick = useCallback(
@@ -62,14 +70,6 @@ export const NadPanelContent = memo(function NadPanelContent({
     const handleUpdateVoltageLevelsFromFilter = useCallback(
         (filterUuid?: UUID) => {
             updateDiagram({ currentFilterUuid: filterUuid }, true);
-        },
-        [updateDiagram]
-    );
-
-    // Update positions in local state only - no Redux dispatch, no fetch
-    const handleUpdatePositions = useCallback(
-        (positions: DiagramConfigPosition[]) => {
-            updateDiagram({ positions }, false);
         },
         [updateDiagram]
     );
@@ -95,19 +95,20 @@ export const NadPanelContent = memo(function NadPanelContent({
                         voltageLevelIds={diagram.voltageLevelIds || []}
                         voltageLevelToExpandIds={diagram.voltageLevelToExpandIds || []}
                         voltageLevelToOmitIds={diagram.voltageLevelToOmitIds || []}
-                        positions={diagram.positions || []}
                         showInSpreadsheet={handleShowInSpreadsheet}
                         svg={diagram.svg?.svg ?? undefined}
                         svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
                         additionalMetadata={diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined}
                         svgVoltageLevels={diagram.voltageLevelIds}
+                        hiddenVoltageBands={unselectedVlNames}
                         loadingState={loading}
                         isNadCreationFromFilter={!!diagram.filterUuid}
                         visible
                         onVoltageLevelClick={handleVoltageLevelClick}
                         onUpdateVoltageLevels={handleUpdateVoltageLevels}
                         onUpdateVoltageLevelsFromFilter={handleUpdateVoltageLevelsFromFilter}
-                        onUpdatePositions={handleUpdatePositions}
+                        onMoveNode={moveNode}
+                        onMoveTextNode={moveTextNode}
                         onReplaceNad={handleReplaceNad}
                         onSaveNad={handleSaveNad}
                         nadPanelId={panelId}
@@ -115,7 +116,14 @@ export const NadPanelContent = memo(function NadPanelContent({
                 </DiagramWrapper>
                 <NadAssociatedPanelsContainer nadPanelId={panelId} />
             </Box>
-            {!globalError && <NadNavigationSidebar nadPanelId={panelId} />}
+            {!globalError && (
+                <NadNavigationSidebar
+                    nadPanelId={panelId}
+                    allNominalVoltages={presentNominalVoltages}
+                    selectedNominalVoltages={selectedNominalVoltages}
+                    onNominalVoltagesChange={setSelectedNominalVoltages}
+                />
+            )}
         </Box>
     );
 });
