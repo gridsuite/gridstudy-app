@@ -1352,8 +1352,6 @@
     "showAll": "Show all",
     "gridLayout": "Grid layout",
     "cascadeLayout": "Cascade layout",
-    "hideLabels": "Hide labels in edit mode",
-    "showLabels": "Show labels",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID",
     "labeledGroupSecurity": "Security",
     "OpenMapCard": "Show the map",

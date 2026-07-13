@@ -1349,8 +1349,6 @@
     "showAll": "Tout afficher",
     "gridLayout": "Disposition en grille",
     "cascadeLayout": "Disposition en cascade",
-    "hideLabels": "Masquer les libellés en mode edition",
-    "showLabels": "Afficher les libellés",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
     "labeledGroupSecurity": "Sécurité",
     "OpenMapCard": "Afficher la carte géographique",

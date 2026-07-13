@@ -117,7 +117,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>(null);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
-    const [showLabels, setShowLabels] = useState(true);
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
@@ -172,10 +171,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         },
         [isEditNadMode, onSaveNad]
     );
-
-    const handleToggleShowLabels = useCallback(() => {
-        setShowLabels((oldShowLabels) => !oldShowLabels);
-    }, []);
 
     const handleToggleHover: OnToggleNadHoverCallbackType = useEffectEvent(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
@@ -592,7 +587,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramLoadflowInvalid : undefined,
-                    isEditNadMode && !showLabels ? styles.hideLabels : undefined,
                     isEditNadMode ? styles.nadEditModeCursors : undefined,
                     hiddenVoltagesSx,
                     hiddenInfosSx
@@ -607,8 +601,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                 onAddVoltageLevel={handleAddVoltageLevel}
                 onAddVoltageLevelsFromFilter={handleAddVoltageLevelsFromFilter}
-                onToggleShowLabels={handleToggleShowLabels}
-                isShowLabels={showLabels}
                 isDiagramLoading={loadingState}
                 isNadCreationFromFilter={isNadCreationFromFilter}
                 svgVoltageLevels={svgVoltageLevels}

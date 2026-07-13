@@ -164,15 +164,6 @@ export const styles = {
             opacity: INVALID_COMPUTATION_OPACITY,
         },
     },
-    hideLabels: {
-        '& .nad-text-nodes': {
-            display: 'none',
-        },
-        '& .nad-busnode-highlight': {
-            filter: 'unset !important',
-            transform: 'unset !important',
-        },
-    },
     nadEditModeCursors: {
         '& .nad-label-box, & .nad-vl-nodes .nad-busnode': {
             cursor: 'grab',
