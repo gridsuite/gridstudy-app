@@ -26,8 +26,8 @@ const INFO_SELECTORS: Record<NadSelectedInfoKey, string[]> = {
     activePowerValue: ['text.nad-active'],
     reactivePowerValue: ['text.nad-reactive'],
     permanentLimitPercentage: ['text.nad-permanent-limit-percentage'],
-    activePowerArrow: ['.nad-arrow-in:not(.nad-reactive)', '.nad-arrow-out:not(.nad-reactive)'],
-    reactivePowerArrow: ['.nad-reactive.nad-arrow-in', '.nad-reactive.nad-arrow-out'],
+    activePowerArrow: ['path.nad-arrow-in:not(.nad-reactive)', 'path.nad-arrow-out:not(.nad-reactive)'],
+    reactivePowerArrow: ['path.nad-reactive.nad-arrow-in', 'path.nad-reactive.nad-arrow-out'],
     voltageLevelName: ['.nad-text-nodes'],
 };
 
