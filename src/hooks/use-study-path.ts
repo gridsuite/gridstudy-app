@@ -68,9 +68,14 @@ export default function useStudyPath(studyUuid: UUID | null) {
                     // number of notifications (they are sent to all the clients every time). Here we are only
                     // interested in changes in parent directories of the study (study is moved, or any parent is moved
                     // or renamed)
-                    const directoryInfos: DirectoryInfos[] = JSON.parse(eventData.headers[DIRECTORIES_INFOS]);
-                    if (directoryInfos.some((info) => studyParentDirectoriesUuidsRef.current.includes(info.uuid))) {
-                        fetchStudyPath();
+                    const directoriesInfosStr = eventData.headers[DIRECTORIES_INFOS];
+                    if (directoriesInfosStr) {
+                        const directoriesInfos: DirectoryInfos[] = JSON.parse(directoriesInfosStr);
+                        if (
+                            directoriesInfos.some((info) => studyParentDirectoriesUuidsRef.current.includes(info.uuid))
+                        ) {
+                            fetchStudyPath();
+                        }
                     }
                 }
             }
