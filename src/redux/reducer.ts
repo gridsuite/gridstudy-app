@@ -365,7 +365,8 @@ function buildSortedRecents(filters: GlobalFilter[]): RecentGlobalFilter[] {
 function registerGlobalFilterOptions(globalFilterOptions: GlobalFilter[], filters: GlobalFilter[]) {
     filters.forEach((filter) => {
         const id = getGlobalFilterId(filter);
-        if (!globalFilterOptions.some((opt) => opt.id === id)) {
+        const alreadyExists = globalFilterOptions.some((opt) => opt.id === id);
+        if (!alreadyExists) {
             globalFilterOptions.push(addGlobalFilterId(filter));
         }
     });
