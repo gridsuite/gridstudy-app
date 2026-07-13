@@ -18,19 +18,13 @@ import { buildValidGlobalFilters } from './build-valid-global-filters';
 
 /* Because of ESLint react-hooks/rules-of-hooks, nullable value must be managed inside the hook, because
  * React hooks can't be called conditionally and/or different order. */
-/**
- * Evaluates the given global filters and returns the matching equipment ids.
- *
- * `isPending` is true between a filter change and the arrival of the corresponding ids. Callers must
- * not display data as unfiltered during that window, otherwise the rows briefly show up unfiltered.
- */
 export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: NonEmptyTuple<FilterEquipmentType>) {
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
     const [filteredIds, setFilteredIds] = useState<string[]>();
+    const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
     const [isPending, setIsPending] = useState(false);
 
     const globalFilters = useMemo(() => buildValidGlobalFilters(filters), [filters]);
@@ -73,6 +67,5 @@ export function useGlobalFilterResults(filters: GlobalFilter[], equipmentTypes: 
         debouncedFetchFilteredIds(globalFilters, equipmentTypes);
     }, [canEvaluate, debouncedFetchFilteredIds, equipmentTypes, globalFilters]);
 
-    // the previous result is kept while a new one is being evaluated, to avoid flickering the rows
     return { filteredIds, isPending };
 }
