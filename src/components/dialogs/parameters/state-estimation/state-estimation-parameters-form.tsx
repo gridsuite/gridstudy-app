@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { SyntheticEvent } from 'react';
-import { TabPanel } from '@gridsuite/commons-ui';
+import { getTabStyle, TabPanel } from '@gridsuite/commons-ui';
 import { Grid2 as Grid, Stack, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { TabValue } from './state-estimation-parameters-utils';
@@ -13,7 +13,6 @@ import { StateEstimationGeneralParameters } from './state-estimation-general-par
 import { StateEstimationWeightsParameters } from './state-estimation-weights-parameters';
 import { StateEstimationQualityParameters } from './state-estimation-quality-parameters';
 import { StateEstimationLoadboundsParameters } from './state-estimation-loadbounds-parameters';
-import { getTabStyle } from '../../../utils/tab-utils';
 
 interface StateEstimationParametersFormProps {
     tabValue: TabValue;
@@ -37,22 +36,22 @@ export const StateEstimationParametersForm = ({
                 <Tab
                     label={<FormattedMessage id="StateEstimationParametersGeneralTabLabel" />}
                     value={TabValue.GENERAL}
-                    sx={getTabStyle(tabIndexesWithError, TabValue.GENERAL)}
+                    sx={getTabStyle(tabIndexesWithError, TabValue.GENERAL, tabValue)}
                 />
                 <Tab
                     label={<FormattedMessage id="StateEstimationParametersWeightsTabLabel" />}
                     value={TabValue.WEIGHTS}
-                    sx={getTabStyle(tabIndexesWithError, TabValue.WEIGHTS)}
+                    sx={getTabStyle(tabIndexesWithError, TabValue.WEIGHTS, tabValue)}
                 />
                 <Tab
                     label={<FormattedMessage id="StateEstimationParametersQualityTabLabel" />}
                     value={TabValue.QUALITY}
-                    sx={getTabStyle(tabIndexesWithError, TabValue.QUALITY)}
+                    sx={getTabStyle(tabIndexesWithError, TabValue.QUALITY, tabValue)}
                 />
                 <Tab
                     label={<FormattedMessage id="StateEstimationParametersLoadboundsTabLabel" />}
                     value={TabValue.LOADBOUNDS}
-                    sx={getTabStyle(tabIndexesWithError, TabValue.LOADBOUNDS)}
+                    sx={getTabStyle(tabIndexesWithError, TabValue.LOADBOUNDS, tabValue)}
                 />
             </Tabs>
             <Grid container sx={{ paddingTop: 2 }}>
