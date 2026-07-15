@@ -33,10 +33,12 @@ import {
     DESCRIPTION,
     EXPORT_DESTINATION,
     EXPORT_FORMAT,
+    EXPORT_COMPRESSION,
     EXPORT_PARAMETERS,
     FILE_NAME,
+    SELECTED_MODIFICATIONS,
 } from 'components/utils/field-constants';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FlatParametersInput } from './flat-parameters-input';
 import {
@@ -49,6 +51,8 @@ import {
 } from './export-network-utils';
 import { useIntl } from 'react-intl';
 import { NetworkExportInfos } from '../../../services/study-types';
+
+const compressions = ['zip', 'gzip'];
 
 /**
  * Dialog to export the network case
@@ -101,6 +105,14 @@ export function ExportNetworkDialog({
     const isValidating = errors.root?.isValidating;
     const disabledSave = Boolean(nameError || isValidating);
 
+    const watchExportFormat: string = useWatch({
+        name: EXPORT_FORMAT,
+    });
+
+    useEffect(() => {
+        console.log('******** export foamt changed !!!');
+    }, [watchExportFormat]);
+
     // fetch study name to build the default file name
     useEffect(() => {
         if (studyUuid) {
@@ -142,6 +154,7 @@ export function ExportNetworkDialog({
             const exportToGridExplore = data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER;
             onClick(nodeUuid, data[EXPORT_PARAMETERS], {
                 selectedFormat: data[EXPORT_FORMAT],
+                selectedCompression: data[EXPORT_COMPRESSION],
                 fileName: data[FILE_NAME],
                 exportToGridExplore: exportToGridExplore,
                 parentDirectoryUuid: exportToGridExplore ? data[DIRECTORY_ITEM]?.[DIRECTORY_ITEM_ID] : undefined,
@@ -209,7 +222,6 @@ export function ExportNetworkDialog({
                     size="small"
                     label="destination"
                 />
-
                 {exportDestination === ExportDestinationType.GRID_EXPLORE && (
                     <Box>
                         <DescriptionField />
@@ -224,11 +236,18 @@ export function ExportNetworkDialog({
                         />
                     </Box>
                 )}
-
                 <SelectInput
                     name={EXPORT_FORMAT}
                     label="exportFormat"
                     options={Object.keys(formatsWithParameters)}
+                    size="small"
+                    disableClearable
+                />
+                <SelectInput
+                    sx={{ marginTop: 1 }}
+                    name={EXPORT_COMPRESSION}
+                    label="exportCompression"
+                    options={compressions}
                     size="small"
                     disableClearable
                 />

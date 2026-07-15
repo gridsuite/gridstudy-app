@@ -415,6 +415,8 @@ export function exportNetworkFile(
         exportInfos.selectedFormat;
 
     const urlSearchParams = new URLSearchParams();
+
+    urlSearchParams.append('compression', exportInfos.selectedCompression);
     if (Object.keys(params).length > 0) {
         const paramsJson = JSON.stringify(params);
         urlSearchParams.append('formatParameters', paramsJson);

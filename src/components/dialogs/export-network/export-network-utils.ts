@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EXPORT_DESTINATION, EXPORT_FORMAT, EXPORT_PARAMETERS, FILE_NAME } from '../../utils/field-constants';
+import {
+    EXPORT_COMPRESSION,
+    EXPORT_DESTINATION,
+    EXPORT_FORMAT,
+    EXPORT_PARAMETERS,
+    FILE_NAME,
+} from '../../utils/field-constants';
 import * as yup from 'yup';
 import {
     DESCRIPTION,
@@ -36,6 +42,7 @@ export const schema = yup.object().shape({
         otherwise: (schema) => schema.notRequired(),
     }),
     [EXPORT_FORMAT]: yup.string().required('exportStudyErrorMsg'),
+    [EXPORT_COMPRESSION]: yup.string().required('exportCompressionErrorMsg'),
     [EXPORT_PARAMETERS]: yup.object(),
 });
 
@@ -45,6 +52,7 @@ export const emptyData = {
     [DIRECTORY_ITEM]: null,
     [DESCRIPTION]: '',
     [EXPORT_FORMAT]: '',
+    [EXPORT_COMPRESSION]: 'zip',
     [EXPORT_PARAMETERS]: emptyObj,
 };
 

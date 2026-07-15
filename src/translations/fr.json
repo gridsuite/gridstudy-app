@@ -40,6 +40,8 @@
     "download.fileName": "Nom de fichier",
     "exportFormat": "Format de l'export",
     "exportStudyErrorMsg": "Le format de l'export n'est pas spécifié",
+    "exportCompression": "Compression",
+    "exportCompressionErrorMsg": "Le type de compression n'est pas spécifié",
 
     "modifyAccessRights": "Modifier les droits d'accès",
     "modifyAccessRightsError": "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
@@ -687,7 +689,7 @@
     "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
     "DeleteAttachingLineError": "Erreur lors de la suppression d'un piquage",
     "GenerationDispatchError": "Erreur lors de la création du démarrage de groupes",
-    "lineAttachedToSplitLineVoltageLevel" : "Poste en piquage à passer en coupure",
+    "lineAttachedToSplitLineVoltageLevel": "Poste en piquage à passer en coupure",
 
     "permanentCurrentLimitMandatory": "Un IST doit être fourni si le jeu de limites contient des limites d'intensité temporaires",
 
