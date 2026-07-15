@@ -105,7 +105,7 @@ import {
 } from './network-modification-menu.type';
 import StaticVarCompensatorCreationDialog from '../../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
 import ModificationByAssignmentDialog from '../../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
-import ByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
+import ModificationByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by-formula/modification-by-formula-dialog';
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
@@ -628,7 +628,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                             label: 'BY_FORMULA',
-                            action: () => withDefaultParams(ByFormulaDialog),
+                            action: () => withDefaultParams(ModificationByFormulaDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
