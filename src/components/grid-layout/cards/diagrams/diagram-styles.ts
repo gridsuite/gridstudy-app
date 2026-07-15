@@ -64,6 +64,15 @@ export const styles = {
         '& .sld-pst-arrow': {
             stroke: theme.palette.text.primary,
         },
+        '& .sld-feeder-info.sld-measurement-valid text': {
+            fill: 'black',
+        },
+        '& .sld-feeder-info.sld-measurement-invalid text': {
+            fill: 'red',
+        },
+        '& .sld-feeder-info.sld-measurement-critical text': {
+            fontWeight: 'bold',
+        },
         '.legend-root': {
             display: 'inline-flex',
             gap: '8px',
@@ -155,10 +164,9 @@ export const styles = {
             opacity: INVALID_COMPUTATION_OPACITY,
         },
     },
-    hideLabels: {
-        '& .nad-text-nodes': {
-            display: 'none',
-        },
+    // The hover highlight materializes the link between a voltage level name and its bus nodes:
+    // pointless, and distracting while dragging, once the names are hidden.
+    disableBusNodeHighlight: {
         '& .nad-busnode-highlight': {
             filter: 'unset !important',
             transform: 'unset !important',

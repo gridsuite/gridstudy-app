@@ -66,6 +66,11 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         return [...LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS, ...repeatableColumns];
     }, [repeatableColumns]);
 
+    const requiredColumns = useMemo(
+        () => csvColumns.filter((column) => column.required).map((column) => column.id),
+        [csvColumns]
+    );
+
     const amountTemporaryLimits = useWatch({
         name: AMOUNT_TEMPORARY_LIMITS,
     });
@@ -306,7 +311,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         <Grid sx={{ flex: 1, minWidth: 0 }}>
                             <CsvPicker<Record<string, unknown>>
                                 label="UploadCSV"
-                                header={csvColumns.map((column) => column.id)}
+                                requiredColumns={requiredColumns}
                                 language={language}
                                 parseConfig={parseConfig}
                                 selectedFile={selectedFile}

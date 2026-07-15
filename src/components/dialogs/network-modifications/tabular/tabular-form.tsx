@@ -127,7 +127,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             if (fieldDef?.type !== BOOLEAN) {
                 return false;
             }
-            if (!isFieldTypeOk(value, fieldDef)) {
+            if (fieldDef.required && typeof value !== 'boolean') {
                 setFileWarningMessage(
                     intl.formatMessage({ id: 'WrongBooleanValueWarning' }, { field: intl.formatMessage({ id: key }) })
                 );
@@ -302,6 +302,11 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             .map((field: TabularField) => field.id)
             .concat(selectedProperties.map((propertyName: string) => PROPERTY_CSV_COLUMN_PREFIX + propertyName));
     }, [csvFields, selectedProperties]);
+
+    const requiredColumns = useMemo(
+        () => csvFields.filter((field) => field.required).map((field) => field.id),
+        [csvFields]
+    );
 
     const commentLines = useMemo(() => {
         return generateCommentLines({
@@ -568,7 +573,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                         <Grid sx={{ flex: 1, minWidth: 0 }}>
                             <CsvPicker<Record<string, unknown>>
                                 label="UploadCSV"
-                                header={csvColumns}
+                                requiredColumns={requiredColumns}
                                 language={language}
                                 parseConfig={parseConfig}
                                 selectedFile={selectedFile}
