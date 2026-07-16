@@ -133,6 +133,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                         isLoadingResult={isLoadingResult}
                         columnDefs={stateEstimationQualityColumns}
                         tableName="qualityCriterionResults"
+                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                     />
                 </GlassPane>
             )}
@@ -143,6 +144,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                         isLoadingResult={isLoadingResult}
                         columnDefs={stateEstimationQualityColumns}
                         tableName="qualityPerRegionResults"
+                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                     />
                 </GlassPane>
             )}
