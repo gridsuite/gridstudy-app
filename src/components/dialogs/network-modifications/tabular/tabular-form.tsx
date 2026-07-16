@@ -420,12 +420,12 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
 
     const resetOnTypeChange = useCallback(() => {
         setValue(CSV_FILENAME, undefined);
+        setValue(TABULAR_PROPERTIES, []);
         setSelectedFile(undefined);
         setFileErrorMessage(undefined);
         setFileWarningMessage(undefined);
         clearErrors(MODIFICATIONS_TABLE);
         tableRef.current?.replace([]);
-        setValue(TABULAR_PROPERTIES, []);
     }, [clearErrors, setValue]);
 
     const equipmentTypeField = (
