@@ -71,6 +71,8 @@ type NetworkAreaDiagramContentProps = {
     readonly additionalMetadata?: DiagramAdditionalMetadata;
     readonly svgVoltageLevels?: string[];
     readonly hiddenVoltageBands?: string[];
+    readonly hiddenInfoSelectors?: string[];
+    readonly areVoltageLevelNamesHidden?: boolean;
     readonly loadingState: boolean;
     readonly isNadCreationFromFilter: boolean;
     readonly visible: boolean;
@@ -105,6 +107,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         additionalMetadata,
         svgVoltageLevels,
         hiddenVoltageBands,
+        hiddenInfoSelectors,
+        areVoltageLevelNamesHidden,
         loadingState,
         isNadCreationFromFilter,
         showInSpreadsheet,
@@ -115,7 +119,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>(null);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
-    const [showLabels, setShowLabels] = useState(true);
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
@@ -170,10 +173,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         },
         [isEditNadMode, onSaveNad]
     );
-
-    const handleToggleShowLabels = useCallback(() => {
-        setShowLabels((oldShowLabels) => !oldShowLabels);
-    }, []);
 
     const handleToggleHover: OnToggleNadHoverCallbackType = useEffectEvent(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
@@ -536,6 +535,16 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         [hiddenVoltageBands]
     );
 
+    // Visually hide the information layers turned off in the "Information" sidebar section
+    const hiddenInfosSx = useMemo(
+        () =>
+            (hiddenInfoSelectors ?? []).reduce<Record<string, { display: 'none' }>>((acc, selector) => {
+                acc[`& ${selector}`] = { display: 'none' };
+                return acc;
+            }, {}),
+        [hiddenInfoSelectors]
+    );
+
     /**
      * RENDER
      */
@@ -580,9 +589,10 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramLoadflowInvalid : undefined,
-                    isEditNadMode && !showLabels ? styles.hideLabels : undefined,
                     isEditNadMode ? styles.nadEditModeCursors : undefined,
-                    hiddenVoltagesSx
+                    areVoltageLevelNamesHidden ? styles.disableBusNodeHighlight : undefined,
+                    hiddenVoltagesSx,
+                    hiddenInfosSx
                 )}
             />
             <DiagramControls
@@ -594,8 +604,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                 onAddVoltageLevel={handleAddVoltageLevel}
                 onAddVoltageLevelsFromFilter={handleAddVoltageLevelsFromFilter}
-                onToggleShowLabels={handleToggleShowLabels}
-                isShowLabels={showLabels}
                 isDiagramLoading={loadingState}
                 isNadCreationFromFilter={isNadCreationFromFilter}
                 svgVoltageLevels={svgVoltageLevels}
