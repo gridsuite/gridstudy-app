@@ -10,6 +10,7 @@ import { useIntl } from 'react-intl';
 import { Box, Button, useTheme } from '@mui/material';
 import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import {
+    DisplayedColumnsChangedEvent,
     GridReadyEvent,
     ICellRendererParams,
     RowClassParams,
@@ -54,6 +55,7 @@ interface ShortCircuitAnalysisResultProps {
     filterEnums: FilterEnumsType;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    onDisplayedColumnsChanged: (event: DisplayedColumnsChangedEvent) => void;
     computationSubType: string;
 }
 
@@ -98,6 +100,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     onGridColumnsChanged,
     onRowDataUpdated,
     computationSubType,
+    onDisplayedColumnsChanged,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
@@ -483,6 +486,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
                 onRowDataUpdated={handleRowDataUpdated}
+                onDisplayedColumnsChanged={onDisplayedColumnsChanged}
                 overrideLocales={AGGRID_LOCALES}
                 onModelUpdated={({ api }) => {
                     if (api.getDisplayedRowCount()) {

@@ -293,6 +293,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                             id: 'LoadFlowResultsCurrentViolations',
                         })}
                         computationSubType={mappingTabs(tabIndex)}
+                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                     />
                 </GlassPane>
             )}
@@ -306,6 +307,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                             id: 'LoadFlowResultsVoltageViolations',
                         })}
                         computationSubType={mappingTabs(tabIndex)}
+                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                     />
                 </GlassPane>
             )}
@@ -320,6 +322,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         id: 'LoadFlowResultsSummary',
                     })}
                     computationSubType={mappingTabs(tabIndex)}
+                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                 />
             )}
             {tabIndex === 3 && (

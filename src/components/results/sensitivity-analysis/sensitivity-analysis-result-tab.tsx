@@ -14,7 +14,13 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType, EquipmentType } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentType,
+    ManagedExportCsvButton,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import {
@@ -24,12 +30,26 @@ import {
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
-import { isSensiKind, mappingTabs, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
+import {
+    isSensiKind,
+    mappingTabs,
+    SensitivityResultTabs,
+    DATA_KEY_TO_FILTER_KEY_N,
+    DATA_KEY_TO_FILTER_KEY_NK,
+    DATA_KEY_TO_SORT_KEY,
+    FUNCTION_TYPES,
+} from './sensitivity-analysis-result-utils.js';
 import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { PaginationType, TableType } from '../../../types/custom-aggrid-types';
+import { PaginationType, TableType, SortWay } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { FilterType, isCriteriaFilterType } from '../common/utils';
+import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
+import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { getColumnFiltersFromStore } from '../../../redux/selectors/filter-store-selectors';
+import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+import { exportSensitivityResultsAsCsv } from 'services/study/sensitivity-analysis';
+import { downloadZipFile } from '../../../services/utils';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -44,14 +64,18 @@ function SensitivityAnalysisResultTab({
 }: Readonly<SensitivityAnalysisResultTabProps>) {
     const [nOrNkIndex, setNOrNkIndex] = useState<number>(0);
     const [sensiTab, setSensiTab] = useState<SensiTab>(SENSITIVITY_IN_DELTA_MW);
+
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+
+    const { snackError } = useSnackMessage();
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
         setNOrNkIndex(newNOrNKIndex);
     };
 
+    // Narrow to SensiKind when needed (pagination, filters, sort)
     const sensiKindForPagination = isSensiKind(sensiTab) ? sensiTab : SENSITIVITY_IN_DELTA_MW;
 
     const { pagination, dispatchPagination } = usePaginationSelector(
@@ -88,6 +112,85 @@ function SensitivityAnalysisResultTab({
         return allFilterTypes;
     }, [sensiTab]);
 
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
+
+    const sortConfig = useSelector(
+        (state: AppState) =>
+            state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKindForPagination, nOrNkIndex)]
+    );
+
+    const resetKey = `${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}-${nOrNkIndex}-${sensiKindForPagination}-${appTabIndex}`;
+
+    const exportCsv = useCallback(async () => {
+        const filters = getColumnFiltersFromStore(
+            TableType.SensitivityAnalysis,
+            mappingTabs(sensiKindForPagination, nOrNkIndex)
+        );
+
+        const mappedFilters = filters?.map((elem) => {
+            const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
+            const newColumn = keyMap[elem.column as keyof typeof keyMap];
+            return { ...elem, column: newColumn };
+        });
+
+        const sortSelector = sortConfig?.length
+            ? {
+                  sortKeysWithWeightAndDirection: Object.fromEntries(
+                      sortConfig.map((value) => [
+                          DATA_KEY_TO_SORT_KEY[value.colId as keyof typeof DATA_KEY_TO_SORT_KEY],
+                          value.sort === SortWay.DESC ? -1 : 1,
+                      ])
+                  ),
+              }
+            : {};
+
+        const selector = {
+            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
+            functionType: FUNCTION_TYPES[sensiKindForPagination],
+            offset: 0,
+            pageNumber: 0,
+            pageSize: -1, // meaning 'All'
+            ...sortSelector,
+        };
+
+        const globalFilters = buildValidGlobalFilters(getSelectedGlobalFilters(TableType.SensitivityAnalysis));
+
+        const response = await exportSensitivityResultsAsCsv(
+            studyUuid,
+            nodeUuid,
+            currentRootNetworkUuid,
+            {
+                csvHeaders,
+                resultTab: SensitivityResultTabs[nOrNkIndex].id,
+                sensitivityFunctionType: FUNCTION_TYPES[sensiKindForPagination],
+                language,
+            },
+            selector,
+            mappedFilters,
+            globalFilters
+        );
+
+        const blob = await response.blob();
+        downloadZipFile(blob, 'sensitivity_analyse_results.zip');
+    }, [
+        sortConfig,
+        nOrNkIndex,
+        sensiKindForPagination,
+        studyUuid,
+        nodeUuid,
+        currentRootNetworkUuid,
+        csvHeaders,
+        language,
+    ]);
+
+    const handleExportError = useCallback(
+        (error: unknown) => {
+            snackWithFallback(snackError, error, { headerId: 'csvExportSensitivityResultError' });
+        },
+        [snackError]
+    );
+
     return (
         <>
             <SensitivityAnalysisTabs sensiTab={sensiTab} setSensiTab={setSensiTab} />
@@ -117,14 +220,11 @@ function SensitivityAnalysisResultTab({
                                 tableType={TableType.SensitivityAnalysis}
                             />
                         </Box>
-                        <SensitivityExportButton
-                            studyUuid={studyUuid}
-                            nodeUuid={nodeUuid}
-                            currentRootNetworkUuid={currentRootNetworkUuid}
-                            csvHeaders={csvHeaders}
-                            nOrNkIndex={nOrNkIndex}
-                            sensiKind={sensiTab}
+                        <ManagedExportCsvButton
+                            exportCsv={exportCsv}
+                            resetKey={resetKey}
                             disabled={isCsvButtonDisabled}
+                            onError={handleExportError}
                         />
                     </Box>
                     <PagedSensitivityAnalysisResult

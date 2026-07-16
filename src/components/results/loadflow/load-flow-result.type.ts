@@ -8,6 +8,7 @@
 import { ColDef } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { BranchSide } from '../../utils/constants';
+import { Key } from 'react';
 
 export interface ComponentResult {
     componentResultUuid: UUID;
@@ -73,6 +74,7 @@ export interface LoadFlowTabProps {
 export interface LoadflowResultTap {
     isLoadingResult: boolean;
     tableName: string;
+    exportCsvResetKey: Key;
 }
 
 export interface LoadflowResultProps extends LoadflowResultTap {
