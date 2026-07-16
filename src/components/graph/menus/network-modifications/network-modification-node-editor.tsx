@@ -248,6 +248,7 @@ const NetworkModificationNodeEditor = () => {
                 editData={editData}
                 isUpdate={isUpdate}
                 editDataFetchStatus={editDataFetchStatus}
+                exportCsvResetKey={`${studyUuid}-${currentNode?.id}-${currentRootNetworkUuid}`}
             />
         );
     }

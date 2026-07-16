@@ -92,7 +92,11 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ result = null, status }) => {
+export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
+    result = null,
+    status,
+    exportCsvResetKey,
+}) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -196,6 +200,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                     // @ts-ignore
                     editDataFetchStatus={FetchStatus.IDLE}
                     disabledSave={autoApplyModifications}
+                    exportCsvResetKey={exportCsvResetKey}
                 />
             );
         }
@@ -286,6 +291,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                     overlayNoRowsTemplate={undefined}
                     computationType={TableType.VoltageInit}
                     computationSubType="Indicators"
+                    exportCsvResetKey={exportCsvResetKey}
                 />
             </Box>
         );
@@ -326,6 +332,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                     overlayNoRowsTemplate={undefined}
                     computationType={TableType.VoltageInit}
                     computationSubType="ReactiveSlacks"
+                    exportCsvResetKey={exportCsvResetKey}
                 />
             </Box>
         );
@@ -377,6 +384,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                 overlayNoRowsTemplate={undefined}
                 computationType={TableType.VoltageInit}
                 computationSubType="BusVoltages"
+                exportCsvResetKey={exportCsvResetKey}
             />
         );
     }
