@@ -29,7 +29,7 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { DisplayedColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import {
@@ -52,6 +52,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     customTablePaginationProps: any;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    onDisplayedColumnsChanged: (event: DisplayedColumnsChangedEvent) => void;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysisGlobalResultProps> = ({
@@ -62,6 +63,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     customTablePaginationProps,
     onGridColumnsChanged,
     onRowDataUpdated,
+    onDisplayedColumnsChanged,
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -238,6 +240,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 isFetching={isFetching}
                 filterEnums={filterEnums}
                 onGridColumnsChanged={onGridColumnsChanged}
+                onDisplayedColumnsChanged={onDisplayedColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
                 computationSubType={mappingTabs(analysisType)}
             />

@@ -30,6 +30,7 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
     columnDefs,
     tableName,
     computationSubType,
+    exportCsvResetKey,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -91,6 +92,7 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
                     skipColumnHeaders={false}
                     computationType={TableType.Loadflow}
                     computationSubType={computationSubType}
+                    exportCsvResetKey={exportCsvResetKey}
                 />
             </>
         );

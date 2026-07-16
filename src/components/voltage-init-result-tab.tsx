@@ -59,5 +59,11 @@ export function VoltageInitResultTab({
             ? voltageInitResult
             : null;
 
-    return <VoltageInitResult result={voltageInitResultToShow} status={voltageInitStatus} />;
+    return (
+        <VoltageInitResult
+            result={voltageInitResultToShow}
+            status={voltageInitStatus}
+            exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+        />
+    );
 }

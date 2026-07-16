@@ -21,10 +21,13 @@ import {
     ComputingType,
     EquipmentType,
     GsLangUser,
+    ManagedExportCsvButton,
     MuiStyles,
     NmkType,
     PARAM_DEVELOPER_MODE,
     SecurityAnalysisResultNmk,
+    snackWithFallback,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -37,7 +40,6 @@ import {
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import { PaginationType, SecurityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
-import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
@@ -50,9 +52,12 @@ import { UUID } from 'node:crypto';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import { PERMANENT_LIMIT_NAME } from '../common/utils';
 import { setTableSort } from '../../../redux/actions';
 import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handler';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
+import { downloadZipFile } from 'services/utils';
 
 import { FilterType, isCriteriaFilterType } from '../common/global-filter/filter.type';
 
@@ -82,29 +87,33 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     currentRootNetworkUuid,
 }) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
     const resultStatusMessages = useIntlResultStatusMessages(intl);
 
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [tabIndex, setTabIndex] = useState(isDeveloperMode ? N_RESULTS_TAB_INDEX : NMK_RESULTS_TAB_INDEX);
     const tabIndexRef = useRef<number>(null);
     tabIndexRef.current = tabIndex;
+
     const [nmkType, setNmkType] = useState(NmkType.CONSTRAINTS_FROM_CONTINGENCIES);
     const [count, setCount] = useState<number>(0);
     const isNmkTab = tabIndex === NMK_RESULTS_TAB_INDEX;
     const isNTabDev = tabIndex === N_RESULTS_TAB_INDEX && isDeveloperMode;
     const showResultsToolbar = isNmkTab || isNTabDev;
     const dispatch = useDispatch();
+
     useEffect(() => {
         if (!isDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
             // handle tabIndex when dev mode is disabled
             setTabIndex(NMK_RESULTS_TAB_INDEX);
         }
     }, [isDeveloperMode]);
+
     const securityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
-    const resultType = useMemo(() => {
+    const resultType = useMemo<RESULT_TYPE>(() => {
         if (isDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
             return RESULT_TYPE.N;
         }
@@ -171,11 +180,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     }, [resultType, tabIndex, sortConfig, filters, globalFiltersFromState, page, rowsPerPage, intl]);
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
-        (studyUuid: string, nodeUuid: string) => {
+        (studyUuidArg: string, nodeUuidArg: string) => {
             if (tabIndex === LOGS_TAB_INDEX) {
                 return Promise.resolve();
             }
-            return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
+            return fetchSecurityAnalysisResult(studyUuidArg, nodeUuidArg, currentRootNetworkUuid, queryParams);
         },
         [tabIndex, queryParams, currentRootNetworkUuid]
     );
@@ -208,7 +217,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         setNmkType(newValue);
     };
 
-    const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
+    const handleTabChange = (_event: SyntheticEvent, newTabIndex: number) => {
         resetResultStates();
         setTabIndex(newTabIndex);
     };
@@ -245,22 +254,54 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const columnDefs = useSecurityAnalysisColumnsDefs(filterEnums, resultType, tabIndex);
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
+
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
+
+    const enumValueTranslations = useMemo(() => {
+        const returnedValue: Record<string, string> = {
+            [PERMANENT_LIMIT_NAME]: intl.formatMessage({
+                id: 'PermanentLimitName',
+            }),
+        };
+        const enumValuesToTranslate = [
+            'CURRENT',
+            'HIGH_VOLTAGE',
+            'LOW_VOLTAGE',
+            'ACTIVE_POWER',
+            'APPARENT_POWER',
+            'MAX_ITERATION_REACHED',
+            'OTHER',
+            'CONVERGED',
+            'FAILED',
+            'ONE',
+            'TWO',
+            'NO_CALCULATION',
+        ];
+
+        enumValuesToTranslate.forEach((value) => {
+            returnedValue[value] = intl.formatMessage({ id: value });
+        });
+
+        return returnedValue;
+    }, [intl]);
+
     const downloadZipResult = useCallback(
         (
-            studyUuid: UUID,
-            nodeUuid: UUID,
-            rootNetworkUuid: UUID,
-            enumValueTranslations: Record<string, string>,
-            language: GsLangUser
+            studyUuidArg: UUID,
+            nodeUuidArg: UUID,
+            rootNetworkUuidArg: UUID,
+            translations: Record<string, string>,
+            lang: GsLangUser
         ) =>
             downloadSecurityAnalysisResultZippedCsv(
-                studyUuid,
-                nodeUuid,
-                rootNetworkUuid,
+                studyUuidArg,
+                nodeUuidArg,
+                rootNetworkUuidArg,
                 queryParams,
                 csvHeaders,
-                enumValueTranslations,
-                language
+                translations,
+                lang
             ),
         [csvHeaders, queryParams]
     );
@@ -275,6 +316,26 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         (result.content && result.content.length === 0) ||
         // empty array result
         result.length === 0;
+
+    const resetKey = `${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}-${resultType}-${appTabIndex}`;
+
+    const exportResultCsv = useCallback(async () => {
+        const fileBlob = await downloadZipResult(
+            studyUuid,
+            nodeUuid,
+            currentRootNetworkUuid,
+            enumValueTranslations,
+            language
+        );
+        downloadZipFile(fileBlob, `${resultType}-results.zip`);
+    }, [studyUuid, nodeUuid, currentRootNetworkUuid, resultType, enumValueTranslations, language, downloadZipResult]);
+
+    const handleExportError = useCallback(
+        (error: unknown) => {
+            snackWithFallback(snackError, error, { headerId: 'securityAnalysisCsvResultsError' });
+        },
+        [snackError]
+    );
 
     const filterableEquipmentTypes: EquipmentType[] = useMemo(() => {
         if (tabIndex === NMK_RESULTS_TAB_INDEX) {
@@ -344,13 +405,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         />
                     </Box>
                     <Box sx={{ justifySelf: 'end' }}>
-                        <SecurityAnalysisExportButton
-                            studyUuid={studyUuid}
-                            nodeUuid={nodeUuid}
-                            rootNetworkUuid={currentRootNetworkUuid}
-                            resultType={resultType}
-                            downloadZipResult={downloadZipResult}
+                        <ManagedExportCsvButton
+                            exportCsv={exportResultCsv}
+                            resetKey={resetKey}
                             disabled={isExportButtonDisabled}
+                            onError={handleExportError}
                         />
                     </Box>
                 </Box>
