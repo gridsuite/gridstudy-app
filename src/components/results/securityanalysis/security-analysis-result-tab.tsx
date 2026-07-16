@@ -349,6 +349,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 EquipmentType.BOUNDARY_LINE,
                 EquipmentType.HVDC_LINE,
                 EquipmentType.VSC_CONVERTER_STATION,
+                EquipmentType.BUSBAR_SECTION,
             ];
         }
         return [];
