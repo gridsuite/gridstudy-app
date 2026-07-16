@@ -1,12 +1,11 @@
 /**
- * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * Copyright (c) 2026, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
-import { useIntl } from 'react-intl';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import { unzip } from 'fflate';
@@ -16,7 +15,6 @@ import {
     fetchCsvSeparator,
     getCsvDelimiter,
     GsLangUser,
-    MuiStyles,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -26,16 +24,6 @@ import { AppState } from '../../../redux/reducer.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 const COPY_SUCCESS_RESET_DELAY_MS = 2000;
-
-// Same bordered/rounded treatment as spreadsheetStyles.spreadsheetButton, for visual
-// consistency with the "tableur" toolbar buttons.
-const styles = {
-    copyButton: {
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: '6px',
-    },
-} as const satisfies MuiStyles;
 
 interface SecurityAnalysisCopyButtonProps {
     studyUuid: UUID;
@@ -100,7 +88,6 @@ export const SecurityAnalysisCopyButton: FunctionComponent<SecurityAnalysisCopyB
     downloadZipResult,
     disabled,
 }) => {
-    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
     const [isCopyLoading, setIsCopyLoading] = useState(false);
@@ -109,7 +96,7 @@ export const SecurityAnalysisCopyButton: FunctionComponent<SecurityAnalysisCopyB
 
     useEffect(() => {
         // reinit the success state when the button is disabled,
-        // for example when the calcul status change or results change
+        // for example when the computation status changes or results change
         setIsCopySuccessful(false);
     }, [disabled]);
 
@@ -148,21 +135,8 @@ export const SecurityAnalysisCopyButton: FunctionComponent<SecurityAnalysisCopyB
     }, [studyUuid, nodeUuid, rootNetworkUuid, enumValueTranslations, language, downloadZipResult, snackError]);
 
     return (
-        <Tooltip title={intl.formatMessage({ id: isCopySuccessful ? 'copiedToClipboard' : 'copyToClipboard' })}>
-            <span>
-                <IconButton
-                    onClick={handleCopy}
-                    disabled={disabled || isCopyLoading}
-                    size="small"
-                    sx={styles.copyButton}
-                >
-                    {isCopySuccessful ? (
-                        <CheckIcon color="success" fontSize="small" />
-                    ) : (
-                        <ContentCopyIcon fontSize="small" />
-                    )}
-                </IconButton>
-            </span>
-        </Tooltip>
+        <IconButton onClick={handleCopy} disabled={disabled || isCopyLoading}>
+            {isCopySuccessful ? <CheckIcon /> : <ContentCopyIcon />}
+        </IconButton>
     );
 };
