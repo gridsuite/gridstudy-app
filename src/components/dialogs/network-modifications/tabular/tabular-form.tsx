@@ -408,14 +408,14 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         );
     }, [dialogMode]);
 
-    const handleChangeType = useCallback(() => {
-        clearErrors(MODIFICATIONS_TABLE);
-        tableRef.current?.replace([]);
+    const resetOnTypeChange = useCallback(() => {
         setValue(CSV_FILENAME, undefined);
         setValue(TABULAR_PROPERTIES, []);
         setSelectedFile(undefined);
         setFileErrorMessage(undefined);
         setFileWarningMessage(undefined);
+        clearErrors(MODIFICATIONS_TABLE);
+        tableRef.current?.replace([]);
     }, [clearErrors, setValue]);
 
     const equipmentTypeField = (
@@ -428,7 +428,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             size={'small'}
             formProps={{ variant: 'outlined' }}
             shouldOpenPopup={() => hasNonEmptyRows(getValues(MODIFICATIONS_TABLE))}
-            resetOnConfirmation={handleChangeType}
+            onValueChange={resetOnTypeChange}
             message="changeTypeMessage"
             validateButtonLabel="button.changeType"
         />
