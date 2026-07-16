@@ -53,6 +53,7 @@ import { useIntl } from 'react-intl';
 import { NetworkExportInfos } from '../../../services/study-types';
 
 const compressions = ['zip', 'gzip'];
+const CGMES_FORMAT = 'CGMES';
 
 /**
  * Dialog to export the network case
@@ -96,6 +97,7 @@ export function ExportNetworkDialog({
         setValue,
         getValues,
         watch,
+        control,
         formState: { errors },
     } = methods;
     const intl = useIntl();
@@ -107,11 +109,19 @@ export function ExportNetworkDialog({
 
     const watchExportFormat: string = useWatch({
         name: EXPORT_FORMAT,
+        control,
     });
 
+    const availableCompressions = useMemo(
+        () => (watchExportFormat === CGMES_FORMAT ? ['zip'] : compressions),
+        [watchExportFormat]
+    );
+
     useEffect(() => {
-        console.log('******** export foamt changed !!!');
-    }, [watchExportFormat]);
+        if (watchExportFormat === CGMES_FORMAT) {
+            setValue(EXPORT_COMPRESSION, 'zip');
+        }
+    }, [watchExportFormat, setValue]);
 
     // fetch study name to build the default file name
     useEffect(() => {
@@ -237,6 +247,7 @@ export function ExportNetworkDialog({
                     </Box>
                 )}
                 <SelectInput
+                    sx={{ marginTop: 1 }}
                     name={EXPORT_FORMAT}
                     label="exportFormat"
                     options={Object.keys(formatsWithParameters)}
@@ -247,7 +258,7 @@ export function ExportNetworkDialog({
                     sx={{ marginTop: 1 }}
                     name={EXPORT_COMPRESSION}
                     label="exportCompression"
-                    options={compressions}
+                    options={availableCompressions}
                     size="small"
                     disableClearable
                 />
