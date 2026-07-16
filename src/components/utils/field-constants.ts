@@ -444,4 +444,4 @@ export const CONNECTION_SIDE = 'connectionSide';
 
 export const ACTION = 'action';
 export const SELECTED_MODIFICATIONS = 'selectedModifications';
-export const COMPOSITE_NAMES = 'compositeNames';
+export const IS_SHARED = 'isShared';

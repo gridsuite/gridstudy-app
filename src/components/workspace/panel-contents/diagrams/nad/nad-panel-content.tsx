@@ -17,6 +17,8 @@ import { NadNavigationSidebar } from '../../../diagrams/nad/nad-navigation-sideb
 import { NadAssociatedPanelsContainer } from './nad-associated-panels-container';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
+import { useNadVoltageLevelFilter } from '../../../diagrams/nad/use-nad-voltage-level-filter';
+import { useNadInfoFilter } from '../../../diagrams/nad/use-nad-info-filter';
 
 interface NadPanelContentProps {
     panelId: UUID;
@@ -42,6 +44,16 @@ export const NadPanelContent = memo(function NadPanelContent({
         });
 
     const { handleShowInSpreadsheet } = useDiagramNavigation();
+
+    // Voltage-level band filtering using CSS classes. The context key changes only when a different NAD
+    // is loaded (nadConfigUuid), which resets the filter. Changing the filter, the node or the root
+    // network keeps the current selection.
+    const filterContextKey = diagram.nadConfigUuid ?? '';
+    const { presentNominalVoltages, selectedNominalVoltages, setSelectedNominalVoltages, unselectedVlNames } =
+        useNadVoltageLevelFilter(diagram.svg?.metadata as DiagramMetadata | null | undefined, filterContextKey);
+
+    // Information-layer filtering (P/Q values, % IST, arrows, labels) using CSS classes
+    const { selectedInfos, toggleSelectedInfo, hiddenInfoSelectors } = useNadInfoFilter();
 
     // Handle voltage level click in NAD: add to history + open/associate SLD
     const handleVoltageLevelClick = useCallback(
@@ -92,6 +104,9 @@ export const NadPanelContent = memo(function NadPanelContent({
                         svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
                         additionalMetadata={diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined}
                         svgVoltageLevels={diagram.voltageLevelIds}
+                        hiddenVoltageBands={unselectedVlNames}
+                        hiddenInfoSelectors={hiddenInfoSelectors}
+                        areVoltageLevelNamesHidden={!selectedInfos.voltageLevelName}
                         loadingState={loading}
                         isNadCreationFromFilter={!!diagram.filterUuid}
                         visible
@@ -107,7 +122,16 @@ export const NadPanelContent = memo(function NadPanelContent({
                 </DiagramWrapper>
                 <NadAssociatedPanelsContainer nadPanelId={panelId} />
             </Box>
-            {!globalError && <NadNavigationSidebar nadPanelId={panelId} />}
+            {!globalError && (
+                <NadNavigationSidebar
+                    nadPanelId={panelId}
+                    allNominalVoltages={presentNominalVoltages}
+                    selectedNominalVoltages={selectedNominalVoltages}
+                    onNominalVoltagesChange={setSelectedNominalVoltages}
+                    selectedInfos={selectedInfos}
+                    onSelectedInfoToggle={toggleSelectedInfo}
+                />
+            )}
         </Box>
     );
 });

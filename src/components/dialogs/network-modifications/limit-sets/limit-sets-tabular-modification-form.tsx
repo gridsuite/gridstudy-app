@@ -11,6 +11,7 @@ import { type FieldValues, useFormContext, type UseFieldArrayReturn, useWatch } 
 import {
     AutocompleteInput,
     BooleanNullableCellRenderer,
+    CsvDownloadButton,
     type CsvProps,
     CsvPicker,
     CustomAgGridTable,
@@ -64,6 +65,11 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     const csvColumns = useMemo<TabularField[]>(() => {
         return [...LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS, ...repeatableColumns];
     }, [repeatableColumns]);
+
+    const requiredColumns = useMemo(
+        () => csvColumns.filter((column) => column.required).map((column) => column.id),
+        [csvColumns]
+    );
 
     const amountTemporaryLimits = useWatch({
         name: AMOUNT_TEMPORARY_LIMITS,
@@ -277,55 +283,70 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         () => ({
             fileName: 'limitset_modification_template',
             language,
-            getTemplateData,
             getTableData,
         }),
-        [language, getTemplateData, getTableData]
+        [language, getTableData]
     );
 
     return (
         <Stack spacing={2} paddingTop={1} sx={[{ height: '100%' }]}>
             <Grid sx={{ width: 400, maxWidth: '100%' }}>{equipmentTypeField}</Grid>
-            <Grid container justifyContent="space-between" alignItems="center">
-                <Grid>
-                    <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
-                </Grid>
-                <Grid>
-                    <CsvPicker<Record<string, unknown>>
-                        label="UploadCSV"
-                        header={csvColumns.map((column) => column.id)}
-                        disabled={!equipmentType}
-                        language={language}
-                        parseConfig={parseConfig}
-                        selectedFile={selectedFile}
-                        onFileChange={setSelectedFile}
-                        onFileError={setFileErrorMessage}
-                        getTableData={() => getValues(MODIFICATIONS_TABLE)}
-                        onReplace={(results, file) => tableRef.current?.replace(getDataFromCsvFile(results, file))}
-                        onAppend={(results, file) => tableRef.current?.append(getDataFromCsvFile(results, file))}
-                    />
-                </Grid>
-            </Grid>
-            {fileErrorMessage && (
-                <Grid>
-                    <Alert severity="error">{fileErrorMessage}</Alert>
-                </Grid>
-            )}
             {equipmentType && (
-                <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-                    <CustomAgGridTable
-                        ref={tableRef}
-                        name={MODIFICATIONS_TABLE}
-                        columnDefs={columnDefs}
-                        defaultColDef={limitSetModificationsDefaultColDef}
-                        makeDefaultRowData={makeDefaultRowData}
-                        loading={isFetching}
-                        pagination
-                        rowSelection={{ mode: 'multiRow' }}
-                        overrideLocales={AGGRID_LOCALES}
-                        csvProps={csvProps}
-                    />
-                </Grid>
+                <>
+                    <Grid container spacing={2} justifyContent="space-between" alignItems="center">
+                        <Grid container alignItems="center">
+                            <Grid>
+                                <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
+                            </Grid>
+                            <Grid>
+                                <CsvDownloadButton
+                                    data={getTemplateData}
+                                    fileName={csvProps.fileName}
+                                    language={language}
+                                    labelId="GenerateCSV"
+                                    variant="contained"
+                                />
+                            </Grid>
+                        </Grid>
+                        <Grid sx={{ flex: 1, minWidth: 0 }}>
+                            <CsvPicker<Record<string, unknown>>
+                                label="UploadCSV"
+                                requiredColumns={requiredColumns}
+                                language={language}
+                                parseConfig={parseConfig}
+                                selectedFile={selectedFile}
+                                onFileChange={setSelectedFile}
+                                onFileError={setFileErrorMessage}
+                                getTableData={() => getValues(MODIFICATIONS_TABLE)}
+                                onReplace={(results, file) =>
+                                    tableRef.current?.replace(getDataFromCsvFile(results, file))
+                                }
+                                onAppend={(results, file) =>
+                                    tableRef.current?.append(getDataFromCsvFile(results, file))
+                                }
+                            />
+                        </Grid>
+                    </Grid>
+                    {fileErrorMessage && (
+                        <Grid>
+                            <Alert severity="error">{fileErrorMessage}</Alert>
+                        </Grid>
+                    )}
+                    <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                        <CustomAgGridTable
+                            ref={tableRef}
+                            name={MODIFICATIONS_TABLE}
+                            columnDefs={columnDefs}
+                            defaultColDef={limitSetModificationsDefaultColDef}
+                            makeDefaultRowData={makeDefaultRowData}
+                            loading={isFetching}
+                            pagination
+                            rowSelection={{ mode: 'multiRow' }}
+                            overrideLocales={AGGRID_LOCALES}
+                            csvProps={csvProps}
+                        />
+                    </Grid>
+                </>
             )}
         </Stack>
     );
