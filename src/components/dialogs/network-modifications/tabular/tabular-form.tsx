@@ -413,14 +413,11 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         );
     }, [dialogMode]);
 
-    const resetFileStateOnTypeChange = useCallback(() => {
+    const resetOnTypeChange = useCallback(() => {
         setValue(CSV_FILENAME, undefined);
         setSelectedFile(undefined);
         setFileErrorMessage(undefined);
         setFileWarningMessage(undefined);
-    }, [setValue]);
-
-    const resetFormStateOnTypeChange = useCallback(() => {
         clearErrors(MODIFICATIONS_TABLE);
         tableRef.current?.replace([]);
         setValue(TABULAR_PROPERTIES, []);
@@ -436,8 +433,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             size={'small'}
             formProps={{ variant: 'outlined' }}
             shouldOpenPopup={() => hasNonEmptyRows(getValues(MODIFICATIONS_TABLE))}
-            resetOnChange={resetFileStateOnTypeChange}
-            resetOnConfirmation={resetFormStateOnTypeChange}
+            onValueChange={resetOnTypeChange}
             message="changeTypeMessage"
             validateButtonLabel="button.changeType"
         />
