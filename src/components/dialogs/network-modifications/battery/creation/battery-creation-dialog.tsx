@@ -29,6 +29,8 @@ import {
     BatteryCreationForm,
     batteryCreationFormToDto,
     BatteryFormInfos,
+    REGULATION_TYPES,
+    getRegulatingTerminalFormData,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -41,6 +43,7 @@ import { NetworkModificationDialogProps } from '../../../../graph/menus/network-
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
+import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 
 interface BatteryCreationDtoWithId extends BatteryCreationDto, WithModificationId {}
 
@@ -76,6 +79,8 @@ export default function BatteryCreationDialog({
                 [FieldConstants.MINIMUM_ACTIVE_POWER]: battery.minP,
                 [FieldConstants.ACTIVE_POWER_SET_POINT]: battery.targetP,
                 [FieldConstants.REACTIVE_POWER_SET_POINT]: battery.targetQ,
+                [FieldConstants.VOLTAGE_SET_POINT]: battery.targetV,
+                [FieldConstants.VOLTAGE_REGULATION]: battery.voltageRegulatorOn,
                 [FieldConstants.FREQUENCY_REGULATION]: battery.activePowerControl?.participate,
                 [FieldConstants.DROOP]: battery.activePowerControl?.droop,
                 ...getConnectivityFormData({
@@ -85,12 +90,21 @@ export default function BatteryCreationDialog({
                     connectionName: battery.connectablePosition.connectionName,
                     // connected is not copied on purpose: we use the default value (true) in all cases
                 }),
+                [FieldConstants.VOLTAGE_REGULATION_TYPE]:
+                    battery?.regulatingTerminalId || battery?.regulatingTerminalConnectableId
+                        ? REGULATION_TYPES.DISTANT.id
+                        : REGULATION_TYPES.LOCAL.id,
                 ...getReactiveLimitsFormData({
                     id: FieldConstants.REACTIVE_LIMITS,
                     reactiveCapabilityCurveChoice: battery?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
                     minimumReactivePower: battery?.minMaxReactiveLimits?.minQ ?? null,
                     maximumReactivePower: battery?.minMaxReactiveLimits?.maxQ ?? null,
                     reactiveCapabilityCurvePoints: battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
+                }),
+                ...getRegulatingTerminalFormData({
+                    equipmentId: battery.regulatingTerminalConnectableId || battery.regulatingTerminalId,
+                    equipmentType: battery.regulatingTerminalConnectableType,
+                    voltageLevelId: battery.regulatingTerminalVlId,
                 }),
                 ...copyEquipmentPropertiesForCreation(battery),
                 ...getShortCircuitFormData({
@@ -141,6 +155,13 @@ export default function BatteryCreationDialog({
             !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
+
+    const fetchEquipments = useCallback(
+        (voltageLevelId: string) =>
+            fetchVoltageLevelEquipments(studyUuid, currentNode.id, currentRootNetworkUuid, voltageLevelId, true),
+        [studyUuid, currentNode.id, currentRootNetworkUuid]
+    );
+
     return (
         <CustomFormProvider
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -162,6 +183,7 @@ export default function BatteryCreationDialog({
                     voltageLevelOptions={voltageLevelOptions}
                     PositionDiagramPane={PositionDiagramPane}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
+                    fetchVoltageLevelEquipments={fetchEquipments}
                 />
 
                 <EquipmentSearchDialog
