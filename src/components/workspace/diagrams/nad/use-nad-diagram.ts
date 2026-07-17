@@ -85,11 +85,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<ErrorMessageDescriptor | undefined>();
 
-    // Keep ref synced to check node build status in async callbacks (avoids stale closures)
-    const currentNodeRef = useRef(currentNode);
-    useEffect(() => {
-        currentNodeRef.current = currentNode;
-    }, [currentNode]);
+    const abortControllerRef = useRef<AbortController | undefined>(undefined);
 
     const setDiagramAndSync = useCallback(
         (updater: React.SetStateAction<NetworkAreaDiagram>, syncToBackend = true) => {
@@ -141,9 +137,17 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
     const fetchDiagram = useCallback(() => {
         if (!currentNode || !isNodeBuilt(currentNode)) {
+            // Abort any still pending fetch so its late response can't overwrite this error
+            abortControllerRef.current?.abort();
             setGlobalError({ descriptor: { id: 'InvalidNode' } });
+            setLoading(false);
             return Promise.resolve();
         }
+
+        // Abort any still pending fetch so its response can be ignored
+        abortControllerRef.current?.abort();
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
 
         setLoading(true);
         setGlobalError(undefined);
@@ -171,10 +175,20 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
+                signal: abortController.signal,
             })
                 .then(processSvgData)
-                .catch(handleFetchError)
-                .finally(() => setLoading(false));
+                .catch((error) => {
+                    // a newer fetchDiagram call already aborted this request, so its response is no longer relevant
+                    if (!abortController.signal.aborted) {
+                        handleFetchError(error);
+                    }
+                })
+                .finally(() => {
+                    if (!abortController.signal.aborted) {
+                        setLoading(false);
+                    }
+                });
             return currentDiagram;
         });
     }, [
