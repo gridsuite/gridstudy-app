@@ -1135,7 +1135,7 @@ const NetworkModificationNodeEditor = () => {
             !mapDataLoading &&
             !isDragging &&
             isEditableModification(modification) &&
-            !modification.isSharedChild,
+            !modification.childFromShared,
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
 
