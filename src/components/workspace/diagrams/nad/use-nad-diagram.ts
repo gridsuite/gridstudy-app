@@ -154,13 +154,17 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
         // we use setDiagram to capture current state without adding diagram to dependencies
         return setDiagram((currentDiagram) => {
+            const nadConfigUuid = currentDiagram.currentNadConfigUuid || currentDiagram.nadConfigUuid;
             const body: any = {
                 nadPositionsGenerationMode: networkVisuParams?.networkAreaDiagramParameters.nadPositionsGenerationMode,
                 voltageLevelIds: currentDiagram.voltageLevelIds,
                 voltageLevelToExpandIds: currentDiagram.voltageLevelToExpandIds,
-                positions: currentDiagram.positions,
+                // positions will be retreived from the saved nadConfig.
+                // Unsaved node drags are lost on refetch and it is fine,
+                // we will add confirmation dialog or a snackbar for this case in future dev
+                positions: nadConfigUuid ? [] : currentDiagram.positions,
                 voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
-                nadConfigUuid: currentDiagram.currentNadConfigUuid || currentDiagram.nadConfigUuid,
+                nadConfigUuid,
                 filterUuid: currentDiagram.currentFilterUuid || currentDiagram.filterUuid,
                 language,
             };
