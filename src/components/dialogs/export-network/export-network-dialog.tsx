@@ -36,7 +36,6 @@ import {
     EXPORT_COMPRESSION,
     EXPORT_PARAMETERS,
     FILE_NAME,
-    SELECTED_MODIFICATIONS,
 } from 'components/utils/field-constants';
 import { useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
