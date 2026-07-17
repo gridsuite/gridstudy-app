@@ -1131,11 +1131,7 @@ const NetworkModificationNodeEditor = () => {
 
     const isModificationClickable = useCallback(
         (modification: ComposedModificationMetadata) =>
-            !isAnyNodeBuilding &&
-            !mapDataLoading &&
-            !isDragging &&
-            isEditableModification(modification) &&
-            !modification.childFromShared,
+            !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
 

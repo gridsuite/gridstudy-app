@@ -1505,5 +1505,6 @@
     "disconnectedLoadActivePower": "Consommation coupée (MW)",
     "disconnectedGenerationActivePower": "Production coupée (MW)",
     "copyLink": "Copier le lien",
-    "linkCopied": "Lien copié"
+    "linkCopied": "Lien copié",
+    "linkCopyError": "Erreur lors de la copie du lien"  
 }

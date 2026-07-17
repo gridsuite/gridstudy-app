@@ -1510,5 +1510,6 @@
     "disconnectedLoadActivePower": "Load cut off (MW)",
     "disconnectedGenerationActivePower": "Generation cut off (MW)",
     "copyLink": "Copy link",
-    "linkCopied": "Link copied"
+    "linkCopied": "Link copied",
+    "linkCopyError": "Error while attempting to cooy link"
 } 
