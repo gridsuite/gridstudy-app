@@ -7,6 +7,7 @@
 
 import { ColDef } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
+import { Key } from 'react';
 
 export interface QualityCriterionResult {
     type: string;
@@ -39,6 +40,7 @@ export interface StateEstimationResultTableProps {
     isLoadingResult: boolean;
     columnDefs: ColDef<any>[];
     tableName: string;
+    exportCsvResetKey: Key;
 }
 
 export interface StateEstimationResultStatusProps {
