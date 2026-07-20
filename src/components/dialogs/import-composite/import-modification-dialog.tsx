@@ -70,6 +70,7 @@ interface SelectedComposite {
     name: string;
     originalName: string;
     isShared: boolean;
+    description?: string;
 }
 
 interface FormData {
@@ -230,6 +231,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 name: e.name,
                 originalName: e.name,
                 [IS_SHARED]: false,
+                description: e?.description,
             }));
             setValue(SELECTED_MODIFICATIONS, newRows, {
                 shouldValidate: true,
@@ -265,8 +267,9 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             name: action === CompositeModificationAction.SPLIT || m.isShared ? m.originalName : m.name,
             // SPLIT modifications are never shared
             isShared: action === CompositeModificationAction.INSERT ? m.isShared : false,
+            description: m.description,
         }));
-
+        console.log('????????? ', modificationsToInsert);
         insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, action).catch((error) =>
             snackWithFallback(snackError, error, { headerId: 'importComposites.error' })
         );
