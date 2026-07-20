@@ -84,6 +84,8 @@ import {
     treeviewFinderFr,
     useUniqueNameValidationEn,
     useUniqueNameValidationFr,
+    modificationFr,
+    modificationEn,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -442,6 +444,7 @@ const messages = {
         ...filterEn,
         ...businessErrorsEn,
         ...errorsEn,
+        ...modificationEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -486,6 +489,7 @@ const messages = {
         ...filterFr,
         ...businessErrorsFr,
         ...errorsFr,
+        ...modificationFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

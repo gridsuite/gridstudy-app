@@ -1503,8 +1503,5 @@
     "button.next": "Suivant",
     "button.previous": "Précédent",
     "disconnectedLoadActivePower": "Consommation coupée (MW)",
-    "disconnectedGenerationActivePower": "Production coupée (MW)",
-    "copyLink": "Copier le lien",
-    "linkCopied": "Lien copié",
-    "linkCopyError": "Erreur lors de la copie du lien"  
+    "disconnectedGenerationActivePower": "Production coupée (MW)"
 }
