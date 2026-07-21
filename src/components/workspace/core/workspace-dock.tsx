@@ -107,7 +107,9 @@ export const WorkspaceDock = memo(() => {
                 variant="scrollable"
                 scrollButtons="auto"
                 sx={{ minHeight: 36 }}
-                TabIndicatorProps={{ sx: { top: 0, bottom: 'auto' } }}
+                slotProps={{
+                    indicator: { sx: { top: 0, bottom: 'auto' } },
+                }}
             >
                 {panels.map((panel, index) => (
                     <Tab

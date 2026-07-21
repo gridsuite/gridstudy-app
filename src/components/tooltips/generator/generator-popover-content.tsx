@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid2 as Grid, Stack, Table, TableBody, TableContainer, TableRow } from '@mui/material';
+import { Grid, Stack, Table, TableBody, TableContainer, TableRow } from '@mui/material';
 import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
 import { CellRender } from '../cell-render';
 import { GeneratorEquipmentInfos } from '../equipment-popover-type';

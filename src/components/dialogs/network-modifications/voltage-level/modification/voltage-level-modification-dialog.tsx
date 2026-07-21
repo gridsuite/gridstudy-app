@@ -151,7 +151,13 @@ const VoltageLevelModificationDialog = ({
                                 EQUIPMENT_INFOS_TYPES.FORM.type,
                                 bbs.id,
                                 true
-                            ).catch(() => ({ id: bbs.id, name: bbs.name ?? undefined }) as BusbarSectionFormInfos)
+                            ).catch(
+                                () =>
+                                    ({
+                                        id: bbs.id,
+                                        name: bbs.name ?? undefined,
+                                    }) as BusbarSectionFormInfos
+                            )
                         )
                     ).then((formDataList) => {
                         const bbsFormData = formDataList as BusbarSectionFormInfos[];

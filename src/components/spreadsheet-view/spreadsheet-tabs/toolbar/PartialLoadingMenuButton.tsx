@@ -132,17 +132,18 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
                     </span>
                 </Tooltip>
             </Badge>
-
             <Menu
                 id="lazy-loading-menu"
                 open={open}
                 onClose={handleClose}
                 anchorEl={anchorEl}
-                MenuListProps={{
-                    'aria-labelledby': 'lazy-loading-button',
-                    sx: { py: 0 },
-                }}
                 variant="menu"
+                slotProps={{
+                    list: {
+                        'aria-labelledby': 'lazy-loading-button',
+                        sx: { py: 0 },
+                    },
+                }}
             >
                 <ListSubheader sx={styles.headers}>
                     <FormattedMessage id="BRANCH" />

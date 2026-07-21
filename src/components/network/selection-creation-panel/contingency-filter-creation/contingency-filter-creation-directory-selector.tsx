@@ -6,7 +6,7 @@
  */
 import { DirectoryItemSelector, ElementType, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { FolderOutlined } from '@mui/icons-material';
-import { Box, Button, Grid2 as Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SelectionCreationPanelFormSchema } from '../selection-creation-schema';

@@ -44,7 +44,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import {
     B,
     BUS_OR_BUSBAR_SECTION,
@@ -879,9 +879,11 @@ const TwoWindingsTransformerModificationDialog = ({
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
-                PaperProps={{
-                    sx: {
-                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                        },
                     },
                 }}
                 {...dialogProps}

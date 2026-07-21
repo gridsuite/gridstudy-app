@@ -7,7 +7,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { Box, Grid2 as Grid, Stack, TextField, Tooltip } from '@mui/material';
+import { Box, Grid, Stack, TextField, Tooltip } from '@mui/material';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import HeaderWithTooltip from '../topology-modification/header-with-tooltip';
@@ -122,9 +122,11 @@ export function MoveVoltageLevelFeederBaysForm({
                 label="ID"
                 value={selectedId}
                 size="small"
-                InputProps={{ readOnly: true }}
                 disabled
                 {...filledTextField}
+                slotProps={{
+                    input: { readOnly: true },
+                }}
             />
         ),
         [selectedId]

@@ -22,7 +22,7 @@ import { getRegulationTypeLabel, getTapSideLabel } from './tap-changer-pane-util
 import { useIntl } from 'react-intl';
 import { GridSection } from '../../../commons/grid-section';
 import { GridItem } from '../../../commons/grid-item';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { getTapChangerEquipmentSectionTypeValue } from '../../../../utils/utils';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';

@@ -36,7 +36,7 @@ import {
     TABULAR_PROPERTIES,
     TYPE,
 } from 'components/utils/field-constants';
-import { Alert, Button, Grid2 as Grid, Stack } from '@mui/material';
+import { Alert, Button, Grid, Stack } from '@mui/material';
 import Papa from 'papaparse';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';

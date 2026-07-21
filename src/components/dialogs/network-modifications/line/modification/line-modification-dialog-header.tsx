@@ -6,7 +6,7 @@
  */
 
 import { EQUIPMENT_NAME } from 'components/utils/field-constants';
-import { Box, Grid2 as Grid, TextField } from '@mui/material';
+import { Box, Grid, TextField } from '@mui/material';
 import LineDialogTabs from './line-dialog-tabs';
 import { BranchInfos, filledTextField, TextInput } from '@gridsuite/commons-ui';
 import { GridItem } from '../../../commons/grid-item';
@@ -32,11 +32,13 @@ const LineModificationDialogHeader = ({
             fullWidth
             label={'ID'}
             value={equipmentId}
-            InputProps={{
-                readOnly: true,
-            }}
             disabled
             {...filledTextField}
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
+            }}
         />
     );
 

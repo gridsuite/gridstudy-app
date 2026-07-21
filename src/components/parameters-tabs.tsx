@@ -8,18 +8,7 @@
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    Box,
-    DialogContentText,
-    Divider,
-    Grid2 as Grid,
-    MenuItem,
-    Select,
-    Stack,
-    Tab,
-    Tabs,
-    Typography,
-} from '@mui/material';
+import { Box, DialogContentText, Divider, Grid, MenuItem, Select, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from 'redux/reducer.type';

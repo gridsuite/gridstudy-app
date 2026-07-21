@@ -36,9 +36,11 @@ export const HistorySectionContent = memo(function HistorySectionContent({
                     </ListItemIcon>
                     <ListItemText
                         primary={voltageLevelId}
-                        primaryTypographyProps={{
-                            variant: 'caption',
-                            noWrap: true,
+                        slotProps={{
+                            primary: {
+                                variant: 'caption',
+                                noWrap: true,
+                            },
                         }}
                     />
                 </ListItemButton>

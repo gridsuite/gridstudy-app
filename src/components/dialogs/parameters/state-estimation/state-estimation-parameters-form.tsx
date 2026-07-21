@@ -6,7 +6,7 @@
  */
 import { SyntheticEvent } from 'react';
 import { TabPanel } from '@gridsuite/commons-ui';
-import { Grid2 as Grid, Stack, Tab, Tabs } from '@mui/material';
+import { Grid, Stack, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { TabValue } from './state-estimation-parameters-utils';
 import { StateEstimationGeneralParameters } from './state-estimation-general-parameters';

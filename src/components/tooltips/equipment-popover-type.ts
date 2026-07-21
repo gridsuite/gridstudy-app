@@ -65,7 +65,4 @@ export interface LoadEquipmentInfos {
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;
 
 export type GenericEquipmentInfos =
-    | BranchEquipmentInfos
-    | GeneratorEquipmentInfos
-    | LoadEquipmentInfos
-    | VoltageLevelTooltipInfos;
+    BranchEquipmentInfos | GeneratorEquipmentInfos | LoadEquipmentInfos | VoltageLevelTooltipInfos;

@@ -8,7 +8,7 @@
 import { FunctionComponent, useCallback } from 'react';
 
 import { ConnectivityForm, PropertiesForm } from '@gridsuite/commons-ui';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';

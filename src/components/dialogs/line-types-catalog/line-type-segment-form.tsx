@@ -7,7 +7,7 @@
 
 import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Box, Grid2 as Grid, Stack } from '@mui/material';
+import { Box, Grid, Stack } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     APPLY_SEGMENTS_LIMITS,

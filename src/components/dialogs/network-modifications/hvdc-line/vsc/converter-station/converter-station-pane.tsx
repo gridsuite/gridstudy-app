@@ -28,7 +28,7 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
 import type { UUID } from 'node:crypto';
-import { Grid2 as Grid, TextField } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
 import { useIntl } from 'react-intl';
@@ -94,10 +94,12 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             fullWidth
             label={'ID'}
             value={previousValues?.id}
-            InputProps={{
-                readOnly: true,
-            }}
             disabled
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
+            }}
         />
     ) : (
         <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />

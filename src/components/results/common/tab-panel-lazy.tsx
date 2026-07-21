@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
-import { BoxProps } from '@mui/material/Box/Box';
+import { BoxProps } from '@mui/material/Box';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
