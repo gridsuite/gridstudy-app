@@ -6,12 +6,13 @@
  */
 import { backendFetch } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
+import { PREFIX_STUDY_SERVER_QUERIES } from './study';
 
 const PREFIX_DYNAMIC_MARGIN_CALCULATION_SERVER_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/dynamic-margin-calculation';
+    PREFIX_STUDY_SERVER_QUERIES + '/v1/dynamic-margin-calculation';
 
 function getDynamicMarginCalculationUrl() {
-    return `${PREFIX_DYNAMIC_MARGIN_CALCULATION_SERVER_QUERIES}/v1/`;
+    return `${PREFIX_DYNAMIC_MARGIN_CALCULATION_SERVER_QUERIES}/`;
 }
 
 export function downloadDebugFileDynamicMarginCalculation(resultUuid: UUID): Promise<Response> {

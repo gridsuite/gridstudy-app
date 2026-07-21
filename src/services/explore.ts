@@ -9,9 +9,10 @@ import { ContingencyList } from './study/contingency-list';
 import type { UUID } from 'node:crypto';
 import { backendFetch, ElementType } from '@gridsuite/commons-ui';
 import { SpreadsheetCollection, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
+import { PREFIX_STUDY_SERVER_QUERIES } from './study';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
-const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
+const PREFIX_DIRECTORY_SERVER_QUERIES = PREFIX_STUDY_SERVER_QUERIES + '/v1/directory';
 
 export function createParameter(
     newParameter: any,
@@ -54,7 +55,7 @@ export function updateParameter(
 }
 
 export function elementExists(directoryUuid: UUID, elementName: string, type: ElementType) {
-    const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
+    const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
 
     console.debug(existsElementUrl);
     return backendFetch(existsElementUrl, { method: 'head' }).then((response) => {

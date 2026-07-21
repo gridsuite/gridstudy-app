@@ -17,7 +17,7 @@ import {
     safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, PREFIX_STUDY_SERVER_QUERIES } from './index';
 import { EQUIPMENT_INFOS_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { getQueryParamsList } from '../utils';
 import { BusBarSectionsInfos, FeederBaysInfos, SwitchInfos } from './network-map.type';
@@ -40,7 +40,7 @@ interface SubstationSingleLineDiagram {
     substationId: string;
 }
 
-export const PREFIX_SCHEMAS_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-map';
+export const PREFIX_SCHEMAS_QUERIES = PREFIX_STUDY_SERVER_QUERIES + '/v1/network-map';
 
 /* voltage-levels */
 export function getVoltageLevelSingleLineDiagramUrl({
@@ -445,7 +445,7 @@ export function fetchExportNetworkFile(exportUuid: UUID) {
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {
-    const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/v1/schemas/${type}/${EQUIPMENT_INFOS_TYPES.TAB.type}`;
+    const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/schemas/${type}/${EQUIPMENT_INFOS_TYPES.TAB.type}`;
     return backendFetchJson(fetchEquipmentTypeSchemaUrl, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },

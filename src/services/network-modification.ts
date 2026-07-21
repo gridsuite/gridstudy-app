@@ -6,17 +6,18 @@
  */
 
 import { backendFetchJson, LineTypeInfo } from '@gridsuite/commons-ui';
+import { PREFIX_STUDY_SERVER_QUERIES } from './study';
 
-const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';
+const PREFIX_NETWORK_MODIFICATION_QUERIES = PREFIX_STUDY_SERVER_QUERIES + '/v1/network-modification';
 
 export function getLineTypesCatalog(): Promise<LineTypeInfo[]> {
     console.info(`get line types catalog`);
-    const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types`;
+    const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/network-modifications/catalog/line_types`;
     return backendFetchJson(url);
 }
 
 export function getLineTypeWithAreaAndTemperature(id: string): Promise<LineTypeInfo> {
-    const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}`;
+    const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/network-modifications/catalog/line_types/${id}`;
     return backendFetchJson(url);
 }
 
@@ -37,7 +38,7 @@ export function getLineTypeWithLimits(
         urlSearchParams.append('shapeFactor', shapeFactor.toString());
     }
     const url =
-        `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}/with-limits?` +
+        `${PREFIX_NETWORK_MODIFICATION_QUERIES}/network-modifications/catalog/line_types/${id}/with-limits?` +
         urlSearchParams.toString();
     return backendFetchJson(url, {
         method: 'GET',
