@@ -66,13 +66,8 @@ export const createBaseColumns = (
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.SHARED.id,
         cell: ReferenceCellRenderer,
-        size: 48,
-        minSize: 48,
-        meta: {
-            cellStyle: {
-                paddingRight: '5px',
-            },
-        },
+        size: 40,
+        minSize: 32,
     },
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.DESCRIPTION.id,
