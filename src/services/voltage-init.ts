@@ -7,12 +7,12 @@
 
 import type { UUID } from 'node:crypto';
 import { backendFetch } from '@gridsuite/commons-ui';
-import { PREFIX_STUDY_SERVER_QUERIES } from './study';
+import { PREFIX_STUDY_QUERIES } from './study';
 
-const PREFIX_VOLTAGE_INIT_SERVER_QUERIES = PREFIX_STUDY_SERVER_QUERIES + '/v1/voltage-init';
+const PREFIX_VOLTAGE_INIT_QUERIES = PREFIX_STUDY_QUERIES + '/v1/voltage-init';
 
 function getVoltageInitUrl() {
-    return `${PREFIX_VOLTAGE_INIT_SERVER_QUERIES}/`;
+    return `${PREFIX_VOLTAGE_INIT_QUERIES}/`;
 }
 
 export function downloadDebugFileVoltageInit(resultUuid: UUID): Promise<Response> {

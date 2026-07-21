@@ -7,12 +7,12 @@
 
 import { backendFetch } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { PREFIX_STUDY_SERVER_QUERIES } from './study';
+import { PREFIX_STUDY_QUERIES } from './study';
 
-const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES = PREFIX_STUDY_SERVER_QUERIES + '/v1/dynamic-simulation';
+const PREFIX_DYNAMIC_SIMULATION_QUERIES = PREFIX_STUDY_QUERIES + '/v1/dynamic-simulation';
 
 function getDynamicSimulationUrl() {
-    return `${PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES}/`;
+    return `${PREFIX_DYNAMIC_SIMULATION_QUERIES}/`;
 }
 
 export function downloadDebugFileDynamicSimulation(resultUuid: UUID): Promise<Response> {

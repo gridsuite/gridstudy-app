@@ -7,12 +7,12 @@
 
 import type { UUID } from 'node:crypto';
 import { backendFetch } from '@gridsuite/commons-ui';
-import { PREFIX_STUDY_SERVER_QUERIES } from './study';
+import { PREFIX_STUDY_QUERIES } from './study';
 
-const PREFIX_STATE_ESTIMATION_SERVER_QUERIES = PREFIX_STUDY_SERVER_QUERIES + '/v1/state-estimation';
+const PREFIX_STATE_ESTIMATION_QUERIES = PREFIX_STUDY_QUERIES + '/v1/state-estimation';
 
 function getStateEstimationServerUrl() {
-    return `${PREFIX_STATE_ESTIMATION_SERVER_QUERIES}/`;
+    return `${PREFIX_STATE_ESTIMATION_QUERIES}/`;
 }
 
 export function downloadDebugFileStateEstimationServer(resultUuid: UUID): Promise<Response> {

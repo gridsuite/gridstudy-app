@@ -6,9 +6,9 @@
  */
 
 import { backendFetchJson, LineTypeInfo } from '@gridsuite/commons-ui';
-import { PREFIX_STUDY_SERVER_QUERIES } from './study';
+import { PREFIX_STUDY_QUERIES } from './study';
 
-const PREFIX_NETWORK_MODIFICATION_QUERIES = PREFIX_STUDY_SERVER_QUERIES + '/v1/network-modification';
+const PREFIX_NETWORK_MODIFICATION_QUERIES = PREFIX_STUDY_QUERIES + '/v1';
 
 export function getLineTypesCatalog(): Promise<LineTypeInfo[]> {
     console.info(`get line types catalog`);

@@ -6,12 +6,12 @@
  */
 
 import { backendFetchJson } from '@gridsuite/commons-ui';
-import { PREFIX_STUDY_SERVER_QUERIES } from './study';
+import { PREFIX_STUDY_QUERIES } from './study';
 
-const PREFIX_LOADFLOW_SERVER_QUERIES = PREFIX_STUDY_SERVER_QUERIES + '/v1/loadflow';
+const PREFIX_LOADFLOW_QUERIES = PREFIX_STUDY_QUERIES + '/v1/loadflow';
 
 export function getLoadFlowUrl() {
-    return `${PREFIX_LOADFLOW_SERVER_QUERIES}/`;
+    return `${PREFIX_LOADFLOW_QUERIES}/`;
 }
 
 export function getLoadFlowProviders() {

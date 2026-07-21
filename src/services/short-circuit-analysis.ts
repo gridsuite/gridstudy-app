@@ -7,12 +7,12 @@
 
 import type { UUID } from 'node:crypto';
 import { backendFetch } from '@gridsuite/commons-ui';
-import { PREFIX_STUDY_SERVER_QUERIES } from './study';
+import { PREFIX_STUDY_QUERIES } from './study';
 
-const PREFIX_SHORT_CIRCUIT_ANALYSIS_SERVER_QUERIES = PREFIX_STUDY_SERVER_QUERIES + '/v1/shortcircuit';
+const PREFIX_SHORT_CIRCUIT_ANALYSIS_QUERIES = PREFIX_STUDY_QUERIES + '/v1/shortcircuit';
 
 function getShotCircuitAnalysisUrl() {
-    return `${PREFIX_SHORT_CIRCUIT_ANALYSIS_SERVER_QUERIES}/`;
+    return `${PREFIX_SHORT_CIRCUIT_ANALYSIS_QUERIES}/`;
 }
 
 export function downloadDebugFileShortCircuitAnalysis(resultUuid: UUID): Promise<Response> {

@@ -7,12 +7,12 @@
 
 import { backendFetch } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { PREFIX_STUDY_SERVER_QUERIES } from './study';
+import { PREFIX_STUDY_QUERIES } from './study';
 
-const PREFIX_DYNAMIC_SECURITY_ANALYSIS_SERVER_QUERIES = PREFIX_STUDY_SERVER_QUERIES + '/v1/dynamic-security-analysis';
+const PREFIX_DYNAMIC_SECURITY_ANALYSIS_QUERIES = PREFIX_STUDY_QUERIES + '/v1/dynamic-security-analysis';
 
 function getDynamicSecurityAnalysisUrl() {
-    return `${PREFIX_DYNAMIC_SECURITY_ANALYSIS_SERVER_QUERIES}/`;
+    return `${PREFIX_DYNAMIC_SECURITY_ANALYSIS_QUERIES}/`;
 }
 
 export function downloadDebugFileDynamicSecurityAnalysis(resultUuid: UUID): Promise<Response> {

@@ -33,8 +33,9 @@ import {
     BatteryModificationDto,
     LineCreationDto,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
+    PREFIX_STUDY_QUERIES,
 } from '@gridsuite/commons-ui';
-import { getBaseNetworkModificationUrl, getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
@@ -1945,8 +1946,8 @@ export function getNetworkModificationsFromComposite(
     compositeModificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
     urlSearchParams.append('onlyMetadata', String(onlyMetadata));
     const url =
-        getBaseNetworkModificationUrl() +
-        '/network-composite-modifications/network-modifications?' +
+        PREFIX_STUDY_QUERIES +
+        '/v1/network-composite-modifications/network-modifications?' +
         urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
