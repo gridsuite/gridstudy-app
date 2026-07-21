@@ -52,9 +52,7 @@ export const useIntlResultStatusMessages = (
     hasFilters: boolean = false
 ) => {
     const specificMessage = useCallback(():
-        | { noData: string }
-        | { noLimitViolation: string }
-        | { fetching: string } => {
+        { noData: string } | { noLimitViolation: string } | { fetching: string } => {
         if (hasNoData) {
             // TODO: maybe just fallback to ag-grid default message (ie. `undefined`)?
             return {

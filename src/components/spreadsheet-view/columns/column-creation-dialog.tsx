@@ -13,7 +13,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Grid2 as Grid,
+    Grid,
     Link,
     Stack,
     Tooltip,
@@ -170,7 +170,7 @@ export default function ColumnCreationDialog({
                         }
                         color="primary"
                         placement="left-end"
-                        componentsProps={{
+                        slotProps={{
                             tooltip: {
                                 sx: {
                                     maxWidth: 500,
@@ -342,7 +342,9 @@ export default function ColumnCreationDialog({
                 open={open.value}
                 onClose={onClose}
                 aria-labelledby="custom-column-dialog-edit-title"
-                PaperProps={{ sx: styles.dialogContent }}
+                slotProps={{
+                    paper: { sx: styles.dialogContent },
+                }}
             >
                 <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>

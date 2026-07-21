@@ -63,10 +63,12 @@ export default function SubstationsAutocomplete({
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     inputRef={ref}
-                    inputProps={{ ...inputProps }}
                     label={label}
                     {...genHelperError(error?.message)}
                     {...rest}
+                    slotProps={{
+                        htmlInput: { ...inputProps },
+                    }}
                 />
             )}
             autoHighlight={true}

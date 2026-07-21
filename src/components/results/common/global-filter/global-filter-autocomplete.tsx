@@ -11,7 +11,6 @@ import {
     AutocompleteChangeDetails,
     AutocompleteChangeReason,
     AutocompleteCloseReason,
-    AutocompleteRenderGetTagProps,
     AutocompleteRenderInputParams,
     Box,
     Checkbox,
@@ -43,6 +42,7 @@ import {
     removeFromSelectedGlobalFilters,
 } from '../../../../redux/actions';
 import { AppDispatch } from '../../../../redux/store';
+import { AutocompleteRenderValueGetItemProps } from '@mui/material/Autocomplete';
 
 const TAG_LIMIT_NUMBER: number = 4;
 
@@ -61,21 +61,24 @@ function RenderInput({
             id={id}
             size={size}
             fullWidth={fullWidth}
-            inputProps={inputProps}
             disabled={disabled}
             label={intl.formatMessage({
                 id: 'results.globalFilter.fillerText',
             })}
-            InputProps={{
-                ...otherInputProps,
-                startAdornment: (
-                    <>
-                        <InputAdornment position="start">
-                            <FilterAlt />
-                        </InputAdornment>
-                        {startAdornment}
-                    </>
-                ),
+            slotProps={{
+                input: {
+                    ...otherInputProps,
+                    startAdornment: (
+                        <>
+                            <InputAdornment position="start">
+                                <FilterAlt />
+                            </InputAdornment>
+                            {startAdornment}
+                        </>
+                    ),
+                },
+
+                htmlInput: inputProps,
             }}
         />
     );
@@ -157,15 +160,17 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
             title={warningEquipmentTypeMessage}
             placement="right"
             arrow
-            PopperProps={{
-                modifiers: [
-                    {
-                        name: 'offset',
-                        options: {
-                            offset: [0, -15],
+            slotProps={{
+                popper: {
+                    modifiers: [
+                        {
+                            name: 'offset',
+                            options: {
+                                offset: [0, -15],
+                            },
                         },
-                    },
-                ],
+                    ],
+                },
             }}
         >
             <IconButton size="small" sx={{ cursor: 'default' }}>
@@ -294,14 +299,19 @@ function GlobalFilterAutocomplete() {
     );
 
     const inputFieldChip = useCallback(
-        (element: GlobalFilter, index: number, getTagsProps: AutocompleteRenderGetTagProps, filtersNumber: number) => {
+        (
+            element: GlobalFilter,
+            index: number,
+            getItemProps: AutocompleteRenderValueGetItemProps<true>,
+            filtersNumber: number
+        ) => {
             const label = getOptionLabel(element, translate, intl);
             const key: string = `inputFieldChip_${element.label}`;
             if (index < TAG_LIMIT_NUMBER) {
                 return (
                     <OverflowableChip
                         label={label}
-                        {...getTagsProps({ index })}
+                        {...getItemProps({ index })}
                         key={key}
                         sx={getResultsGlobalFiltersChipStyle(element)}
                     />
@@ -371,7 +381,7 @@ function GlobalFilterAutocomplete() {
                     options={options}
                     onChange={handleOnChange}
                     renderInput={RenderInput}
-                    renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
+                    renderValue={(filters: GlobalFilter[], getItemProps: AutocompleteRenderValueGetItemProps<true>) => {
                         return (
                             <Box
                                 sx={{
@@ -383,7 +393,7 @@ function GlobalFilterAutocomplete() {
                                 }}
                             >
                                 {filters.map((element, index) => {
-                                    return inputFieldChip(element, index, getTagsProps, filters.length);
+                                    return inputFieldChip(element, index, getItemProps, filters.length);
                                 })}
                             </Box>
                         );
@@ -398,20 +408,23 @@ function GlobalFilterAutocomplete() {
                     filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
                         filterOptions(options, state)
                     }
-                    // dropdown paper
-                    PaperComponent={PaperComponentMemo}
-                    ListboxProps={{
-                        sx: {
-                            '& .MuiAutocomplete-option': {
-                                paddingLeft: 0,
-                                paddingRight: 0,
+                    noOptionsText={''}
+                    slots={{
+                        paper: PaperComponentMemo,
+                    }}
+                    slotProps={{
+                        listbox: {
+                            sx: {
+                                '& .MuiAutocomplete-option': {
+                                    paddingLeft: 0,
+                                    paddingRight: 0,
+                                },
+                                height: '100%',
+                                maxHeight: '100%',
+                                overflowY: 'auto',
                             },
-                            height: '100%',
-                            maxHeight: '100%',
-                            overflowY: 'auto',
                         },
                     }}
-                    noOptionsText={''}
                 />
             </div>
             {warningEquipmentTypeMessage && (

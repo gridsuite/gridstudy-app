@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid2 as Grid, Paper, TextField, ToggleButton, Tooltip, Typography } from '@mui/material';
+import { Box, Grid, Paper, TextField, ToggleButton, Tooltip, Typography } from '@mui/material';
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
 import { ChangeEvent, memo, useCallback, useMemo, useRef, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
@@ -379,10 +379,12 @@ function DynamicSimulationResultChart({
                                     type="number"
                                     value={gridLayout.numColumns}
                                     onChange={handleChangeNumColumns}
-                                    InputProps={{
-                                        inputProps: {
-                                            max: 3,
-                                            min: 1,
+                                    slotProps={{
+                                        input: {
+                                            inputProps: {
+                                                max: 3,
+                                                min: 1,
+                                            },
                                         },
                                     }}
                                 />

@@ -141,11 +141,13 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                             control={
                                 <Switch
                                     checked={nodeOnlyReport}
-                                    inputProps={{
-                                        'aria-label': 'primary checkbox',
-                                    }}
                                     onChange={(e) => handleChangeNodeOnlySwitch(e)}
                                     disabled={disabled || rootNodeId === currentNode?.id}
+                                    slotProps={{
+                                        input: {
+                                            'aria-label': 'primary checkbox',
+                                        },
+                                    }}
                                 />
                             }
                             label={intl.formatMessage({

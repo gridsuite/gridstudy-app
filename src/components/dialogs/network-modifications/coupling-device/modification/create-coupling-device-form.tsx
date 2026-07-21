@@ -8,7 +8,7 @@
 import { AutocompleteInput, filledTextField, getObjectId, Option } from '@gridsuite/commons-ui';
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import { GridItem } from '../../../commons/grid-item';
-import { Box, Grid2 as Grid, TextField, Tooltip } from '@mui/material';
+import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback, useState } from 'react';
@@ -45,11 +45,13 @@ export default function CreateCouplingDeviceForm({
             fullWidth
             label={intl.formatMessage({ id: 'VoltageLevelId' })}
             value={voltageLevelId}
-            InputProps={{
-                readOnly: true,
-            }}
             disabled
             {...filledTextField}
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
+            }}
         />
     );
 

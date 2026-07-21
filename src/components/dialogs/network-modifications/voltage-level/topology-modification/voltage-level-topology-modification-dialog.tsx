@@ -319,9 +319,11 @@ export default function VoltageLevelTopologyModificationDialog({
                 titleId="ModifyVoltageLevelTopology"
                 open={open}
                 keepMounted={true}
-                PaperProps={{
-                    sx: {
-                        height: '95vh',
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '95vh',
+                        },
                     },
                 }}
                 isDataFetching={

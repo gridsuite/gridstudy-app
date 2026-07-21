@@ -16,7 +16,7 @@ import {
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
-import { Box, Button, Grid2 as Grid, Slider, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Grid, Slider, TextField, Tooltip, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import {
@@ -88,11 +88,13 @@ export function CreateVoltageLevelSectionForm({
             fullWidth
             label={intl.formatMessage({ id: 'VoltageLevelId' })}
             value={voltageLevelId}
-            InputProps={{
-                readOnly: true,
-            }}
             disabled
             {...filledTextField}
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
+            }}
         />
     );
     const switchValue = useWatch({ name: NEW_SWITCH_STATES });

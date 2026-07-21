@@ -10,7 +10,7 @@ import { EQUIPMENT_TYPE_FIELD, FORMULAS } from '../../../../utils/field-constant
 import FormulaForm from './formula/formula-form';
 import { getFormulaInitialValue } from './formula/formula-utils';
 import { useFormContext } from 'react-hook-form';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import {
     EquipmentType,
     ExpandableInput,

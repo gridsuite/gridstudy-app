@@ -17,7 +17,7 @@ import ConverterStationPane from '../converter-station/converter-station-pane';
 import type { UUID } from 'node:crypto';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { PowerMeasurementsForm, TextInput } from '@gridsuite/commons-ui';
-import { Box, Grid2 as Grid, TextField } from '@mui/material';
+import { Box, Grid, TextField } from '@mui/material';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
 import { GridItem } from '../../../../commons/grid-item';
@@ -54,11 +54,13 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
             fullWidth
             label={'ID'}
             value={equipmentId || ''}
-            InputProps={{
-                readOnly: true,
-            }}
             disabled
             variant="filled"
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
+            }}
         />
     );
 

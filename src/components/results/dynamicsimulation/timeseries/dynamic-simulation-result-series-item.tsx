@@ -43,7 +43,9 @@ function DynamicSimulationResultSeriesItem({
                     edge={'end'}
                     onChange={() => handleToggleRightAxis(id)}
                     checked={rightAxisChecked}
-                    inputProps={{ 'aria-labelledby': `right-axis-label-${id}` }}
+                    slotProps={{
+                        input: { 'aria-labelledby': `right-axis-label-${id}` },
+                    }}
                 />
             }
             disablePadding
@@ -54,8 +56,10 @@ function DynamicSimulationResultSeriesItem({
                         edge={'start'}
                         checked={leftAxisChecked}
                         disableRipple
-                        inputProps={{
-                            'aria-labelledby': `left-axis-label-${id}`,
+                        slotProps={{
+                            input: {
+                                'aria-labelledby': `left-axis-label-${id}`,
+                            },
                         }}
                     />
                 </ListItemIcon>

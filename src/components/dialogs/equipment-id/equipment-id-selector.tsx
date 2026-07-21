@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import type { UUID } from 'node:crypto';
-import { Autocomplete, Box, CircularProgress, Grid2 as Grid, TextField } from '@mui/material';
+import { Autocomplete, Box, CircularProgress, Grid, TextField } from '@mui/material';
 import {
     type EquipmentType,
     type ExtendedEquipmentType,
@@ -108,10 +108,12 @@ export function EquipmentIdSelector({
                     label={FieldLabel({
                         label: 'ID',
                     })}
-                    inputProps={{ ...inputProps, readOnly: readOnly }}
                     autoFocus
                     {...filledTextField}
                     {...rest}
+                    slotProps={{
+                        htmlInput: { ...inputProps, readOnly: readOnly },
+                    }}
                 />
             )}
         />

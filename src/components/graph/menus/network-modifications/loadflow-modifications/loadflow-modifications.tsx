@@ -88,14 +88,16 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
 
     return (
         <Dialog
-            PaperProps={{
-                sx: {
-                    height: '90vh',
-                },
-            }}
             fullWidth
             maxWidth="md"
             open={true}
+            slotProps={{
+                paper: {
+                    sx: {
+                        height: '90vh',
+                    },
+                },
+            }}
         >
             <DialogTitle>
                 {intl.formatMessage({

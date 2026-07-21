@@ -29,12 +29,14 @@ export default function SearchBar({ placeholder, value, label, onChange, onClear
                 label={label}
                 onChange={onChange}
                 size="small"
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <SearchIcon />
-                        </InputAdornment>
-                    ),
+                slotProps={{
+                    input: {
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <SearchIcon />
+                            </InputAdornment>
+                        ),
+                    },
                 }}
             />
             <IconButton size="small" onClick={onClear}>

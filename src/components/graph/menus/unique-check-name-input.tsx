@@ -164,9 +164,11 @@ export function UniqueCheckNameInput({
             margin="dense"
             error={!!error}
             helperText={translatedError || <Typography variant="caption">{helperText}</Typography>}
-            InputProps={{ endAdornment }}
-            inputProps={inputProps}
             {...formProps}
+            slotProps={{
+                input: { endAdornment },
+                htmlInput: inputProps,
+            }}
         />
     );
 }

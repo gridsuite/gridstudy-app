@@ -7,7 +7,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { Box, Button, Grid2 as Grid, Stack, TextField } from '@mui/material';
+import { Box, Button, Grid, Stack, TextField } from '@mui/material';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
@@ -149,9 +149,11 @@ export function VoltageLevelTopologyModificationForm({
                         label="ID"
                         value={selectedId}
                         size="small"
-                        InputProps={{ readOnly: true }}
                         disabled
                         {...filledTextField}
+                        slotProps={{
+                            input: { readOnly: true },
+                        }}
                     />
                 </Grid>
                 <Grid size={8} container justifyContent="flex-end">

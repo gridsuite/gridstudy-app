@@ -26,7 +26,7 @@ import { EQUIPMENTS_FIELDS, EquipmentTypeOptionType } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { GridItem } from '../../../../commons/grid-item';
 
 interface FormulaProps {

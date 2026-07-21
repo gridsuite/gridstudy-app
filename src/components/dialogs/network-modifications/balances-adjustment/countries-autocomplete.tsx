@@ -43,10 +43,12 @@ export default function CountriesAutocomplete({ name, label, disabled, ...props 
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     inputRef={ref}
-                    inputProps={{ ...inputProps }}
                     label={label}
                     {...genHelperError(error?.message)}
                     {...rest}
+                    slotProps={{
+                        htmlInput: { ...inputProps },
+                    }}
                 />
             )}
             getOptionLabel={(value) => translate(value)}
