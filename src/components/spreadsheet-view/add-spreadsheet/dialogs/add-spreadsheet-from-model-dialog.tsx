@@ -119,7 +119,7 @@ export default function AddSpreadsheetFromModelDialog({ open }: Readonly<AddSpre
                 onClose={open.setFalse}
                 onSave={onSubmit}
                 onClear={() => null}
-                PaperProps={{ sx: dialogStyles.dialogContent }}
+                slotProps={{ paper: { sx: dialogStyles.dialogContent } }}
             >
                 <Stack spacing={2} marginTop={2}>
                     <Box>

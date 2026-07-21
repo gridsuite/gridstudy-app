@@ -143,7 +143,7 @@ export default function AddSpreadsheetsFromCollectionDialog({ open }: Readonly<D
                     onClose={open.setFalse}
                     onSave={onSubmit}
                     onClear={() => null}
-                    PaperProps={{ sx: dialogStyles.dialogContent }}
+                    slotProps={{ paper: { sx: dialogStyles.dialogContent } }}
                 >
                     <Stack spacing={2}>
                         <Box>{updateModeSelectionField}</Box>

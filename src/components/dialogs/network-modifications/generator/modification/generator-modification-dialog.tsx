@@ -232,7 +232,7 @@ export default function GeneratorModificationDialog({
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
                 maxWidth={'md'}
-                PaperProps={{ sx: { height: '75vh' } }}
+                slotProps={{ paper: { sx: { height: '75vh' } } }}
                 titleId="ModifyGenerator"
                 open={open}
                 keepMounted={true}
