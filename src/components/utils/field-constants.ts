@@ -330,14 +330,7 @@ export const HVDC_LINE_TAB = 'hvdcLineTab';
 export const CONVERTER_STATION_1 = 'converterStation1';
 export const CONVERTER_STATION_2 = 'converterStation2';
 
-// By formula
 export const EQUIPMENT_TYPE_FIELD = 'equipmentType';
-export const FORMULAS = 'formulas';
-export const EDITED_FIELD = 'editedField';
-export const OPERATOR = 'operator';
-export const REFERENCE_FIELD_OR_VALUE_1 = 'referenceFieldOrValue1';
-export const REFERENCE_FIELD_OR_VALUE_2 = 'referenceFieldOrValue2';
-
 export const ADD_STAND_BY_AUTOMATON = 'addStandbyAutomaton';
 export const LOW_VOLTAGE_SET_POINT = 'lowVoltageSetpoint';
 export const HIGH_VOLTAGE_SET_POINT = 'highVoltageSetpoint';
