@@ -529,7 +529,6 @@
 
     "LoadCreationError": "Erreur lors de la création d'une consommation",
     "LoadModificationError": "Erreur lors de la modification d'une consommation",
-    "LineModificationError": "Erreur lors de la modification d'une ligne",
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
     "StaticVarCompensatorCreationError": "Erreur lors de la création d'un cspr",
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
@@ -579,7 +578,6 @@
     "reactiveCapabilityCurvePmax": "Pmax",
     "reactiveCapabilityCurveQminPmax": "QminPmax",
     "reactiveCapabilityCurveQmaxPmax": "QmaxPmax",
-    "ModifyLine": "Modifier une ligne",
     "CreateVsc": "Création d'une HVDC (VSC)",
     "CreateLcc": "Création d'une HVDC (LCC)",
     "Filters": "Filtres",

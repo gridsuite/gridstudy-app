@@ -33,6 +33,7 @@ import {
     BatteryModificationDto,
     LineCreationDto,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
+    LineModificationDto,
     CreateVoltageLevelSectionInfos,
 } from '@gridsuite/commons-ui';
 import { getBaseNetworkModificationUrl, getStudyUrlWithNodeUuid } from './index';
@@ -43,6 +44,7 @@ import {
     BalancesAdjustmentInfos,
     ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
+    CreateVoltageLevelSectionInfos,
     CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
@@ -647,48 +649,14 @@ export function createLine({
     });
 }
 
-export function modifyLine({
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    lineId,
-    equipmentName,
-    r,
-    x,
-    g1,
-    b1,
-    g2,
-    b2,
-    operationalLimitsGroups,
-    selectedOperationalLimitsGroupId1,
-    selectedOperationalLimitsGroupId2,
-    enableOLGModification,
-    voltageLevelId1,
-    busOrBusbarSectionId1,
-    voltageLevelId2,
-    busOrBusbarSectionId2,
-    connectionName1,
-    connectionName2,
-    connectionDirection1,
-    connectionDirection2,
-    connectionPosition1,
-    connectionPosition2,
-    connected1,
-    connected2,
-    properties,
-    p1MeasurementValue,
-    p1MeasurementValidity,
-    q1MeasurementValue,
-    q1MeasurementValidity,
-    p2MeasurementValue,
-    p2MeasurementValidity,
-    q2MeasurementValue,
-    q2MeasurementValidity,
-    lineSegments,
-}: LineModificationInfos) {
+export function modifyLine(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: LineModificationDto
+) {
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
+    if (modificationUuid) {
         modifyLineUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating line modification');
     } else {
@@ -696,51 +664,12 @@ export function modifyLine({
     }
 
     return backendFetchText(modifyLineUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
-            equipmentId: lineId,
-            equipmentName: equipmentName,
-            r: toModificationOperation(r),
-            x: toModificationOperation(x),
-            g1: toModificationOperation(g1),
-            b1: toModificationOperation(b1),
-            g2: toModificationOperation(g2),
-            b2: toModificationOperation(b2),
-            operationalLimitsGroups: operationalLimitsGroups,
-            selectedOperationalLimitsGroupId1: selectedOperationalLimitsGroupId1,
-            selectedOperationalLimitsGroupId2: selectedOperationalLimitsGroupId2,
-            [ENABLE_OLG_MODIFICATION]: enableOLGModification,
-            [OLGS_MODIFICATION_TYPE]: enableOLGModification
-                ? OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE
-                : null,
-            voltageLevelId1: toModificationOperation(voltageLevelId1),
-            busOrBusbarSectionId1: toModificationOperation(busOrBusbarSectionId1),
-            voltageLevelId2: toModificationOperation(voltageLevelId2),
-            busOrBusbarSectionId2: toModificationOperation(busOrBusbarSectionId2),
-            connectionName1: toModificationOperation(connectionName1),
-            connectionName2: toModificationOperation(connectionName2),
-            connectionDirection1: toModificationOperation(connectionDirection1),
-            connectionDirection2: toModificationOperation(connectionDirection2),
-            connectionPosition1: toModificationOperation(connectionPosition1),
-            connectionPosition2: toModificationOperation(connectionPosition2),
-            terminal1Connected: toModificationOperation(connected1),
-            terminal2Connected: toModificationOperation(connected2),
-            properties,
-            p1MeasurementValue: toModificationOperation(p1MeasurementValue),
-            p1MeasurementValidity: toModificationOperation(p1MeasurementValidity),
-            q1MeasurementValue: toModificationOperation(q1MeasurementValue),
-            q1MeasurementValidity: toModificationOperation(q1MeasurementValidity),
-            p2MeasurementValue: toModificationOperation(p2MeasurementValue),
-            p2MeasurementValidity: toModificationOperation(p2MeasurementValidity),
-            q2MeasurementValue: toModificationOperation(q2MeasurementValue),
-            q2MeasurementValidity: toModificationOperation(q2MeasurementValidity),
-            lineSegments: lineSegments,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
