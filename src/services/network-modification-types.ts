@@ -13,9 +13,7 @@ import {
     AssignmentFieldValue,
     AttributeModification,
     LineCreationDto,
-    LineSegmentInfos,
     ModificationType,
-    OperationalLimitsGroup,
     OperationalLimitsGroupModificationInfos,
     Property,
     ReactiveCapabilityCurvePoints,
@@ -291,49 +289,6 @@ export interface Assignment {
     filters: Filter[];
     editedField: string;
     propertyName?: string;
-}
-
-export interface LineModificationInfos {
-    uuid?: string | null;
-    studyUuid: string;
-    equipmentId?: string;
-    equipmentName?: AttributeModification<string> | null;
-    nodeUuid: UUID;
-    modificationUuid: string;
-    lineId: string;
-    r: AttributeModification<number> | null;
-    x: AttributeModification<number> | null;
-    g1: AttributeModification<number> | null;
-    b1: AttributeModification<number> | null;
-    g2: AttributeModification<number> | null;
-    b2: AttributeModification<number> | null;
-    operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroupId1: AttributeModification<string> | null;
-    selectedOperationalLimitsGroupId2: AttributeModification<string> | null;
-    [ENABLE_OLG_MODIFICATION]: boolean;
-    applySegmentsLimits: boolean;
-    voltageLevelId1: string;
-    busOrBusbarSectionId1: string;
-    voltageLevelId2: string;
-    busOrBusbarSectionId2: string;
-    connectionName1: string | null;
-    connectionName2: string | null;
-    connectionDirection1: string | null;
-    connectionDirection2: string | null;
-    connectionPosition1: string | null;
-    connectionPosition2: string | null;
-    connected1: boolean;
-    connected2: boolean;
-    properties: Property[] | null;
-    lineSegments?: LineSegmentInfos[];
-    p1MeasurementValue: number | null;
-    p1MeasurementValidity: boolean | null;
-    q1MeasurementValue: number | null;
-    q1MeasurementValidity: boolean | null;
-    p2MeasurementValue: number | null;
-    p2MeasurementValidity: boolean | null;
-    q2MeasurementValue: number | null;
-    q2MeasurementValidity: boolean | null;
 }
 
 export interface LimitsPropertyInfos {

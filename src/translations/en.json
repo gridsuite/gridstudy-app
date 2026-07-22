@@ -534,7 +534,6 @@
 
     "LoadCreationError": "Error while creating load",
     "LoadModificationError": "Error while modifying load",
-    "LineModificationError": "Error while modifying line",
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
     "StaticVarCompensatorCreationError": "Error while creating static var compensator",
     "LccCreationError": "Error while creating HVDC (LCC)",
@@ -585,7 +584,6 @@
     "reactiveCapabilityCurvePmax": "Pmax",
     "reactiveCapabilityCurveQminPmax": "QminPmax",
     "reactiveCapabilityCurveQmaxPmax": "QmaxPmax",
-    "ModifyLine": "Modify line",
     "CreateVsc": "Create HVDC (VSC)",
     "CreateLcc": "Create HVDC (LCC)",
     "Filters": "Filters",
