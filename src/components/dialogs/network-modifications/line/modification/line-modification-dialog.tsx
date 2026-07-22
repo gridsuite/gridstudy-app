@@ -212,30 +212,14 @@ const LineModificationDialog = ({
         lineSegments: LineSegmentsFormData,
         applyLimits: boolean | null
     ) => {
-        setValue(
-            `${FieldConstants.CHARACTERISTICS}.${FieldConstants.R}` as any,
-            data[FieldConstants.TOTAL_RESISTANCE],
-            {
-                shouldDirty: true,
-            }
-        );
-        setValue(`${FieldConstants.CHARACTERISTICS}.${FieldConstants.X}` as any, data[FieldConstants.TOTAL_REACTANCE], {
-            shouldDirty: true,
-        });
-        setValue(
-            `${FieldConstants.CHARACTERISTICS}.${FieldConstants.B1}` as any,
-            data[FieldConstants.TOTAL_SUSCEPTANCE] / 2,
-            {
-                shouldDirty: true,
-            }
-        );
-        setValue(
-            `${FieldConstants.CHARACTERISTICS}.${FieldConstants.B2}` as any,
-            data[FieldConstants.TOTAL_SUSCEPTANCE] / 2,
-            {
-                shouldDirty: true,
-            }
-        );
+        const setCharacteristic = (field: string, value: number) =>
+            setValue(`${FieldConstants.CHARACTERISTICS}.${field}` as any, value, { shouldDirty: true });
+
+        setCharacteristic(FieldConstants.R, data[FieldConstants.TOTAL_RESISTANCE]);
+        setCharacteristic(FieldConstants.X, data[FieldConstants.TOTAL_REACTANCE]);
+        setCharacteristic(FieldConstants.B1, data[FieldConstants.TOTAL_SUSCEPTANCE] / 2);
+        setCharacteristic(FieldConstants.B2, data[FieldConstants.TOTAL_SUSCEPTANCE] / 2);
+
         setValue(FieldConstants.LINE_SEGMENTS, convertToLineSegmentInfos(lineSegments));
 
         const shouldApplyLimits = applyLimits ?? true;
