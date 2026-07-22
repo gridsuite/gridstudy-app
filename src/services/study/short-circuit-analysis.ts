@@ -244,17 +244,3 @@ export function setShortCircuitParameters(studyUuid: UUID, newParams: any) {
         body: newParams ? JSON.stringify(newParams) : null,
     });
 }
-
-export function getShortCircuitParameters(studyUuid: UUID) {
-    console.info('get short circuit parameters');
-    const getScParams = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
-    console.debug(getScParams);
-    return backendFetchJson(getScParams);
-}
-
-export function getShortCircuitSpecificParametersDescription() {
-    console.info('get short circuit specific parameters description');
-    const getShortCircuitSpecificParametersUrl = getShortCircuitUrl() + 'parameters/specific-parameters';
-    console.debug(getShortCircuitSpecificParametersUrl);
-    return backendFetchJson(getShortCircuitSpecificParametersUrl);
-}

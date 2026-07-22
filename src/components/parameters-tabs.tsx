@@ -63,13 +63,13 @@ import {
     setSecurityAnalysisParameters,
     ShortCircuitParametersInLine,
     useParametersBackend,
+    getShortCircuitParameters,
+    getShortCircuitSpecificParametersDescription,
     VoltageInitParametersInLine,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
 import {
-    getShortCircuitParameters,
-    getShortCircuitSpecificParametersDescription,
     setShortCircuitParameters,
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
