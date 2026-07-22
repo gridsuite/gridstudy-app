@@ -33,6 +33,7 @@ import {
     BatteryModificationDto,
     LineCreationDto,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
+    CreateVoltageLevelSectionInfos,
 } from '@gridsuite/commons-ui';
 import { getBaseNetworkModificationUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -42,7 +43,6 @@ import {
     BalancesAdjustmentInfos,
     ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
-    CreateVoltageLevelSectionInfos,
     CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,

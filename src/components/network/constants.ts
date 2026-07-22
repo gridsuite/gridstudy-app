@@ -94,16 +94,6 @@ export const VARIATION_TYPES = {
     TARGET_P: { id: 'TARGET_P', label: 'TargetPText' },
 } as const;
 
-export const SWITCH_TYPE = {
-    BREAKER: { id: 'BREAKER', label: 'Breaker' },
-    DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
-} as const;
-
-export const POSITION_NEW_SECTION_SIDE = {
-    BEFORE: { id: 'BEFORE', label: 'Before' },
-    AFTER: { id: 'AFTER', label: 'After' },
-} as const;
-
 export enum VscConverterMode {
     SIDE_1_RECTIFIER_SIDE_2_INVERTER = 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
     SIDE_1_INVERTER_SIDE_2_RECTIFIER = 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
