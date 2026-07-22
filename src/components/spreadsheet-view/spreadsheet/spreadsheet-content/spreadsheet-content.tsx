@@ -122,7 +122,7 @@ export const SpreadsheetContent = memo(
             tableDefinition
         );
 
-        const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGlobalFilter(
+        const { isExternalFilterPresent, doesFormulaFilteringPass, isGlobalFilterPending } = useSpreadsheetGlobalFilter(
             gridRef,
             tableDefinition?.uuid,
             tableDefinition?.type
@@ -248,7 +248,7 @@ export const SpreadsheetContent = memo(
                             rowData={transformedRowData}
                             currentNode={currentNode}
                             columnData={columns}
-                            isFetching={equipments.isFetching}
+                            isFetching={equipments.isFetching || isGlobalFilterPending}
                             isDataEditable={isModificationDialogForEquipmentType}
                             handleColumnDrag={handleColumnDrag}
                             isExternalFilterPresent={isExternalFilterPresent}
