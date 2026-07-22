@@ -58,6 +58,7 @@ import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handle
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { downloadZipFile } from 'services/utils';
+import { SecurityAnalysisCopyButton } from './security-analysis-copy-button';
 
 import { FilterType, isCriteriaFilterType } from '../common/global-filter/filter.type';
 
@@ -74,6 +75,12 @@ const styles = {
     },
     resultContainer: {
         flexGrow: 1,
+    },
+    exportActions: {
+        display: 'flex',
+        justifySelf: 'end',
+        alignItems: 'center',
+        gap: 2,
     },
 } as const satisfies MuiStyles;
 
@@ -405,7 +412,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             tableType={TableType.SecurityAnalysis}
                         />
                     </Box>
-                    <Box sx={{ justifySelf: 'end' }}>
+                    <Box sx={styles.exportActions}>
+                        <SecurityAnalysisCopyButton
+                            studyUuid={studyUuid}
+                            nodeUuid={nodeUuid}
+                            rootNetworkUuid={currentRootNetworkUuid}
+                            enumValueTranslations={enumValueTranslations}
+                            downloadZipResult={downloadZipResult}
+                            disabled={isExportButtonDisabled}
+                        />
                         <ManagedExportCsvButton
                             exportCsv={exportResultCsv}
                             resetKey={resetKey}
