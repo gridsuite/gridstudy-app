@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { LimitTypes } from './limit-violtation.type';
+import { LimitTypes } from './limit-violation.type';
 import { FilterConfig, SortConfig } from '@gridsuite/commons-ui';
 
 /**

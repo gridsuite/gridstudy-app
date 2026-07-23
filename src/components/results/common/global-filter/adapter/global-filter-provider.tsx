@@ -44,11 +44,7 @@ type GlobalFilterProviderProps = PropsWithChildren<{
     tableUuid: string;
 }>;
 
-export default function GlobalFilterProvider({
-    children,
-    tableType,
-    tableUuid,
-}: Readonly<GlobalFilterProviderProps>) {
+export default function GlobalFilterProvider({ children, tableType, tableUuid }: Readonly<GlobalFilterProviderProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
