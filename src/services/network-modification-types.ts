@@ -612,14 +612,6 @@ export interface CreateCouplingDeviceInfos {
     couplingDeviceInfos: CouplingDeviceInfos;
 }
 
-export interface CreateVoltageLevelTopologyInfos {
-    type: ModificationType;
-    uuid?: string;
-    voltageLevelId: string;
-    sectionCount?: number | null;
-    switchKinds?: string[] | null;
-}
-
 export interface CreateVoltageLevelSectionInfos {
     type: ModificationType;
     uuid?: string;
