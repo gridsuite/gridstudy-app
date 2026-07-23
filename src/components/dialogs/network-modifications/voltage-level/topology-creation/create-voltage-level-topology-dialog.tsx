@@ -5,54 +5,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SECTION_COUNT, SWITCH_KIND, SWITCH_KINDS, SWITCHES_BETWEEN_SECTIONS } from 'components/utils/field-constants';
-import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import {
     CustomFormProvider,
     EquipmentType,
-    MODIFICATION_TYPES,
     snackWithFallback,
     useSnackMessage,
     DeepNullable,
-    MAX_SECTIONS_COUNT,
+    CreateVoltageLevelTopologyForm,
+    createVoltageLevelTopologyFormSchema,
+    createVoltageLevelTopologyEmptyFormData,
+    createVoltageLevelTopologyDtoToForm,
+    createVoltageLevelTopologyFormToDto,
+    CreateVoltageLevelTopologyInfos,
+    CreateVoltageLevelTopologyDialogSchemaForm,
 } from '@gridsuite/commons-ui';
-import * as yup from 'yup';
+import { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { CreateVoltageLevelTopologyDialogSchemaForm } from './create-voltage-level-topology-dialog.type';
-import CreateVoltageLevelTopologyForm from './create-voltage-level-topology-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevelTopology } from '../../../../../services/study/network-modifications';
-import { CreateVoltageLevelTopologyInfos } from '../../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../../services/utils';
 import { useIntl } from 'react-intl';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 
-const emptyFormData = {
-    [SECTION_COUNT]: null,
-    [SWITCHES_BETWEEN_SECTIONS]: '',
-    [SWITCH_KINDS]: [],
-};
-const formSchema = yup.object().shape({
-    [SECTION_COUNT]: yup
-        .number()
-        .required()
-        .nullable()
-        .min(1, 'AtLeastOneSectionAdded')
-        .max(MAX_SECTIONS_COUNT, 'SectionCountMustBeLessThanOrEqualToTwenty'),
-    [SWITCHES_BETWEEN_SECTIONS]: yup
-        .string()
-        .nullable()
-        .when([SECTION_COUNT], {
-            is: (sectionCount: number) => sectionCount > 1,
-            then: (schema) => schema.required(),
-        }),
-    [SWITCH_KINDS]: yup.array().nullable(),
-});
 export type CreateVoltageLevelTopologyDialogProps = EquipmentModificationDialogProps & {
     editData?: CreateVoltageLevelTopologyInfos;
 };
@@ -72,8 +52,10 @@ export default function CreateVoltageLevelTopologyDialog({
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
 
     const formMethods = useForm<DeepNullable<CreateVoltageLevelTopologyDialogSchemaForm>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<CreateVoltageLevelTopologyDialogSchemaForm>>(formSchema),
+        defaultValues: createVoltageLevelTopologyEmptyFormData,
+        resolver: yupResolver<DeepNullable<CreateVoltageLevelTopologyDialogSchemaForm>>(
+            createVoltageLevelTopologyFormSchema
+        ),
     });
 
     const { reset } = formMethods;
@@ -83,23 +65,12 @@ export default function CreateVoltageLevelTopologyDialog({
             if (editData?.voltageLevelId) {
                 setSelectedId(editData.voltageLevelId);
             }
-            const switchKinds =
-                editData.switchKinds?.map((switchKind) => ({
-                    [SWITCH_KIND]: switchKind,
-                })) || [];
-            const switchesBetweenSections =
-                editData.switchKinds?.map((switchKind) => intl.formatMessage({ id: switchKind })).join(' / ') || '';
-
-            reset({
-                [SECTION_COUNT]: editData?.sectionCount ?? null,
-                [SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
-                [SWITCH_KINDS]: switchKinds,
-            });
+            reset(createVoltageLevelTopologyDtoToForm(editData, intl));
         }
     }, [editData, reset, intl]);
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(createVoltageLevelTopologyEmptyFormData);
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
@@ -110,14 +81,10 @@ export default function CreateVoltageLevelTopologyDialog({
 
     const onSubmit = useCallback(
         (voltageLevelTopology: CreateVoltageLevelTopologyDialogSchemaForm) => {
-            const createVoltageLevelTopologyInfos = {
-                type: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
-                voltageLevelId: selectedId,
-                sectionCount: voltageLevelTopology[SECTION_COUNT],
-                switchKinds: voltageLevelTopology[SWITCH_KINDS]?.map((e) => {
-                    return e.switchKind;
-                }),
-            } satisfies CreateVoltageLevelTopologyInfos;
+            const createVoltageLevelTopologyInfos = createVoltageLevelTopologyFormToDto(
+                voltageLevelTopology,
+                selectedId
+            );
             createVoltageLevelTopology({
                 createVoltageLevelTopologyInfos: createVoltageLevelTopologyInfos,
                 studyUuid: studyUuid,
@@ -133,7 +100,7 @@ export default function CreateVoltageLevelTopologyDialog({
 
     return (
         <CustomFormProvider
-            validationSchema={formSchema}
+            validationSchema={createVoltageLevelTopologyFormSchema}
             removeOptional={true}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -160,7 +127,10 @@ export default function CreateVoltageLevelTopologyDialog({
                     />
                 )}
                 {selectedId != null && (
-                    <CreateVoltageLevelTopologyForm voltageLevelId={selectedId} currentNode={currentNode} />
+                    <CreateVoltageLevelTopologyForm
+                        voltageLevelId={selectedId}
+                        PositionDiagramPane={PositionDiagramPane}
+                    />
                 )}
             </ModificationDialog>
         </CustomFormProvider>
