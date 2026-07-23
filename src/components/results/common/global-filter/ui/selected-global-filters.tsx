@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GlobalFilter } from '../global-filter.type';
+import { GlobalFilter } from '../types/global-filter.type';
 import { EquipmentType, OverflowableChip } from '@gridsuite/commons-ui';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from '../global-filter.style';
 import { Box, Divider, List, ListItem, Typography } from '@mui/material';
@@ -13,7 +13,7 @@ import { getOptionLabel } from '../utils/global-filter-utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useGlobalFilterContext } from '../context/global-filter-context';
 
-import { FilterType } from '../filter.type';
+import { FilterType } from '../types/filter.type';
 
 function SelectedGlobalFilters() {
     const { selectedGlobalFilters, translateCountryCode, unselectGlobalFilters } = useGlobalFilterContext();

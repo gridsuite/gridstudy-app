@@ -9,7 +9,7 @@ import { Key } from 'react';
 import { ColDef } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { BranchSide } from '../../utils/constants';
-import { LimitTypes } from '../common/global-filter/limit-violtation.type';
+import { LimitTypes } from '../common/global-filter/types/limit-violtation.type';
 
 export interface ComponentResult {
     componentResultUuid: UUID;

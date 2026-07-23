@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GlobalFilter } from '../global-filter.type';
+import { GlobalFilter } from '../types/global-filter.type';
 import { IntlShape } from 'react-intl';
 import { UUID } from 'node:crypto';
 
-import { FilterType } from '../filter.type';
+import { FilterType } from '../types/filter.type';
 
 export type GlobalFilterWithoutId = Omit<GlobalFilter, 'id'>;
 

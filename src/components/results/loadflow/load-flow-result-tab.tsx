@@ -50,7 +50,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
-import { LimitTypes } from '../common/global-filter/limit-violtation.type';
+import { LimitTypes } from '../common/global-filter/types/limit-violtation.type';
 
 const styles = {
     flexWrapper: {

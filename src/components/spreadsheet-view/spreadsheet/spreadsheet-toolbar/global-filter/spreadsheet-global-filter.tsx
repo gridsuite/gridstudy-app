@@ -13,7 +13,7 @@ import GlobalFilterSelector, {
 import { TableType } from '../../../../../types/custom-aggrid-types';
 import { EquipmentType } from '@gridsuite/commons-ui';
 
-import { FilterType } from '../../../../results/common/global-filter/filter.type';
+import { FilterType } from '../../../../results/common/global-filter/types/filter.type';
 
 export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;

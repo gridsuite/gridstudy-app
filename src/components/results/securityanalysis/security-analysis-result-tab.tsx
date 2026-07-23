@@ -60,7 +60,7 @@ import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { downloadZipFile } from 'services/utils';
 import { SecurityAnalysisCopyButton } from './security-analysis-copy-button';
 
-import { FilterType, isCriteriaFilterType } from '../common/global-filter/filter.type';
+import { FilterType, isCriteriaFilterType } from '../common/global-filter/types/filter.type';
 
 const styles = {
     toolbarRow: {

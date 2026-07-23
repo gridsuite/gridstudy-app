@@ -50,7 +50,7 @@ import { getSelectedGlobalFilters } from '../common/global-filter/hooks/use-sele
 import { exportSensitivityResultsAsCsv } from 'services/study/sensitivity-analysis';
 import { downloadZipFile } from '../../../services/utils';
 
-import { FilterType, isCriteriaFilterType } from '../common/global-filter/filter.type';
+import { FilterType, isCriteriaFilterType } from '../common/global-filter/types/filter.type';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;

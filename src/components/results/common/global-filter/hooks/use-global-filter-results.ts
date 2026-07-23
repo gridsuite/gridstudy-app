@@ -9,7 +9,7 @@ import type { NonEmptyTuple } from 'type-fest';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
-import type { GlobalFilter } from '../global-filter.type';
+import type { GlobalFilter } from '../types/global-filter.type';
 import { evaluateGlobalFilter } from '../../../../../services/study/filter';
 import type { AppState } from '../../../../../redux/reducer.type';
 import type { FilterEquipmentType } from '../../../../../types/filter-lib/filter';

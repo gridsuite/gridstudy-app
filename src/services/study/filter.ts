@@ -16,7 +16,7 @@ import {
 import type { UUID } from 'node:crypto';
 import { getRequestParamFromList } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import type { GlobalFilters } from '../../components/results/common/global-filter/global-filter.type';
+import type { GlobalFilters } from '../../components/results/common/global-filter/types/global-filter.type';
 import type { FilterEquipmentType } from '../../types/filter-lib/filter';
 
 /**

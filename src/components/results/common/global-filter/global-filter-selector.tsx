@@ -11,7 +11,7 @@ import type { UUID } from 'node:crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
 import GlobalFilter from './ui/global-filter';
 
-import { FilterType } from './filter.type';
+import { FilterType } from './types/filter.type';
 
 export type GlobalFilterSelectorProps = {
     filterCategories?: FilterType[];

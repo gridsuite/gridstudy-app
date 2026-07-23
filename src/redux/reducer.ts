@@ -294,7 +294,7 @@ import {
     addGlobalFilterId,
     getGlobalFilterId,
 } from '../components/results/common/global-filter/utils/global-filter-utils';
-import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter.type';
+import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/types/global-filter.type';
 import {
     addSelectedGlobalFiltersToTableState,
     clearSelectedGlobalFiltersFromTableState,
@@ -312,7 +312,7 @@ import {
     type SpreadsheetNetworkState,
     type Substation,
 } from './reducer.type';
-import { isCriteriaFilter } from '../components/results/common/global-filter/filter.type';
+import { isCriteriaFilter } from '../components/results/common/global-filter/types/filter.type';
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
     switch (updateType) {

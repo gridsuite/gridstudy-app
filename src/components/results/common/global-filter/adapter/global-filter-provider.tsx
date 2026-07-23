@@ -6,7 +6,7 @@
  */
 
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { GlobalFilter, RecentGlobalFilter } from '../global-filter.type';
+import { GlobalFilter, RecentGlobalFilter } from '../types/global-filter.type';
 import {
     ElementAttributes,
     ElementType,
@@ -35,7 +35,7 @@ import { fetchSubstationPropertiesGlobalFilters } from './global-filter-app-data
 import { useLocalizedCountries } from '../../../../utils/localized-countries-hook';
 import type { UUID } from 'node:crypto';
 
-import { FilterType, isCriteriaFilter } from '../filter.type';
+import { FilterType, isCriteriaFilter } from '../types/filter.type';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];
 

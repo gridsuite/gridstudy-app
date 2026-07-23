@@ -24,7 +24,7 @@ import SelectedGlobalFilters from './selected-global-filters';
 import { LabelWithInfoTooltip } from './label-with-info-tooltip';
 import { useGlobalFilterContext } from '../context/global-filter-context';
 import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from '../global-filter.style';
-import { FilterType, isCriteriaFilterType } from '../filter.type';
+import { FilterType, isCriteriaFilterType } from '../types/filter.type';
 
 const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;

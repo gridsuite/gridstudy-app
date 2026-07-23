@@ -29,7 +29,7 @@ import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
 import { TableSortConfig } from '../../../../types/custom-aggrid-types';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
-import { GlobalFilter } from '../../../results/common/global-filter/global-filter.type';
+import { GlobalFilter } from '../../../results/common/global-filter/types/global-filter.type';
 import { ResetNodeAliasCallback } from '../../hooks/use-node-aliases';
 
 const createNewTableDefinition = (

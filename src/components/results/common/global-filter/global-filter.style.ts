@@ -8,9 +8,9 @@
 import { cyan, lime } from '@mui/material/colors';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { Theme, SxProps } from '@mui/material';
-import { GlobalFilter } from './global-filter.type';
+import { GlobalFilter } from './types/global-filter.type';
 
-import { FilterType } from './filter.type';
+import { FilterType } from './types/filter.type';
 
 export const getResultsGlobalFiltersChipStyle = (element: GlobalFilter): SxProps<Theme> => {
     return mergeSx(

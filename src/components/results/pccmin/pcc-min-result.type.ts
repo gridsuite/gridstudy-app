@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { GlobalFilters } from '../common/global-filter/global-filter.type';
+import { GlobalFilters } from '../common/global-filter/types/global-filter.type';
 import { Page, Selector } from '../common/utils';
 import { ColumnContext, numericFilterParams, TableType, textFilterParams } from 'types/custom-aggrid-types';
 import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';

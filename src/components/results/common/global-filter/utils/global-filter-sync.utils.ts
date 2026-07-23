@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GlobalFilter } from '../global-filter.type';
-import { markEditingGlobalFilter, unmarkEditingGlobalFilter } from '../editing-global-filter-sync';
+import { GlobalFilter } from '../types/global-filter.type';
+import { markEditingGlobalFilter, unmarkEditingGlobalFilter } from './editing-global-filter-sync';
 
 const DEFAULT_GLOBAL_FILTER_SYNC_DEBOUNCE_MS = 2000;
 
