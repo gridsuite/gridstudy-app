@@ -14,9 +14,12 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useGlobalFilterContext } from '../context/global-filter-context';
 
 import { FilterType } from '../types/filter.type';
+import type { GlobalFilterProps } from './global-filter';
 
-function SelectedGlobalFilters() {
-    const { selectedGlobalFilters, translateCountryCode, unselectGlobalFilters } = useGlobalFilterContext();
+type SelectedGlobalFiltersProps = Pick<GlobalFilterProps, 'translateCountryCode'>;
+
+function SelectedGlobalFilters({ translateCountryCode }: Readonly<SelectedGlobalFiltersProps>) {
+    const { selectedGlobalFilters, unselectGlobalFilters } = useGlobalFilterContext();
     const intl = useIntl();
 
     const filtersByCategories: Map<string, GlobalFilter[]> = new Map();

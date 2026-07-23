@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { GlobalFilter, RecentGlobalFilter } from '../types/global-filter.type';
+import { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import { GlobalFilter as GlobalFilterType, RecentGlobalFilter } from '../types/global-filter.type';
 import {
     ElementAttributes,
     ElementType,
@@ -31,36 +31,26 @@ import { HttpStatusCode } from '../../../../../utils/http-status-code';
 import { TableType } from '../../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../../redux/reducer.type';
 import GlobalFilterContextProvider from '../context/global-filter-context-provider';
-import { fetchSubstationPropertiesGlobalFilters } from './global-filter-app-data';
-import { useLocalizedCountries } from '../../../../utils/localized-countries-hook';
 import type { UUID } from 'node:crypto';
 
 import { FilterType, isCriteriaFilter } from '../types/filter.type';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];
 
-type FilterUpdateResult = { kind: 'updated' | 'notFound'; filter: GlobalFilter } | { kind: 'unchanged' };
+type FilterUpdateResult = { kind: 'updated' | 'notFound'; filter: GlobalFilterType } | { kind: 'unchanged' };
 
 type GlobalFilterProviderProps = PropsWithChildren<{
-    filterCategories: FilterType[];
-    genericFiltersStrictMode: boolean;
-    filterableEquipmentTypes: string[];
     tableType: TableType;
     tableUuid: string;
 }>;
 
 export default function GlobalFilterProvider({
     children,
-    filterCategories,
-    genericFiltersStrictMode = false,
-    filterableEquipmentTypes = [],
     tableType,
     tableUuid,
 }: Readonly<GlobalFilterProviderProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
-    const { translate: translateCountryCode } = useLocalizedCountries();
-    const [substationPropertiesGlobalFilters, setSubstationPropertiesGlobalFilters] = useState<Map<string, string[]>>();
 
     const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
 
@@ -75,19 +65,13 @@ export default function GlobalFilterProvider({
             selectedFilterIds
                 ? selectedFilterIds
                       .map((id) => globalFilterOptions.find((opt) => opt.id === id))
-                      .filter((filter): filter is GlobalFilter => filter !== undefined)
+                      .filter((filter): filter is GlobalFilterType => filter !== undefined)
                 : [],
         [selectedFilterIds, globalFilterOptions]
     );
 
-    useEffect(() => {
-        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
-            setSubstationPropertiesGlobalFilters(substationPropertiesGlobalFilters);
-        });
-    }, []);
-
     const updateGenericFilter = useCallback(
-        async (genericFilter: GlobalFilter): Promise<FilterUpdateResult> => {
+        async (genericFilter: GlobalFilterType): Promise<FilterUpdateResult> => {
             try {
                 if (!genericFilter.uuid) {
                     return { kind: 'unchanged' };
@@ -118,12 +102,12 @@ export default function GlobalFilterProvider({
     // Check the selected global filters and mark them as deleted if they no longer exist.
     useEffect(() => {
         const checkSelectedFilters = async () => {
-            const genericFilters: GlobalFilter[] = selectedGlobalFilters.filter(
+            const genericFilters: GlobalFilterType[] = selectedGlobalFilters.filter(
                 (globalFilter) => isCriteriaFilter(globalFilter) && !globalFilter.deleted
             );
             const results = await Promise.all(genericFilters.map(updateGenericFilter));
-            const updatedFilters: GlobalFilter[] = [];
-            const notFoundFilters: GlobalFilter[] = [];
+            const updatedFilters: GlobalFilterType[] = [];
+            const notFoundFilters: GlobalFilterType[] = [];
             for (const result of results) {
                 if (result.kind === 'updated') updatedFilters.push(result.filter);
                 else if (result.kind === 'notFound') notFoundFilters.push(result.filter);
@@ -167,7 +151,7 @@ export default function GlobalFilterProvider({
     const addFiltersToGlobalFiltersOptions = useCallback(
         async (elementIds: UUID[]) => {
             const elements: ElementAttributes[] = await fetchElementsInfos(elementIds);
-            const newlySelectedFilters: GlobalFilter[] = [];
+            const newlySelectedFilters: GlobalFilterType[] = [];
             elements.forEach((element: ElementAttributes) => {
                 // ignore already selected filters and non-generic filters :
                 if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
@@ -199,11 +183,6 @@ export default function GlobalFilterProvider({
             globalFilterOptions={globalFilterOptions}
             selectedGlobalFilters={selectedGlobalFilters}
             recentGlobalFilters={recentGlobalFilters}
-            substationPropertiesGlobalFilters={substationPropertiesGlobalFilters}
-            filterCategories={filterCategories}
-            genericFiltersStrictMode={genericFiltersStrictMode}
-            filterableEquipmentTypes={filterableEquipmentTypes}
-            translateCountryCode={translateCountryCode}
             selectGlobalFilter={selectGlobalFilter}
             unselectGlobalFilters={unselectGlobalFilters}
             clearSelectedGlobalFilters={clearSelectedGlobalFilters}

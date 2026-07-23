@@ -13,11 +13,6 @@ export type GlobalFilterContextValue = {
     globalFilterOptions: GlobalFilter[];
     selectedGlobalFilters: GlobalFilter[];
     recentGlobalFilters: RecentGlobalFilter[];
-    substationPropertiesGlobalFilters?: Map<string, string[]>;
-    filterCategories: string[];
-    genericFiltersStrictMode: boolean;
-    filterableEquipmentTypes: string[];
-    translateCountryCode: (countryCode: string) => string;
     selectGlobalFilter: (id: string) => void;
     unselectGlobalFilters: (ids: string[]) => void;
     clearSelectedGlobalFilters: () => void;

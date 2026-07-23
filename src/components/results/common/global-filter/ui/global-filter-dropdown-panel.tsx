@@ -25,17 +25,20 @@ import { LabelWithInfoTooltip } from './label-with-info-tooltip';
 import { useGlobalFilterContext } from '../context/global-filter-context';
 import { GLOBAL_FILTERS_CELL_HEIGHT, IMPORT_FILTER_HEIGHT, resultsGlobalFilterStyles } from '../global-filter.style';
 import { FilterType, isCriteriaFilterType } from '../types/filter.type';
+import type { GlobalFilterProps } from './global-filter';
 
 const XS_COLUMN1: number = 3;
 const XS_COLUMN2: number = 4;
 const XS_COLUMN3: number = 5;
 
-type GlobalFilterPaperProps = PropsWithChildren<{
-    autocompleteRef?: RefObject<HTMLElement | null>;
-    setOpenedDropdown: (open: boolean) => void;
-    filterGroupSelected: string;
-    setFilterGroupSelected: (selectedFilterGroup: string) => void;
-}>;
+type GlobalFilterPaperProps = PropsWithChildren<
+    GlobalFilterProps & {
+        autocompleteRef?: RefObject<HTMLElement | null>;
+        setOpenedDropdown: (open: boolean) => void;
+        filterGroupSelected: string;
+        setFilterGroupSelected: (selectedFilterGroup: string) => void;
+    }
+>;
 
 function GlobalFilterDropdownPanel({
     children,
@@ -43,18 +46,16 @@ function GlobalFilterDropdownPanel({
     setOpenedDropdown,
     filterGroupSelected,
     setFilterGroupSelected,
+    substationPropertiesGlobalFilters,
+    filterCategories,
+    genericFiltersStrictMode,
+    filterableEquipmentTypes,
+    translateCountryCode,
 }: Readonly<GlobalFilterPaperProps>) {
     const intl = useIntl();
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
-    const {
-        selectedGlobalFilters,
-        substationPropertiesGlobalFilters,
-        filterCategories,
-        genericFiltersStrictMode,
-        filterableEquipmentTypes,
-        clearSelectedGlobalFilters,
-        addFiltersToGlobalFiltersOptions,
-    } = useGlobalFilterContext();
+    const { selectedGlobalFilters, clearSelectedGlobalFilters, addFiltersToGlobalFiltersOptions } =
+        useGlobalFilterContext();
 
     const filteringOnlySubstations = useMemo(() => {
         return filterableEquipmentTypes?.length === 1 && filterableEquipmentTypes[0] === EquipmentType.SUBSTATION;
@@ -244,7 +245,7 @@ function GlobalFilterDropdownPanel({
                             )}
                         </Grid>
                         <Grid size={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
-                            <SelectedGlobalFilters />
+                            <SelectedGlobalFilters translateCountryCode={translateCountryCode} />
                         </Grid>
                     </Grid>
                 </Paper>

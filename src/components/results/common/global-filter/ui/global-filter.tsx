@@ -38,6 +38,14 @@ import { FilterType } from '../types/filter.type';
 
 const TAG_LIMIT_NUMBER: number = 4;
 
+export type GlobalFilterProps = {
+    substationPropertiesGlobalFilters?: Map<string, string[]>;
+    filterCategories: string[];
+    genericFiltersStrictMode: boolean;
+    filterableEquipmentTypes: string[];
+    translateCountryCode: (countryCode: string) => string;
+};
+
 // renderInput : the inputfield that contains the chips, adornments and label
 function RenderInput({
     id,
@@ -84,14 +92,16 @@ function RenderOption({
     props,
     option,
     state,
+    translateCountryCode,
 }: {
     props: Omit<React.HTMLAttributes<HTMLLIElement>, 'key'>;
     option: GlobalFilter;
     state: { selected: boolean };
+    translateCountryCode: GlobalFilterProps['translateCountryCode'];
 }) {
     const { children, ...otherProps } = props;
     const intl = useIntl();
-    const { removeGlobalFilterOption, translateCountryCode } = useGlobalFilterContext();
+    const { removeGlobalFilterOption } = useGlobalFilterContext();
 
     const label = getOptionLabel(option, translateCountryCode, intl) ?? '';
 
@@ -166,18 +176,20 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
     );
 }
 
-function GlobalFilter() {
+function GlobalFilter({
+    substationPropertiesGlobalFilters,
+    filterCategories,
+    genericFiltersStrictMode,
+    filterableEquipmentTypes,
+    translateCountryCode,
+}: Readonly<GlobalFilterProps>) {
     const {
         globalFilterOptions,
         selectedGlobalFilters,
         recentGlobalFilters,
-        filterCategories,
-        genericFiltersStrictMode,
-        filterableEquipmentTypes,
         selectGlobalFilter,
         unselectGlobalFilters,
         clearSelectedGlobalFilters,
-        translateCountryCode,
     } = useGlobalFilterContext();
     const intl = useIntl();
     const autocompleteRef = useRef<HTMLDivElement | null>(null);
@@ -324,9 +336,22 @@ function GlobalFilter() {
                 setOpenedDropdown={setOpenedDropdown}
                 filterGroupSelected={filterGroupSelected}
                 setFilterGroupSelected={setFilterGroupSelected}
+                substationPropertiesGlobalFilters={substationPropertiesGlobalFilters}
+                filterCategories={filterCategories}
+                genericFiltersStrictMode={genericFiltersStrictMode}
+                filterableEquipmentTypes={filterableEquipmentTypes}
+                translateCountryCode={translateCountryCode}
             />
         ),
-        [autocompleteRef, filterGroupSelected]
+        [
+            autocompleteRef,
+            filterGroupSelected,
+            substationPropertiesGlobalFilters,
+            filterCategories,
+            genericFiltersStrictMode,
+            filterableEquipmentTypes,
+            translateCountryCode,
+        ]
     );
 
     const handleOnChange = useCallback(
@@ -395,7 +420,15 @@ function GlobalFilter() {
                     // renderOption : the checkboxes visible when we focus on the AutoComplete
                     renderOption={(props, option, state) => {
                         const { key, ...otherProps } = props;
-                        return <RenderOption key={key} props={otherProps} option={option} state={state} />;
+                        return (
+                            <RenderOption
+                                key={key}
+                                props={otherProps}
+                                option={option}
+                                state={state}
+                                translateCountryCode={translateCountryCode}
+                            />
+                        );
                     }}
                     // Allows to find the corresponding chips without taking into account the recent status
                     isOptionEqualToValue={isOptionEqualToValue}
