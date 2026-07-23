@@ -26,6 +26,11 @@ export enum ExportDestinationType {
     MY_COMPUTER = 'myComputer',
 }
 
+export enum CompressionType {
+    ZIP = 'zip',
+    GZIP = 'gzip',
+}
+
 export const separator = '/';
 
 export const emptyObj = {};
@@ -52,7 +57,7 @@ export const emptyData = {
     [DIRECTORY_ITEM]: null,
     [DESCRIPTION]: '',
     [EXPORT_FORMAT]: '',
-    [EXPORT_COMPRESSION]: 'zip',
+    [EXPORT_COMPRESSION]: CompressionType.ZIP,
     [EXPORT_PARAMETERS]: emptyObj,
 };
 

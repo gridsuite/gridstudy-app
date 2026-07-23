@@ -37,10 +37,11 @@ import {
     EXPORT_PARAMETERS,
     FILE_NAME,
 } from 'components/utils/field-constants';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FlatParametersInput } from './flat-parameters-input';
 import {
+    CompressionType,
     emptyData,
     emptyObj,
     ExportDestinationType,
@@ -51,8 +52,10 @@ import {
 import { useIntl } from 'react-intl';
 import { NetworkExportInfos } from '../../../services/study-types';
 
-const compressions = ['zip', 'gzip'];
+const compressions = [CompressionType.ZIP, CompressionType.GZIP];
+const onlyZipCompression = [CompressionType.ZIP];
 const CGMES_FORMAT = 'CGMES';
+const XIIDM_FORMAT = 'XIIDM';
 
 /**
  * Dialog to export the network case
@@ -79,6 +82,7 @@ export function ExportNetworkDialog({
 }: Readonly<ExportNetworkDialogProps>) {
     const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
     const [parameters, setParameters] = useState<Parameter[]>();
+    const [availableCompressions, setAvailableCompressions] = useState<CompressionType[]>(compressions);
     const { snackError } = useSnackMessage();
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -96,7 +100,6 @@ export function ExportNetworkDialog({
         setValue,
         getValues,
         watch,
-        control,
         formState: { errors },
     } = methods;
     const intl = useIntl();
@@ -105,22 +108,6 @@ export function ExportNetworkDialog({
     const nameError = errors[FILE_NAME];
     const isValidating = errors.root?.isValidating;
     const disabledSave = Boolean(nameError || isValidating);
-
-    const watchExportFormat: string = useWatch({
-        name: EXPORT_FORMAT,
-        control,
-    });
-
-    const availableCompressions = useMemo(
-        () => (watchExportFormat === CGMES_FORMAT ? ['zip'] : compressions),
-        [watchExportFormat]
-    );
-
-    useEffect(() => {
-        if (watchExportFormat === CGMES_FORMAT) {
-            setValue(EXPORT_COMPRESSION, 'zip');
-        }
-    }, [watchExportFormat, setValue]);
 
     // fetch study name to build the default file name
     useEffect(() => {
@@ -145,7 +132,6 @@ export function ExportNetworkDialog({
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
-                const XIIDM_FORMAT = 'XIIDM';
                 const availableFormats = isDeveloperMode
                     ? formats
                     : Object.fromEntries(Object.entries(formats).filter(([key]) => key === XIIDM_FORMAT));
@@ -163,7 +149,7 @@ export function ExportNetworkDialog({
             const exportToGridExplore = data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER;
             onClick(nodeUuid, data[EXPORT_PARAMETERS], {
                 selectedFormat: data[EXPORT_FORMAT],
-                selectedCompression: data[EXPORT_COMPRESSION],
+                selectedCompression: data[EXPORT_COMPRESSION].toUpperCase(),
                 fileName: data[FILE_NAME],
                 exportToGridExplore: exportToGridExplore,
                 parentDirectoryUuid: exportToGridExplore ? data[DIRECTORY_ITEM]?.[DIRECTORY_ITEM_ID] : undefined,
@@ -182,8 +168,14 @@ export function ExportNetworkDialog({
             callback: () => {
                 //When an export format changes, reset export parameters
                 setValue(EXPORT_PARAMETERS, emptyObj);
+                const exportFormat = getValues(EXPORT_FORMAT);
                 // get corresponding parameters of the selected format
-                setParameters(formatsWithParameters[getValues(EXPORT_FORMAT)]?.parameters);
+                setParameters(formatsWithParameters[exportFormat]?.parameters);
+                // update compression
+                setAvailableCompressions(exportFormat === CGMES_FORMAT ? onlyZipCompression : compressions);
+                if (exportFormat === CGMES_FORMAT) {
+                    setValue(EXPORT_COMPRESSION, CompressionType.ZIP);
+                }
             },
         });
         return () => unsubscribe();
