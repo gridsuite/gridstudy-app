@@ -56,6 +56,9 @@ const compressions = [CompressionType.ZIP, CompressionType.GZIP];
 const onlyZipCompression = [CompressionType.ZIP];
 const CGMES_FORMAT = 'CGMES';
 const XIIDM_FORMAT = 'XIIDM';
+const BIIDM_FORMAT = 'BIIDM';
+const JIIDM_FORMAT = 'JIIDM';
+const defaultGzipFormats = [XIIDM_FORMAT, BIIDM_FORMAT, JIIDM_FORMAT];
 
 /**
  * Dialog to export the network case
@@ -173,7 +176,9 @@ export function ExportNetworkDialog({
                 setParameters(formatsWithParameters[exportFormat]?.parameters);
                 // update compression
                 setAvailableCompressions(exportFormat === CGMES_FORMAT ? onlyZipCompression : compressions);
-                if (exportFormat === CGMES_FORMAT) {
+                if (defaultGzipFormats.includes(exportFormat)) {
+                    setValue(EXPORT_COMPRESSION, CompressionType.GZIP);
+                } else {
                     setValue(EXPORT_COMPRESSION, CompressionType.ZIP);
                 }
             },
