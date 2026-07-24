@@ -176,10 +176,10 @@ export function ExportNetworkDialog({
                 setParameters(formatsWithParameters[exportFormat]?.parameters);
                 // update compression
                 setAvailableCompressions(exportFormat === CGMES_FORMAT ? onlyZipCompression : compressions);
-                if (!defaultGzipFormats.includes(exportFormat)) {
-                    setValue(EXPORT_COMPRESSION, CompressionType.ZIP);
-                } else {
+                if (defaultGzipFormats.includes(exportFormat)) {
                     setValue(EXPORT_COMPRESSION, CompressionType.GZIP);
+                } else {
+                    setValue(EXPORT_COMPRESSION, CompressionType.ZIP);
                 }
             },
         });
