@@ -27,6 +27,7 @@ import {
     snackWithFallback,
     useNotificationsListener,
     usePrevious,
+    useSharedModificationsPermissions,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
@@ -187,6 +188,11 @@ const NetworkModificationNodeEditor = () => {
 
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
+
+    // Shared modifications the user has no write permission on, and whether the current selection reaches
+    // inside one of them: acting on such a content is denied, acting on the shared modification as a whole isn't.
+    const { readOnlySharedModificationUuids } = useSharedModificationsPermissions(modifications);
+    const [selectionContainsLockedModification, setSelectionContainsLockedModification] = useState(false);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
@@ -1102,9 +1108,14 @@ const NetworkModificationNodeEditor = () => {
         setIsUpdate(false);
     };
     const handleRowSelected = useCallback(
-        (selectedRows: ComposedModificationMetadata[], isAssemblyDepthExceeded: boolean) => {
+        (
+            selectedRows: ComposedModificationMetadata[],
+            isAssemblyDepthExceeded: boolean,
+            containsLockedModification: boolean
+        ) => {
             setSelectedNetworkModifications(selectedRows);
             setIsAssemblyDepthExceeded(isAssemblyDepthExceeded);
+            setSelectionContainsLockedModification(containsLockedModification);
         },
         [setSelectedNetworkModifications, setIsAssemblyDepthExceeded]
     );
@@ -1181,6 +1192,7 @@ const NetworkModificationNodeEditor = () => {
                 modificationsToExclude={modificationsToExclude}
                 setModificationsToExclude={setModificationsToExclude}
                 isDisabled={isAnyNodeBuilding || mapDataLoading}
+                readOnlySharedModificationUuids={readOnlySharedModificationUuids}
             />
         );
     };
@@ -1249,8 +1261,22 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const disabledCompositeCreation: boolean = useMemo(() => {
-        return selectedNetworkModifications?.length === 0 || saveInProgress || isRootNode || isAssemblyDepthExceeded;
-    }, [selectedNetworkModifications, saveInProgress, isRootNode, isAssemblyDepthExceeded]);
+        return (
+            selectedNetworkModifications?.length === 0 ||
+            saveInProgress ||
+            isRootNode ||
+            isAssemblyDepthExceeded ||
+            // assembling is denied as soon as the selection covers part of a shared modification content,
+            // but stays allowed on shared modifications taken as a whole
+            selectionContainsLockedModification
+        );
+    }, [
+        selectedNetworkModifications,
+        saveInProgress,
+        isRootNode,
+        isAssemblyDepthExceeded,
+        selectionContainsLockedModification,
+    ]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
         return (
@@ -1340,7 +1366,8 @@ const NetworkModificationNodeEditor = () => {
                                 mapDataLoading ||
                                 !currentNode ||
                                 isRootNode ||
-                                selectionContainsShared
+                                selectionContainsShared ||
+                                selectionContainsLockedModification
                             }
                         >
                             <ContentCutIcon />
@@ -1379,7 +1406,12 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            disabled={isPasteButtonDisabled || isRootNode || selectionContainsShared}
+                            disabled={
+                                isPasteButtonDisabled ||
+                                isRootNode ||
+                                selectionContainsShared ||
+                                selectionContainsLockedModification
+                            }
                         >
                             <ContentPasteIcon />
                         </IconButton>
@@ -1396,7 +1428,9 @@ const NetworkModificationNodeEditor = () => {
                                 mapDataLoading ||
                                 deleteInProgress ||
                                 !currentNode ||
-                                isRootNode
+                                isRootNode ||
+                                // deleting a shared modification as a whole stays allowed
+                                selectionContainsLockedModification
                             }
                         >
                             <DeleteIcon />
