@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GlobalFilter, GlobalFilters } from './global-filter-types';
-import { FilterType } from '../utils';
+import { GlobalFilter, GlobalFilters } from '../types/global-filter.type';
+import { FilterType } from '../types/filter.type';
 
 /**
  * Transforms global filters stored by the frontend into the format expected by the filter server.

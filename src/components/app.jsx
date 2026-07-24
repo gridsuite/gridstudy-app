@@ -73,9 +73,9 @@ import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
 import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
-import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options.ts';
+import { useGlobalFilterOptions } from './results/common/global-filter/hooks/use-global-filter-options.ts';
 import { updateComputationColumnFilters, updateComputationGlobalFilters } from './results/common/utils.ts';
-import { isEditingGlobalFilter } from '../utils/editing-global-filter-sync.ts';
+import { isEditingGlobalFilter } from './results/common/global-filter/utils/editing-global-filter-sync.ts';
 import { cleanupStaleStudyData } from '../redux/session-storage/local-storage';
 
 const noUserManager = { instance: null, error: null };

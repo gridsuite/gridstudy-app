@@ -43,7 +43,7 @@ import {
 } from '../types/custom-aggrid-types';
 import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
-import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../components/results/common/global-filter/types/global-filter.type';
 import {
     LOGS_PAGINATION_STORE_FIELD,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,

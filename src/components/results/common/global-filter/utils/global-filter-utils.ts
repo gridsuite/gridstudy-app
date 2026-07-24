@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GlobalFilter } from './global-filter-types';
-import { FilterType } from '../utils';
-import { fetchStudyMetadata } from '@gridsuite/commons-ui';
+import { GlobalFilter } from '../types/global-filter.type';
 import { IntlShape } from 'react-intl';
 import { UUID } from 'node:crypto';
+
+import { FilterType } from '../types/filter.type';
 
 export type GlobalFilterWithoutId = Omit<GlobalFilter, 'id'>;
 
@@ -58,15 +58,3 @@ export const getOptionLabel = (
     }
     return '';
 };
-
-export async function fetchSubstationPropertiesGlobalFilters(): Promise<{
-    substationPropertiesGlobalFilters?: Map<string, string[]>;
-}> {
-    const { substationPropertiesGlobalFilters } = await fetchStudyMetadata();
-    const definedSubstationPropertiesGlobalFilters: Map<string, string[]> = substationPropertiesGlobalFilters
-        ? new Map(Object.entries(substationPropertiesGlobalFilters))
-        : new Map<string, string[]>();
-    return {
-        substationPropertiesGlobalFilters: definedSubstationPropertiesGlobalFilters,
-    };
-}

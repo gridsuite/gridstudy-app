@@ -14,8 +14,9 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
 import { TableType } from '../../../../../types/custom-aggrid-types';
 import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
-import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
-import { isCriteriaFilterType } from '../../../../results/common/utils';
+import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/hooks/use-selected-global-filters';
+
+import { isCriteriaFilterType } from '../../../../results/common/global-filter/types/filter.type';
 
 type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact | null>;

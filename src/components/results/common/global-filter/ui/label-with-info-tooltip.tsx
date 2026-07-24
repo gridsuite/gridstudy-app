@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { resultsGlobalFilterStyles } from './global-filter-styles';
+import { resultsGlobalFilterStyles } from '../global-filter.style';
 import { Box, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Info } from '@mui/icons-material';
@@ -15,7 +15,7 @@ type TextWithToolTipProps = {
     tooltipMessage: string;
 };
 
-export function TextWithInfoIcon({ text, tooltipMessage }: Readonly<TextWithToolTipProps>) {
+export function LabelWithInfoTooltip({ text, tooltipMessage }: Readonly<TextWithToolTipProps>) {
     const intl = useIntl();
 
     return (

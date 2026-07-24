@@ -15,7 +15,7 @@ import {
     SensitivityResultFilterOptions,
 } from './sensitivity-analysis.type';
 import { FilterConfig } from '../../types/custom-aggrid-types';
-import { GlobalFilters } from 'components/results/common/global-filter/global-filter-types';
+import { GlobalFilters } from 'components/results/common/global-filter/types/global-filter.type';
 
 export function startSensitivityAnalysis(
     studyUuid: UUID,

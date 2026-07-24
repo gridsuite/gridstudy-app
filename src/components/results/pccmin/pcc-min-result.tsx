@@ -31,8 +31,8 @@ import { PaginationType, TableType } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { useSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
+import { useSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 interface PccMinResultProps {

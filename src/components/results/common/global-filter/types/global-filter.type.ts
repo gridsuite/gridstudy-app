@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LimitTypes } from '../../loadflow/load-flow-result.type';
-import { FilterConfig, SortConfig } from '../../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
+import { LimitTypes } from './limit-violation.type';
+import { FilterConfig, SortConfig } from '@gridsuite/commons-ui';
 
 /**
  * globals filters are the filters applied to computation results

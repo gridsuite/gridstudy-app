@@ -5,12 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import GlobalFilterProvider from './global-filter-provider';
-import GlobalFilterAutocomplete from './global-filter-autocomplete';
-import { FilterType } from '../utils';
+import GlobalFilterProvider from './adapter/global-filter-provider';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
+import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
+
+import { FilterType } from './types/filter.type';
+import GlobalFilter from './ui/global-filter';
+import { useEffect, useState } from 'react';
+import { fetchSubstationPropertiesGlobalFilters } from './adapter/global-filter-app-data';
 
 export type GlobalFilterSelectorProps = {
     filterCategories?: FilterType[];
@@ -27,15 +31,24 @@ export default function GlobalFilterSelector({
     tableType,
     tableUuid,
 }: Readonly<GlobalFilterSelectorProps>) {
+    const { translate: translateCountryCode } = useLocalizedCountries();
+    const [substationPropertiesGlobalFilters, setSubstationPropertiesGlobalFilters] = useState<Map<string, string[]>>();
+
+    useEffect(() => {
+        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
+            setSubstationPropertiesGlobalFilters(substationPropertiesGlobalFilters);
+        });
+    }, []);
+
     return (
-        <GlobalFilterProvider
-            filterCategories={filterCategories}
-            genericFiltersStrictMode={genericFiltersStrictMode}
-            filterableEquipmentTypes={filterableEquipmentTypes}
-            tableType={tableType}
-            tableUuid={tableUuid ?? tableType}
-        >
-            <GlobalFilterAutocomplete />
+        <GlobalFilterProvider tableType={tableType} tableUuid={tableUuid ?? tableType}>
+            <GlobalFilter
+                translateCountryCode={translateCountryCode}
+                filterCategories={filterCategories}
+                genericFiltersStrictMode={genericFiltersStrictMode}
+                filterableEquipmentTypes={filterableEquipmentTypes}
+                substationPropertiesGlobalFilters={substationPropertiesGlobalFilters}
+            />
         </GlobalFilterProvider>
     );
 }
