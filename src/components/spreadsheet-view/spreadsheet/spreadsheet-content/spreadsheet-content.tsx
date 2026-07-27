@@ -11,9 +11,8 @@ import { type Identifiable, type MuiStyles } from '@gridsuite/commons-ui';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
-import { Alert, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
-import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
 import { CustomColDef, FilterConfig, TableType } from 'types/custom-aggrid-types';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
@@ -46,11 +45,6 @@ const styles = {
             color: theme.palette.text.disabled,
         },
     }),
-    invalidNode: {
-        position: 'absolute',
-        top: '30%',
-        left: '43%',
-    },
 } as const satisfies MuiStyles;
 
 interface SpreadsheetContentProps {
@@ -59,7 +53,6 @@ interface SpreadsheetContentProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
-    disabled: boolean;
     registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
     active: boolean;
 }
@@ -71,7 +64,6 @@ export const SpreadsheetContent = memo(
         currentNode,
         tableDefinition,
         columns,
-        disabled,
         registerRowCounterEvents,
         active,
     }: SpreadsheetContentProps) => {
@@ -82,14 +74,6 @@ export const SpreadsheetContent = memo(
         const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
         const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
         const { fetchNodesEquipmentData, fetchFailed, resetFetchFailed } = useFetchEquipment();
-
-        // Reset isGridReady when the grid is unmounted (disabled=true), so a fresh
-        // false → true transition on remount re-triggers effects depending on it.
-        useEffect(() => {
-            if (disabled) {
-                setIsGridReady(false);
-            }
-        }, [disabled]);
 
         // Initial data loading for this type when the tab is opened
         useEffect(() => {
@@ -237,32 +221,26 @@ export const SpreadsheetContent = memo(
 
         return (
             <>
-                {disabled ? (
-                    <Alert sx={styles.invalidNode} severity="warning">
-                        <FormattedMessage id={'InvalidNode'} />
-                    </Alert>
-                ) : (
-                    <Box sx={styles.table}>
-                        <EquipmentTable
-                            gridRef={gridRef}
-                            rowData={transformedRowData}
-                            currentNode={currentNode}
-                            columnData={columns}
-                            isFetching={equipments.isFetching}
-                            isDataEditable={isModificationDialogForEquipmentType}
-                            handleColumnDrag={handleColumnDrag}
-                            isExternalFilterPresent={isExternalFilterPresent}
-                            doesExternalFilterPass={doesFormulaFilteringPass}
-                            onModelUpdated={onModelUpdated}
-                            onFirstDataRendered={onFirstDataRendered}
-                            onGridReady={onGridReady}
-                            onRowDataUpdated={onRowDataUpdated}
-                            handleModify={handleModify}
-                            handleOpenDiagram={handleOpenDiagram}
-                            equipmentType={tableDefinition?.type}
-                        />
-                    </Box>
-                )}
+                <Box sx={styles.table}>
+                    <EquipmentTable
+                        gridRef={gridRef}
+                        rowData={transformedRowData}
+                        currentNode={currentNode}
+                        columnData={columns}
+                        isFetching={equipments.isFetching}
+                        isDataEditable={isModificationDialogForEquipmentType}
+                        handleColumnDrag={handleColumnDrag}
+                        isExternalFilterPresent={isExternalFilterPresent}
+                        doesExternalFilterPass={doesFormulaFilteringPass}
+                        onModelUpdated={onModelUpdated}
+                        onFirstDataRendered={onFirstDataRendered}
+                        onGridReady={onGridReady}
+                        onRowDataUpdated={onRowDataUpdated}
+                        handleModify={handleModify}
+                        handleOpenDiagram={handleOpenDiagram}
+                        equipmentType={tableDefinition?.type}
+                    />
+                </Box>
                 {modificationDialog}
             </>
         );

@@ -15,10 +15,12 @@ import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { mapColumns } from '../columns/utils/column-mapper';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
 import type { UUID } from 'node:crypto';
-import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType, MuiStyles } from '@gridsuite/commons-ui';
 import { CustomColDef } from '../../../types/custom-aggrid-types';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
+import { Alert } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
 
 interface SpreadsheetProps {
     panelId: UUID;
@@ -27,6 +29,14 @@ interface SpreadsheetProps {
     disabled: boolean;
     active: boolean;
 }
+
+const styles = {
+    invalidNode: {
+        position: 'absolute',
+        top: '30%',
+        left: '43%',
+    },
+} as const satisfies MuiStyles;
 
 export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabled, active }: SpreadsheetProps) => {
     const gridRef = useRef<AgGridReact>(null);
@@ -75,17 +85,21 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
                 columns={displayedColsDefs}
                 disabled={disabled}
             />
-
-            <SpreadsheetContent
-                panelId={panelId}
-                gridRef={gridRef}
-                currentNode={currentNode}
-                tableDefinition={tableDefinition}
-                columns={displayedColsDefs}
-                disabled={disabled}
-                registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
-                active={active}
-            />
+            {disabled ? (
+                <Alert sx={styles.invalidNode} severity="warning">
+                    <FormattedMessage id={'InvalidNode'} />
+                </Alert>
+            ) : (
+                <SpreadsheetContent
+                    panelId={panelId}
+                    gridRef={gridRef}
+                    currentNode={currentNode}
+                    tableDefinition={tableDefinition}
+                    columns={displayedColsDefs}
+                    registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
+                    active={active}
+                />
+            )}
         </>
     );
 });
