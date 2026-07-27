@@ -108,12 +108,12 @@ export function EquipmentIdSelector({
                     label={FieldLabel({
                         label: 'ID',
                     })}
-                    autoFocus
-                    {...filledTextField}
-                    {...rest}
                     slotProps={{
                         htmlInput: { ...inputProps, readOnly: readOnly },
                     }}
+                    autoFocus
+                    {...filledTextField}
+                    {...rest}
                 />
             )}
         />

@@ -122,11 +122,11 @@ export function MoveVoltageLevelFeederBaysForm({
                 label="ID"
                 value={selectedId}
                 size="small"
-                disabled
-                {...filledTextField}
                 slotProps={{
                     input: { readOnly: true },
                 }}
+                disabled
+                {...filledTextField}
             />
         ),
         [selectedId]

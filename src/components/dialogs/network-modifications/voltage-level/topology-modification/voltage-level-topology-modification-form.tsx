@@ -149,11 +149,11 @@ export function VoltageLevelTopologyModificationForm({
                         label="ID"
                         value={selectedId}
                         size="small"
-                        disabled
-                        {...filledTextField}
                         slotProps={{
                             input: { readOnly: true },
                         }}
+                        disabled
+                        {...filledTextField}
                     />
                 </Grid>
                 <Grid size={8} container justifyContent="flex-end">

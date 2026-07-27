@@ -45,13 +45,13 @@ export default function CreateCouplingDeviceForm({
             fullWidth
             label={intl.formatMessage({ id: 'VoltageLevelId' })}
             value={voltageLevelId}
-            disabled
-            {...filledTextField}
             slotProps={{
                 input: {
                     readOnly: true,
                 },
             }}
+            disabled
+            {...filledTextField}
         />
     );
 

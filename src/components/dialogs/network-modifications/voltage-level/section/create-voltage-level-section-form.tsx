@@ -88,13 +88,13 @@ export function CreateVoltageLevelSectionForm({
             fullWidth
             label={intl.formatMessage({ id: 'VoltageLevelId' })}
             value={voltageLevelId}
-            disabled
-            {...filledTextField}
             slotProps={{
                 input: {
                     readOnly: true,
                 },
             }}
+            disabled
+            {...filledTextField}
         />
     );
     const switchValue = useWatch({ name: NEW_SWITCH_STATES });

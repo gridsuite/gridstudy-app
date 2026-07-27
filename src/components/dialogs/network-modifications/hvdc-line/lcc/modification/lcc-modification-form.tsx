@@ -42,13 +42,13 @@ function LccModificationDialogHeader({ lccToModify }: Readonly<LccModificationHe
             fullWidth
             label={'ID'}
             value={lccToModify?.id ?? ''}
-            disabled
-            {...filledTextField}
             slotProps={{
                 input: {
                     readOnly: true,
                 },
             }}
+            disabled
+            {...filledTextField}
         />
     );
     const LccNameField = (

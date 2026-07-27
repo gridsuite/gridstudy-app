@@ -41,8 +41,6 @@ export default function DependenciesEditor({ name, dependencies, ...props }: Dep
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     inputRef={ref}
-                    {...genHelperError(error?.message)}
-                    {...rest}
                     slotProps={{
                         htmlInput: {
                             style: {
@@ -51,6 +49,8 @@ export default function DependenciesEditor({ name, dependencies, ...props }: Dep
                             ...inputProps,
                         },
                     }}
+                    {...genHelperError(error?.message)}
+                    {...rest}
                 />
             )}
             autoHighlight={true}

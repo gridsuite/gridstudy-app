@@ -33,13 +33,13 @@ export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFor
             fullWidth
             label={'ID'}
             value={equipmentId}
-            {...filledTextField}
-            disabled
             slotProps={{
                 input: {
                     readOnly: true,
                 },
             }}
+            {...filledTextField}
+            disabled
         />
     );
 
