@@ -31,25 +31,26 @@ import {
 } from './sensitivity-analysis-result.type';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import {
-    isSensiKind,
-    mappingTabs,
-    SensitivityResultTabs,
     DATA_KEY_TO_FILTER_KEY_N,
     DATA_KEY_TO_FILTER_KEY_NK,
     DATA_KEY_TO_SORT_KEY,
     FUNCTION_TYPES,
-} from './sensitivity-analysis-result-utils.js';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { PaginationType, TableType, SortWay } from '../../../types/custom-aggrid-types';
+    isSensiKind,
+    mappingTabs,
+    SensitivityResultTabs,
+} from './sensitivity-analysis-result-utils';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
+import { PaginationType, SortWay, TableType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
-import { FilterType, isCriteriaFilterType } from '../common/utils';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { getColumnFiltersFromStore } from '../../../redux/selectors/filter-store-selectors';
-import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+import { getSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 import { exportSensitivityResultsAsCsv } from 'services/study/sensitivity-analysis';
 import { downloadZipFile } from '../../../services/utils';
+
+import { FilterType, isCriteriaFilterType } from '../common/global-filter/types/filter.type';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
