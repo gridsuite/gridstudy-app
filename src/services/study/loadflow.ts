@@ -8,7 +8,7 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
+import { ResultsQueryParams } from '../../components/results/common/global-filter/types/global-filter.type';
 
 export function setLoadFlowParameters(studyUuid: UUID, newParams: any) {
     console.info('set load flow parameters');

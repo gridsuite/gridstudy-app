@@ -8,7 +8,7 @@ import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
 import { IntlShape } from 'react-intl';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { FilterConfig, SortConfig, TableType } from 'types/custom-aggrid-types';
-import { GlobalFilter } from './global-filter/global-filter-types';
+import { GlobalFilter } from './global-filter/types/global-filter.type';
 import { Dispatch } from 'redux';
 import { UUID } from 'node:crypto';
 import {
@@ -16,7 +16,7 @@ import {
     getComputationResultGlobalFilters,
 } from '../../../services/study/study-config';
 import { initOrUpdateGlobalFilters, updateColumnFiltersAction } from '../../../redux/actions';
-import { isEditingGlobalFilter } from '../../../utils/editing-global-filter-sync';
+import { isEditingGlobalFilter } from './global-filter/utils/editing-global-filter-sync';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -41,29 +41,6 @@ export const translateLimitNameFrontToBack = (limitName: string, intl: IntlShape
             return limitName;
     }
 };
-
-/**
- * Global filters types
- * the order of those enum values is the default order for global filter displays : do not move them around
- */
-export enum FilterType {
-    VOLTAGE_LEVEL = 'voltageLevel',
-    COUNTRY = 'country',
-    SUBSTATION_PROPERTY = 'substationProperty',
-    SUBSTATION_OR_VL = 'substationOrVoltageLevelFilter', // voltage levels and substation generic filters which uses the filter library
-    GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library (except voltage level and substation filters)
-}
-
-export function isCriteriaFilter(filter: GlobalFilter): boolean {
-    return isCriteriaFilterType(filter.filterType);
-}
-
-export function isCriteriaFilterType(filterType: string | undefined): boolean {
-    return (
-        filterType !== undefined &&
-        (filterType === FilterType.GENERIC_FILTER || filterType === FilterType.SUBSTATION_OR_VL)
-    );
-}
 
 export interface Selector {
     page: number;

@@ -24,7 +24,7 @@ import { TableType } from '../../../../../types/custom-aggrid-types';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 import { SaveSpreadsheetModelDialog } from './save-spreadsheet-model-dialog';
 
-import { getSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
+import { getSelectedGlobalFilters } from '../../../../results/common/global-filter/hooks/use-selected-global-filters';
 
 export type SaveSpreadsheetDialogProps = {
     tableDefinition: SpreadsheetTabDefinition;

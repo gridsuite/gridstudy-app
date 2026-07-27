@@ -4,12 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { TableType } from '../../../../types/custom-aggrid-types';
+import { TableType } from '../../../../../types/custom-aggrid-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer.type';
+import { AppState } from '../../../../../redux/reducer.type';
 import { useEffect } from 'react';
 import { useSelectedGlobalFilters } from './use-selected-global-filters';
-import { updateComputationGlobalFilters } from '../utils';
+import { updateComputationGlobalFilters } from '../../utils';
 
 // Get the global filters for a given table from the server and store them in the Redux store
 export function useFetchComputationGlobalFilters(tableType: TableType) {

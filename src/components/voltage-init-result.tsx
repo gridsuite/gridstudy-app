@@ -92,6 +92,8 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
+const globalFilterFilterableEquipmentTypes = [EquipmentType.VOLTAGE_LEVEL];
+
 export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     result = null,
     status,
@@ -426,7 +428,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     </Box>
                     <Box sx={mergeSx(tabIndex === 0 || tabIndex === 2 ? styles.show : styles.hide)}>
                         <GlobalFilterSelector
-                            filterableEquipmentTypes={[EquipmentType.VOLTAGE_LEVEL]}
+                            filterableEquipmentTypes={globalFilterFilterableEquipmentTypes}
                             genericFiltersStrictMode={true}
                             tableType={TableType.VoltageInit}
                         />

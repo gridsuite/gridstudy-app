@@ -290,9 +290,21 @@ import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
-import { isCriteriaFilter } from '../components/results/common/utils';
-import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
-import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter-types';
+import {
+    addGlobalFilterId,
+    getGlobalFilterId,
+} from '../components/results/common/global-filter/utils/global-filter-utils';
+import type {
+    GlobalFilter,
+    RecentGlobalFilter,
+} from '../components/results/common/global-filter/types/global-filter.type';
+import {
+    addSelectedGlobalFiltersToTableState,
+    clearSelectedGlobalFiltersFromTableState,
+    markNotFoundGlobalFiltersAsDeletedInState,
+    MAX_RECENT_GLOBAL_FILTERS,
+    removeSelectedGlobalFiltersFromTableState,
+} from '../components/results/common/global-filter/utils/global-filter-state.utils';
 
 // Types are defined in reducer.type.ts — import them directly from there
 import {
@@ -303,6 +315,7 @@ import {
     type SpreadsheetNetworkState,
     type Substation,
 } from './reducer.type';
+import { isCriteriaFilter } from '../components/results/common/global-filter/types/filter.type';
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
     switch (updateType) {
@@ -346,8 +359,6 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): Spread
             return;
     }
 }
-
-const MAX_RECENT_GLOBAL_FILTERS = 10;
 
 function buildSortedRecents(filters: GlobalFilter[]): RecentGlobalFilter[] {
     return filters
@@ -1640,60 +1651,42 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ADD_GLOBAL_FILTERS, (state, action: AddGlobalFiltersAction) => {
         const { tableId, filterIds } = action;
 
-        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
-        const tableState = state.tableFilters.globalFilters[tableId];
-
-        filterIds.forEach((id) => {
-            if (!tableState.selected.includes(id)) {
-                tableState.selected.push(id);
-            }
-            tableState.recents = tableState.recents.filter((r) => r.id !== id);
-        });
+        state.tableFilters.globalFilters[tableId] = addSelectedGlobalFiltersToTableState(
+            state.tableFilters.globalFilters[tableId],
+            filterIds
+        );
     });
 
     builder.addCase(REMOVE_GLOBAL_FILTERS, (state, action: RemoveGlobalFiltersAction) => {
         const { tableId, filterIds } = action;
 
-        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
-        const tableState = state.tableFilters.globalFilters[tableId];
-
-        tableState.selected = tableState.selected.filter((id) => !filterIds.includes(id));
-
-        const now = Date.now();
-        filterIds.forEach((filterId) => {
-            const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
-            if (!filterOption?.deleted) {
-                tableState.recents.unshift({ id: filterId, unselectedDate: now });
-            }
-        });
-        tableState.recents = tableState.recents.slice(0, MAX_RECENT_GLOBAL_FILTERS);
+        state.tableFilters.globalFilters[tableId] = removeSelectedGlobalFiltersFromTableState(
+            state.tableFilters.globalFilters[tableId],
+            filterIds,
+            state.globalFilterOptions
+        );
     });
 
     builder.addCase(CLEAR_GLOBAL_FILTERS, (state, action: ClearGlobalFiltersAction) => {
         const { tableId } = action;
-        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
-        const tableState = state.tableFilters.globalFilters[tableId];
-        const now = Date.now();
-        const newRecents = tableState.selected
-            .filter((filterId) => {
-                const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
-                return !filterOption?.deleted;
-            })
-            .map((filterId) => ({ id: filterId, unselectedDate: now }));
-        tableState.recents = [...newRecents, ...tableState.recents].slice(0, MAX_RECENT_GLOBAL_FILTERS);
-        tableState.selected = [];
+        state.tableFilters.globalFilters[tableId] = clearSelectedGlobalFiltersFromTableState(
+            state.tableFilters.globalFilters[tableId],
+            state.globalFilterOptions
+        );
     });
     builder.addCase(
         MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
         (state, action: MarkNotFoundGlobalFiltersAsDeletedAction) => {
             const { globalFilters, tableId } = action;
-            const ids = new Set(globalFilters.map((f) => f.id));
-            state.globalFilterOptions.forEach((globalFilter) => {
-                if (ids.has(globalFilter.id)) globalFilter.deleted = true;
-            });
-            const tableState = state.tableFilters.globalFilters[tableId];
-            if (tableState?.recents?.length) {
-                tableState.recents = tableState.recents.filter((r) => !ids.has(r.id));
+            const result = markNotFoundGlobalFiltersAsDeletedInState(
+                state.globalFilterOptions,
+                state.tableFilters.globalFilters[tableId],
+                globalFilters
+            );
+
+            state.globalFilterOptions = result.globalFilterOptions;
+            if (result.tableState) {
+                state.tableFilters.globalFilters[tableId] = result.tableState;
             }
         }
     );
