@@ -14,12 +14,11 @@ import { type AgGridReact } from 'ag-grid-react';
 import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
 import { FormattedMessage } from 'react-intl';
-import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
 import { CustomColDef, FilterConfig, TableType } from 'types/custom-aggrid-types';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
 import { PanelType } from 'components/workspace/types/workspace.types';
-import { type RowDataUpdatedEvent } from 'ag-grid-community';
+import { type DoesExternalFilterPass, type IsExternalFilterPresent, type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useNodeAliases } from '../../hooks/use-node-aliases';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
@@ -62,6 +61,9 @@ interface SpreadsheetContentProps {
     disabled: boolean;
     registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
     active: boolean;
+    isExternalFilterPresent: IsExternalFilterPresent;
+    doesFormulaFilteringPass: DoesExternalFilterPass;
+    isGlobalFilterPending: boolean;
 }
 
 export const SpreadsheetContent = memo(
@@ -74,6 +76,9 @@ export const SpreadsheetContent = memo(
         disabled,
         registerRowCounterEvents,
         active,
+        isExternalFilterPresent,
+        doesFormulaFilteringPass,
+        isGlobalFilterPending,
     }: SpreadsheetContentProps) => {
         const [isGridReady, setIsGridReady] = useState(false);
         const targetEquipment = useSelector((state: RootState) => selectPanelTargetEquipment(state, panelId));
@@ -120,12 +125,6 @@ export const SpreadsheetContent = memo(
         const { updateSortConfig, updateLockedColumnsConfig, handleColumnDrag } = useColumnManagement(
             gridRef,
             tableDefinition
-        );
-
-        const { isExternalFilterPresent, doesFormulaFilteringPass, isGlobalFilterPending } = useSpreadsheetGlobalFilter(
-            gridRef,
-            tableDefinition?.uuid,
-            tableDefinition?.type
         );
 
         const { modificationDialog, handleOpenModificationDialog, isModificationDialogForEquipmentType } =
