@@ -87,7 +87,9 @@ const EventModificationScenarioEditor = memo(() => {
     const fillNotification = useCallback(
         (
             eventData:
-                EventCreatingInProgressEventData | EventUpdatingInProgressEventData | EventDeletingInProgressEventData,
+                | EventCreatingInProgressEventData
+                | EventUpdatingInProgressEventData
+                | EventDeletingInProgressEventData,
             messageId: string
         ) => {
             // (work for all users)
@@ -102,7 +104,9 @@ const EventModificationScenarioEditor = memo(() => {
     const manageNotification = useCallback(
         (
             eventData:
-                EventCreatingInProgressEventData | EventUpdatingInProgressEventData | EventDeletingInProgressEventData
+                | EventCreatingInProgressEventData
+                | EventUpdatingInProgressEventData
+                | EventDeletingInProgressEventData
         ) => {
             let messageId = '';
             if (eventData.headers.updateType === NotificationType.EVENT_CREATING_IN_PROGRESS) {
