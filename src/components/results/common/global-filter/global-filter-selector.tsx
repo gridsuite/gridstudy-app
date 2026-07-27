@@ -23,8 +23,9 @@ export type GlobalFilterSelectorProps = {
     tableType: TableType;
     tableUuid?: UUID;
 };
+const defaultFilterCategories = Object.values(FilterType) as FilterType[];
 export default function GlobalFilterSelector({
-    filterCategories = Object.values(FilterType) as FilterType[],
+    filterCategories = defaultFilterCategories,
     filterableEquipmentTypes,
     //If this parameter is enabled, only generic filters of the same type as those provided in filterableEquipmentTypes will be available
     genericFiltersStrictMode = false,
