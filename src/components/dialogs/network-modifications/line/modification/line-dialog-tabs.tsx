@@ -23,10 +23,8 @@ const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }: LineDial
                 value={tabIndex}
                 variant="scrollable"
                 onChange={(event, newValue) => setTabIndex(newValue)}
-                slotProps={{
-                    indicator: {
-                        sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
-                    },
+                TabIndicatorProps={{
+                    sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
                 }}
             >
                 <Tab
