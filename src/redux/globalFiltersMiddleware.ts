@@ -17,9 +17,7 @@ import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig 
 import { TableType } from '../types/custom-aggrid-types';
 import { UUID } from 'node:crypto';
 import type { AppState } from './reducer.type';
-import { markEditingGlobalFilter, unmarkEditingGlobalFilter } from '../utils/editing-global-filter-sync';
-
-const debouncedSyncTimers: Record<string, ReturnType<typeof setTimeout>> = {};
+import { syncGlobalFilters } from '../components/results/common/global-filter/utils/global-filter-sync.utils';
 
 /**
  * Redux middleware that synchronizes global filter changes with the backend.
@@ -49,9 +47,6 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             }
             const index = tableId ?? tableType;
 
-            // Protection from overriding more recent filters from backend notification
-            markEditingGlobalFilter(index);
-
             const tableFiltersState = state.tableFilters.globalFilters[index];
 
             const selectedFiltersIds = tableFiltersState?.selected ?? [];
@@ -69,30 +64,17 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
 
             const globalFilters = [...selectedGlobalFilters, ...recentGlobalFilters];
 
-            // Debounce per table to avoid excessive requests
-            if (debouncedSyncTimers[index]) {
-                clearTimeout(debouncedSyncTimers[index]);
-            }
-
-            debouncedSyncTimers[index] = setTimeout(() => {
-                const globalFilterPromise =
+            syncGlobalFilters({
+                index,
+                globalFilters,
+                onError: (error) => {
+                    console.error('Failed to save global filters: ', error);
+                },
+                save: (filters) =>
                     tableType === TableType.Spreadsheet
-                        ? setGlobalFiltersToSpreadsheetConfig(studyUuid, tableId as UUID, globalFilters)
-                        : setComputationResultGlobalFilters(studyUuid, tableType, globalFilters);
-
-                globalFilterPromise
-                    .catch((error) => {
-                        console.error('Failed to save global filters: ', error);
-                    })
-                    .finally(() => {
-                        // Only unmark if no new debounce timer was started while the POST was in flight
-                        if (!debouncedSyncTimers[index]) {
-                            unmarkEditingGlobalFilter(index);
-                        }
-                    });
-
-                delete debouncedSyncTimers[index];
-            }, 2000);
+                        ? setGlobalFiltersToSpreadsheetConfig(studyUuid, tableId as UUID, filters)
+                        : setComputationResultGlobalFilters(studyUuid, tableType, filters),
+            });
 
             break;
         }
