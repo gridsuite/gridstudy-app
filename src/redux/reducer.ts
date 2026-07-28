@@ -315,7 +315,6 @@ import {
     type SpreadsheetNetworkState,
     type Substation,
 } from './reducer.type';
-import { isCriteriaFilter } from '../components/results/common/global-filter/types/filter.type';
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
     switch (updateType) {
