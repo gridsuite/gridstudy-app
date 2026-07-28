@@ -13,6 +13,7 @@ import {
     snackWithFallback,
     useSnackMessage,
     DeepNullable,
+    ProblemDetailError,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
@@ -46,10 +47,12 @@ import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bay
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import {
     fetchBusesOrBusbarSectionsForVoltageLevel,
+    fetchNetworkElementInfos,
     fetchVoltageLevelFeederBaysInfos,
 } from '../../../../../services/study/network';
 import { isNumber } from 'mathjs';
 import { FeederBaysInfos } from '../../../../../services/study/network-map.type';
+import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 
 function requiredWhenActive<T extends yup.Schema>(schema: T) {
     return schema.when([IS_REMOVED, IS_SEPARATOR], ([isRemoved, isSeparator], schema) => {
@@ -138,6 +141,8 @@ export default function MoveVoltageLevelFeederBaysDialog({
     const mergeRowData = useCallback(
         (feederBaysInfos: FeederBays, busBarSectionInfos: string[]) => {
             let mergedRowData: FeederBaysFormInfos[] = [];
+            console.log('======================editData', editData);
+            console.log('======================isNodeBuiltValue', isNodeBuiltValue);
             if (!editData?.uuid && feederBaysInfos.length > 0) {
                 mergedRowData = feederBaysInfos.filter(Boolean).map((bay) => ({
                     equipmentId: bay.equipmentId,
@@ -256,6 +261,15 @@ export default function MoveVoltageLevelFeederBaysDialog({
             if (voltageLevelId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 try {
+                    await fetchNetworkElementInfos(
+                        studyUuid,
+                        currentNodeUuid,
+                        currentRootNetworkUuid,
+                        EquipmentType.VOLTAGE_LEVEL,
+                        EQUIPMENT_INFOS_TYPES.FORM.type,
+                        voltageLevelId,
+                        true
+                    );
                     const [busesOrBusbarSections, feederBaysInfo] = await Promise.all([
                         fetchBusesOrBusbarSectionsForVoltageLevel(
                             studyUuid,
@@ -282,6 +296,12 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         setDataFetchStatus(FetchStatus.FAILED);
                     }
                 } catch (error) {
+                    if (error instanceof ProblemDetailError && error.status === 404) {
+                        // Voltage level does not exist yet in the built network
+                        // (likely created by a pending modification on an unbuilt node).
+                        setDataFetchStatus(FetchStatus.SUCCEED);
+                        return;
+                    }
                     console.error(error);
                     setDataFetchStatus(FetchStatus.FAILED);
                 }
