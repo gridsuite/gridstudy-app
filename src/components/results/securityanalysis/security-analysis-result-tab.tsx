@@ -49,15 +49,18 @@ import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { UUID } from 'node:crypto';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
-import { FilterType, isCriteriaFilterType, PERMANENT_LIMIT_NAME } from '../common/utils';
+import { PERMANENT_LIMIT_NAME } from '../common/utils';
 import { setTableSort } from '../../../redux/actions';
 import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handler';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { downloadZipFile } from 'services/utils';
+import { SecurityAnalysisCopyButton } from './security-analysis-copy-button';
+
+import { FilterType, isCriteriaFilterType } from '../common/global-filter/types/filter.type';
 
 const styles = {
     toolbarRow: {
@@ -72,6 +75,12 @@ const styles = {
     },
     resultContainer: {
         flexGrow: 1,
+    },
+    exportActions: {
+        display: 'flex',
+        justifySelf: 'end',
+        alignItems: 'center',
+        gap: 2,
     },
 } as const satisfies MuiStyles;
 
@@ -349,6 +358,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 EquipmentType.BOUNDARY_LINE,
                 EquipmentType.HVDC_LINE,
                 EquipmentType.VSC_CONVERTER_STATION,
+                EquipmentType.BUSBAR_SECTION,
             ];
         }
         return [];
@@ -402,7 +412,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             tableType={TableType.SecurityAnalysis}
                         />
                     </Box>
-                    <Box sx={{ justifySelf: 'end' }}>
+                    <Box sx={styles.exportActions}>
+                        <SecurityAnalysisCopyButton
+                            studyUuid={studyUuid}
+                            nodeUuid={nodeUuid}
+                            rootNetworkUuid={currentRootNetworkUuid}
+                            enumValueTranslations={enumValueTranslations}
+                            downloadZipResult={downloadZipResult}
+                            disabled={isExportButtonDisabled}
+                        />
                         <ManagedExportCsvButton
                             exportCsv={exportResultCsv}
                             resetKey={resetKey}

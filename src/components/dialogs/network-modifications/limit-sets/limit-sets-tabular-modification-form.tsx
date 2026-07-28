@@ -199,12 +199,12 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         return commentData;
     }, [intl, csvTranslatedColumns, language]);
 
-    const handleChangeType = useCallback(() => {
-        clearErrors(MODIFICATIONS_TABLE);
-        tableRef.current?.replace([]);
+    const resetOnTypeChange = useCallback(() => {
         setValue(CSV_FILENAME, undefined);
         setSelectedFile(undefined);
         setFileErrorMessage(undefined);
+        clearErrors(MODIFICATIONS_TABLE);
+        tableRef.current?.replace([]);
     }, [clearErrors, setValue]);
 
     const csvFilename = getValues(CSV_FILENAME);
@@ -231,7 +231,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
             size={'small'}
             formProps={{ variant: 'outlined' }}
             shouldOpenPopup={() => hasNonEmptyRows(getValues(MODIFICATIONS_TABLE))}
-            resetOnConfirmation={handleChangeType}
+            onValueChange={resetOnTypeChange}
             message="changeTypeMessage"
             validateButtonLabel="button.changeType"
         />

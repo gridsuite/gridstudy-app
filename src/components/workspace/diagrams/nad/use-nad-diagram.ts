@@ -85,11 +85,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<ErrorMessageDescriptor | undefined>();
 
-    // Keep ref synced to check node build status in async callbacks (avoids stale closures)
-    const currentNodeRef = useRef(currentNode);
-    useEffect(() => {
-        currentNodeRef.current = currentNode;
-    }, [currentNode]);
+    const abortControllerRef = useRef<AbortController | undefined>(undefined);
 
     const setDiagramAndSync = useCallback(
         (updater: React.SetStateAction<NetworkAreaDiagram>, syncToBackend = true) => {
@@ -141,22 +137,34 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
     const fetchDiagram = useCallback(() => {
         if (!currentNode || !isNodeBuilt(currentNode)) {
+            // Abort any still pending fetch so its late response can't overwrite this error
+            abortControllerRef.current?.abort();
             setGlobalError({ descriptor: { id: 'InvalidNode' } });
+            setLoading(false);
             return Promise.resolve();
         }
+
+        // Abort any still pending fetch so its response can be ignored
+        abortControllerRef.current?.abort();
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
 
         setLoading(true);
         setGlobalError(undefined);
 
         // we use setDiagram to capture current state without adding diagram to dependencies
         return setDiagram((currentDiagram) => {
+            const nadConfigUuid = currentDiagram.currentNadConfigUuid || currentDiagram.nadConfigUuid;
             const body: any = {
                 nadPositionsGenerationMode: networkVisuParams?.networkAreaDiagramParameters.nadPositionsGenerationMode,
                 voltageLevelIds: currentDiagram.voltageLevelIds,
                 voltageLevelToExpandIds: currentDiagram.voltageLevelToExpandIds,
-                positions: currentDiagram.positions,
+                // positions will be retreived from the saved nadConfig.
+                // Unsaved node drags are lost on refetch and it is fine,
+                // we will add confirmation dialog or a snackbar for this case in future dev
+                positions: nadConfigUuid ? [] : currentDiagram.positions,
                 voltageLevelToOmitIds: currentDiagram.voltageLevelToOmitIds,
-                nadConfigUuid: currentDiagram.currentNadConfigUuid || currentDiagram.nadConfigUuid,
+                nadConfigUuid,
                 filterUuid: currentDiagram.currentFilterUuid || currentDiagram.filterUuid,
                 language,
             };
@@ -167,10 +175,20 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
+                signal: abortController.signal,
             })
                 .then(processSvgData)
-                .catch(handleFetchError)
-                .finally(() => setLoading(false));
+                .catch((error) => {
+                    // a newer fetchDiagram call already aborted this request, so its response is no longer relevant
+                    if (!abortController.signal.aborted) {
+                        handleFetchError(error);
+                    }
+                })
+                .finally(() => {
+                    if (!abortController.signal.aborted) {
+                        setLoading(false);
+                    }
+                });
             return currentDiagram;
         });
     }, [

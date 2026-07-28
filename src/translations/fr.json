@@ -40,6 +40,8 @@
     "download.fileName": "Nom de fichier",
     "exportFormat": "Format de l'export",
     "exportStudyErrorMsg": "Le format de l'export n'est pas spécifié",
+    "exportCompression": "Compression",
+    "exportCompressionErrorMsg": "Le type de compression n'est pas spécifié",
 
     "modifyAccessRights": "Modifier les droits d'accès",
     "modifyAccessRightsError": "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
@@ -341,6 +343,7 @@
     "descTransient": "Transitoire",
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "securityAnalysisCsvResultsError": "Une erreur est survenue lors de l'export des résultats de l'analyse de sécurité",
+    "securityAnalysisCopyResultsError": "Une erreur est survenue lors de la copie des résultats de l'analyse de sécurité", 
     "shortCircuitAnalysisCsvResultsError": "Une erreur est survenue lors de l'export des résultats de l'analyse de court-circuit",
     "startLoadFlowError": "Une erreur est survenue lors du lancement du calcul de répartition",
     "LoadFlowResultsCurrentViolations": "Contraintes de transit",
@@ -528,7 +531,6 @@
 
     "LoadCreationError": "Erreur lors de la création d'une consommation",
     "LoadModificationError": "Erreur lors de la modification d'une consommation",
-    "LineModificationError": "Erreur lors de la modification d'une ligne",
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
     "StaticVarCompensatorCreationError": "Erreur lors de la création d'un cspr",
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
@@ -578,7 +580,6 @@
     "reactiveCapabilityCurvePmax": "Pmax",
     "reactiveCapabilityCurveQminPmax": "QminPmax",
     "reactiveCapabilityCurveQmaxPmax": "QmaxPmax",
-    "ModifyLine": "Modifier une ligne",
     "CreateVsc": "Création d'une HVDC (VSC)",
     "CreateLcc": "Création d'une HVDC (LCC)",
     "Filters": "Filtres",
@@ -687,7 +688,7 @@
     "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
     "DeleteAttachingLineError": "Erreur lors de la suppression d'un piquage",
     "GenerationDispatchError": "Erreur lors de la création du démarrage de groupes",
-    "lineAttachedToSplitLineVoltageLevel" : "Poste en piquage à passer en coupure",
+    "lineAttachedToSplitLineVoltageLevel": "Poste en piquage à passer en coupure",
 
     "permanentCurrentLimitMandatory": "Un IST doit être fourni si le jeu de limites contient des limites d'intensité temporaires",
 

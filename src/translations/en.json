@@ -40,6 +40,8 @@
     "download.fileName": "File name",
     "exportFormat": "Format of the export",
     "exportStudyErrorMsg": "No export format specified",
+    "exportCompression": "Compression",
+    "exportCompressionErrorMsg": "No export compression specified",
 
     "modifyAccessRights": "Modify the access rights",
     "modifyAccessRightsError": "You cannot modify the access rights of a study you don't own",
@@ -340,6 +342,7 @@
     "descTransient": "Transient",
     "securityAnalysisError": "An error occurred while executing the security analysis",
     "securityAnalysisCsvResultsError": "An error occurred while exporting the security analysis results",
+    "securityAnalysisCopyResultsError": "An error occurred while copying the security analysis results",
     "shortCircuitAnalysisCsvResultsError": "An error occurred while exporting the short circuit analysis results",
     "startLoadFlowError": "An error occurred while starting the load flow",
     "LoadFlowResultsCurrentViolations": "Current violations",
@@ -531,7 +534,6 @@
 
     "LoadCreationError": "Error while creating load",
     "LoadModificationError": "Error while modifying load",
-    "LineModificationError": "Error while modifying line",
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
     "StaticVarCompensatorCreationError": "Error while creating static var compensator",
     "LccCreationError": "Error while creating HVDC (LCC)",
@@ -582,7 +584,6 @@
     "reactiveCapabilityCurvePmax": "Pmax",
     "reactiveCapabilityCurveQminPmax": "QminPmax",
     "reactiveCapabilityCurveQmaxPmax": "QmaxPmax",
-    "ModifyLine": "Modify line",
     "CreateVsc": "Create HVDC (VSC)",
     "CreateLcc": "Create HVDC (LCC)",
     "Filters": "Filters",
@@ -1508,4 +1509,4 @@
     "button.previous": "Previous",
     "disconnectedLoadActivePower": "Load cut off (MW)",
     "disconnectedGenerationActivePower": "Generation cut off (MW)"
-} 
+}
