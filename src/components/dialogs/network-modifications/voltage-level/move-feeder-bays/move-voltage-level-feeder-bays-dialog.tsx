@@ -141,8 +141,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
     const mergeRowData = useCallback(
         (feederBaysInfos: FeederBays, busBarSectionInfos: string[]) => {
             let mergedRowData: FeederBaysFormInfos[] = [];
-            console.log('======================editData', editData);
-            console.log('======================isNodeBuiltValue', isNodeBuiltValue);
             if (!editData?.uuid && feederBaysInfos.length > 0) {
                 mergedRowData = feederBaysInfos.filter(Boolean).map((bay) => ({
                     equipmentId: bay.equipmentId,
@@ -300,6 +298,8 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         // Voltage level does not exist yet in the built network
                         // (likely created by a pending modification on an unbuilt node).
                         setDataFetchStatus(FetchStatus.SUCCEED);
+                        // Feed empty built network data to reach the unbuilt-node merge path.
+                        handleVoltageLevelDataFetch({}, []);
                         return;
                     }
                     console.error(error);
