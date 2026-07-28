@@ -262,7 +262,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
 
         const modificationsToInsert: CompositesToBeInserted[] = selectedModifications.map((m: SelectedComposite) => ({
             id: m.id,
-
             // only inserted non shared composites may be renamed
             name: action === CompositeModificationAction.SPLIT || m.isShared ? m.originalName : m.name,
             // SPLIT modifications are never shared
