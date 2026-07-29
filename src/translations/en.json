@@ -40,6 +40,8 @@
     "download.fileName": "File name",
     "exportFormat": "Format of the export",
     "exportStudyErrorMsg": "No export format specified",
+    "exportCompression": "Compression",
+    "exportCompressionErrorMsg": "No export compression specified",
 
     "modifyAccessRights": "Modify the access rights",
     "modifyAccessRightsError": "You cannot modify the access rights of a study you don't own",
@@ -1507,4 +1509,4 @@
     "button.previous": "Previous",
     "disconnectedLoadActivePower": "Load cut off (MW)",
     "disconnectedGenerationActivePower": "Generation cut off (MW)"
-} 
+}
