@@ -49,16 +49,18 @@ import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { UUID } from 'node:crypto';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
-import { FilterType, isCriteriaFilterType, PERMANENT_LIMIT_NAME } from '../common/utils';
+import { PERMANENT_LIMIT_NAME } from '../common/utils';
 import { setTableSort } from '../../../redux/actions';
 import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handler';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { downloadZipFile } from 'services/utils';
 import { SecurityAnalysisCopyButton } from './security-analysis-copy-button';
+
+import { FilterType, isCriteriaFilterType } from '../common/global-filter/types/filter.type';
 
 const styles = {
     toolbarRow: {
