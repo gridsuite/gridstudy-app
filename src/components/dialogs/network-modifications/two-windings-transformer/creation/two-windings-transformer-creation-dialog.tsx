@@ -10,6 +10,7 @@ import {
     convertOutputValue,
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
+    CurrentLimitsData,
     CustomFormProvider,
     DeepNullable,
     emptyProperties,
@@ -17,9 +18,15 @@ import {
     EquipmentWithProperties,
     FieldConstants,
     FieldType,
+    getAllLimitsFormData,
     getConnectivityFormData,
+    getLimitsEmptyFormData,
+    getLimitsValidationSchema,
     getPropertiesFromModification,
+    LimitsSchemaType,
+    LimitsGroupFormData,
     REGULATION_TYPES,
+    sanitizeLimitsGroups,
     sanitizeString,
     snackWithFallback,
     toModificationProperties,
@@ -95,13 +102,6 @@ import {
     getTwoWindingsTransformerFormData,
     getTwoWindingsTransformerValidationSchema,
 } from './characteristics-pane/two-windings-transformer-creation-characteristics-pane-utils';
-import {
-    getAllLimitsFormData,
-    getLimitsEmptyFormData,
-    getLimitsValidationSchema,
-    LimitsFormSchema,
-    sanitizeLimitsGroups,
-} from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
 import { addSelectedFieldToRows, computeHighTapPosition, formatCompleteCurrentLimit } from 'components/utils/utils';
@@ -124,8 +124,6 @@ import {
     TwoWindingsTransformerCreationInfo,
 } from 'services/network-modification-types';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
-import { CurrentLimitsData } from 'services/study/network-map.type';
-import { OperationalLimitsGroupFormSchema } from 'components/dialogs/limits/operational-limits-groups-types';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -165,7 +163,11 @@ type BaseFormValues = yup.InferType<typeof formSchema>;
 
 export type TwoWindingsTransformerCreationFormValues = BaseFormValues & {
     [CHARACTERISTICS]: CharacteristicsCreationFormSchema;
-    [LIMITS]: LimitsFormSchema;
+    [LIMITS]: LimitsSchemaType & {
+        [OPERATIONAL_LIMITS_GROUPS]?: LimitsGroupFormData[] | null;
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID1]?: string | null;
+        [SELECTED_OPERATIONAL_LIMITS_GROUP_ID2]?: string | null;
+    };
     [RATIO_TAP_CHANGER]: RatioTapChangerFormSchema;
     [PHASE_TAP_CHANGER]: PhaseTapChangerFormSchema;
 };
@@ -266,12 +268,12 @@ const TwoWindingsTransformerCreationDialog = ({
                 applicability,
                 limitsProperties: limitsProperties ?? undefined,
                 currentLimits: {
-                    permanentLimit: currentLimits?.permanentLimit ?? null,
+                    permanentLimit: (currentLimits?.permanentLimit ?? '') as unknown as number,
                     temporaryLimits:
                         currentLimits?.temporaryLimits?.map((tl) => ({
-                            name: tl.name ?? undefined,
-                            value: tl.value ?? undefined,
-                            acceptableDuration: tl.acceptableDuration ?? undefined,
+                            name: tl.name ?? '',
+                            value: (tl.value ?? '') as unknown as number,
+                            acceptableDuration: (tl.acceptableDuration ?? '') as unknown as number,
                         })) ?? [],
                 },
             }));
@@ -615,7 +617,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 ratedU1: Number(characteristics[RATED_U1]),
                 ratedU2: Number(characteristics[RATED_U2]),
                 operationalLimitsGroups: sanitizeLimitsGroups(
-                    limits[OPERATIONAL_LIMITS_GROUPS] as OperationalLimitsGroupFormSchema[]
+                    limits[OPERATIONAL_LIMITS_GROUPS] as LimitsGroupFormData[]
                 ) as OperationalLimitsGroupInfos[],
                 selectedOperationalLimitsGroupId1: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID1] ?? null,
                 selectedOperationalLimitsGroupId2: limits[SELECTED_OPERATIONAL_LIMITS_GROUP_ID2] ?? null,
@@ -698,9 +700,11 @@ const TwoWindingsTransformerCreationDialog = ({
                 titleId="CreateTwoWindingsTransformer"
                 subtitle={headerAndTabs}
                 searchCopy={searchCopy}
-                PaperProps={{
-                    sx: {
-                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                        },
                     },
                 }}
                 open={open}

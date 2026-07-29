@@ -18,6 +18,7 @@ import { computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import type { UUID } from 'node:crypto';
 import { isMetadataUpdatedNotification, parseEventData, CommonStudyEventData } from 'types/notification-types';
+import { DIRECTORIES_INFOS, DirectoryInfos } from '../types/directory-server-types';
 
 export default function useStudyPath(studyUuid: UUID | null) {
     const [studyName, setStudyName] = useState<string>();
@@ -67,8 +68,14 @@ export default function useStudyPath(studyUuid: UUID | null) {
                     // number of notifications (they are sent to all the clients every time). Here we are only
                     // interested in changes in parent directories of the study (study is moved, or any parent is moved
                     // or renamed)
-                    if (studyParentDirectoriesUuidsRef.current.includes(eventData.headers['directoryUuid'])) {
-                        fetchStudyPath();
+                    const directoriesInfosStr = eventData.headers[DIRECTORIES_INFOS];
+                    if (directoriesInfosStr) {
+                        const directoriesInfos: DirectoryInfos[] = JSON.parse(directoriesInfosStr);
+                        if (
+                            directoriesInfos.some((info) => studyParentDirectoriesUuidsRef.current.includes(info.uuid))
+                        ) {
+                            fetchStudyPath();
+                        }
                     }
                 }
             }

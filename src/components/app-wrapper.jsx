@@ -54,6 +54,8 @@ import {
     filterFr,
     flatParametersEn,
     flatParametersFr,
+    genericValidationEn,
+    genericValidationFr,
     importParamsEn,
     importParamsFr,
     LANG_FRENCH,
@@ -68,7 +70,9 @@ import {
     descriptionFr,
     descriptionEn,
     networkModificationsEn,
+    networkModificationValidationEn,
     networkModificationsFr,
+    networkModificationValidationFr,
     NotificationsProvider,
     PARAM_THEME,
     parametersEn,
@@ -442,6 +446,8 @@ const messages = {
         ...filterEn,
         ...businessErrorsEn,
         ...errorsEn,
+        ...genericValidationEn,
+        ...networkModificationValidationEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -486,6 +492,8 @@ const messages = {
         ...filterFr,
         ...businessErrorsFr,
         ...errorsFr,
+        ...genericValidationFr,
+        ...networkModificationValidationFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

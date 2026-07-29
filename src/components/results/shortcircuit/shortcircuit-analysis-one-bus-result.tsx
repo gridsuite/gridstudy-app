@@ -18,16 +18,18 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
 import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
 import { RunningStatus } from 'components/utils/running-status';
-import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { DisplayedColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisOneBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    onDisplayedColumnsChanged: (event: DisplayedColumnsChangedEvent) => void;
 }
 
 export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAnalysisOneBusResultProps> = ({
     onGridColumnsChanged,
     onRowDataUpdated,
+    onDisplayedColumnsChanged,
 }) => {
     const { snackError } = useSnackMessage();
 
@@ -95,6 +97,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAna
                 labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPageOneBusSCA',
             }}
             onGridColumnsChanged={onGridColumnsChanged}
+            onDisplayedColumnsChanged={onDisplayedColumnsChanged}
             onRowDataUpdated={onRowDataUpdated}
         />
     );

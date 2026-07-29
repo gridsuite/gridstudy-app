@@ -30,6 +30,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
     isLoadingResult,
     columnDefs,
     tableName,
+    exportCsvResetKey,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -107,6 +108,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
                     skipColumnHeaders={false}
                     computationType={TableType.StateEstimation}
                     computationSubType={tableName}
+                    exportCsvResetKey={exportCsvResetKey}
                 />
             </>
         );

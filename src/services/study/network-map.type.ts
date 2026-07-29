@@ -4,9 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { LimitsProperty } from '../network-modification-types';
 import { BusBarSections } from '../../components/dialogs/network-modifications/voltage-level/section/voltage-level-section.type';
-import { ConnectablePositionInfos, EquipmentWithProperties } from '@gridsuite/commons-ui';
+import { ConnectablePositionInfos } from '@gridsuite/commons-ui';
 
 export type SwitchInfos = {
     id: string;
@@ -29,34 +28,3 @@ interface FeederBay {
 }
 
 export type FeederBaysInfos = Record<string, FeederBay[]>;
-
-export type BranchInfos = EquipmentWithProperties & {
-    name: string;
-    voltageLevelId1: string;
-    voltageLevelId2: string;
-    busOrBusbarSectionId1: string;
-    busOrBusbarSectionId2: string;
-    currentLimits: CurrentLimitsData[];
-    selectedOperationalLimitsGroupId1: string;
-    selectedOperationalLimitsGroupId2: string;
-    r?: number;
-    x?: number;
-    g1?: number;
-    b1?: number;
-    g2?: number;
-    b2?: number;
-};
-
-export interface CurrentLimitsData {
-    id: string;
-    applicability?: string;
-    limitsProperties?: LimitsProperty[];
-    permanentLimit: number | null;
-    temporaryLimits: TemporaryLimitsData[];
-}
-
-export interface TemporaryLimitsData {
-    name: string;
-    value: number | null;
-    acceptableDuration: number | null;
-}

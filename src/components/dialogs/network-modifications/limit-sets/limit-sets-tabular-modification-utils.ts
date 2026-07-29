@@ -26,8 +26,7 @@ import {
 import * as yup from 'yup';
 import type { UUID } from 'node:crypto';
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
-import { APPLICABILITY } from '../../../network/constants';
-import { AttributeModification, EquipmentType, toModificationOperation } from '@gridsuite/commons-ui';
+import { APPLICABILITY, AttributeModification, EquipmentType, toModificationOperation } from '@gridsuite/commons-ui';
 import { MODIFICATIONS_REQUIRED_TAB_ERROR } from '../../../../utils/translationKeys';
 
 type TemporaryLimit = {

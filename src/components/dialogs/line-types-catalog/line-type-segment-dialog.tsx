@@ -11,9 +11,14 @@ import * as yup from 'yup';
 import { ModificationDialog } from '../commons/modificationDialog';
 import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
-import { CustomFormProvider, DeepNullable } from '@gridsuite/commons-ui';
-import { ComputedLineCharacteristics } from './line-catalog.type';
-import { SegmentFormData, SegmentSchema, SegmentsFormData } from './segment-utils';
+import {
+    ComputedLineCharacteristics,
+    CustomFormProvider,
+    DeepNullable,
+    SegmentSchema,
+    LineSegmentsFormData,
+    SegmentsFormData,
+} from '@gridsuite/commons-ui';
 import {
     APPLY_SEGMENTS_LIMITS,
     FINAL_CURRENT_LIMITS,
@@ -37,9 +42,9 @@ const LineTypeSegmentSchema = yup
     .required();
 
 const emptyFormData = {
-    [TOTAL_RESISTANCE]: 0.0,
-    [TOTAL_REACTANCE]: 0.0,
-    [TOTAL_SUSCEPTANCE]: 0.0,
+    [TOTAL_RESISTANCE]: 0,
+    [TOTAL_REACTANCE]: 0,
+    [TOTAL_SUSCEPTANCE]: 0,
     [APPLY_SEGMENTS_LIMITS]: true,
     [FINAL_CURRENT_LIMITS]: [],
     [SEGMENTS]: [],
@@ -50,7 +55,7 @@ export interface LineTypeSegmentDialogProps {
     onClose: () => void;
     onSave: (
         data: ComputedLineCharacteristics,
-        lineSegments: DeepNullable<SegmentFormData | null>[],
+        lineSegments: LineSegmentsFormData,
         applyLimits: boolean | null
     ) => void;
     editData?: SegmentsFormData;
@@ -79,7 +84,7 @@ export default function LineTypeSegmentDialog({
 
     const onSubmit = useCallback(
         (data: ComputedLineCharacteristics) => {
-            onSave(data, getValues(`${SEGMENTS}`) ?? [], getValues(APPLY_SEGMENTS_LIMITS));
+            onSave(data, (getValues(`${SEGMENTS}`) as LineSegmentsFormData) ?? [], getValues(APPLY_SEGMENTS_LIMITS));
         },
         [getValues, onSave]
     );

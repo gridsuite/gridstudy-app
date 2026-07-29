@@ -18,7 +18,7 @@ import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
-import { ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
+import { DisplayedColumnsChangedEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { PanelType } from 'components/workspace/types/workspace.types';
@@ -101,6 +101,15 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         setCsvHeaders(getColumnHeaderDisplayNames(api))
     );
 
+    const handleDisplayedColumnsChanged = useCallback(
+        (event: DisplayedColumnsChangedEvent) => {
+            if (event?.api) {
+                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
+            }
+        },
+        [setCsvHeaders]
+    );
+
     return (
         <Box sx={styles.gridContainer}>
             {showLoader && <LinearProgress sx={{ height: 4 }} />}
@@ -113,6 +122,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
                     columnDefs={columns}
                     onRowDataUpdated={handleRowDataUpdated}
                     onGridReady={onGridReady}
+                    onDisplayedColumnsChanged={handleDisplayedColumnsChanged}
                     overlayNoRowsTemplate={noRowMessage}
                     overrideLocales={AGGRID_LOCALES}
                     onModelUpdated={({ api }) => {

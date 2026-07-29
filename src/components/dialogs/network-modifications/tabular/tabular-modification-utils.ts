@@ -6,6 +6,7 @@
  */
 
 import {
+    APPLICABILITY,
     CONNECTION_DIRECTIONS,
     convertInputValue,
     convertOutputValue,
@@ -13,8 +14,10 @@ import {
     FieldConstants,
     FieldType,
     MODIFICATION_TYPES,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     ReactiveCapabilityCurvePoints,
     SHUNT_COMPENSATOR_TYPES,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
     toModificationOperation,
 } from '@gridsuite/commons-ui';
 import {
@@ -55,7 +58,6 @@ import {
     MIN_P,
     MODIFICATION_TYPE,
     NOMINAL_V,
-    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     P0,
     PARTICIPATE,
     PERMANENT_LIMIT,
@@ -91,7 +93,6 @@ import {
     TARGET_Q,
     TARGET_V,
     TEMPORARY_LIMIT_DURATION,
-    TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS_MODIFICATION_TYPE,
@@ -99,7 +100,6 @@ import {
     X,
 } from 'components/utils/field-constants';
 import {
-    APPLICABILITY,
     BOOLEAN,
     ENUM,
     LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
@@ -184,9 +184,13 @@ export const LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS: TabularField[] =
 ];
 
 export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
-    SUBSTATION: [{ id: EQUIPMENT_ID }, { id: FieldConstants.EQUIPMENT_NAME }, { id: FieldConstants.COUNTRY }],
+    SUBSTATION: [
+        { id: EQUIPMENT_ID, required: true },
+        { id: FieldConstants.EQUIPMENT_NAME },
+        { id: FieldConstants.COUNTRY },
+    ],
     VOLTAGE_LEVEL: [
-        { id: EQUIPMENT_ID },
+        { id: EQUIPMENT_ID, required: true },
         { id: FieldConstants.EQUIPMENT_NAME },
         { id: NOMINAL_V, type: NUMBER },
         { id: LOW_VOLTAGE_LIMIT, type: NUMBER },
@@ -195,7 +199,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         { id: IP_MAX, type: NUMBER },
     ],
     LINE: [
-        { id: EQUIPMENT_ID },
+        { id: EQUIPMENT_ID, required: true },
         { id: FieldConstants.EQUIPMENT_NAME },
         { id: R, type: NUMBER },
         { id: X, type: NUMBER },
@@ -206,7 +210,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         ...TWO_SIDES_CONNECTION_FIELDS,
     ],
     TWO_WINDINGS_TRANSFORMER: [
-        { id: EQUIPMENT_ID },
+        { id: EQUIPMENT_ID, required: true },
         { id: FieldConstants.EQUIPMENT_NAME },
         { id: R, type: NUMBER },
         { id: X, type: NUMBER },
@@ -224,7 +228,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         },
     ],
     GENERATOR: [
-        { id: EQUIPMENT_ID },
+        { id: EQUIPMENT_ID, required: true },
         { id: FieldConstants.EQUIPMENT_NAME },
         { id: ENERGY_SOURCE, type: ENUM, options: ENERGY_SOURCES.map((energy) => energy.id) },
         ...CONNECTION_FIELDS,
@@ -252,7 +256,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         { id: FieldConstants.FORCED_OUTAGE_RATE, type: NUMBER },
     ],
     LOAD: [
-        { id: EQUIPMENT_ID },
+        { id: EQUIPMENT_ID, required: true },
         { id: FieldConstants.EQUIPMENT_NAME },
         {
             id: LOAD_TYPE,
@@ -264,7 +268,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         { id: Q0, type: NUMBER },
     ],
     BATTERY: [
-        { id: EQUIPMENT_ID },
+        { id: EQUIPMENT_ID, required: true },
         { id: FieldConstants.EQUIPMENT_NAME },
         ...CONNECTION_FIELDS,
         { id: MIN_P, type: NUMBER },
@@ -278,7 +282,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         { id: FieldConstants.DROOP, type: NUMBER },
     ],
     SHUNT_COMPENSATOR: [
-        { id: EQUIPMENT_ID },
+        { id: EQUIPMENT_ID, required: true },
         { id: FieldConstants.EQUIPMENT_NAME },
         ...CONNECTION_FIELDS,
         { id: MAXIMUM_SECTION_COUNT, type: NUMBER },

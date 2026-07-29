@@ -13,7 +13,6 @@ import {
     APPLY_SEGMENTS_LIMITS,
     AREA,
     FINAL_CURRENT_LIMITS,
-    LINE_SEGMENTS,
     SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_REACTANCE,
@@ -33,26 +32,27 @@ import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
 import { calculateReactance, calculateResistance, calculateSusceptance } from '../../utils/utils';
 import {
+    AreaTemperatureShapeFactorInfo,
+    CurrentLimitsInfo,
     CustomAGGrid,
     DefaultCellRenderer,
+    emptyLineSegment,
     ExpandableInput,
     ExpandableInputHandle,
     fetchStudyMetadata,
+    LimitSelectedRowData,
+    LineTypeInfo,
     type MuiStyles,
     ReadOnlyInput,
+    SegmentFormData,
     snackWithFallback,
     SwitchInput,
     useSnackMessage,
+    SegmentInfoFormData,
+    SegmentsFormData,
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
 import { GridItem } from '../commons/grid-item';
-import {
-    AreaTemperatureShapeFactorInfo,
-    CurrentLimitsInfo,
-    LimitSelectedRowData,
-    LineTypeInfo,
-} from './line-catalog.type';
-import { emptyLineSegment, SegmentFormData, SegmentsFormData } from './segment-utils';
 import { ColDef } from 'ag-grid-community';
 import { GridSection } from '../commons/grid-section';
 
@@ -198,7 +198,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         setValue(FINAL_CURRENT_LIMITS, Array.from(mostContrainingLimits.values()));
     }, [getValues, setValue, setCurrentLimitResult]);
 
-    const getSegmentLimits = useCallback((segment: SegmentFormData) => {
+    const getSegmentLimits = useCallback((segment: SegmentInfoFormData) => {
         return getLineTypeWithLimits(
             segment[SEGMENT_TYPE_ID],
             segment[AREA],
@@ -217,11 +217,11 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
             return {
                 ...emptyLineSegment,
                 [SEGMENT_TYPE_ID]: segment[SEGMENT_TYPE_ID],
-                [SEGMENT_TYPE_VALUE]: lineTypeWithLimits?.type ?? '',
+                [SEGMENT_DISTANCE_VALUE]: segment[SEGMENT_DISTANCE_VALUE],
                 [AREA]: segment[AREA],
                 [TEMPERATURE]: segment[TEMPERATURE],
                 [SHAPE_FACTOR]: segment[SHAPE_FACTOR],
-                [SEGMENT_DISTANCE_VALUE]: segment[SEGMENT_DISTANCE_VALUE],
+                [SEGMENT_TYPE_VALUE]: lineTypeWithLimits?.type ?? '',
                 [SEGMENT_RESISTANCE]: newResistance,
                 [SEGMENT_REACTANCE]: newReactance,
                 [SEGMENT_SUSCEPTANCE]: newSusceptance,
@@ -231,13 +231,12 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        if (!editData?.[LINE_SEGMENTS]?.length) {
+        if (!editData?.lineSegments?.length) {
             return;
         }
         arrayRef.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
-            const promises = editData[LINE_SEGMENTS]?.map((segment) => getSegmentLimits(segment));
-
+            const promises = editData?.lineSegments?.map((segment) => getSegmentLimits(segment));
             try {
                 if (promises) {
                     const segmentsWithLimits = await Promise.all(promises);
