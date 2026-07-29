@@ -26,7 +26,18 @@ import {
     type UserAction,
     type UserValidationErrorAction,
     EquipmentType,
+    addGlobalFilterId,
+    getGlobalFilterId,
+    GlobalFilter,
+    RecentGlobalFilter,
+    addSelectedGlobalFiltersToTableState,
+    clearSelectedGlobalFiltersFromTableState,
+    markNotFoundGlobalFiltersAsDeletedInState,
+    MAX_RECENT_GLOBAL_FILTERS,
+    removeSelectedGlobalFiltersFromTableState,
+    isCriteriaFilter,
 } from '@gridsuite/commons-ui';
+
 import {
     ADD_GLOBAL_FILTERS,
     ADD_NOTIFICATION,
@@ -290,21 +301,6 @@ import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
-import {
-    addGlobalFilterId,
-    getGlobalFilterId,
-} from '../components/results/common/global-filter/utils/global-filter-utils';
-import type {
-    GlobalFilter,
-    RecentGlobalFilter,
-} from '../components/results/common/global-filter/types/global-filter.type';
-import {
-    addSelectedGlobalFiltersToTableState,
-    clearSelectedGlobalFiltersFromTableState,
-    markNotFoundGlobalFiltersAsDeletedInState,
-    MAX_RECENT_GLOBAL_FILTERS,
-    removeSelectedGlobalFiltersFromTableState,
-} from '../components/results/common/global-filter/utils/global-filter-state.utils';
 
 // Types are defined in reducer.type.ts — import them directly from there
 import {
@@ -315,7 +311,6 @@ import {
     type SpreadsheetNetworkState,
     type Substation,
 } from './reducer.type';
-import { isCriteriaFilter } from '../components/results/common/global-filter/types/filter.type';
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
     switch (updateType) {

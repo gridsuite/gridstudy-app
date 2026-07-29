@@ -8,22 +8,20 @@
 import GlobalFilterProvider from './adapter/global-filter-provider';
 import { TableType } from '../../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, GlobalFilterPanel, GlobalFilterType } from '@gridsuite/commons-ui';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 
-import { FilterType } from './types/filter.type';
-import GlobalFilter from './ui/global-filter';
 import { useEffect, useState } from 'react';
 import { fetchSubstationPropertiesGlobalFilters } from './adapter/global-filter-app-data';
 
 export type GlobalFilterSelectorProps = {
-    filterCategories?: FilterType[];
+    filterCategories?: GlobalFilterType[];
     filterableEquipmentTypes: EquipmentType[];
     genericFiltersStrictMode?: boolean;
     tableType: TableType;
     tableUuid?: UUID;
 };
-const defaultFilterCategories = Object.values(FilterType) as FilterType[];
+const defaultFilterCategories = Object.values(GlobalFilterType) as GlobalFilterType[];
 export default function GlobalFilterSelector({
     filterCategories = defaultFilterCategories,
     filterableEquipmentTypes,
@@ -43,7 +41,7 @@ export default function GlobalFilterSelector({
 
     return (
         <GlobalFilterProvider tableType={tableType} tableUuid={tableUuid ?? tableType}>
-            <GlobalFilter
+            <GlobalFilterPanel
                 translateCountryCode={translateCountryCode}
                 filterCategories={filterCategories}
                 genericFiltersStrictMode={genericFiltersStrictMode}

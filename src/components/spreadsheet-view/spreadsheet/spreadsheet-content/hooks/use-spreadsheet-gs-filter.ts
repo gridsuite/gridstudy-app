@@ -14,7 +14,7 @@ import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 import { useGlobalFilterResults } from '../../../../results/common/global-filter/hooks/use-global-filter-results';
 import { FilterEquipmentType } from '../../../../../types/filter-lib/filter';
 import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/hooks/use-selected-global-filters';
-import { buildValidGlobalFilters } from '../../../../results/common/global-filter/utils/build-valid-global-filters';
+import { buildValidGlobalFilters } from '@gridsuite/commons-ui';
 
 export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
     event.api.refreshCells({ columns: [ROW_INDEX_COLUMN_ID], force: true });
