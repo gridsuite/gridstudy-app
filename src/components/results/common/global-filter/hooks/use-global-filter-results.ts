@@ -13,7 +13,8 @@ import {
     useDebounce,
     useSnackMessage,
     GlobalFilter,
-    buildValidGlobalFilters, GlobalFilters,
+    buildValidGlobalFilters,
+    GlobalFilters,
 } from '@gridsuite/commons-ui';
 import { evaluateGlobalFilter } from '../../../../../services/study/filter';
 import type { AppState } from '../../../../../redux/reducer.type';

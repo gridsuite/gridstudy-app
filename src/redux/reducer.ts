@@ -35,7 +35,6 @@ import {
     markNotFoundGlobalFiltersAsDeletedInState,
     MAX_RECENT_GLOBAL_FILTERS,
     removeSelectedGlobalFiltersFromTableState,
-    isCriteriaFilter,
 } from '@gridsuite/commons-ui';
 
 import {
