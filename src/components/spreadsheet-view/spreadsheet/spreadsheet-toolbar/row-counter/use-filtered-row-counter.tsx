@@ -7,7 +7,7 @@
 
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
-import { type ReactElement, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -22,6 +22,7 @@ type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact | null>;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
+    isGlobalFilterPending: boolean;
 };
 
 export type UseFilteredRowCounterInfoReturn = {
@@ -37,6 +38,7 @@ export function useFilteredRowCounterInfo({
     gridRef,
     tableDefinition,
     disabled,
+    isGlobalFilterPending,
 }: UseFilteredRowCounterInfoParams): UseFilteredRowCounterInfoReturn {
     const intl = useIntl();
     const [displayedRows, setDisplayedRows] = useState<number | null>(null);
@@ -52,10 +54,17 @@ export function useFilteredRowCounterInfo({
         (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet]?.[tableDefinition?.uuid]
     );
 
+    const isGlobalFilterPendingRef = useRef(isGlobalFilterPending);
+
     // Update is debounced to avoid displayed row count falsely set to 0 because of AG Grid internal behaviour which briefly set row count to 0 in between filters
     const debouncedUpdateRowCounter = useMemo(
         () =>
             debounce(() => {
+                // the grid rejects every row while the global filter is evaluated: skip that intermediate count,
+                // the counter is refreshed once the evaluation has resolved
+                if (isGlobalFilterPendingRef.current) {
+                    return;
+                }
                 if (!gridRef.current?.api || !currentNode || disabled) {
                     setDisplayedRows(0);
                     setTotalRows(0);
@@ -73,6 +82,16 @@ export function useFilteredRowCounterInfo({
     useEffect(() => {
         setIsLoading(true);
     }, [currentRootNetworkUuid]);
+
+    // A global filter evaluation makes the grid go through two filtering passes (rows dropped while pending, then
+    // restored with the evaluated ids). Stay loading across both, so the counter spins once instead of twice.
+    useEffect(() => {
+        isGlobalFilterPendingRef.current = isGlobalFilterPending;
+        if (!isGlobalFilterPending) {
+            // the updates skipped while pending are replayed here, even if AG Grid emits no further event
+            debouncedUpdateRowCounter();
+        }
+    }, [debouncedUpdateRowCounter, isGlobalFilterPending]);
 
     const onFilterChanged = useCallback((event: FilterChangedEvent) => {
         setIsAnyFilterPresent(event.api.isAnyFilterPresent());
@@ -105,6 +124,8 @@ export function useFilteredRowCounterInfo({
         }
     }, [currentNode, debouncedUpdateRowCounter, disabled, gridRef]);
 
+    const isCounterLoading = isLoading || isGlobalFilterPending;
+
     const rowCountLabel = useMemo(() => {
         if (displayedRows === 0 && isAnyFilterPresent) {
             return intl.formatMessage({ id: 'NoMatch' });
@@ -115,7 +136,7 @@ export function useFilteredRowCounterInfo({
     }, [displayedRows, totalRows, intl, isAnyFilterPresent]);
 
     const filtersSummary = useMemo(() => {
-        if (isLoading || !isAnyFilterPresent) {
+        if (isCounterLoading || !isAnyFilterPresent) {
             return;
         }
         const gsFilterByType = globalFilterSpreadsheetState?.reduce<Record<string, string[]>>((acc, item) => {
@@ -149,7 +170,14 @@ export function useFilteredRowCounterInfo({
             }
         }
         return <span style={{ whiteSpace: 'pre-line' }}>{lines.join('\n')}</span>;
-    }, [globalFilterSpreadsheetState, gridRef, intl, isAnyFilterPresent, isLoading, spreadsheetColumnsFiltersState]);
+    }, [
+        globalFilterSpreadsheetState,
+        gridRef,
+        intl,
+        isAnyFilterPresent,
+        isCounterLoading,
+        spreadsheetColumnsFiltersState,
+    ]);
 
     const tooltipContent = useMemo(
         () =>
@@ -162,7 +190,7 @@ export function useFilteredRowCounterInfo({
     );
 
     return {
-        isLoading,
+        isLoading: isCounterLoading,
         isAnyFilterPresent,
         rowCountLabel,
         tooltipContent,
