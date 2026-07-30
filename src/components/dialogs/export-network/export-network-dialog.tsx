@@ -16,6 +16,7 @@ import {
     DirectoryItemSchema,
     ElementType,
     fetchDirectoryElementPath,
+    isDisabledValidationButton,
     PARAM_DEVELOPER_MODE,
     Parameter,
     SelectInput,
@@ -107,11 +108,6 @@ export function ExportNetworkDialog({
     } = methods;
     const intl = useIntl();
 
-    // due to the use of UniqueNameInput, we need to disable the validate button while the name is being validated
-    const nameError = errors[FILE_NAME];
-    const isValidating = errors.root?.isValidating;
-    const disabledSave = Boolean(nameError || isValidating);
-
     // fetch study name to build the default file name
     useEffect(() => {
         if (studyUuid) {
@@ -197,7 +193,7 @@ export function ExportNetworkDialog({
                 ...methods,
                 validationSchema: schema,
             }}
-            disabledSave={disabledSave}
+            disabledSave={isDisabledValidationButton(errors, FILE_NAME)}
             onSave={onSubmit}
             titleId="exportNetwork"
             sx={{
