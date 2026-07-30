@@ -228,7 +228,6 @@ export default function BatteryModificationDialog({
         [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
 
-
     return (
         <CustomFormProvider
             validationSchema={batteryModificationFormSchema}
