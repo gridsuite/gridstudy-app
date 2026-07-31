@@ -25,7 +25,6 @@ import {
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
-    mergeSx,
     type MuiStyles,
     MultipleAutocompleteInput,
     snackWithFallback,
