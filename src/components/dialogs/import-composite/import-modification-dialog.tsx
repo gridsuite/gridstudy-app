@@ -269,7 +269,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             isShared: action === CompositeModificationAction.INSERT ? m.isShared : false,
             description: m.description,
         }));
-        console.log('????????? ', modificationsToInsert);
         insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, action).catch((error) =>
             snackWithFallback(snackError, error, { headerId: 'importComposites.error' })
         );
