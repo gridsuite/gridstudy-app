@@ -84,6 +84,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     }));
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<ErrorMessageDescriptor | undefined>();
+    const [isEditNadMode, setIsEditNadMode] = useState(false);
 
     const abortControllerRef = useRef<AbortController | undefined>(undefined);
 
@@ -257,6 +258,53 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         }
     }, [diagram, studyUuid, workspaceId, panelId, setDiagramAndSync]);
 
+    // Mirrors of the current values, so that applyPendingNadEdit below can stay stable: it is registered as
+    // an event listener, which would otherwise have to be resubscribed on every render to stay up to date
+    const saveNadRef = useRef(handleSaveNad);
+    saveNadRef.current = handleSaveNad;
+    const isEditNadModeRef = useRef(isEditNadMode);
+
+    const setEditNadMode = useCallback((newMode: boolean) => {
+        isEditNadModeRef.current = newMode;
+        setIsEditNadMode(newMode);
+    }, []);
+
+    /**
+     * Saves the pending node moves, exactly as an explicit "apply" would, and leaves edit mode.
+     * Returns the pending save, or null when there is nothing to apply.
+     */
+    const applyPendingNadEdit = useCallback(() => {
+        // The ref, not the state: two triggers landing in the same tick must not save twice
+        if (!isEditNadModeRef.current) {
+            return null;
+        }
+        setEditNadMode(false);
+        return saveNadRef.current();
+    }, [setEditNadMode]);
+
+    // Any NAD refresh triggered from outside the diagram (node change, loadflow, network modification...)
+    // first applies the pending moves, otherwise the incoming SVG would silently discard them.
+    const applyPendingNadEditThenFetch = useCallback(() => {
+        const pendingSave = applyPendingNadEdit();
+        if (pendingSave) {
+            // Wait for the save so the refetch uses the freshly saved config and positions
+            pendingSave.finally(() => fetchDiagram());
+        } else {
+            fetchDiagram();
+        }
+    }, [applyPendingNadEdit, fetchDiagram]);
+
+    const toggleEditNadMode = useCallback(
+        (newMode: boolean) => {
+            if (newMode) {
+                setEditNadMode(true);
+            } else {
+                applyPendingNadEdit();
+            }
+        },
+        [applyPendingNadEdit, setEditNadMode]
+    );
+
     const replaceNadConfig = useCallback(
         (title: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
             // Cleanup saved config if exists
@@ -282,7 +330,9 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const handleNotification = useCallback(
         (newConfigUuid?: UUID) => {
             if (newConfigUuid) {
-                // NAD config updated from another tab
+                // NAD config updated from another tab: that config wins, so we leave edit mode without
+                // saving, as saving would overwrite the positions the other tab just applied.
+                setEditNadMode(false);
                 updateDiagram(
                     {
                         currentNadConfigUuid: newConfigUuid,
@@ -296,16 +346,26 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 );
             } else {
                 // Root network notification (loadflow, etc.)
-                fetchDiagram();
+                applyPendingNadEditThenFetch();
             }
         },
-        [updateDiagram, fetchDiagram]
+        [updateDiagram, applyPendingNadEditThenFetch, setEditNadMode]
     );
 
     // Initial fetch and when node or root network changes
     useEffect(() => {
-        fetchDiagram();
-    }, [currentNodeId, currentRootNetworkUuid, fetchDiagram]);
+        applyPendingNadEditThenFetch();
+    }, [currentNodeId, currentRootNetworkUuid, applyPendingNadEditThenFetch]);
+
+    // Apply the pending moves when switching workspace: the event is dispatched before the store changes,
+    // so the panel is still mounted and the save still targets the workspace the diagram belongs to.
+    // Closing the panel deliberately discards them instead, so there is nothing to do on unmount.
+    useEffect(() => {
+        globalThis.addEventListener('workspace:switchWorkspace', applyPendingNadEdit);
+        return () => {
+            globalThis.removeEventListener('workspace:switchWorkspace', applyPendingNadEdit);
+        };
+    }, [applyPendingNadEdit]);
 
     // Sync cross-tab updates
     useEffect(() => {
@@ -363,7 +423,8 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         globalError,
         fetchDiagram,
         updateDiagram,
-        handleSaveNad,
+        isEditNadMode,
+        toggleEditNadMode,
         replaceNadConfig,
         moveNode,
         moveTextNode,

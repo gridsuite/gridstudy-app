@@ -86,7 +86,8 @@ type NetworkAreaDiagramContentProps = {
     readonly onMoveNode: (voltageLevelId: string, x: number, y: number) => void;
     readonly onMoveTextNode: (voltageLevelId: string, shiftX: number, shiftY: number) => void;
     readonly onReplaceNad: (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => void;
-    readonly onSaveNad?: () => void;
+    readonly isEditNadMode: boolean;
+    readonly onToggleEditNadMode: (isEditMode: boolean) => void;
 };
 
 const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
@@ -112,7 +113,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         loadingState,
         isNadCreationFromFilter,
         showInSpreadsheet,
-        onSaveNad,
+        isEditNadMode,
+        onToggleEditNadMode,
     } = props;
     const svgRef = useRef(null);
     const { snackError, snackInfo } = useSnackMessage();
@@ -128,7 +130,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
     const workspaceId = useSelector(selectActiveWorkspaceId);
 
     // Workaround for https://github.com/react/react/issues/35187 and https://github.com/react/react/issues/35034:
@@ -162,17 +163,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     if (diagramViewerRef.current) {
         diagramViewerRef.current.enableDragInteraction = isEditNadMode;
     }
-
-    // save nad when exiting edit mode
-    const handleSetIsEditNadMode = useCallback(
-        (newMode: boolean) => {
-            if (isEditNadMode && !newMode) {
-                onSaveNad?.();
-            }
-            setIsEditNadMode(newMode);
-        },
-        [isEditNadMode, onSaveNad]
-    );
 
     const handleToggleHover: OnToggleNadHoverCallbackType = useEffectEvent(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
@@ -600,7 +590,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 onUpdate={handleUpdateNadConfig}
                 onLoad={handleReplaceNadConfig}
                 isEditNadMode={isEditNadMode}
-                onToggleEditNadMode={handleSetIsEditNadMode}
+                onToggleEditNadMode={onToggleEditNadMode}
                 onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                 onAddVoltageLevel={handleAddVoltageLevel}
                 onAddVoltageLevelsFromFilter={handleAddVoltageLevelsFromFilter}
