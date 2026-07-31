@@ -33,7 +33,7 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import type { UUID } from 'node:crypto';
 import { ColDef, DisplayedColumnsChangedEvent, GridApi, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { PaginationType, ShortcircuitAnalysisTab, TableType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import {
@@ -52,8 +52,8 @@ import {
     ShortCircuitCsvExportParams,
 } from '../../../services/study/short-circuit-analysis';
 import { downloadZipFile } from '../../../services/utils';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { getSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
+import { getSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;

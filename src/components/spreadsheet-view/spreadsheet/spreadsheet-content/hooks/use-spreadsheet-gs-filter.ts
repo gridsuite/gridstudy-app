@@ -11,10 +11,10 @@ import type { UUID } from 'node:crypto';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
-import { useGlobalFilterResults } from '../../../../results/common/global-filter/use-global-filter-results';
+import { useGlobalFilterResults } from '../../../../results/common/global-filter/hooks/use-global-filter-results';
 import { FilterEquipmentType } from '../../../../../types/filter-lib/filter';
-import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/use-selected-global-filters';
-import { buildValidGlobalFilters } from '../../../../results/common/global-filter/build-valid-global-filters';
+import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/hooks/use-selected-global-filters';
+import { buildValidGlobalFilters } from '../../../../results/common/global-filter/utils/build-valid-global-filters';
 
 export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
     event.api.refreshCells({ columns: [ROW_INDEX_COLUMN_ID], force: true });
@@ -35,18 +35,27 @@ export function useSpreadsheetGlobalFilter<TData extends ObjWithId = ObjWithId>(
                 : ([equipmentType as unknown as FilterEquipmentType] as const),
         [equipmentType]
     );
-    const filteredEquipmentIds = useGlobalFilterResults(selectedGlobalFilters, equipmentTypes);
-    useEffect(() => {
-        gridRef.current?.api?.onFilterChanged();
-    }, [filteredEquipmentIds, gridRef]);
+    const { filteredIds: filteredEquipmentIds, isPending } = useGlobalFilterResults(
+        selectedGlobalFilters,
+        equipmentTypes
+    );
     // Check if the equipment of the row belongs to the filtered equipments
     const doesFormulaFilteringPass = useCallback<NonNullable<GridOptions<TData>['doesExternalFilterPass']>>(
-        (node) => node.data?.id !== undefined && (filteredEquipmentIds?.includes(node.data?.id) ?? true),
-        [filteredEquipmentIds]
+        (node) => {
+            // while the filter is being evaluated, no row passes: the grid must never show unfiltered data
+            if (isPending) {
+                return false;
+            }
+            return node.data?.id !== undefined && (filteredEquipmentIds?.includes(node.data?.id) ?? true);
+        },
+        [filteredEquipmentIds, isPending]
     );
     const isExternalFilterPresent = useCallback<NonNullable<GridOptions<TData>['isExternalFilterPresent']>>(() => {
         const globalFilters = buildValidGlobalFilters(selectedGlobalFilters);
         return globalFilters != null;
     }, [selectedGlobalFilters]);
-    return { doesFormulaFilteringPass, isExternalFilterPresent };
+    useEffect(() => {
+        gridRef.current?.api?.onFilterChanged();
+    }, [filteredEquipmentIds, isPending, isExternalFilterPresent, gridRef]);
+    return { doesFormulaFilteringPass, isExternalFilterPresent, isGlobalFilterPending: isPending };
 }
