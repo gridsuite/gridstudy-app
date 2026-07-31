@@ -511,10 +511,26 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 (property: TabularProperty) => property.name
             ) ?? [];
         if (newSelectedProperties.toString() !== selectedProperties.toString()) {
-            // new columns => reset table
+            // sync property columns on existing rows without discarding their data
             clearErrors(MODIFICATIONS_TABLE);
-            tableRef.current?.replace([]);
-            setValue(CSV_FILENAME, undefined);
+            const removedPropertyColumns = selectedProperties
+                .filter((name) => !newSelectedProperties.includes(name))
+                .map((name) => PROPERTY_CSV_COLUMN_PREFIX + name);
+            const addedPropertyColumns = newSelectedProperties
+                .filter((name) => !selectedProperties.includes(name))
+                .map((name) => PROPERTY_CSV_COLUMN_PREFIX + name);
+            const currentRows = (getValues(MODIFICATIONS_TABLE) ?? []) as Record<string, unknown>[];
+            const updatedRows = currentRows.map((row) => {
+                const newRow = { ...row };
+                removedPropertyColumns.forEach((col) => {
+                    delete newRow[col];
+                });
+                addedPropertyColumns.forEach((col) => {
+                    newRow[col] = '';
+                });
+                return newRow;
+            });
+            tableRef.current?.replace(updatedRows);
         }
         setValue(TABULAR_PROPERTIES, formData[TABULAR_PROPERTIES], { shouldDirty: true });
     };
