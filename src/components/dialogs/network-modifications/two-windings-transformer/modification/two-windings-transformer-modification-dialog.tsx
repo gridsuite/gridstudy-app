@@ -916,7 +916,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             <TwoWindingsTransformerCharacteristicsPane twtToModify={twtToModify} isModification />
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.LIMITS_TAB} p={1}>
-                            <LimitsPane equipmentToModify={twtToModify as BranchInfos} clearableFields />
+                            <LimitsPane equipmentToModify={twtToModify as BranchInfos} isModification />
                         </Box>
                         <Box
                             hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.STATE_ESTIMATION_TAB}
