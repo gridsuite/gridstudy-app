@@ -16,3 +16,5 @@ export const DC_RESISTANCE_MUST_BE_GREATER_OR_EQUAL_TO_ZERO = 'dcResistanceMustB
 export const MAX_P_MUST_BE_GREATER_OR_EQUAL_TO_ZERO = 'maxPMustBeGreaterOrEqualToZero';
 export const ACTIVE_POWER_SETPOINT_MAX_VALUE_ERROR = 'activePowerSetpointMaxValueError';
 export const ACTIVE_POWER_SETPOINT_MIN_VALUE_ERROR = 'activePowerSetpointMinValueError';
+export const AMOUNT_TEMPORARY_LIMITS_ERROR = 'amountTemporaryLimitsError';
+export const POWER_FACTOR_INTERVAL_VALUE_ERROR = 'powerFactorIntervalValueError';

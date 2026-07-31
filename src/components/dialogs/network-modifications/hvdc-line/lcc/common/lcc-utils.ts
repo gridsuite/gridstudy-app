@@ -66,6 +66,7 @@ import {
     DC_RESISTANCE_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
     MAX_P_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
     NOMINAL_V_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
+    POWER_FACTOR_INTERVAL_VALUE_ERROR,
     Q_MAX_AT_NOMINAL_V_MUST_BE_GREATER_THAN_ZERO,
 } from 'utils/translationKeys';
 
@@ -106,8 +107,8 @@ export const getLccConverterStationModificationSchema = () =>
         [POWER_FACTOR]: yup
             .number()
             .nullable()
-            .min(0, 'powerFactorIntervalValueError')
-            .max(1, 'powerFactorIntervalValueError'),
+            .min(0, POWER_FACTOR_INTERVAL_VALUE_ERROR)
+            .max(1, POWER_FACTOR_INTERVAL_VALUE_ERROR),
         [FILTERS_SHUNT_COMPENSATOR_TABLE]: yup
             .array()
             .of(
