@@ -17,7 +17,6 @@ import {
     SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO,
     TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
     VARIATION_LIST_EMPTY,
-    WRONG_REF_OR_VALUE_ERROR,
 } from '../utils/translationKeys';
 
 const messages_en = {
@@ -30,7 +29,6 @@ const messages_en = {
 
     'button.delete': 'Delete',
     'button.continue': 'Continue',
-    filter: 'Filter',
 
     deleteStudy: 'Delete Study',
     studyNameDidNotMatchMsg: 'The given study name did not match with ',
@@ -773,8 +771,6 @@ const messages_en = {
     [TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'Deadband value must be greater than or equal to 0',
     LowTapPosition: 'Low tap position',
     HighTapPosition: 'High tap position',
-    RatioHighTapPosition: 'Ratio high tap position',
-    PhaseHighTapPosition: 'Phase high tap position',
     TapPosition: 'Tap position',
     HighTapPositionError: 'High tap position must be between low tap and 100',
     TapPositionMustBeBetweenLowAndHighTapPositionValue:
@@ -869,8 +865,6 @@ const messages_en = {
     'PrefilledColumn.ReactivePowerLimits': 'Reactive power limits',
     'PrefilledColumn.ReactiveCapabilityCurve': 'Reactive capability curve',
 
-    G: 'Magnetizing conductance',
-    B: 'Magnetizing susceptance',
     RatedVoltage: 'Rated voltage',
     TwoWindingsTransformerCreationError: 'Error while creating a 2 windings transformer',
     NewName: 'New name',
@@ -1148,17 +1142,9 @@ const messages_en = {
     checkRootNetworkIndexationError: 'Root Network indexation checking has failed.',
     rootNetworkIndexationStatusUnknown: 'Root Network indexation status unknown : "{status}".',
 
-    ReferenceFieldOrValue: 'Reference field or value',
-    Operator: 'Operator',
 
     ModifyByFormula: 'Modify by formula',
     ModifyByAssignment: 'Modify by filter',
-    UseDashToSelectField: 'Use # to select a field',
-    [WRONG_REF_OR_VALUE_ERROR]:
-        'Please enter a valid numeric value or a valid field reference. Use # to select a field',
-    ValueMustBeNumericWhenPercentageError: 'When using %, this field must be a valid positive numeric value',
-    ValueMustBeRefWhenPercentageError: 'When using %, this field must be a valid field reference',
-    addNewFormula: 'Add new formula',
     waitingRootNetworkIndexation: 'Waiting for root network indexation...',
     undefined: 'undefined',
     GenerationStages: 'Stages',

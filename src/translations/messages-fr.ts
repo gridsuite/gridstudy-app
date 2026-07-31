@@ -17,7 +17,6 @@ import {
     SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO,
     TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
     VARIATION_LIST_EMPTY,
-    WRONG_REF_OR_VALUE_ERROR,
 } from '../utils/translationKeys';
 
 const messages_fr = {
@@ -30,7 +29,6 @@ const messages_fr = {
 
     'button.delete': 'Supprimer',
     'button.continue': 'Continuer',
-    filter: 'Filtre',
 
     deleteStudy: "Supprimer l'étude",
     studyNameDidNotMatchMsg: "Le nom d'étude donné ne correspond pas à ",
@@ -778,8 +776,6 @@ const messages_fr = {
     [TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'La valeur de la bande morte doit être supérieure ou égale à 0',
     LowTapPosition: 'Prise min',
     HighTapPosition: 'Prise max',
-    RatioHighTapPosition: 'Prise max régleur',
-    PhaseHighTapPosition: 'Prise max déphaseur',
     TapPosition: 'Prise courante',
     HighTapPositionError: 'La valeur de la prise max doit être comprise entre la prise min et 100',
     TapPositionMustBeBetweenLowAndHighTapPositionValue:
@@ -876,8 +872,6 @@ const messages_fr = {
     'PrefilledColumn.ReactivePowerLimits': 'Limites puissance réactive',
     'PrefilledColumn.ReactiveCapabilityCurve': 'Diagramme de groupe',
 
-    G: 'Conductance magnétisante',
-    B: 'Susceptance magnétisante',
     RatedVoltage: "Tension d'enroulement",
     TwoWindingsTransformerCreationError: "Erreur lors de la création d'un transformateur à 2 enroulements",
     NewName: 'Nouveau nom',
@@ -1163,17 +1157,8 @@ const messages_fr = {
     rootNetworkIndexationError: "L'indexation de réseau racine a échoué.",
     checkRootNetworkIndexationError: "La récupération de l'état d'indexation du réseau racine a échoué.",
     rootNetworkIndexationStatusUnknown: 'L\'état d\'indexation du réseau racine est inconnu : "{status}".',
-    ReferenceFieldOrValue: 'Champ de référence ou valeur',
-    Operator: 'Opérateur',
     ModifyByFormula: 'Modification par formule',
     ModifyByAssignment: 'Modification par filtre',
-    UseDashToSelectField: 'Utiliser # pour sélectionner un champ',
-    [WRONG_REF_OR_VALUE_ERROR]:
-        'Veuillez saisir une valeur numérique valide ou une référence de champ valide. Utiliser # pour sélectionner un champ',
-    ValueMustBeNumericWhenPercentageError:
-        "Lors de l'utilisation de %, ce champ doit être une valeur numérique positive valide",
-    ValueMustBeRefWhenPercentageError: "Lors de l'utilisation de %, ce champ doit être une référence de champ valide",
-    addNewFormula: 'Ajouter une nouvelle formule',
     waitingRootNetworkIndexation: "En attente de l'indexation de réseau racine...",
     undefined: 'non défini',
     GenerationStages: 'Paliers',

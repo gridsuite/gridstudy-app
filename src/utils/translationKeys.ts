@@ -7,7 +7,6 @@
 
 export const OUT_OF_BOUNDS_PERCENTAGE = 'OutOfBoundsPercentage';
 export const SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO = 'SegmentDistanceMustBeGreaterThanZero';
-export const WRONG_REF_OR_VALUE_ERROR = 'WrongRefOrValueError';
 export const VARIATION_LIST_EMPTY = 'EmptyList.variations';
 export const MODIFICATIONS_REQUIRED_TAB_ERROR = 'ModificationsRequiredTabError';
 export const TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO = 'TargetDeadbandMustBeGreaterOrEqualToZero';
