@@ -126,6 +126,9 @@ export type SpreadsheetOptionalLoadingParameters = {
     [SpreadsheetEquipmentType.GENERATOR]: {
         regulatingTerminal: boolean;
     };
+    [SpreadsheetEquipmentType.BATTERY]: {
+        regulatingTerminal: boolean;
+    };
     [SpreadsheetEquipmentType.BUS]: {
         networkComponents: boolean;
     };

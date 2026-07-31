@@ -51,6 +51,10 @@ export function useOptionalLoadingParametersForEquipments() {
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
     );
+    const remoteBatteryRegTerm = useSelector(
+        (state: AppState) =>
+            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BATTERY].regulatingTerminal
+    );
     const remoteBusNetworkComponents = useSelector(
         (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BUS].networkComponents
     );
@@ -58,6 +62,7 @@ export function useOptionalLoadingParametersForEquipments() {
     const [lineOlg, setLineOlg] = useState<boolean>(remoteLineOlg);
     const [twtOlg, setTwtOlg] = useState<boolean>(remoteTwtOlg);
     const [generatorRegTerm, setGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
+    const [batteryRegTerm, setBatteryRegTerm] = useState<boolean>(remoteBatteryRegTerm);
     const [busNetworkComponents, setBusNetworkComponents] = useState<boolean>(remoteBusNetworkComponents);
 
     const [loadOptional, setLoadOptional] = useState<OptionalLoadingParameters>(initialOptionalLoadingParameters);
@@ -112,6 +117,17 @@ export function useOptionalLoadingParametersForEquipments() {
                 return { ...prevState, [SpreadsheetEquipmentType.GENERATOR]: true };
             });
         }
+        console.log("remoteBatteryRegTerm", remoteBatteryRegTerm);
+        console.log('batteryRegTerm', batteryRegTerm);
+        if (remoteBatteryRegTerm !== batteryRegTerm && remoteBatteryRegTerm) {
+            setLoadOptional((prevState) => {
+                return { ...prevState, [SpreadsheetEquipmentType.BATTERY]: true };
+            });
+        } else if (remoteBatteryRegTerm !== batteryRegTerm && !remoteBatteryRegTerm) {
+            setCleanOptional((prevState) => {
+                return { ...prevState, [SpreadsheetEquipmentType.BATTERY]: true };
+            });
+        }
         if (remoteBusNetworkComponents !== busNetworkComponents && remoteBusNetworkComponents) {
             setLoadOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.BUS]: true };
@@ -125,12 +141,15 @@ export function useOptionalLoadingParametersForEquipments() {
         setLineOlg(remoteLineOlg);
         setTwtOlg(remoteTwtOlg);
         setGeneratorRegTerm(remoteGeneratorRegTerm);
+        setBatteryRegTerm(remoteBatteryRegTerm);
         setBusNetworkComponents(remoteBusNetworkComponents);
     }, [
+        batteryRegTerm,
         branchOlg,
         busNetworkComponents,
         generatorRegTerm,
         lineOlg,
+        remoteBatteryRegTerm,
         remoteBranchOlg,
         remoteBusNetworkComponents,
         remoteGeneratorRegTerm,
