@@ -595,9 +595,6 @@ const messages_en = {
     ShortCircuit: 'Short-circuit',
     LowShortCircuitCurrentLimit: 'Low short-circuit current limit',
     HighShortCircuitCurrentLimit: 'High short-circuit current limit',
-    ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero:
-        'Short-circuit current limit must be greater than or equal to 0',
-    ShortCircuitCurrentLimitMinMaxError: 'Low short-circuit current limit must be less than or equal to high limit',
     directTransX: 'Transient reactance (Ω)',
     'withoutunit.directTransX': 'Transient reactance',
     stepUpTransformerX: 'Transformer reactance (Ω)',
@@ -605,7 +602,6 @@ const messages_en = {
     plannedActivePowerSetPoint: 'Planning P (MW)',
     'withoutunit.plannedActivePowerSetPoint': 'Planning P',
     RatedNominalPowerMustBeGreaterThanZero: 'The rated nominal power value must be greater than 0',
-    RealPercentage: 'This value must be between 0 and 1',
     reactiveCapabilityCurvePmin: 'Pmin',
     reactiveCapabilityCurveQminPmin: 'QminPmin',
     reactiveCapabilityCurveQmaxPmin: 'QmaxPmin',
@@ -1142,7 +1138,6 @@ const messages_en = {
     checkRootNetworkIndexationError: 'Root Network indexation checking has failed.',
     rootNetworkIndexationStatusUnknown: 'Root Network indexation status unknown : "{status}".',
 
-
     ModifyByFormula: 'Modify by formula',
     ModifyByAssignment: 'Modify by filter',
     waitingRootNetworkIndexation: 'Waiting for root network indexation...',
@@ -1235,8 +1230,6 @@ const messages_en = {
     networkModificationActivationError: 'An error occurred while enabling / disabling modification',
     networkModificationRenamingError: 'An error occurred while renaming the modification',
     AddAutomaton: 'Add an automaton',
-    BusBarCountMustBeGreaterThanOrEqualToOne: 'Number of busbars must be greater than or equal to 1',
-    SectionCountMustBeGreaterThanOrEqualToOne: 'Number of sections must be greater than or equal to 1',
 
     StateEstimationQualityCriterionResults: 'Criterion quality',
     StateEstimationQualityPerRegionResults: 'Quality per region',
@@ -1358,7 +1351,6 @@ const messages_en = {
     CREATE_COUPLING_DEVICE: 'Add a coupling device',
     CreateVoltageLevelSection: 'Add busbar section',
     CreateCouplingDeviceDiagramButton: 'Show voltage level',
-    CreateCouplingDeviceIdenticalBusBar: 'Bus bar section / bus 1 and 2 must be different',
     builtNodeTooltipForDiagram: 'Current diagram taking into account all applied modifications',
     notBuiltNodeTooltipForDiagram: 'Diagram from last build node in current branch',
     CouplingDeviceText: 'Bus bar sections',
@@ -1395,7 +1387,6 @@ const messages_en = {
     showAll: 'Show all',
     gridLayout: 'Grid layout',
     cascadeLayout: 'Cascade layout',
-    CreateSubstationInVoltageLevelIdenticalId: 'Voltage Level ID can not match Substation ID',
     labeledGroupSecurity: 'Security',
     OpenMapCard: 'Show the map',
     MapCard: 'Map',
@@ -1467,7 +1458,6 @@ const messages_en = {
     equipmentID: 'Equipment ID',
     voltageLevelNominalVoltageMinValueError:
         'Nominal voltage must be greater than low voltage limit and less than high voltage limit',
-    voltageLevelNominalVoltageMaxValueError: 'Low voltage limit must be inferior to high voltage limit',
     PccMinTri: 'Pcc min (MVA) ',
     IccMinTri: 'Icc min (kA)',
     rOhm: 'r (Ω)',
