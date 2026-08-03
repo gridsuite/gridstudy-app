@@ -18,6 +18,8 @@ import {
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
     MODIFICATION_TYPES,
+    MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
+    NORMALIZED_PERCENTAGE,
     ReactiveCapabilityCurvePoints,
     sanitizeString,
     toModificationOperation,
@@ -77,12 +79,7 @@ export function getVscConverterStationSchema() {
     return yup.object().shape({
         [CONVERTER_STATION_ID]: yup.string().nullable().required(),
         [CONVERTER_STATION_NAME]: yup.string().nullable(),
-        [LOSS_FACTOR]: yup
-            .number()
-            .nullable()
-            .required()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage'),
+        [LOSS_FACTOR]: yup.number().nullable().required().min(0, NORMALIZED_PERCENTAGE).max(100, NORMALIZED_PERCENTAGE),
         [VOLTAGE_REGULATION_ON]: yup.boolean(),
         [REACTIVE_POWER]: yup
             .number()
@@ -96,7 +93,7 @@ export function getVscConverterStationSchema() {
             .number()
             .nullable()
             .default(null)
-            .min(0, 'mustBeGreaterOrEqualToZero')
+            .min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
             .when([VOLTAGE_REGULATION_ON], {
                 is: true,
                 then: (schema) => schema.required(),
@@ -111,10 +108,10 @@ export function getVscConverterStationModificationSchema(id: string) {
         [id]: yup.object().shape({
             [CONVERTER_STATION_ID]: yup.string(),
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
-            [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
+            [LOSS_FACTOR]: yup.number().nullable().min(0, NORMALIZED_PERCENTAGE).max(100, NORMALIZED_PERCENTAGE),
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
             [REACTIVE_POWER]: yup.number().nullable(),
-            [VOLTAGE]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+            [VOLTAGE]: yup.number().nullable().min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
             [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
             ...getReactiveLimitsSchema(true),
         }),
