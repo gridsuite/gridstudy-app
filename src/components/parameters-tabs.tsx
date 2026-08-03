@@ -31,7 +31,6 @@ import {
 import { getLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import { SelectOptionsDialog } from 'utils/dialogs';
-import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
@@ -58,6 +57,7 @@ import {
     PARAM_LANGUAGE,
     ParameterLayoutProvider,
     PccMinParametersInLine,
+    RunningStatus,
     SecurityAnalysisParametersInline,
     SensitivityAnalysisParametersInline,
     setSecurityAnalysisParameters,

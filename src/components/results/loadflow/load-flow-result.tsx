@@ -12,17 +12,18 @@ import { Box, useTheme } from '@mui/material';
 import { RowClassParams } from 'ag-grid-community';
 
 import { LoadflowResultProps } from './load-flow-result.type';
-import { getNoRowsMessage, getRows } from '../../utils/aggrid-rows-handler';
 import {
     ComputingType,
     DefaultCellRenderer,
+    getNoRowsMessage,
+    getRows,
+    RunningStatus,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 
 import LinearProgress from '@mui/material/LinearProgress';
-import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult, formatCountryAdequaciesResult, formatExchangesResult } from './load-flow-result-utils';

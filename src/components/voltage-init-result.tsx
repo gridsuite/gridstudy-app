@@ -16,6 +16,7 @@ import {
     EquipmentType,
     mergeSx,
     type MuiStyles,
+    RunningStatus,
     snackWithFallback,
     unscrollableDialogStyles,
     useOpenLoaderShortWait,
@@ -43,7 +44,6 @@ import {
     VoltageInitResultType,
 } from './voltage-init-result.type';
 import { AppState } from 'redux/reducer.type';
-import RunningStatus from './utils/running-status';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { TableType } from 'types/custom-aggrid-types';

@@ -10,14 +10,17 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
 import { RowClassParams } from 'ag-grid-community';
-
-import { ComputingType, DefaultCellRenderer, useIntlResultStatusMessages, useOpenLoaderShortWait } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    DefaultCellRenderer,
+    getNoRowsMessage,
+    RunningStatus,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
+} from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 
-import { getNoRowsMessage } from '../../utils/aggrid-rows-handler';
-
 import LinearProgress from '@mui/material/LinearProgress';
-import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
