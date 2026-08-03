@@ -45,13 +45,11 @@ import {
     type MuiStyles,
     ReadOnlyInput,
     SegmentFormData,
-    LineSegmentsFormData,
     snackWithFallback,
     SwitchInput,
     useSnackMessage,
     SegmentInfoFormData,
     SegmentsFormData,
-    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
 import { GridItem } from '../commons/grid-item';
@@ -74,16 +72,11 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface LineTypeSegmentFormProps {
-    editDataCreationCase?: LineSegmentsFormData | null;
-    editDataModificationCase?: SegmentsFormData;
+    editData?: SegmentsFormData;
     isModification: boolean;
 }
 
-export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({
-    editDataCreationCase,
-    editDataModificationCase,
-    isModification,
-}) => {
+export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = ({ editData, isModification }) => {
     const { setValue, getValues, clearErrors, watch } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
@@ -179,7 +172,8 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                                 (temporaryLimitData) => temporaryLimitData.name === temporaryLimit.name
                             );
                             if (foundTemporaryLimit === undefined) {
-                                computedLimit?.temporaryLimits.push(temporaryLimit);
+                                // clone the pushed entry so later mutations don't leak into the form state
+                                computedLimit?.temporaryLimits.push({ ...temporaryLimit });
                             } else if (temporaryLimit.limitValue === null) {
                                 foundTemporaryLimit.limitValue = temporaryLimit.limitValue;
                             } else {
@@ -192,11 +186,12 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                         computedLimit.permanentLimit = Math.min(computedLimit.permanentLimit, limit.permanentLimit);
                     }
                 } else {
-                    // need deep copy else segment[SEGMENT_CURRENT_LIMITS] will be modified with computedLimit
+                    // deep copy: clone each temporaryLimit too, else mutating computedLimit.temporaryLimits[i]
+                    // would leak back into segment[SEGMENT_CURRENT_LIMITS] (form state)
                     mostContrainingLimits.set(limit.limitSetName, {
                         limitSetName: limit.limitSetName,
                         permanentLimit: limit.permanentLimit,
-                        temporaryLimits: [...(limit?.temporaryLimits ?? [])],
+                        temporaryLimits: (limit?.temporaryLimits ?? []).map((t) => ({ ...t })),
                     } as CurrentLimitsInfo);
                 }
             });
@@ -238,24 +233,12 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
     }, []);
 
     useEffect(() => {
-        if (isModification && !editDataModificationCase?.[FieldConstants.LINE_SEGMENTS]?.length) {
-            return;
-        }
-        if (!isModification && !editDataCreationCase?.length) {
+        if (!editData?.lineSegments?.length) {
             return;
         }
         arrayRef.current?.replaceItems([]);
         const updateSegmentsLimits = async () => {
-            let promises;
-            if (!isModification && editDataCreationCase) {
-                promises = editDataCreationCase.map((segment) => getSegmentLimits(segment));
-            }
-            if (isModification && editDataModificationCase) {
-                promises = editDataModificationCase[FieldConstants.LINE_SEGMENTS]?.map((segment) =>
-                    getSegmentLimits(segment)
-                );
-            }
-
+            const promises = editData?.lineSegments?.map((segment) => getSegmentLimits(segment));
             try {
                 if (promises) {
                     const segmentsWithLimits = await Promise.all(promises);
@@ -272,19 +255,9 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
         updateSegmentsLimits().then(() => {
             updateTotals();
             keepMostConstrainingLimits();
-            const applyLimits = isModification ? (editDataModificationCase?.applySegmentsLimits ?? true) : true;
-            setValue(APPLY_SEGMENTS_LIMITS, applyLimits);
+            setValue(APPLY_SEGMENTS_LIMITS, editData?.applySegmentsLimits ?? true);
         });
-    }, [
-        editDataCreationCase,
-        editDataModificationCase,
-        isModification,
-        getSegmentLimits,
-        snackError,
-        updateTotals,
-        keepMostConstrainingLimits,
-        setValue,
-    ]);
+    }, [editData, getSegmentLimits, snackError, updateTotals, keepMostConstrainingLimits, setValue]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo, selectedAreaAndTemperature2LineTypeData: AreaTemperatureShapeFactorInfo) => {

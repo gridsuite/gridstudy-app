@@ -163,7 +163,7 @@ const LineAttachToVoltageLevelForm = ({
 
     const newLine2NameField = <TextInput name={LINE2_NAME} label={'Line2Name'} />;
 
-    const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
+    const isVoltageLevelEdit = !!voltageLevelIdWatch && voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     const connectivityForm = (
         <VoltageLevelConnectivityForm

@@ -10,7 +10,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { LimitTypes, LoadFlowTabProps, OverloadedEquipment } from './load-flow-result.type';
+import { LoadFlowTabProps, OverloadedEquipment } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
@@ -41,15 +41,16 @@ import { loadflowResultInvalidations } from '../../computing-status/use-all-comp
 import { useNodeData } from 'components/use-node-data';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { Button, LinearProgress } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import { LimitTypes } from '../common/global-filter/types/limit-violation.type';
 
 const styles = {
     flexWrapper: {
@@ -293,6 +294,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                             id: 'LoadFlowResultsCurrentViolations',
                         })}
                         computationSubType={mappingTabs(tabIndex)}
+                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                     />
                 </GlassPane>
             )}
@@ -306,6 +308,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                             id: 'LoadFlowResultsVoltageViolations',
                         })}
                         computationSubType={mappingTabs(tabIndex)}
+                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                     />
                 </GlassPane>
             )}
@@ -320,6 +323,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         id: 'LoadFlowResultsSummary',
                     })}
                     computationSubType={mappingTabs(tabIndex)}
+                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                 />
             )}
             {tabIndex === 3 && (

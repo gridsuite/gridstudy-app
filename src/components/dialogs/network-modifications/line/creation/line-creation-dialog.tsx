@@ -33,7 +33,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -97,6 +97,13 @@ const LineCreationDialog = ({
     const { reset, setValue, watch } = formMethods;
 
     const watchSegments = watch(FieldConstants.LINE_SEGMENTS) as LineSegmentsFormData;
+
+    const editSegmentsData = useMemo(
+        () => ({
+            [FieldConstants.LINE_SEGMENTS]: watchSegments ?? [],
+        }),
+        [watchSegments]
+    );
 
     const fromSearchCopyToFormValues = (line: LineFormInfos) => {
         const formData = {
@@ -268,8 +275,8 @@ const LineCreationDialog = ({
                 <LineTypeSegmentDialog
                     open={isOpenLineTypesCatalogDialog}
                     onClose={handleCloseLineTypesCatalogDialog}
-                    onSaveCreationCase={handleLineSegmentsBuildSubmit}
-                    editDataCreationCase={watchSegments}
+                    onSave={handleLineSegmentsBuildSubmit}
+                    editData={editSegmentsData}
                 />
             </ModificationDialog>
         </CustomFormProvider>

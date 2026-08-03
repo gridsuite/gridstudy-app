@@ -47,6 +47,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     countryAdequaciesColumnDefs,
     exchangesColumnDefs,
     computationSubType,
+    exportCsvResetKey,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -124,6 +125,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                         computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
+                        exportCsvResetKey={exportCsvResetKey}
                     />
                 </div>
                 <GridSection
@@ -146,6 +148,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                         computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
+                        exportCsvResetKey={exportCsvResetKey}
                     />
                 </div>
                 <GridSection
@@ -168,6 +171,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                         computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
+                        exportCsvResetKey={exportCsvResetKey}
                     />
                 </div>
             </div>

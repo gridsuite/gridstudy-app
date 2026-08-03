@@ -92,7 +92,13 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ result = null, status }) => {
+const globalFilterFilterableEquipmentTypes = [EquipmentType.VOLTAGE_LEVEL];
+
+export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
+    result = null,
+    status,
+    exportCsvResetKey,
+}) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -196,6 +202,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                     // @ts-ignore
                     editDataFetchStatus={FetchStatus.IDLE}
                     disabledSave={autoApplyModifications}
+                    exportCsvResetKey={exportCsvResetKey}
                 />
             );
         }
@@ -286,6 +293,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                     overlayNoRowsTemplate={undefined}
                     computationType={TableType.VoltageInit}
                     computationSubType="Indicators"
+                    exportCsvResetKey={exportCsvResetKey}
                 />
             </Box>
         );
@@ -326,6 +334,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                     overlayNoRowsTemplate={undefined}
                     computationType={TableType.VoltageInit}
                     computationSubType="ReactiveSlacks"
+                    exportCsvResetKey={exportCsvResetKey}
                 />
             </Box>
         );
@@ -377,6 +386,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                 overlayNoRowsTemplate={undefined}
                 computationType={TableType.VoltageInit}
                 computationSubType="BusVoltages"
+                exportCsvResetKey={exportCsvResetKey}
             />
         );
     }
@@ -418,7 +428,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({ r
                     </Box>
                     <Box sx={mergeSx(tabIndex === 0 || tabIndex === 2 ? styles.show : styles.hide)}>
                         <GlobalFilterSelector
-                            filterableEquipmentTypes={[EquipmentType.VOLTAGE_LEVEL]}
+                            filterableEquipmentTypes={globalFilterFilterableEquipmentTypes}
                             genericFiltersStrictMode={true}
                             tableType={TableType.VoltageInit}
                         />
