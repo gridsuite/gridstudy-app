@@ -23,7 +23,8 @@ export const FEEDER_TYPES = {
     HVDC_LINE_VSC: 'HVDC_LINE_VSC',
     HVDC_LINE_LCC: 'HVDC_LINE_LCC',
     /**
-     * this is an ElementType from powsybl-network-viewer: the label of a voltage level in a network area diagram
+     * this is not a feeder type either: it is the element type the network area diagram reports for the label of a
+     * voltage level, and it carries the equipment id of that voltage level
      */
     TEXT_NODE: 'TEXT_NODE',
 };
