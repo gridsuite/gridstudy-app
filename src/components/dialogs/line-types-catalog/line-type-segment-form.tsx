@@ -172,7 +172,8 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                                 (temporaryLimitData) => temporaryLimitData.name === temporaryLimit.name
                             );
                             if (foundTemporaryLimit === undefined) {
-                                computedLimit?.temporaryLimits.push(temporaryLimit);
+                                // clone the pushed entry so later mutations don't leak into the form state
+                                computedLimit?.temporaryLimits.push({ ...temporaryLimit });
                             } else if (temporaryLimit.limitValue === null) {
                                 foundTemporaryLimit.limitValue = temporaryLimit.limitValue;
                             } else {
@@ -185,11 +186,12 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                         computedLimit.permanentLimit = Math.min(computedLimit.permanentLimit, limit.permanentLimit);
                     }
                 } else {
-                    // need deep copy else segment[SEGMENT_CURRENT_LIMITS] will be modified with computedLimit
+                    // deep copy: clone each temporaryLimit too, else mutating computedLimit.temporaryLimits[i]
+                    // would leak back into segment[SEGMENT_CURRENT_LIMITS] (form state)
                     mostContrainingLimits.set(limit.limitSetName, {
                         limitSetName: limit.limitSetName,
                         permanentLimit: limit.permanentLimit,
-                        temporaryLimits: [...(limit?.temporaryLimits ?? [])],
+                        temporaryLimits: (limit?.temporaryLimits ?? []).map((t) => ({ ...t })),
                     } as CurrentLimitsInfo);
                 }
             });
