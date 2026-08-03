@@ -7,13 +7,13 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
     Identifiable,
     MODIFICATION_TYPES,
+    ProblemDetailError,
     snackWithFallback,
     useSnackMessage,
-    DeepNullable,
-    ProblemDetailError,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
@@ -47,12 +47,10 @@ import { FeederBays, FeederBaysFormInfos } from './move-voltage-level-feeder-bay
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import {
     fetchBusesOrBusbarSectionsForVoltageLevel,
-    fetchNetworkElementInfos,
     fetchVoltageLevelFeederBaysInfos,
 } from '../../../../../services/study/network';
 import { isNumber } from 'mathjs';
 import { FeederBaysInfos } from '../../../../../services/study/network-map.type';
-import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 
 function requiredWhenActive<T extends yup.Schema>(schema: T) {
     return schema.when([IS_REMOVED, IS_SEPARATOR], ([isRemoved, isSeparator], schema) => {
@@ -259,15 +257,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
             if (voltageLevelId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 try {
-                    await fetchNetworkElementInfos(
-                        studyUuid,
-                        currentNodeUuid,
-                        currentRootNetworkUuid,
-                        EquipmentType.VOLTAGE_LEVEL,
-                        EQUIPMENT_INFOS_TYPES.FORM.type,
-                        voltageLevelId,
-                        true
-                    );
                     const [busesOrBusbarSections, feederBaysInfo] = await Promise.all([
                         fetchBusesOrBusbarSectionsForVoltageLevel(
                             studyUuid,
