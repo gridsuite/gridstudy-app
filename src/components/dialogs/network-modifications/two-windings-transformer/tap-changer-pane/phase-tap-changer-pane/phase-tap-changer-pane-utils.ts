@@ -51,6 +51,7 @@ import {
     getRegulatingTerminalFormData,
     REGULATION_TYPES,
 } from '@gridsuite/commons-ui';
+import { TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO } from '../../../../../../utils/translationKeys';
 
 const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -123,7 +124,7 @@ const phaseTapChangerValidationSchema = (isModification: boolean, id: string) =>
                     enabled && regulationMode === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id,
                 then: (schema) => schema.required(),
             }),
-        [TARGET_DEADBAND]: yup.number().nullable().min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
+        [TARGET_DEADBAND]: yup.number().nullable().min(0, TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO),
         [LOW_TAP_POSITION]: yup
             .number()
             .nullable()
