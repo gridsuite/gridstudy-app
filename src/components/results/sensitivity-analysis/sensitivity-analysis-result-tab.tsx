@@ -11,12 +11,12 @@ import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import {
     ComputingType,
     EquipmentType,
     ManagedExportCsvButton,
+    RunningStatus,
     snackWithFallback,
     useOpenLoaderShortWait,
     useSnackMessage,

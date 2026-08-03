@@ -14,7 +14,6 @@ import {
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import { AppState } from 'redux/reducer.type';
-import { RunningStatus } from 'components/utils/running-status';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
@@ -24,7 +23,14 @@ import {
     mappingTabs,
     PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
-import { ComputingType, CustomTablePagination, snackWithFallback, useOpenLoaderShortWait, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    CustomTablePagination,
+    RunningStatus,
+    snackWithFallback,
+    useOpenLoaderShortWait,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';

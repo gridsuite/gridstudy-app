@@ -26,6 +26,7 @@ import {
     type UserAction,
     type UserValidationErrorAction,
     EquipmentType,
+    RunningStatus,
 } from '@gridsuite/commons-ui';
 import {
     ADD_GLOBAL_FILTERS,
@@ -224,7 +225,6 @@ import { getLocalStorageSyncEnabled } from './session-storage/navigation-local-s
 import { PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
-import { RunningStatus } from 'components/utils/running-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import {
     ALL_BUSES,

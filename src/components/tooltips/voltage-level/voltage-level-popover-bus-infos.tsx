@@ -11,11 +11,10 @@ import { CellRender } from '../cell-render';
 import { formatValue, styles as genericStyles } from '../generic-equipment-popover-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import RunningStatus from 'components/utils/running-status';
 import { CSSProperties, useMemo } from 'react';
 import { getBaseVoltageSldAndNadThemeColors, INVALID_COMPUTATION_OPACITY } from 'utils/colors';
 import { useBaseVoltages } from 'hooks/use-base-voltages';
-import { PARAM_THEME } from '@gridsuite/commons-ui';
+import { PARAM_THEME, RunningStatus } from '@gridsuite/commons-ui';
 
 const styles = {
     invalidComputation: {

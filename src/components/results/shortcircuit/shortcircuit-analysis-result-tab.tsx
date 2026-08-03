@@ -22,11 +22,11 @@ import {
     ComputingType,
     EquipmentType,
     ManagedExportCsvButton,
+    RunningStatus,
     snackWithFallback,
     useOpenLoaderShortWait,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';

@@ -13,7 +13,6 @@ import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { LoadFlowTabProps, OverloadedEquipment } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
-import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer.type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -31,7 +30,7 @@ import {
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
-import { LimitViolationResult, useOpenLoaderShortWait } from '@gridsuite/commons-ui';
+import { LimitViolationResult, RunningStatus, useOpenLoaderShortWait } from '@gridsuite/commons-ui';
 import { StatusCellRender } from '../common/result-cell-renderers';
 import { ComputingType, EquipmentType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';

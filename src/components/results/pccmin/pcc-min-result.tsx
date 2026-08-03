@@ -13,6 +13,7 @@ import {
     CustomTablePagination,
     ManagedExportCsvButton,
     MuiStyles,
+    RunningStatus,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -22,7 +23,6 @@ import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import RunningStatus from 'components/utils/running-status';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { Box } from '@mui/material';
 import { PAGE_OPTIONS } from '../securityanalysis/security-analysis-result-utils';

@@ -9,8 +9,7 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
-import { ComputingType, useIntlResultStatusMessages } from '@gridsuite/commons-ui';
-import RunningStatus from '../../utils/running-status';
+import { ComputingType, RunningStatus, useIntlResultStatusMessages } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import Overlay from '../common/Overlay';
 

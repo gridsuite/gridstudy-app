@@ -14,7 +14,6 @@ import {
     downloadSecurityAnalysisResultZippedCsv,
     fetchSecurityAnalysisResult,
 } from '../../../services/study/security-analysis';
-import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import {
     ComputingType,
@@ -24,6 +23,7 @@ import {
     MuiStyles,
     NmkType,
     PARAM_DEVELOPER_MODE,
+    RunningStatus,
     SecurityAnalysisResultNmk,
     snackWithFallback,
     useIntlResultStatusMessages,
