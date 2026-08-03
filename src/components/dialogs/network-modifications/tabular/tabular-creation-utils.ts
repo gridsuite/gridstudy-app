@@ -46,9 +46,11 @@ import {
     REGULATING_TERMINAL_ID,
     REGULATING_TERMINAL_TYPE,
     REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
+    REGULATION_MODE,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
     STEP_UP_TRANSFORMER_REACTANCE,
+    TARGET_DEADBAND,
     TARGET_P,
     TARGET_Q,
     TARGET_V,
@@ -89,6 +91,14 @@ const CONNECTION_FIELDS: TabularField[] = [
     { id: CONNECTION_POSITION, required: false, type: NUMBER },
 ];
 
+const VOLTAGE_REGULATION_FIELDS: TabularField[] = [
+    { id: VOLTAGE_REGULATION_ON, required: true, type: BOOLEAN },
+    { id: TARGET_V, required: false, type: NUMBER },
+    { id: REGULATING_TERMINAL_ID, required: false },
+    { id: REGULATING_TERMINAL_TYPE, required: false, type: ENUM, options: REGULATING_TERMINAL_TYPES },
+    { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID, required: false },
+];
+
 export const TABULAR_CREATION_FIELDS: TabularFields = {
     GENERATOR: [
         { id: EQUIPMENT_ID, required: true },
@@ -105,11 +115,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         ...REACTIVE_CAPABILITY_CURVE_FIELDS,
         { id: TARGET_P, required: true, type: NUMBER },
         { id: TARGET_Q, required: true, type: NUMBER },
-        { id: VOLTAGE_REGULATION_ON, required: true, type: BOOLEAN },
-        { id: TARGET_V, required: false, type: NUMBER },
-        { id: REGULATING_TERMINAL_ID, required: false },
-        { id: REGULATING_TERMINAL_TYPE, required: false, type: ENUM, options: REGULATING_TERMINAL_TYPES },
-        { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID, required: false },
+        ...VOLTAGE_REGULATION_FIELDS,
         { id: FieldConstants.Q_PERCENT, required: false, type: NUMBER },
         { id: PARTICIPATE, required: true, type: BOOLEAN },
         { id: FieldConstants.DROOP, required: false, type: NUMBER },
@@ -150,6 +156,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         { id: TARGET_Q, required: true, type: NUMBER },
         { id: PARTICIPATE, required: true, type: BOOLEAN },
         { id: FieldConstants.DROOP, required: false, type: NUMBER },
+        ...VOLTAGE_REGULATION_FIELDS,
     ],
     SHUNT_COMPENSATOR: [
         { id: EQUIPMENT_ID, required: true },

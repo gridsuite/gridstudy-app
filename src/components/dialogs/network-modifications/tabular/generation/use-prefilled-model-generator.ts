@@ -144,6 +144,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
      */
     const generateCsvContent = useCallback(
         (equipments: Identifiable[], selectedColumnGroups: string[]): string => {
+            console.log('csvColumns', csvColumns);
             const csvRows: string[] = [];
 
             // 1. Header row
