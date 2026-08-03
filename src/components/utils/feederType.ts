@@ -23,8 +23,7 @@ export const FEEDER_TYPES = {
     HVDC_LINE_VSC: 'HVDC_LINE_VSC',
     HVDC_LINE_LCC: 'HVDC_LINE_LCC',
     /**
-     * this is not a feeder type either: it is the element type the network area diagram reports for the label of a
-     * voltage level, and it carries the equipment id of that voltage level
+     * it is the element type the NAD reports for the label of a voltage level
      */
     TEXT_NODE: 'TEXT_NODE',
 };
