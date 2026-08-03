@@ -352,10 +352,25 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
         [updateDiagram, applyPendingNadEditThenFetch, setEditNadMode]
     );
 
-    // Initial fetch and when node or root network changes
+    // Mirror of the latest callback so the effect below is keyed on the values that actually matter,
+    // not on the callback identity, which changes on every re-render touching one of its dependencies
+    const applyPendingNadEditThenFetchRef = useRef(applyPendingNadEditThenFetch);
+    applyPendingNadEditThenFetchRef.current = applyPendingNadEditThenFetch;
+
+    // Initial fetch, then refetch when the node, root network or rendering inputs change. Keyed on values
+    // (same pattern as use-sld-diagram): keying on the callback identity would also fire on unrelated
+    // object churn (currentNode, networkVisuParams...), spuriously saving the pending moves and leaving
+    // edit mode.
     useEffect(() => {
-        applyPendingNadEditThenFetch();
-    }, [currentNodeId, currentRootNetworkUuid, applyPendingNadEditThenFetch]);
+        applyPendingNadEditThenFetchRef.current();
+    }, [
+        currentNodeId,
+        currentRootNetworkUuid,
+        currentNode?.type,
+        currentNode?.data?.globalBuildStatus,
+        language,
+        networkVisuParams?.networkAreaDiagramParameters.nadPositionsGenerationMode,
+    ]);
 
     // Apply the pending moves when switching workspace: the event is dispatched before the store changes,
     // so the panel is still mounted and the save still targets the workspace the diagram belongs to.
