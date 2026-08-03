@@ -22,5 +22,9 @@ export const FEEDER_TYPES = {
     THREE_WINDINGS_TRANSFORMER_LEG: 'THREE_WINDINGS_TRANSFORMER_LEG',
     HVDC_LINE_VSC: 'HVDC_LINE_VSC',
     HVDC_LINE_LCC: 'HVDC_LINE_LCC',
+    /**
+     * this is an ElementType from powsybl-network-viewer: the label of a voltage level in a network area diagram
+     */
+    TEXT_NODE: 'TEXT_NODE',
 };
 export type FeederTypes = ValueOf<typeof FEEDER_TYPES>;

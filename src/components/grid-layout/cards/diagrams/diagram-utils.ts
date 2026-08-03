@@ -70,6 +70,7 @@ export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): 
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER_LEG:
             return { equipmentType: EquipmentType.THREE_WINDINGS_TRANSFORMER };
         case FEEDER_TYPES.VOLTAGE_LEVEL:
+        case FEEDER_TYPES.TEXT_NODE: // a NAD label carries the id of the voltage level it labels
             return { equipmentType: EquipmentType.VOLTAGE_LEVEL };
         default: {
             console.log('bad feeder type ', feederType);
@@ -122,6 +123,7 @@ export const equipmentsWithPopover = [
     FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER_LEG,
     FEEDER_TYPES.LOAD,
     FEEDER_TYPES.VOLTAGE_LEVEL,
+    FEEDER_TYPES.TEXT_NODE,
     FEEDER_TYPES.GENERATOR,
 ];
 
