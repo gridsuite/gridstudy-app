@@ -81,6 +81,39 @@ export interface PrefilledColumnGroup {
     networkFields: string[];
 }
 
+const VOLTAGE_REGULATION_FIELDS: PrefilledColumnGroup[] = [
+    {
+        labelId: VOLTAGE_REGULATION_ON,
+        csvColumns: [VOLTAGE_REGULATION_ON],
+        networkFields: ['voltageRegulatorOn'],
+    },
+    {
+        labelId: TARGET_V,
+        csvColumns: [TARGET_V],
+        networkFields: ['targetV'],
+    },
+    {
+        labelId: REGULATION_TYPE,
+        csvColumns: [REGULATION_TYPE],
+        networkFields: ['regulationType'],
+    },
+    {
+        labelId: REGULATING_TERMINAL_ID,
+        csvColumns: [REGULATING_TERMINAL_ID],
+        networkFields: ['regulatingTerminalConnectableId'],
+    },
+    {
+        labelId: REGULATING_TERMINAL_TYPE,
+        csvColumns: [REGULATING_TERMINAL_TYPE],
+        networkFields: ['regulatingTerminalConnectableType'],
+    },
+    {
+        labelId: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
+        csvColumns: [REGULATING_TERMINAL_VOLTAGE_LEVEL_ID],
+        networkFields: ['regulatingTerminalVlId'],
+    },
+];
+
 export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = {
     SUBSTATION: [
         {
@@ -329,36 +362,7 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             csvColumns: [TARGET_Q],
             networkFields: ['targetQ'],
         },
-        {
-            labelId: VOLTAGE_REGULATION_ON,
-            csvColumns: [VOLTAGE_REGULATION_ON],
-            networkFields: ['voltageRegulatorOn'],
-        },
-        {
-            labelId: TARGET_V,
-            csvColumns: [TARGET_V],
-            networkFields: ['targetV'],
-        },
-        {
-            labelId: REGULATION_TYPE,
-            csvColumns: [REGULATION_TYPE],
-            networkFields: ['regulationType'],
-        },
-        {
-            labelId: REGULATING_TERMINAL_ID,
-            csvColumns: [REGULATING_TERMINAL_ID],
-            networkFields: ['regulatingTerminalConnectableId'],
-        },
-        {
-            labelId: REGULATING_TERMINAL_TYPE,
-            csvColumns: [REGULATING_TERMINAL_TYPE],
-            networkFields: ['regulatingTerminalConnectableType'],
-        },
-        {
-            labelId: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
-            csvColumns: [REGULATING_TERMINAL_VOLTAGE_LEVEL_ID],
-            networkFields: ['regulatingTerminalVlId'],
-        },
+        ...VOLTAGE_REGULATION_FIELDS,
         {
             labelId: FieldConstants.Q_PERCENT,
             csvColumns: [FieldConstants.Q_PERCENT],
@@ -510,36 +514,7 @@ export const PREFILLED_COLUMNS_CONFIG: Record<string, PrefilledColumnGroup[]> = 
             csvColumns: [TARGET_Q],
             networkFields: ['targetQ'],
         },
-        {
-            labelId: VOLTAGE_REGULATION_ON,
-            csvColumns: [VOLTAGE_REGULATION_ON],
-            networkFields: ['voltageRegulatorOn'],
-        },
-        {
-            labelId: TARGET_V,
-            csvColumns: [TARGET_V],
-            networkFields: ['targetV'],
-        },
-        {
-            labelId: REGULATION_TYPE,
-            csvColumns: [REGULATION_TYPE],
-            networkFields: ['regulationType'],
-        },
-        {
-            labelId: REGULATING_TERMINAL_ID,
-            csvColumns: [REGULATING_TERMINAL_ID],
-            networkFields: ['regulatingTerminalConnectableId'],
-        },
-        {
-            labelId: REGULATING_TERMINAL_TYPE,
-            csvColumns: [REGULATING_TERMINAL_TYPE],
-            networkFields: ['regulatingTerminalConnectableType'],
-        },
-        {
-            labelId: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
-            csvColumns: [REGULATING_TERMINAL_VOLTAGE_LEVEL_ID],
-            networkFields: ['regulatingTerminalVlId'],
-        },
+        ...VOLTAGE_REGULATION_FIELDS,
         {
             labelId: PARTICIPATE,
             csvColumns: [PARTICIPATE],
