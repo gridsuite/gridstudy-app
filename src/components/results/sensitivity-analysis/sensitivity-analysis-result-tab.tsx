@@ -12,13 +12,13 @@ import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result'
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import {
     ComputingType,
     EquipmentType,
     ManagedExportCsvButton,
     snackWithFallback,
+    useOpenLoaderShortWait,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';

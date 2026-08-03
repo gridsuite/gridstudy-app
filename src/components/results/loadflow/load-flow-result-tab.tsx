@@ -31,7 +31,7 @@ import {
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
-import { LimitViolationResult } from '@gridsuite/commons-ui';
+import { LimitViolationResult, useOpenLoaderShortWait } from '@gridsuite/commons-ui';
 import { StatusCellRender } from '../common/result-cell-renderers';
 import { ComputingType, EquipmentType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -47,7 +47,6 @@ import { Button, LinearProgress } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
@@ -332,6 +331,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     tableName={intl.formatMessage({
                         id: 'LoadFlowResultsSummary',
                     })}
+                    language={language}
                     computationSubType={mappingTabs(tabIndex)}
                     exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                 />

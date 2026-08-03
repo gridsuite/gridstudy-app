@@ -12,9 +12,8 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
-import { ComputingType, EquipmentType } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType, useOpenLoaderShortWait } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { PccMinResultTabProps } from './pcc-min-result.type';

@@ -23,12 +23,12 @@ import {
     EquipmentType,
     ManagedExportCsvButton,
     snackWithFallback,
+    useOpenLoaderShortWait,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import type { UUID } from 'node:crypto';
 import { ColDef, DisplayedColumnsChangedEvent, GridApi, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';

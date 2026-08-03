@@ -8,10 +8,10 @@
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo, useRef } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
-import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
+import { getNoRowsMessage, getRows } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { ComputingType, CustomAGGrid, CustomAGGridProps, DefaultCellRenderer } from '@gridsuite/commons-ui';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { ComputingType, CustomAGGrid, CustomAGGridProps, DefaultCellRenderer,
+    useIntlResultStatusMessages, useOpenLoaderShortWait } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
