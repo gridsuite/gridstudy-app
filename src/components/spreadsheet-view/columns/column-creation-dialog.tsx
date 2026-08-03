@@ -25,7 +25,6 @@ import {
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
-    mergeSx,
     type MuiStyles,
     MultipleAutocompleteInput,
     snackWithFallback,
@@ -346,8 +345,8 @@ export default function ColumnCreationDialog({
             >
                 <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>
-                    <Stack spacing={2} alignItems="center">
-                        <Grid sx={mergeSx(styles.field, { marginTop: '5px' })}>{columnNameField}</Grid>
+                    <Stack spacing={2} mt="5px" alignItems="center">
+                        <Grid sx={styles.field}>{columnNameField}</Grid>
                         <Grid sx={styles.field}>{columnIdField}</Grid>
                         <Grid sx={styles.field}>{columnType}</Grid>
                         {watchColumnType === COLUMN_TYPES.NUMBER && <Grid sx={styles.field}>{precisionField}</Grid>}
