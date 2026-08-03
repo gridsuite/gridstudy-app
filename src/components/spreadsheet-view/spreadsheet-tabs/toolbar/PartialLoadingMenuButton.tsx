@@ -121,10 +121,11 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         remoteTwtOlg,
         localGeneratorRegTerm,
         remoteGeneratorRegTerm,
+        localBatteryRegTerm,
+        remoteBatteryRegTerm,
         localBusNetworkComponents,
         remoteBusNetworkComponents,
         studyUuid,
-        localBatteryRegTerm,
     ]);
 
     const open = anchorEl !== undefined;

@@ -117,7 +117,7 @@ export function useOptionalLoadingParametersForEquipments() {
                 return { ...prevState, [SpreadsheetEquipmentType.GENERATOR]: true };
             });
         }
-        console.log("remoteBatteryRegTerm", remoteBatteryRegTerm);
+        console.log('remoteBatteryRegTerm', remoteBatteryRegTerm);
         console.log('batteryRegTerm', batteryRegTerm);
         if (remoteBatteryRegTerm !== batteryRegTerm && remoteBatteryRegTerm) {
             setLoadOptional((prevState) => {
