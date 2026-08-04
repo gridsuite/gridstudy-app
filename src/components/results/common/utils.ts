@@ -6,9 +6,8 @@
  */
 import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
 import { IntlShape } from 'react-intl';
-import type { MuiStyles } from '@gridsuite/commons-ui';
+import { type MuiStyles, type GlobalFilter, isEditingGlobalFilter } from '@gridsuite/commons-ui';
 import { FilterConfig, SortConfig, TableType } from 'types/custom-aggrid-types';
-import { GlobalFilter } from './global-filter/types/global-filter.type';
 import { Dispatch } from 'redux';
 import { UUID } from 'node:crypto';
 import {
@@ -16,7 +15,6 @@ import {
     getComputationResultGlobalFilters,
 } from '../../../services/study/study-config';
 import { initOrUpdateGlobalFilters, updateColumnFiltersAction } from '../../../redux/actions';
-import { isEditingGlobalFilter } from './global-filter/utils/editing-global-filter-sync';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
