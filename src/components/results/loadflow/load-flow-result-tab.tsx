@@ -56,6 +56,7 @@ import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-ac
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 const styles = {
     flexWrapper: {

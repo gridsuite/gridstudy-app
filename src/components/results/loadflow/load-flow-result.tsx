@@ -53,7 +53,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     exchangesColumnDefs,
     computationSubType,
     exportCsvResetKey,
-    language
+    language,
 }) => {
     const theme = useTheme();
     const intl = useIntl();

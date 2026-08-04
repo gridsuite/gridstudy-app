@@ -8,7 +8,7 @@ import type { UUID } from 'node:crypto';
 import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
-import {getNoRowsMessage, makeAgGridCustomHeaderColumn, useIntlResultStatusMessages } from '@gridsuite/commons-ui';
+import { getNoRowsMessage, makeAgGridCustomHeaderColumn, useIntlResultStatusMessages } from '@gridsuite/commons-ui';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';

@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import {getNoRowsMessage, makeAgGridCustomHeaderColumn, useIntlResultStatusMessages } from '@gridsuite/commons-ui';
+import { getNoRowsMessage, makeAgGridCustomHeaderColumn, useIntlResultStatusMessages } from '@gridsuite/commons-ui';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from '@gridsuite/commons-ui';
 import { COL_STATUS, StatusCellRender } from '../common/result-cell-renderers';
 import type { UUID } from 'node:crypto';

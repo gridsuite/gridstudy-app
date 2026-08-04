@@ -23,7 +23,7 @@ import {
     PARAM_DEVELOPER_MODE,
     snackWithFallback,
     useSnackMessage,
-    RunningStatus
+    RunningStatus,
 } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import { startSensitivityAnalysis, stopSensitivityAnalysis } from '../services/study/sensitivity-analysis';
