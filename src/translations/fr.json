@@ -68,6 +68,7 @@
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
     "networkLoadingFail": "Le réseau de l'étude avec l'identifiant \"{studyUuid}\" n'a pas pu être chargé",
     "geoDataLoadingFail": "Erreur lors du chargement des données géographiques.",
+    "networkMapVoltageLevelsWithoutSubstation": "{voltageLevelCount} niveaux de tension ne sont pas rattachés à un site et ne sont donc pas affichés. Exemples : {voltageLevelIds}",
 
     "parameters": "Paramètres",
     "close": "Fermer",

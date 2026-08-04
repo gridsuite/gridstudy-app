@@ -68,6 +68,7 @@
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
     "geoDataLoadingFail": "An error occurred while loading geographical data.",
+    "networkMapVoltageLevelsWithoutSubstation": "{voltageLevelCount} voltage levels are not attached to a substation and therefore are not displayed. Examples: {voltageLevelIds}",
 
     "parameters": "Parameters",
     "close": "Close",

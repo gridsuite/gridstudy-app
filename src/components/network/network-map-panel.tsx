@@ -172,7 +172,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     const [isInitialized, setIsInitialized] = useState(false);
     const mapBoxToken = useMapBoxToken();
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>();
     const [geoData, setGeoData] = useState<GeoData>();
@@ -180,8 +180,23 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
 
     const basicDataReady = mapEquipments && geoData;
 
+    const voltageLevelIdsWithoutSubstation = useMemo(() => {
+        if (!mapEquipments) {
+            return [];
+        }
+
+        const voltageLevelIds = new Set([
+            ...mapEquipments.getLines().flatMap((line) => [line.voltageLevelId1, line.voltageLevelId2]),
+            ...mapEquipments.getTieLines().flatMap((line) => [line.voltageLevelId1, line.voltageLevelId2]),
+            ...mapEquipments.getHvdcLines().flatMap((line) => [line.voltageLevelId1, line.voltageLevelId2]),
+        ]);
+
+        return Array.from(voltageLevelIds).filter((voltageLevelId) => !mapEquipments.getVoltageLevel(voltageLevelId));
+    }, [mapEquipments]);
+
     const lineFullPathRef = useRef<boolean>(null);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const voltageLevelWarningShownRef = useRef(false);
 
     const { getBaseVoltageInterval } = useBaseVoltages();
 
@@ -209,6 +224,25 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
     const [position, setPosition] = useState([-1, -1]);
     const currentNodeRef = useRef<CurrentTreeNode | null>(null);
     const currentRootNetworkUuidRef = useRef<UUID | null>(null);
+
+    useEffect(() => {
+        if (!isInitialized) {
+            voltageLevelWarningShownRef.current = false;
+        } else if (voltageLevelIdsWithoutSubstation.length > 0 && !voltageLevelWarningShownRef.current) {
+            const voltageLevelIds =
+                voltageLevelIdsWithoutSubstation.length > 3
+                    ? voltageLevelIdsWithoutSubstation.slice(0, 3).join(', ') + ', ...'
+                    : voltageLevelIdsWithoutSubstation.join(', ');
+            snackWarning({
+                messageId: 'networkMapVoltageLevelsWithoutSubstation',
+                messageValues: {
+                    voltageLevelCount: voltageLevelIdsWithoutSubstation.length,
+                    voltageLevelIds: voltageLevelIds,
+                },
+            });
+            voltageLevelWarningShownRef.current = true;
+        }
+    }, [isInitialized, snackWarning, voltageLevelIdsWithoutSubstation]);
 
     const [updatedLines, setUpdatedLines] = useState<MapLineWithType[]>([]);
     const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLineWithType[]>([]);
