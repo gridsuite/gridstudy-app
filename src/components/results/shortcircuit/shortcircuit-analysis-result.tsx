@@ -30,6 +30,7 @@ import {
     snackWithFallback,
     useOpenLoaderShortWait,
     useSnackMessage,
+    buildValidGlobalFilters,
 } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
@@ -45,7 +46,6 @@ import {
 } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { useSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 

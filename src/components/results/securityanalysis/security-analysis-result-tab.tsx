@@ -29,6 +29,9 @@ import {
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
     useSnackMessage,
+    GlobalFilterType,
+    isCriteriaFilterType,
+    buildValidGlobalFilters,
 } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -51,7 +54,6 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { UUID } from 'node:crypto';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
-import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import { PERMANENT_LIMIT_NAME } from '../common/utils';
 import { setTableSort } from '../../../redux/actions';
@@ -59,8 +61,6 @@ import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-col
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { downloadZipFile } from 'services/utils';
 import { SecurityAnalysisCopyButton } from './security-analysis-copy-button';
-
-import { FilterType, isCriteriaFilterType } from '../common/global-filter/types/filter.type';
 
 const styles = {
     toolbarRow: {
@@ -364,8 +364,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         return [];
     }, [tabIndex]);
 
-    const filterTypes: FilterType[] = useMemo(() => {
-        const allFilterTypes = Object.values(FilterType);
+    const filterTypes: GlobalFilterType[] = useMemo(() => {
+        const allFilterTypes = Object.values(GlobalFilterType);
         if (tabIndex === N_RESULTS_TAB_INDEX) {
             // in this case we disable generic filters
             return allFilterTypes.filter((filterType) => !isCriteriaFilterType(filterType));

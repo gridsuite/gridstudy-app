@@ -4,17 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    snackWithFallback,
+    useSnackMessage,
+    GlobalFilterType,
+    addGlobalFilterId,
+    GlobalFilterWithoutId,
+} from '@gridsuite/commons-ui';
 import { useEffect } from 'react';
 import { fetchAllCountries } from '../../../../../services/study/network-map';
-import { addGlobalFilterId, GlobalFilterWithoutId } from '../utils/global-filter-utils';
 import { fetchSubstationPropertiesGlobalFilters } from '../adapter/global-filter-app-data';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
 import { useBaseVoltages } from '../../../../../hooks/use-base-voltages';
 import { addToGlobalFilterOptions } from '../../../../../redux/actions';
-
-import { FilterType } from '../types/filter.type';
 
 /**
  * Custom hook that manages global filter options for tables.
@@ -42,7 +45,7 @@ export const useGlobalFilterOptions = () => {
                     label: voltage.name,
                     minValue: voltage.minValue,
                     maxValue: voltage.maxValue,
-                    filterType: FilterType.VOLTAGE_LEVEL,
+                    filterType: GlobalFilterType.VOLTAGE_LEVEL,
                 }))
                 .map(addGlobalFilterId) ?? [];
         dispatch(addToGlobalFilterOptions(newVoltageLevelsFilter));
@@ -55,7 +58,7 @@ export const useGlobalFilterOptions = () => {
                     const newCountriesFilter = countryCodes
                         .map((countryCode: string) => ({
                             label: countryCode,
-                            filterType: FilterType.COUNTRY,
+                            filterType: GlobalFilterType.COUNTRY,
                         }))
                         .map(addGlobalFilterId);
                     dispatch(addToGlobalFilterOptions(newCountriesFilter));
@@ -71,7 +74,7 @@ export const useGlobalFilterOptions = () => {
                         propertyValues.forEach((propertyValue) => {
                             propertiesGlobalFilters.push({
                                 label: propertyValue,
-                                filterType: FilterType.SUBSTATION_PROPERTY,
+                                filterType: GlobalFilterType.SUBSTATION_PROPERTY,
                                 filterSubtype: propertyName,
                             });
                         });

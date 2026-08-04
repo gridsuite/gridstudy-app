@@ -9,8 +9,7 @@ import { Key } from 'react';
 import { ColDef } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { BranchSide } from '../../utils/constants';
-import { LimitTypes } from '../common/global-filter/types/limit-violation.type';
-import { GsLangUser } from "@gridsuite/commons-ui";
+import { LimitTypes, GsLangUser } from '@gridsuite/commons-ui';
 
 export interface ComponentResult {
     componentResultUuid: UUID;

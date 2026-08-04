@@ -32,7 +32,15 @@ import {
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 import { LimitViolationResult, RunningStatus, useOpenLoaderShortWait } from '@gridsuite/commons-ui';
 import { StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, EquipmentType, mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentType,
+    mergeSx,
+    type MuiStyles,
+    OverflowableText,
+    buildValidGlobalFilters,
+    LimitTypes,
+} from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS, TableType } from '../../../types/custom-aggrid-types';
@@ -41,7 +49,6 @@ import { loadflowResultInvalidations } from '../../computing-status/use-all-comp
 import { useNodeData } from 'components/use-node-data';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { Button, LinearProgress } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community';
 import { resultsStyles } from '../common/utils';
@@ -49,8 +56,6 @@ import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-ac
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
-import { LimitTypes } from '../common/global-filter/types/limit-violation.type';
-import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 const styles = {
     flexWrapper: {
