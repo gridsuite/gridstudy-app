@@ -12,8 +12,6 @@ import { FilterConfig } from '../../../types/custom-aggrid-types';
 
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
-export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
-
 export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     elementId: 'fault.id',
     voltageLevel: 'fault.voltageLevelId',

@@ -29,7 +29,7 @@ import {
     buildValidGlobalFilters,
 } from '@gridsuite/commons-ui';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
-import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
+import { ShortCircuitAnalysisAllBusesResultWrapper } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result-wrapper';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import type { UUID } from 'node:crypto';
 import { ColDef, DisplayedColumnsChangedEvent, GridApi, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
@@ -309,7 +309,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
             </Box>
             {resultOrLogIndex === RESULTS_TAB_INDEX &&
                 (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ? (
-                    <ShortCircuitAnalysisAllBusesResult
+                    <ShortCircuitAnalysisAllBusesResultWrapper
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
                         onDisplayedColumnsChanged={handleDisplayedColumnsChanged}
