@@ -259,9 +259,12 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     }, [diagram, studyUuid, workspaceId, panelId, setDiagramAndSync]);
 
     // Mirrors of the current values, so that applyPendingNadEdit below can stay stable: it is registered as
-    // an event listener, which would otherwise have to be resubscribed on every render to stay up to date
+    // an event listener, which would otherwise have to be resubscribed on every render to stay up to date.
+    // Synced in an effect, not during render, so a discarded render can't leak an uncommitted callback.
     const saveNadRef = useRef(handleSaveNad);
-    saveNadRef.current = handleSaveNad;
+    useEffect(() => {
+        saveNadRef.current = handleSaveNad;
+    }, [handleSaveNad]);
     const isEditNadModeRef = useRef(isEditNadMode);
 
     const setEditNadMode = useCallback((newMode: boolean) => {
@@ -353,9 +356,13 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     );
 
     // Mirror of the latest callback so the effect below is keyed on the values that actually matter,
-    // not on the callback identity, which changes on every re-render touching one of its dependencies
+    // not on the callback identity, which changes on every re-render touching one of its dependencies.
+    // This sync effect must stay declared before the fetch effect, so that within a same commit the
+    // fetch always sees the freshly committed callback.
     const applyPendingNadEditThenFetchRef = useRef(applyPendingNadEditThenFetch);
-    applyPendingNadEditThenFetchRef.current = applyPendingNadEditThenFetch;
+    useEffect(() => {
+        applyPendingNadEditThenFetchRef.current = applyPendingNadEditThenFetch;
+    }, [applyPendingNadEditThenFetch]);
 
     // Initial fetch, then refetch when the node, root network or rendering inputs change. Keyed on values
     // (same pattern as use-sld-diagram): keying on the callback identity would also fire on unrelated
