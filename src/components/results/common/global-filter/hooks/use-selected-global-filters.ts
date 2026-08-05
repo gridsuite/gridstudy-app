@@ -7,7 +7,7 @@
 
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { GlobalFilter } from '../types/global-filter.type';
+import { GlobalFilter } from '@gridsuite/commons-ui';
 import { RootState, store } from '../../../../../redux/store';
 
 /**
