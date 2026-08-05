@@ -15,7 +15,7 @@ import {
     PropertiesForm,
     VoltageAdornment,
 } from '@gridsuite/commons-ui';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
 import { GridItem } from '../../../commons/grid-item';

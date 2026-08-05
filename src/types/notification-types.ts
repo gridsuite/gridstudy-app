@@ -138,8 +138,7 @@ interface StudyEventDataHeaders extends CommonStudyEventDataHeaders {
 
 interface ComputationResultTabUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType:
-        | NotificationType.UPDATE_COMPUTATION_GLOBAL_FILTER_TAB
-        | NotificationType.UPDATE_COMPUTATION_COLUMN_FILTER_TAB;
+        NotificationType.UPDATE_COMPUTATION_GLOBAL_FILTER_TAB | NotificationType.UPDATE_COMPUTATION_COLUMN_FILTER_TAB;
     computationType: ComputingType;
     computationSubtype?: string;
 }
