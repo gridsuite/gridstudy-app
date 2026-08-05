@@ -68,6 +68,7 @@ import {
     TwoWindingsTransformerDialogTab,
     TwoWindingsTransformerMapInfos,
     TwoWindingsTransformerModificationDto,
+    TwoWindingsTransformerModificationDtoWithId,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -155,10 +156,6 @@ import {
 import { CharacteristicsFormSchema } from './two-windings-transformer-modification.types';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
-import { WithModificationId } from '../../../../../services/network-modification-types';
-
-interface TwoWindingsTransformerModificationDtoWithId
-    extends TwoWindingsTransformerModificationDto, WithModificationId {}
 
 export interface TwoWindingsTransformerModificationDialogProps {
     studyUuid: UUID;

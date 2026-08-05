@@ -32,6 +32,7 @@ import {
     TwoWindingsTransformerForm,
     REGULATION_SIDES,
     PHASE_REGULATION_MODES,
+    TwoWindingsTransformerCreationDtoWithId,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -60,12 +61,9 @@ import { FetchStatus } from 'services/utils.type';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import { WithModificationId } from '../../../../../services/network-modification-types';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
-
-interface TwoWindingsTransformerCreationDtoWithId extends TwoWindingsTransformerCreationDto, WithModificationId {}
 
 type TwoWindingsTransformerCreationDialogProps = NetworkModificationDialogProps & {
     editData?: TwoWindingsTransformerCreationDtoWithId;
