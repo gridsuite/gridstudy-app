@@ -10,8 +10,7 @@ import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { TwtEquipmentInfos } from '../equipment-popover-type';
 import { REGULATING } from '../../utils/field-constants';
-import { RATIO_REGULATION_MODES } from '../../network/constants';
-import { getComputedPhaseTapChangerRegulationMode } from '@gridsuite/commons-ui';
+import { getComputedPhaseTapChangerRegulationMode, RATIO_REGULATION_MODES } from '@gridsuite/commons-ui';
 
 interface TwtTapChangerCharacteristicsProps {
     equipmentInfos: TwtEquipmentInfos;

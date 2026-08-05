@@ -6,6 +6,7 @@
  */
 
 import {
+    addSelectedFieldToRows,
     CustomFormProvider,
     DeepNullable,
     snackWithFallback,
@@ -34,7 +35,6 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { ModificationDialog } from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 import { generationDispatch } from '../../../../services/study/network-modifications';
-import { addSelectedFieldToRows } from 'components/utils/utils';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
 import { FetchStatus } from 'services/utils.type';

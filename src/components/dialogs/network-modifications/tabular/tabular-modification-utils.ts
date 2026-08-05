@@ -16,6 +16,7 @@ import {
     MODIFICATION_TYPES,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     ReactiveCapabilityCurvePoints,
+    REGULATION_SIDES,
     SHUNT_COMPENSATOR_TYPES,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
     toModificationOperation,
@@ -105,7 +106,6 @@ import {
     LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
     REGULATING_TERMINAL_TYPES,
-    SIDE as SIDE_CONSTANTS,
 } from '../../../network/constants';
 import {
     convertReactiveCapabilityCurvePointsFromBackToFront,
@@ -224,7 +224,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         {
             id: RATIO_TAP_CHANGER_REGULATION_SIDE,
             type: ENUM,
-            options: Object.values(SIDE_CONSTANTS).map((side) => side.id),
+            options: Object.values(REGULATION_SIDES).map((side) => side.id),
         },
     ],
     GENERATOR: [

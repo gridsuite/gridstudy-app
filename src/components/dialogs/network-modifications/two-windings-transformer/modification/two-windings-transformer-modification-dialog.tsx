@@ -8,10 +8,12 @@
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
+    addSelectedFieldToRows,
     BranchActiveReactivePowerMeasurementsForm,
     BranchConnectivityForm,
     BranchInfos,
     compareStepsWithPreviousValues,
+    computeHighTapPosition,
     ConnectivityFormSchema,
     convertInputValue,
     convertOutputValue,
@@ -50,9 +52,11 @@ import {
     ModificationType,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     OperationalLimitsGroupFormSchema,
+    PHASE_REGULATION_MODES,
     PhaseTapChangerFormSchema,
     PhaseTapChangerModificationDto,
     PhaseTapChangerPane,
+    RATIO_REGULATION_MODES,
     RatioTapChangerFormSchema,
     RatioTapChangerModificationDto,
     RatioTapChangerPane,
@@ -125,13 +129,12 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { FieldErrors, Resolver } from 'react-hook-form';
-import { FORM_LOADING_DELAY, PHASE_REGULATION_MODES, RATIO_REGULATION_MODES } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import TwoWindingsTransformerModificationDialogTabs from './two-windings-transformer-modification-dialog-tabs';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
-import { addSelectedFieldToRows, computeHighTapPosition } from '../../../../utils/utils';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyTwoWindingsTransformer } from '../../../../../services/study/network-modifications';

@@ -33,6 +33,8 @@ import {
     REGULATION_SIDES,
     PHASE_REGULATION_MODES,
     TwoWindingsTransformerCreationDtoWithId,
+    computeHighTapPosition,
+    addSelectedFieldToRows,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -55,7 +57,7 @@ import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { addSelectedFieldToRows, computeHighTapPosition, formatCompleteCurrentLimit } from 'components/utils/utils';
+import { formatCompleteCurrentLimit } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from 'services/utils.type';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
