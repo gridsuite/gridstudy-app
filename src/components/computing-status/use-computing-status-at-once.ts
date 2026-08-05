@@ -157,12 +157,10 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
                     );
                     await Promise.all(
                         Array.from(allStatusInfosMap).map(async ([computingType, statusValue]) => {
-                            if (
-                                !(
-                                    computingType === ComputingType.LOAD_FLOW &&
-                                    updateType === 'all_computation_status_without_loadflow'
-                                )
-                            ) {
+                            if (!(
+                                computingType === ComputingType.LOAD_FLOW &&
+                                updateType === 'all_computation_status_without_loadflow'
+                            )) {
                                 const status = getComputationRunningStatus(statusValue, computingType);
                                 dispatch(setComputingStatus(computingType, status));
                                 await handleComputingStatusParameters(status, canceledRequest, computingType);
