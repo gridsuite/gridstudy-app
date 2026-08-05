@@ -9,9 +9,9 @@ import { Table, TableHead, TableRow, TableBody, TableContainer, Grid2 as Grid } 
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { TwtEquipmentInfos } from '../equipment-popover-type';
-import { getComputedPhaseTapChangerRegulationMode } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { REGULATING } from '../../utils/field-constants';
 import { RATIO_REGULATION_MODES } from '../../network/constants';
+import { getComputedPhaseTapChangerRegulationMode } from '@gridsuite/commons-ui';
 
 interface TwtTapChangerCharacteristicsProps {
     equipmentInfos: TwtEquipmentInfos;

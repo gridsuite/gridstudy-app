@@ -13,13 +13,10 @@ import {
     Identifiable,
     OperationalLimitsGroupFormSchema,
     OperationType,
+    TapChangerStepMapInfos,
     VoltageLevelOption,
 } from '@gridsuite/commons-ui';
 import { APPLICABILITY_FIELD, CURRENT_LIMITS, ID, LIMITS_PROPERTIES, NAME, SELECTED } from './field-constants';
-import {
-    TapChangerStep,
-    TapChangerStepMapInfos,
-} from 'components/dialogs/network-modifications/two-windings-transformer/two-windings-transformer.types';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -142,34 +139,11 @@ export const computeHighTapPosition = (steps: Record<number, TapChangerStepMapIn
     return values?.length > 0 ? Math.max(...values) : null;
 };
 
-export const compareStepsWithPreviousValues = (tapSteps: TapChangerStep[], previousValues?: TapChangerStep[]) => {
-    if (previousValues === undefined) {
-        return false;
-    }
-    if (tapSteps.length !== previousValues?.length) {
-        return false;
-    }
-    return tapSteps.every((step, index) => {
-        const previousStep = previousValues[index];
-        return (Object.keys(previousStep) as (keyof TapChangerStep)[]).every((key) => {
-            return step[key] === previousStep[key];
-        });
-    });
-};
-
 interface TapChangerInfos {
     regulatingTerminalConnectableType: string;
     regulatingTerminalConnectableId: string;
     regulatingTerminalVlId: string;
 }
-
-export const getTapChangerEquipmentSectionTypeValue = (tapChanger: TapChangerInfos) => {
-    if (!tapChanger?.regulatingTerminalConnectableType) {
-        return null;
-    } else {
-        return tapChanger?.regulatingTerminalConnectableType + ' : ' + tapChanger?.regulatingTerminalConnectableId;
-    }
-};
 
 export const getTapChangerRegulationTerminalValue = (tapChanger: TapChangerInfos) => {
     let regulatingTerminalGeneratorValue = tapChanger?.regulatingTerminalConnectableId ?? '';

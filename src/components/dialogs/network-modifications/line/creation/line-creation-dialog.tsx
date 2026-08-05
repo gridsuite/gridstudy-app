@@ -49,9 +49,12 @@ import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLi
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
+import { WithModificationId } from '../../../../../services/network-modification-types';
+
+interface LineCreationDtoWithId extends LineCreationDto, WithModificationId {}
 
 type LineCreationDialogProps = NetworkModificationDialogProps & {
-    editData?: LineCreationDto;
+    editData?: LineCreationDtoWithId;
     onCreateLine: typeof createLine;
     displayConnectivity?: boolean;
 };

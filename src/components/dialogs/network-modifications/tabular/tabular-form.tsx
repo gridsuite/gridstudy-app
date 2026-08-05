@@ -27,6 +27,7 @@ import {
     type TreeViewFinderNodeProps,
     useSnackMessage,
     useStateBoolean,
+    transformIfFrenchNumber,
 } from '@gridsuite/commons-ui';
 import { v4 as uuid4 } from 'uuid';
 import {
@@ -51,7 +52,6 @@ import {
     setFieldTypeError,
     TabularField,
     TabularModificationType,
-    transformIfFrenchNumber,
 } from './tabular-common';
 import { ColDef } from 'ag-grid-community';
 import { BOOLEAN, ENUM, NUMBER } from '../../../network/constants';

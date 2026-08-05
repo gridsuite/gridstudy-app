@@ -22,6 +22,7 @@ import {
     hasNonEmptyRows,
     InputWithPopupConfirmation,
     IntegerInput,
+    transformIfFrenchNumber,
 } from '@gridsuite/commons-ui';
 import {
     AMOUNT_TEMPORARY_LIMITS,
@@ -37,7 +38,7 @@ import { ColDef } from 'ag-grid-community';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
-import { isFieldTypeOk, setFieldTypeError, TabularField, transformIfFrenchNumber } from '../tabular/tabular-common';
+import { isFieldTypeOk, setFieldTypeError, TabularField } from '../tabular/tabular-common';
 import {
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
