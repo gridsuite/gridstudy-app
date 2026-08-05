@@ -6,7 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, buildValidGlobalFilters } from '@gridsuite/commons-ui';
 import RunningStatus from './utils/running-status';
 import { voltageInitResultInvalidations } from './computing-status/use-all-computing-status';
 import { useNodeData } from './use-node-data';
@@ -17,7 +17,6 @@ import { useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import { useComputationGlobalFilters } from './results/common/global-filter/hooks/use-computation-global-filters';
 import { TableType } from '../types/custom-aggrid-types';
-import { buildValidGlobalFilters } from './results/common/global-filter/utils/build-valid-global-filters';
 
 export type VoltageInitResultTabProps = {
     studyUuid: UUID;

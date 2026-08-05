@@ -29,7 +29,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { InputAdornment, Grid2 as Grid, TextField } from '@mui/material';
+import { InputAdornment, Grid, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { GridItem } from '../../../commons/grid-item';
 
@@ -56,8 +56,10 @@ export const SusceptanceArea = () => {
             label={<FormattedMessage id={'minSusceptance'} />}
             disabled={true}
             size={'small'}
-            InputProps={{
-                endAdornment: <InputAdornment position="start">S</InputAdornment>,
+            slotProps={{
+                input: {
+                    endAdornment: <InputAdornment position="start">S</InputAdornment>,
+                },
             }}
         />
     );
@@ -68,8 +70,10 @@ export const SusceptanceArea = () => {
             label={<FormattedMessage id={'maximumSusceptance'} />}
             disabled={true}
             size={'small'}
-            InputProps={{
-                endAdornment: <InputAdornment position="start">S</InputAdornment>,
+            slotProps={{
+                input: {
+                    endAdornment: <InputAdornment position="start">S</InputAdornment>,
+                },
             }}
         />
     );
@@ -80,8 +84,10 @@ export const SusceptanceArea = () => {
             label={<FormattedMessage id={'minQAtNominalV'} />}
             disabled={true}
             size={'small'}
-            InputProps={{
-                endAdornment: <InputAdornment position="start">Mvar</InputAdornment>,
+            slotProps={{
+                input: {
+                    endAdornment: <InputAdornment position="start">Mvar</InputAdornment>,
+                },
             }}
         />
     );
@@ -92,8 +98,10 @@ export const SusceptanceArea = () => {
             label={<FormattedMessage id={'maxQAtVnominal'} />}
             disabled={true}
             size={'small'}
-            InputProps={{
-                endAdornment: <InputAdornment position="start">Mvar</InputAdornment>,
+            slotProps={{
+                input: {
+                    endAdornment: <InputAdornment position="start">Mvar</InputAdornment>,
+                },
             }}
         />
     );

@@ -76,7 +76,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import {
     B,
     BUS_OR_BUSBAR_SECTION,
@@ -923,7 +923,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             <TwoWindingsTransformerCharacteristicsPane twtToModify={twtToModify} isModification />
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerDialogTab.LIMITS_TAB} p={1}>
-                            <LimitsPane equipmentToModify={twtToModify as BranchInfos} clearableFields />
+                            <LimitsPane equipmentToModify={twtToModify as BranchInfos} isModification />
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerDialogTab.STATE_ESTIMATION_TAB} p={1}>
                             <Grid container>

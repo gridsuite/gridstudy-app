@@ -43,7 +43,9 @@ export default function CountriesAutocomplete({ name, label, disabled, ...props 
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     inputRef={ref}
-                    inputProps={{ ...inputProps }}
+                    slotProps={{
+                        htmlInput: { ...inputProps },
+                    }}
                     label={label}
                     {...genHelperError(error?.message)}
                     {...rest}

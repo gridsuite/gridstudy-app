@@ -129,6 +129,14 @@ const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularField[] = [
     { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, type: NUMBER },
 ];
 
+const VOLTAGE_REGULATION_FIELDS: TabularField[] = [
+    { id: VOLTAGE_REGULATION_ON, type: BOOLEAN },
+    { id: TARGET_V, type: NUMBER },
+    { id: REGULATING_TERMINAL_ID },
+    { id: REGULATING_TERMINAL_TYPE, type: ENUM, options: REGULATING_TERMINAL_TYPES },
+    { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID },
+];
+
 const CONNECTION_FIELDS: TabularField[] = [
     { id: CONNECTED, type: BOOLEAN },
     { id: CONNECTION_NAME },
@@ -240,11 +248,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         ...REACTIVE_CAPABILITY_CURVE_FIELDS,
         { id: TARGET_P, type: NUMBER },
         { id: TARGET_Q, type: NUMBER },
-        { id: VOLTAGE_REGULATION_ON, type: BOOLEAN },
-        { id: TARGET_V, type: NUMBER },
-        { id: REGULATING_TERMINAL_ID },
-        { id: REGULATING_TERMINAL_TYPE, type: ENUM, options: REGULATING_TERMINAL_TYPES },
-        { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID },
+        ...VOLTAGE_REGULATION_FIELDS,
         { id: FieldConstants.Q_PERCENT, type: NUMBER },
         { id: PARTICIPATE, type: BOOLEAN },
         { id: FieldConstants.DROOP, type: NUMBER },
@@ -280,6 +284,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         { id: TARGET_Q, type: NUMBER },
         { id: PARTICIPATE, type: BOOLEAN },
         { id: FieldConstants.DROOP, type: NUMBER },
+        ...VOLTAGE_REGULATION_FIELDS,
     ],
     SHUNT_COMPENSATOR: [
         { id: EQUIPMENT_ID, required: true },

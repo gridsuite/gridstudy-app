@@ -6,7 +6,7 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { CustomFormProvider, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -95,7 +95,7 @@ export default function NodesConfigDialog({
                 onClose={onClose}
                 onSave={onValidate}
                 onClear={() => null}
-                PaperProps={{ sx: styles.dialogContent }}
+                slotProps={{ paper: { sx: styles.dialogContent } }}
                 {...dialogProps}
             >
                 <Grid container>

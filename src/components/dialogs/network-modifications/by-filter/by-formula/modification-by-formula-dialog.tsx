@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * Copyright (c) 2026, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,46 +9,44 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
     CustomFormProvider,
     DeepNullable,
-    emptyModificationByAssignmentFormData,
-    modificationByAssignmentDtoToForm,
-    modificationByAssignmentFormSchema,
-    modificationByAssignmentFormToDto,
-    ModificationByAssignmentForm,
+    emptyModificationFormData,
+    ModificationByFormulaDto,
+    ModificationByFormulaFormData,
+    ModificationByFormulaForm,
+    modificationByFormulaDtoToForm,
+    modificationByFormulaFormSchema,
+    modificationByFormulaFormToDto,
     snackWithFallback,
     useSnackMessage,
-    type ModificationByAssignmentFormData,
-    ModificationByAssignmentDto,
 } from '@gridsuite/commons-ui';
-import { FC, useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
-import { modifyByAssignment } from '../../../../../services/study/network-modifications';
-import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { modifyByFormula } from '../../../../../services/study/network-modifications';
 import { UUID } from 'node:crypto';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
-type ModificationByAssignmentDialogProps = NetworkModificationDialogProps & {
-    editData?: ModificationByAssignmentDto & { uuid: UUID };
+export type ByFormulaDialogProps = NetworkModificationDialogProps & {
+    editData: ModificationByFormulaDto & { uuid: UUID };
 };
 
-const ModificationByAssignmentDialog: FC<ModificationByAssignmentDialogProps> = ({
-    editData,
-    currentNode,
+const ModificationByFormulaDialog = ({
     studyUuid,
+    currentNode,
+    editData,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: ByFormulaDialogProps) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    // "DeepNullable" to allow deeply null values as default values for required values
-    // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
-    const formMethods = useForm<DeepNullable<ModificationByAssignmentFormData>>({
-        defaultValues: emptyModificationByAssignmentFormData,
-        resolver: yupResolver<DeepNullable<ModificationByAssignmentFormData>>(modificationByAssignmentFormSchema),
+    const formMethods = useForm<DeepNullable<ModificationByFormulaFormData>>({
+        defaultValues: emptyModificationFormData,
+        resolver: yupResolver<DeepNullable<ModificationByFormulaFormData>>(modificationByFormulaFormSchema),
     });
 
     const open = useOpenShortWaitFetching({
@@ -61,31 +59,31 @@ const ModificationByAssignmentDialog: FC<ModificationByAssignmentDialogProps> = 
 
     useEffect(() => {
         if (editData) {
-            reset(modificationByAssignmentDtoToForm(editData));
+            reset(modificationByFormulaDtoToForm(editData));
         }
     }, [editData, reset]);
 
     const clear = useCallback(() => {
-        reset(emptyModificationByAssignmentFormData);
+        reset(emptyModificationFormData);
     }, [reset]);
 
     const onSubmit = useCallback(
-        (formData: ModificationByAssignmentFormData) => {
-            const dto = modificationByAssignmentFormToDto(formData);
-            modifyByAssignment(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'ModifyByAssignment' });
+        (formData: ModificationByFormulaFormData) => {
+            const dto = modificationByFormulaFormToDto(formData);
+            modifyByFormula(studyUuid, currentNodeUuid, dto, editData?.uuid).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'ModifyByFormula' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     return (
-        <CustomFormProvider validationSchema={modificationByAssignmentFormSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={modificationByFormulaFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                titleId="ModifyByAssignment"
+                titleId="ModifyByFormula"
                 open={open}
                 maxWidth={'xl'}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
@@ -98,10 +96,10 @@ const ModificationByAssignmentDialog: FC<ModificationByAssignmentDialogProps> = 
                 }}
                 {...dialogProps}
             >
-                <ModificationByAssignmentForm />
+                <ModificationByFormulaForm />
             </ModificationDialog>
         </CustomFormProvider>
     );
 };
 
-export default ModificationByAssignmentDialog;
+export default ModificationByFormulaDialog;
