@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { Fragment, useCallback, useEffect, useState } from 'react';
 import { areIdsEqual, AutocompleteInput, EquipmentType, getObjectId, Option, TextInput } from '@gridsuite/commons-ui';
 import {

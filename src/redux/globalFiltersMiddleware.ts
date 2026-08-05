@@ -17,7 +17,7 @@ import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig 
 import { TableType } from '../types/custom-aggrid-types';
 import { UUID } from 'node:crypto';
 import type { AppState } from './reducer.type';
-import { syncGlobalFilters } from '../components/results/common/global-filter/utils/global-filter-sync.utils';
+import { GlobalFilter, notUndefined, syncGlobalFilters } from '@gridsuite/commons-ui';
 
 /**
  * Redux middleware that synchronizes global filter changes with the backend.
@@ -55,12 +55,12 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
             );
 
             const recentFilters = tableFiltersState?.recents ?? [];
-            const recentGlobalFilters = recentFilters
+            const recentGlobalFilters: GlobalFilter[] = recentFilters
                 .map((recentFilter) => {
                     const filterOption = state.globalFilterOptions.find((opt) => opt.id === recentFilter.id);
                     return filterOption ? { ...filterOption, unselectedDate: recentFilter.unselectedDate } : undefined;
                 })
-                .filter((f) => f !== undefined);
+                .filter(notUndefined);
 
             const globalFilters = [...selectedGlobalFilters, ...recentGlobalFilters];
 

@@ -15,7 +15,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { ACTIVE_POWER_SETPOINT, CONVERTERS_MODE, MAX_P, NOMINAL_V, R } from '../../../../../utils/field-constants';
 import { VSC_CONVERTER_MODE, VscConverterMode } from 'components/network/constants';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { GridSection } from '../../../../commons/grid-section';
 import { GridItem } from '../../../../commons/grid-item';
 import { LccFormInfos } from './lcc-type';
