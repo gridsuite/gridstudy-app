@@ -617,7 +617,16 @@ const TwoWindingsTransformerModificationDialog = ({
                 snackWithFallback(snackError, error, { headerId: 'TwoWindingsTransformerModificationError' });
             });
         },
-        [editData?.uuid, studyUuid, currentNodeUuid, snackError]
+        [
+            selectedId,
+            intl,
+            computeRatioTapForSubmit,
+            computePhaseTapForSubmit,
+            studyUuid,
+            currentNodeUuid,
+            editData?.uuid,
+            snackError,
+        ]
     );
 
     const onValidationError = (errors: FieldErrors<TwoWindingsTransformerModificationFormValues>) => {

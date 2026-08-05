@@ -29,7 +29,6 @@ import {
     EquipmentType,
     equipmentTypesForPredefinedPropertiesMapper,
     getCsvDelimiter,
-    LANG_FRENCH,
     ModificationType,
     PredefinedProperties,
     Property,

@@ -14,11 +14,9 @@ import {
     AttributeModification,
     LineCreationDto,
     ModificationType,
-    OperationalLimitsGroupModificationInfos,
     Property,
     ReactiveCapabilityCurvePoints,
 } from '@gridsuite/commons-ui';
-import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 import { VARIATION_TYPES } from '../components/network/constants';
 
 export interface WithModificationId {

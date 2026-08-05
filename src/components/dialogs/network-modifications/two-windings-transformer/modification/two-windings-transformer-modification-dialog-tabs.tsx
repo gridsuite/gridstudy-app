@@ -46,10 +46,7 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                 />
                 <Tab
                     label={<FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />}
-                    sx={getTabStyle(
-                        tabIndexesWithError,
-                        TwoWindingsTransformerDialogTab.CHARACTERISTICS_TAB
-                    )}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerDialogTab.CHARACTERISTICS_TAB)}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
@@ -57,10 +54,7 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                 />
                 <Tab
                     label={<FormattedMessage id="StateEstimationTab" />}
-                    sx={getTabStyle(
-                        tabIndexesWithError,
-                        TwoWindingsTransformerDialogTab.STATE_ESTIMATION_TAB
-                    )}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerDialogTab.STATE_ESTIMATION_TAB)}
                 />
                 <Tab
                     label={<FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />}

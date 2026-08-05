@@ -9,11 +9,11 @@ import { B, G, R, RATED_S, RATED_U1, RATED_U2, X } from '../../../../utils/field
 // TODO remove this file when moving twt modification to commons-ui
 
 export type CharacteristicsFormSchema = {
-     [R]: number | null;
-     [X]: number | null;
-     [G]: number | null;
-     [B]: number | null;
-     [RATED_S]: number | null;
-     [RATED_U1]: number | null;
-     [RATED_U2]: number | null;
- };
+    [R]: number | null;
+    [X]: number | null;
+    [G]: number | null;
+    [B]: number | null;
+    [RATED_S]: number | null;
+    [RATED_U1]: number | null;
+    [RATED_U2]: number | null;
+};
