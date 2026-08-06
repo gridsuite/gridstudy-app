@@ -22,16 +22,13 @@ import { PARAM_PROVIDER_DYNAFLOW, PARAM_PROVIDER_DYNAWO } from '../utils/config-
 import {
     ComputingType,
     formatComputingTypeLabel,
-    isEmpty,
     PARAM_DEVELOPER_MODE,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
-import { DynamicSimulationParametersSelector } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 import { startSensitivityAnalysis, stopSensitivityAnalysis } from '../services/study/sensitivity-analysis';
 import {
-    fetchDynamicSimulationParameters,
     fetchDynamicSimulationProvider,
     startDynamicSimulation,
     stopDynamicSimulation,
@@ -61,14 +58,6 @@ import {
 } from '../services/study/dynamic-margin-calculation.ts';
 import useDebugSubscription from '../hooks/computation-debug/use-debug-subscription.ts';
 import useDebugNotification from '../hooks/computation-debug/use-debug-notification.ts';
-
-const checkDynamicSimulationParameters = (studyUuid) => {
-    return fetchDynamicSimulationParameters(studyUuid).then((params) => {
-        // check mapping configuration
-        const mapping = params.mapping;
-        return !isEmpty(mapping);
-    });
-};
 
 const COMPUTATIONS_WITH_PAGINATION = [
     ComputingType.SECURITY_ANALYSIS,
@@ -108,11 +97,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
     const stateEstimationStatus = useSelector((state) => state.computingStatus[ComputingType.STATE_ESTIMATION]);
     const pccMinStatus = useSelector((state) => state.computingStatus[ComputingType.PCC_MIN]);
-
-    const [showDynamicSimulationParametersSelector, setShowDynamicSimulationParametersSelector] = useState(false);
-
-    // a transient state which is used only for a run with popup dialog
-    const [runWithDebug, setRunWithDebug] = useState(false);
 
     const [computationStopped, setComputationStopped] = useState(false);
 
@@ -242,22 +226,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         );
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid, startComputationAsync]);
 
-    const handleStartDynamicSimulation = (debug) => {
-        startComputationAsync(
-            ComputingType.DYNAMIC_SIMULATION,
-            null,
-            () =>
-                startDynamicSimulation({
-                    studyUuid,
-                    currentNodeUuid: currentNode?.id,
-                    currentRootNetworkUuid,
-                    debug,
-                }),
-            () => debug && subscribeDebug(ComputingType.DYNAMIC_SIMULATION),
-            null,
-            'DynamicSimulationRunError'
-        );
-    };
     const handleStartLoadFlow = useCallback(
         (withRatioTapChangers) => {
             startComputationAsync(
@@ -383,14 +351,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                             [PARAM_PROVIDER_DYNAWO]
                         );
                         if (!isProviderValid) {
-                            return;
-                        }
-
-                        const isParametersValid = await checkDynamicSimulationParameters(studyUuid);
-                        if (!isParametersValid) {
-                            // open parameters selector to configure mandatory params
-                            setShowDynamicSimulationParametersSelector(true);
-                            setRunWithDebug(debug);
                             return;
                         }
 
@@ -656,18 +616,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 computationStopped={computationStopped}
                 disabled={isModificationsInProgress || disabled}
             />
-            {!disabled && showDynamicSimulationParametersSelector && (
-                <DynamicSimulationParametersSelector
-                    open={showDynamicSimulationParametersSelector}
-                    onClose={() => setShowDynamicSimulationParametersSelector(false)}
-                    onStart={() => {
-                        handleStartDynamicSimulation(runWithDebug);
-                        setShowDynamicSimulationParametersSelector(false);
-                        setRunWithDebug(false);
-                    }}
-                    studyUuid={studyUuid}
-                />
-            )}
         </>
     );
 }

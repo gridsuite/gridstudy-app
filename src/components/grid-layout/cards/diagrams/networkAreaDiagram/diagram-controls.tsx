@@ -26,8 +26,6 @@ import IconButton from '@mui/material/IconButton';
 import UploadIcon from '@mui/icons-material/Upload';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
-import SpeakerNotesOffOutlinedIcon from '@mui/icons-material/SpeakerNotesOffOutlined';
-import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
 import { Tooltip } from '@mui/material';
@@ -83,8 +81,6 @@ interface DiagramControlsProps {
     onExpandAllVoltageLevels?: () => void;
     onAddVoltageLevel: (vlId: string) => void;
     onAddVoltageLevelsFromFilter: (elementUuid: UUID) => void;
-    onToggleShowLabels?: () => void;
-    isShowLabels?: boolean;
     isDiagramLoading?: boolean;
     isNadCreationFromFilter: boolean;
     svgVoltageLevels?: string[];
@@ -100,8 +96,6 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     onExpandAllVoltageLevels,
     onAddVoltageLevel,
     onAddVoltageLevelsFromFilter,
-    onToggleShowLabels,
-    isShowLabels,
     isDiagramLoading,
     isNadCreationFromFilter,
     svgVoltageLevels,
@@ -137,12 +131,6 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
 
     const handleCloseFilterSelector = () => {
         setIsFilterSelectorOpen(false);
-    };
-
-    const handleToggleShowLabels = () => {
-        if (onToggleShowLabels && !isDiagramLoading) {
-            onToggleShowLabels();
-        }
     };
 
     const handleClickExpandAllVoltageLevelsIcon = () => {
@@ -326,21 +314,6 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                                         disabled={isDiagramLoading}
                                     >
                                         <AddLocationOutlined sx={styles.icon} />
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
-                            <Tooltip title={<FormattedMessage id={isShowLabels ? 'hideLabels' : 'showLabels'} />}>
-                                <span>
-                                    <IconButton
-                                        sx={styles.actionIcon}
-                                        onClick={handleToggleShowLabels}
-                                        disabled={isDiagramLoading}
-                                    >
-                                        {isShowLabels ? (
-                                            <SpeakerNotesOutlinedIcon sx={styles.icon} />
-                                        ) : (
-                                            <SpeakerNotesOffOutlinedIcon sx={styles.icon} />
-                                        )}
                                     </IconButton>
                                 </span>
                             </Tooltip>

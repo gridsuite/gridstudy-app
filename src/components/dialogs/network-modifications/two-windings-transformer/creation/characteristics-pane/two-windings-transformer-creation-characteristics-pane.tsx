@@ -5,19 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import TwoWindingsTransformerCharacteristicsPane from '../../characteristics-pane/two-windings-transformer-characteristics-pane';
 import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import { Grid2Section as GridSection } from '../../../../commons/grid2-section';
-import { Grid2Item as GridItem } from '../../../../commons/grid2-item';
+import { GridSection } from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
 import { TwoWindingsTransformerCreationDialogTab } from '../../two-windings-transformer-utils';
-import { LimitsPane } from '../../../../limits/limits-pane';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { ConnectivityForm } from '@gridsuite/commons-ui';
+import { ConnectivityForm, LimitsPane } from '@gridsuite/commons-ui';
 import PositionDiagramPane from '../../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback } from 'react';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../../services/study/network';

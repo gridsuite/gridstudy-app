@@ -5,12 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { Key } from 'react';
 import RunningStatus from './utils/running-status';
 import type { UUID } from 'node:crypto';
 
 export interface VoltageInitResultProps {
     result: any;
     status: RunningStatus;
+    exportCsvResetKey: Key;
 }
 
 export interface ReactiveSlack {

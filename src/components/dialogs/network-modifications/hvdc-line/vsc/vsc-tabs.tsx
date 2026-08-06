@@ -26,13 +26,15 @@ export default function VscTabs({
 }: Readonly<VscTabsProps>) {
     return (
         <>
-            <Grid container>
+            <Grid container sx={{ width: '100%' }}>
                 <Tabs
                     value={tabIndex}
                     variant="scrollable"
                     onChange={(event, newValue) => setTabIndex(newValue)}
-                    TabIndicatorProps={{
-                        sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
+                    slotProps={{
+                        indicator: {
+                            sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
+                        },
                     }}
                 >
                     <Tab

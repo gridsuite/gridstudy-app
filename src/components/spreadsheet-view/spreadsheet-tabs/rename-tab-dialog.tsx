@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { Grid } from '@mui/material';
+import { Grid, Stack } from '@mui/material';
 import { CustomFormProvider, TextInput } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -83,11 +83,11 @@ export default function RenameTabDialog({
                 onClose={onClose}
                 onSave={onSubmit}
                 onClear={() => null}
-                PaperProps={{ sx: { width: '30%' } }}
+                slotProps={{ paper: { sx: { width: '30%' } } }}
                 {...dialogProps}
             >
-                <Grid container spacing={2} direction="column" marginTop="auto">
-                    <Grid item>
+                <Stack spacing={2} marginTop={2}>
+                    <Grid>
                         <TextInput
                             name="name"
                             label="spreadsheet/create_new_spreadsheet/spreadsheet_name"
@@ -97,7 +97,7 @@ export default function RenameTabDialog({
                             }}
                         />
                     </Grid>
-                </Grid>
+                </Stack>
             </ModificationDialog>
         </CustomFormProvider>
     );

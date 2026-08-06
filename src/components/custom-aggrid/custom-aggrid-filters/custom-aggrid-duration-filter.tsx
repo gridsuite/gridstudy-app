@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import { Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { useCustomAggridColumnFilter } from './hooks/use-custom-aggrid-column-filter';
+import { CustomAggridComparatorSelector } from '@gridsuite/commons-ui';
+import { SelectChangeEvent } from '@mui/material/Select';
+import { useCustomAggridColumnFilter } from '@gridsuite/commons-ui';
 
 import { CustomAggridFilterParams } from '../../../types/custom-aggrid-types';
 
@@ -135,48 +135,52 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
     }, [handleClearFilter]);
 
     return (
-        <Grid container direction={'column'} gap={0.8} sx={{ padding: '8px' }}>
+        <Stack gap={0.8} sx={{ padding: '8px' }}>
             <CustomAggridComparatorSelector
                 value={selectedFilterComparator}
                 onChange={handleFilterComparatorChange}
                 options={comparators}
             />
-            <Grid item container columns={12} sx={styles.containerStyle}>
-                <Grid item flex={1}>
+            <Grid container columns={12} sx={styles.containerStyle}>
+                <Grid flex={1}>
                     <TextField
                         fullWidth
                         size="small"
                         value={minutes}
                         onChange={handleMinutesChange}
                         placeholder={intl.formatMessage({ id: 'filter.filterOoo' })}
-                        InputProps={{
-                            type: 'number',
-                            endAdornment: <InputAdornment position="end">min</InputAdornment>,
-                            inputProps: { min: 0 },
-                        }}
                         sx={styles.noArrows}
+                        slotProps={{
+                            input: {
+                                type: 'number',
+                                endAdornment: <InputAdornment position="end">min</InputAdornment>,
+                                inputProps: { min: 0 },
+                            },
+                        }}
                     />
                 </Grid>
-                <Grid item xs={1} sx={styles.flexCenter}>
+                <Grid size={1} sx={styles.flexCenter}>
                     <Typography variant="body1">:</Typography>
                 </Grid>
-                <Grid item flex={1}>
+                <Grid flex={1}>
                     <TextField
                         fullWidth
                         size="small"
                         value={seconds}
                         onChange={handleSecondsChange}
                         placeholder={intl.formatMessage({ id: 'filter.filterOoo' })}
-                        InputProps={{
-                            type: 'number',
-                            endAdornment: <InputAdornment position="end">s</InputAdornment>,
-                            inputProps: { min: 0, max: 59 },
-                        }}
                         sx={styles.noArrows}
+                        slotProps={{
+                            input: {
+                                type: 'number',
+                                endAdornment: <InputAdornment position="end">s</InputAdornment>,
+                                inputProps: { min: 0, max: 59 },
+                            },
+                        }}
                     />
                 </Grid>
                 {selectedFilterData !== undefined && selectedFilterData !== '' && (
-                    <Grid item xs={1} sx={styles.flexCenter} ml={0.5}>
+                    <Grid size={1} sx={styles.flexCenter} ml={0.5}>
                         <IconButton
                             onClick={clearValue}
                             sx={styles.iconStyle}
@@ -189,7 +193,7 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                     </Grid>
                 )}
             </Grid>
-        </Grid>
+        </Stack>
     );
 };
 

@@ -20,7 +20,7 @@ interface BranchLimitsTableProps {
 
 export const BranchLimitsTable: React.FC<BranchLimitsTableProps> = ({ equipmentInfos, loadFlowStatus }) => {
     return (
-        <Grid item sx={styles.grid}>
+        <Grid sx={styles.grid}>
             <TableContainer sx={styles.table}>
                 <Table size="small" sx={styles.layout}>
                     <TableHead>

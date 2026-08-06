@@ -144,8 +144,7 @@ interface LoadBoundsDetailsParameters extends VoltageLevelCode {
 }
 
 interface LoadBoundsDetailsParametersForm
-    extends VoltageLevelLabel,
-        Omit<LoadBoundsDetailsParameters, 'voltageLevel'> {}
+    extends VoltageLevelLabel, Omit<LoadBoundsDetailsParameters, 'voltageLevel'> {}
 
 interface ThresholdsPerVoltageLevel extends ThresholdVoltageLevelCode {
     thresholdOutBoundsGapV: number;
@@ -160,8 +159,7 @@ interface ThresholdsPerVoltageLevel extends ThresholdVoltageLevelCode {
 }
 
 interface ThresholdsPerVoltageLevelForm
-    extends VoltageLevelLabel,
-        Omit<ThresholdsPerVoltageLevel, 'thresholdVoltageLevel'> {}
+    extends VoltageLevelLabel, Omit<ThresholdsPerVoltageLevel, 'thresholdVoltageLevel'> {}
 
 export interface StateEstimationParameters {
     estimParameters: {

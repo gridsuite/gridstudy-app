@@ -6,7 +6,7 @@
  */
 
 import { GridApi } from 'ag-grid-community';
-import { addToleranceToFilter } from './filter-tolerance-utils';
+import { addToleranceToFilter } from '@gridsuite/commons-ui';
 import { FILTER_DATA_TYPES, FILTER_NUMBER_COMPARATORS, FilterConfig } from '../../../../types/custom-aggrid-types';
 
 export enum BooleanFilterValue {
@@ -22,8 +22,8 @@ interface FilterModel {
 const generateEnumFilterModel = (filter: FilterConfig) => {
     const filterValue = filter.value as string[];
     return {
-        type: 'text',
-        filterType: 'customInRange',
+        type: 'customInRange',
+        filterType: 'text',
         filter: filterValue,
     };
 };

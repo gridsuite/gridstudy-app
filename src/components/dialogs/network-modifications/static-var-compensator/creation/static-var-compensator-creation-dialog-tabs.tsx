@@ -23,7 +23,7 @@ const StaticVarCompensatorCreationDialogTabs: FunctionComponent<StaticVarCompens
     setTabIndex,
 }) => {
     return (
-        <Grid container item>
+        <Grid container sx={{ width: '100%' }}>
             <Tabs value={tabIndex} onChange={(event, newValue) => setTabIndex(newValue)}>
                 <Tab
                     label={<FormattedMessage id="StaticVarCompensatorConnectivityTab" />}

@@ -244,9 +244,11 @@ export function LccCreationDialog({
                 onValidationError={onValidationError}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
-                PaperProps={{
-                    sx: {
-                        height: '95vh',
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '95vh',
+                        },
                     },
                 }}
                 {...dialogProps}

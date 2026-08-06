@@ -6,19 +6,29 @@
  */
 
 import {
-    DIRECTORY_ITEM,
+    EXPORT_COMPRESSION,
     EXPORT_DESTINATION,
     EXPORT_FORMAT,
     EXPORT_PARAMETERS,
     FILE_NAME,
 } from '../../utils/field-constants';
 import * as yup from 'yup';
-import { DESCRIPTION, MAX_CHAR_DESCRIPTION, Parameter } from '@gridsuite/commons-ui';
-import { directoryItemSchema } from '../../utils/rhf-inputs/directory-item-input/directory-item-utils';
+import {
+    DESCRIPTION,
+    DIRECTORY_ITEM,
+    directoryItemSchema,
+    MAX_CHAR_DESCRIPTION,
+    Parameter,
+} from '@gridsuite/commons-ui';
 
 export enum ExportDestinationType {
     GRID_EXPLORE = 'gridExplore',
     MY_COMPUTER = 'myComputer',
+}
+
+export enum CompressionType {
+    ZIP = 'zip',
+    GZIP = 'gzip',
 }
 
 export const separator = '/';
@@ -37,6 +47,7 @@ export const schema = yup.object().shape({
         otherwise: (schema) => schema.notRequired(),
     }),
     [EXPORT_FORMAT]: yup.string().required('exportStudyErrorMsg'),
+    [EXPORT_COMPRESSION]: yup.string().required('exportCompressionErrorMsg'),
     [EXPORT_PARAMETERS]: yup.object(),
 });
 
@@ -46,6 +57,7 @@ export const emptyData = {
     [DIRECTORY_ITEM]: null,
     [DESCRIPTION]: '',
     [EXPORT_FORMAT]: '',
+    [EXPORT_COMPRESSION]: CompressionType.ZIP,
     [EXPORT_PARAMETERS]: emptyObj,
 };
 

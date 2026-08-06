@@ -21,13 +21,15 @@ export default function BalancesAdjustmentDialogTabs({
     setTabIndex,
 }: BalancesAdjustmentDialogTabsProps) {
     return (
-        <Grid container>
+        <Grid container sx={{ width: '100%' }}>
             <Tabs
                 value={tabIndex}
                 variant="scrollable"
                 onChange={(_: React.SyntheticEvent, newValue: number) => setTabIndex(newValue)}
-                TabIndicatorProps={{
-                    sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
+                slotProps={{
+                    indicator: {
+                        sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
+                    },
                 }}
             >
                 <Tab

@@ -12,11 +12,11 @@ import {
     FilterEquipments,
     Identifiable,
     IdentifiableAttributes,
+    GlobalFilters,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { getRequestParamFromList } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import type { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
 import type { FilterEquipmentType } from '../../types/filter-lib/filter';
 
 /**

@@ -6,7 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, buildValidGlobalFilters } from '@gridsuite/commons-ui';
 import RunningStatus from './utils/running-status';
 import { voltageInitResultInvalidations } from './computing-status/use-all-computing-status';
 import { useNodeData } from './use-node-data';
@@ -15,9 +15,8 @@ import { AppState } from '../redux/reducer.type';
 import { VoltageInitResult } from './voltage-init-result';
 import { useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
-import { useComputationGlobalFilters } from './results/common/global-filter/use-computation-global-filters';
+import { useComputationGlobalFilters } from './results/common/global-filter/hooks/use-computation-global-filters';
 import { TableType } from '../types/custom-aggrid-types';
-import { buildValidGlobalFilters } from './results/common/global-filter/build-valid-global-filters';
 
 export type VoltageInitResultTabProps = {
     studyUuid: UUID;
@@ -59,5 +58,11 @@ export function VoltageInitResultTab({
             ? voltageInitResult
             : null;
 
-    return <VoltageInitResult result={voltageInitResultToShow} status={voltageInitStatus} />;
+    return (
+        <VoltageInitResult
+            result={voltageInitResultToShow}
+            status={voltageInitStatus}
+            exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+        />
+    );
 }

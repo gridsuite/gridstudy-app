@@ -5,9 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { Key } from 'react';
 import { ColDef } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { BranchSide } from '../../utils/constants';
+import { LimitTypes } from '@gridsuite/commons-ui';
 
 export interface ComponentResult {
     componentResultUuid: UUID;
@@ -58,12 +60,6 @@ export interface LoadFlowResult {
     exchanges: Record<string, ExchangeValue[]>;
 }
 
-export enum LimitTypes {
-    HIGH_VOLTAGE = 'HIGH_VOLTAGE',
-    LOW_VOLTAGE = 'LOW_VOLTAGE',
-    CURRENT = 'CURRENT',
-}
-
 export interface LoadFlowTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
@@ -73,6 +69,7 @@ export interface LoadFlowTabProps {
 export interface LoadflowResultTap {
     isLoadingResult: boolean;
     tableName: string;
+    exportCsvResetKey: Key;
 }
 
 export interface LoadflowResultProps extends LoadflowResultTap {

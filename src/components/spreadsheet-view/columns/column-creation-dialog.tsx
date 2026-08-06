@@ -7,14 +7,24 @@
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Tooltip, Typography } from '@mui/material';
+import {
+    Box,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    Link,
+    Stack,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 import {
     AutocompleteInput,
     CancelButton,
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
-    mergeSx,
     type MuiStyles,
     MultipleAutocompleteInput,
     snackWithFallback,
@@ -125,7 +135,7 @@ export default function ColumnCreationDialog({
 
     const dialogTitle = (
         <Grid container spacing={2} justifyContent={'space-between'} alignItems="center">
-            <Grid item xs={6}>
+            <Grid size={6}>
                 <Typography variant="h6">
                     <FormattedMessage
                         id={
@@ -136,8 +146,8 @@ export default function ColumnCreationDialog({
                     />
                 </Typography>
             </Grid>
-            <Grid item xs={6} container spacing={2} justifyContent={'right'}>
-                <Grid item>
+            <Grid size={6} container spacing={2} justifyContent={'right'}>
+                <Grid>
                     <Tooltip
                         title={
                             <FormattedMessage
@@ -159,7 +169,7 @@ export default function ColumnCreationDialog({
                         }
                         color="primary"
                         placement="left-end"
-                        componentsProps={{
+                        slotProps={{
                             tooltip: {
                                 sx: {
                                     maxWidth: 500,
@@ -331,36 +341,24 @@ export default function ColumnCreationDialog({
                 open={open.value}
                 onClose={onClose}
                 aria-labelledby="custom-column-dialog-edit-title"
-                PaperProps={{ sx: styles.dialogContent }}
+                slotProps={{
+                    paper: { sx: styles.dialogContent },
+                }}
             >
                 <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>
-                    <Grid container spacing={2} direction="column" alignItems="center">
-                        <Grid item sx={mergeSx(styles.field, { marginTop: '5px' })}>
-                            {columnNameField}
-                        </Grid>
-                        <Grid item sx={styles.field}>
-                            {columnIdField}
-                        </Grid>
-                        <Grid item sx={styles.field}>
-                            {columnType}
-                        </Grid>
-                        {watchColumnType === COLUMN_TYPES.NUMBER && (
-                            <Grid item sx={styles.field}>
-                                {precisionField}
-                            </Grid>
-                        )}
-                        <Grid item sx={styles.field}>
-                            {formulaField}
-                        </Grid>
-                        <Grid item sx={styles.field}>
-                            {dependenciesField}
-                        </Grid>
-                    </Grid>
+                    <Stack spacing={2} mt="5px" alignItems="center">
+                        <Grid sx={styles.field}>{columnNameField}</Grid>
+                        <Grid sx={styles.field}>{columnIdField}</Grid>
+                        <Grid sx={styles.field}>{columnType}</Grid>
+                        {watchColumnType === COLUMN_TYPES.NUMBER && <Grid sx={styles.field}>{precisionField}</Grid>}
+                        <Grid sx={styles.field}>{formulaField}</Grid>
+                        <Grid sx={styles.field}>{dependenciesField}</Grid>
+                    </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Grid container spacing={0.5}>
-                        <Grid item xs>
+                        <Grid size="grow">
                             <Box sx={styles.actionButtons}>
                                 <CancelButton onClick={open.setFalse} />
                                 <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined" />

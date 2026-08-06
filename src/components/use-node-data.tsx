@@ -7,7 +7,14 @@
 
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import type { UUID } from 'node:crypto';
-import { identity, NotificationsUrlKeys, useDebounce, useNotificationsListener } from '@gridsuite/commons-ui';
+import {
+    identity,
+    NotificationsUrlKeys,
+    snackWithFallback,
+    useDebounce,
+    useNotificationsListener,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { parseEventData, StudyUpdatedEventData } from '../types/notification-types';
 
 export type ResultFetcher<T> = (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<T | null>;
@@ -107,7 +114,6 @@ export function useNodeData<T, R = T>({
 }: UseNodeDataParams<T, R>) {
     const [result, setResult] = useState<R | undefined>(defaultValue);
     const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(undefined);
     const nodeUuidRef = useRef<UUID>(undefined);
     const rootNetworkUuidRef = useRef<UUID>(undefined);
     const lastUpdateRef = useRef<LastUpdateParams<T>>(undefined);
@@ -117,6 +123,7 @@ export function useNodeData<T, R = T>({
     // another tab with a different result shape) cannot overwrite the current
     // result and crash consumers.
     const requestIdRef = useRef<number>(0);
+    const { snackError } = useSnackMessage();
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
@@ -124,16 +131,16 @@ export function useNodeData<T, R = T>({
         const requestId = ++requestIdRef.current;
         const isLatestRequest = () => requestId === requestIdRef.current;
         setIsLoading(true);
-        setErrorMessage(undefined);
         fetcher?.(studyUuid, nodeUuid, rootNetworkUuid)
             .then((res) => {
                 if (isLatestRequest()) {
                     setResult(resultConverter(res) ?? undefined);
                 }
             })
-            .catch((err) => {
+            .catch((error) => {
                 if (isLatestRequest()) {
-                    setErrorMessage(err.message);
+                    setResult(undefined);
+                    snackWithFallback(snackError, error, { headerId: 'NodeDataFetchingError' });
                 }
             })
             .finally(() => {
@@ -141,7 +148,7 @@ export function useNodeData<T, R = T>({
                     setIsLoading(false);
                 }
             });
-    }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter]);
+    }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter, snackError]);
 
     // Debounce the update to avoid excessive calls
     const debouncedUpdate = useDebounce(update, 1000);
@@ -179,5 +186,5 @@ export function useNodeData<T, R = T>({
         evaluateUpdate();
     }, [evaluateUpdate]);
 
-    return { result, isLoading, setResult, errorMessage, update };
+    return { result, isLoading, setResult, update };
 }

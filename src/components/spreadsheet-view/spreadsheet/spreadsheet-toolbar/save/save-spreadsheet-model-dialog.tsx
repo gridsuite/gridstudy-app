@@ -10,6 +10,7 @@ import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
 import {
     Grid,
+    Stack,
     Box,
     Button,
     CircularProgress,
@@ -36,6 +37,7 @@ import {
     useSnackMessage,
     DirectoryInitConfig,
     initializeDirectory,
+    DESCRIPTION_LIMIT_ERROR,
 } from '@gridsuite/commons-ui';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
@@ -101,7 +103,7 @@ const schema = yup
     .object()
     .shape({
         [FieldConstants.NAME]: yup.string().trim().required(),
-        [FieldConstants.DESCRIPTION]: yup.string().optional().max(MAX_CHAR_DESCRIPTION, 'descriptionLimitError'),
+        [FieldConstants.DESCRIPTION]: yup.string().optional().max(MAX_CHAR_DESCRIPTION, DESCRIPTION_LIMIT_ERROR),
         [FieldConstants.OPERATION_TYPE]: yup.string().oneOf(Object.values(OperationType)).required(),
     })
     .required();
@@ -303,8 +305,8 @@ export function SaveSpreadsheetModelDialog({
     const renderChooser = () => {
         if (isCreateMode) {
             return (
-                <Grid container item>
-                    <Grid item>
+                <Grid container>
+                    <Grid>
                         <Button onClick={handleChangeFolder} variant="contained" size="small">
                             <FormattedMessage id="showSelectDirectoryDialog" />
                         </Button>
@@ -318,8 +320,8 @@ export function SaveSpreadsheetModelDialog({
             );
         }
         return (
-            <Grid container item>
-                <Grid item>
+            <Grid container>
+                <Grid>
                     <Button onClick={handleChangeFolder} variant="contained" size="small">
                         <FormattedMessage id="showSelectDirectoryItemDialog" />
                     </Button>
@@ -343,8 +345,8 @@ export function SaveSpreadsheetModelDialog({
             }}
             disabledSave={disableSave}
         >
-            <Grid container spacing={2} marginTop="auto" direction="column">
-                <Grid item>
+            <Stack spacing={2} marginTop={2}>
+                <Grid>
                     <RadioInput
                         name={FieldConstants.OPERATION_TYPE}
                         options={[
@@ -360,7 +362,7 @@ export function SaveSpreadsheetModelDialog({
                         }}
                     />
                 </Grid>
-                <Grid item>
+                <Grid>
                     <FormControl component="fieldset">
                         <FormLabel focused={false}>
                             {intl.formatMessage({ id: 'spreadsheet/save-dialog/include' })}
@@ -401,7 +403,7 @@ export function SaveSpreadsheetModelDialog({
                         </FormGroup>
                     </FormControl>
                 </Grid>
-                <Grid item>
+                <Grid>
                     <UniqueNameInput
                         name={FieldConstants.NAME}
                         label="name"
@@ -411,11 +413,11 @@ export function SaveSpreadsheetModelDialog({
                         autoFocus
                     />
                 </Grid>
-                <Grid item>
+                <Grid>
                     <DescriptionField />
                 </Grid>
                 {renderChooser()}
-            </Grid>
+            </Stack>
             <DirectoryItemSelector
                 key={isCreateMode ? destinationFolder?.id : selectedItem?.id}
                 open={directorySelectorOpen}

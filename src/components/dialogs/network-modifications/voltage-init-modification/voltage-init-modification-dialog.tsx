@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, Key, useCallback, useMemo, useRef, useState } from 'react';
 import { BasicModificationDialog } from '../../commons/basicModificationDialog';
 import {
     BooleanCellRenderer,
@@ -177,6 +177,7 @@ interface VoltageInitModificationProps {
     onPreviewModeSubmit?: () => void;
     editDataFetchStatus: FetchStatus;
     disabledSave: boolean;
+    exportCsvResetKey: Key;
 }
 
 const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationProps> = ({
@@ -185,6 +186,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
     onPreviewModeSubmit,
     editDataFetchStatus,
     disabledSave,
+    exportCsvResetKey,
     ...dialogProps
 }) => {
     const intl = useIntl();
@@ -548,6 +550,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             disabled={rowData.length === 0 || editDataFetchStatus === FetchStatus.RUNNING}
                             language={language}
                             getData={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
+                            resetKey={exportCsvResetKey}
                         />
                     </Box>
                     <Box sx={styles.grid}>
@@ -574,6 +577,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             shuntCompensatorsColumnDefs,
             busColumnDefs,
             language,
+            exportCsvResetKey,
         ]
     );
 
@@ -592,9 +596,11 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             onClose={onClose}
             onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
             open={open}
-            PaperProps={{
-                sx: {
-                    height: '90vh',
+            slotProps={{
+                paper: {
+                    sx: {
+                        height: '90vh',
+                    },
                 },
             }}
             subtitle={equipmentTabs}

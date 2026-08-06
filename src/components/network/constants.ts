@@ -43,12 +43,6 @@ export const SIDE = {
     SIDE2: { id: 'SIDE2', label: 'RegulatedSide2' },
 } as const;
 
-export const APPLICABILITY = {
-    EQUIPMENT: { id: 'EQUIPMENT', label: 'BothSides' },
-    SIDE1: { id: 'SIDE1', label: 'Side1' },
-    SIDE2: { id: 'SIDE2', label: 'Side2' },
-};
-
 const PROPORTIONAL = { id: 'PROPORTIONAL', label: 'Proportional' } as const;
 const REGULAR_DISTRIBUTION = {
     id: 'REGULAR_DISTRIBUTION',

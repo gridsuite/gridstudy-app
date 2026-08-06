@@ -28,7 +28,7 @@ import {
     SelectInput,
     SwitchInput,
 } from '@gridsuite/commons-ui';
-import GridSection from '../../../commons/grid-section';
+import { GridSection } from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from 'components/grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
@@ -88,8 +88,10 @@ export function CreateVoltageLevelSectionForm({
             fullWidth
             label={intl.formatMessage({ id: 'VoltageLevelId' })}
             value={voltageLevelId}
-            InputProps={{
-                readOnly: true,
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
             }}
             disabled
             {...filledTextField}
@@ -329,13 +331,11 @@ export function CreateVoltageLevelSectionForm({
     return (
         <Box sx={{ p: 2 }}>
             <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid size={12}>
                     <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} md={6}>
-                            {voltageLevelIdField}
-                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>{voltageLevelIdField}</Grid>
                         {isNodeBuilt(currentNode) && (
-                            <Grid item xs={12} md={3}>
+                            <Grid size={{ xs: 12, md: 3 }}>
                                 <Button onClick={handleClickOpenDiagramPane} variant="outlined" size="small">
                                     <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
                                 </Button>
@@ -345,42 +345,28 @@ export function CreateVoltageLevelSectionForm({
                     </Grid>
                 </Grid>
                 {isNotFoundOrNotSupported && (
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                         <Typography variant="body1" color="red">
                             <FormattedMessage id={'notValidVoltageLevel'} />
                         </Typography>
                     </Grid>
                 )}
-                <Grid item xs={12}>
+                <Grid size={12}>
                     <GridSection title="SectionPosition" />
                 </Grid>
 
-                <Grid item xs={4}>
-                    {busbarCountField}
-                </Grid>
-                <Grid item xs={4}>
-                    {busbarSectionsField}
-                </Grid>
-                <Grid item xs={4}>
-                    {positionSideNewSectionField}
-                </Grid>
+                <Grid size={4}>{busbarCountField}</Grid>
+                <Grid size={4}>{busbarSectionsField}</Grid>
+                <Grid size={4}>{positionSideNewSectionField}</Grid>
 
-                <Grid item xs={12}>
+                <Grid size={12}>
                     <GridSection title="Switch" />
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
-                    {switchBeforeField}
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                    {newSectionField}
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                    {switchAfterField}
-                </Grid>
-                <Grid item xs={12}>
-                    {newSwitchState}
-                </Grid>
+                <Grid size={{ xs: 12, sm: 4 }}>{switchBeforeField}</Grid>
+                <Grid size={{ xs: 12, sm: 4 }}>{newSectionField}</Grid>
+                <Grid size={{ xs: 12, sm: 4 }}>{switchAfterField}</Grid>
+                <Grid size={12}>{newSwitchState}</Grid>
             </Grid>
             <PositionDiagramPane
                 open={isDiagramPaneOpen}

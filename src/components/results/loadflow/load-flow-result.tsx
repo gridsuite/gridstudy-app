@@ -24,7 +24,7 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult, formatCountryAdequaciesResult, formatExchangesResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';
 import { AppState } from 'redux/reducer.type';
-import GridSection from '../../dialogs/commons/grid-section';
+import { GridSection } from '../../dialogs/commons/grid-section';
 import { TableType } from '../../../types/custom-aggrid-types';
 
 const styles = {
@@ -47,6 +47,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     countryAdequaciesColumnDefs,
     exchangesColumnDefs,
     computationSubType,
+    exportCsvResetKey,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -124,6 +125,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                         computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
+                        exportCsvResetKey={exportCsvResetKey}
                     />
                 </div>
                 <GridSection
@@ -146,6 +148,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                         computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
+                        exportCsvResetKey={exportCsvResetKey}
                     />
                 </div>
                 <GridSection
@@ -168,6 +171,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                         computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
+                        exportCsvResetKey={exportCsvResetKey}
                     />
                 </div>
             </div>

@@ -6,7 +6,7 @@
  */
 
 import { Box } from '@mui/material';
-import { QuickSearch } from '../../../report-viewer/QuickSearch';
+import { QuickSearch } from '@gridsuite/commons-ui';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { ChevronRight, ExpandMore } from '@mui/icons-material';
 import Button from '@mui/material/Button';

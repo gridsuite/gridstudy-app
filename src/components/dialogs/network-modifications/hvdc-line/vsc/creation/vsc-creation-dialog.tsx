@@ -52,7 +52,7 @@ import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../../services/study/network-modifications';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
-import GridItem from '../../../../commons/grid-item';
+import { GridItem } from '../../../../commons/grid-item';
 import { VSC_TABS } from '../vsc-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -151,7 +151,7 @@ export default function VscCreationDialog({
                 gap: '15px',
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
                 <GridItem size={4}>{generatorIdField}</GridItem>
                 <GridItem size={4}>{generatorNameField}</GridItem>
             </Grid>
@@ -248,9 +248,11 @@ export default function VscCreationDialog({
                 titleId="CreateVsc"
                 subtitle={headersAndTabs}
                 searchCopy={searchCopy}
-                PaperProps={{
-                    sx: {
-                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                        },
                     },
                 }}
                 open={open}

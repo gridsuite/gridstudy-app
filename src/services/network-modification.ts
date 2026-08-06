@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson } from '@gridsuite/commons-ui';
-import { LineTypeInfo } from '../components/dialogs/line-types-catalog/line-catalog.type';
+import { backendFetchJson, LineTypeInfo } from '@gridsuite/commons-ui';
 
 const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';
 

@@ -18,11 +18,7 @@ export interface GridSectionProps {
     tooltipMessage?: string;
     isLiteralText?: boolean;
 }
-
-/**
- * @deprecated Use the Grid2Section component instead.
- */
-export default function GridSection({
+export function GridSection({
     title,
     heading = 3,
     size = 12,
@@ -33,23 +29,21 @@ export default function GridSection({
 }: Readonly<GridSectionProps>) {
     const intl = useIntl();
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={size}>
-                <Box
-                    sx={mergeSx(customStyle, {
-                        display: 'flex',
-                        alignItems: 'center',
-                    })}
-                    component={`h${heading}`}
-                >
-                    {isLiteralText ? title : <FormattedMessage id={title} />}
-                    {tooltipEnabled && (
-                        <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: tooltipMessage })}>
-                            <InfoOutlined color="info" fontSize="medium" />
-                        </Tooltip>
-                    )}
-                </Box>
-            </Grid>
+        <Grid container spacing={2} size={size}>
+            <Box
+                sx={mergeSx(customStyle, {
+                    display: 'flex',
+                    alignItems: 'center',
+                })}
+                component={`h${heading}`}
+            >
+                {isLiteralText ? title : <FormattedMessage id={title} />}
+                {tooltipEnabled && (
+                    <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: tooltipMessage })}>
+                        <InfoOutlined color="info" fontSize="medium" />
+                    </Tooltip>
+                )}
+            </Box>
         </Grid>
     );
 }

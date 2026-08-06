@@ -19,7 +19,7 @@ import LccHvdcLine from '../common/lcc-hvdc-line';
 import LccConverterStation from '../common/lcc-converter-station';
 import LccTabs from '../common/lcc-tabs';
 import { filledTextField, TextInput } from '@gridsuite/commons-ui';
-import GridItem from '../../../../commons/grid-item';
+import { GridItem } from '../../../../commons/grid-item';
 
 interface LccModificationFormProps {
     tabIndex: number;
@@ -42,8 +42,10 @@ function LccModificationDialogHeader({ lccToModify }: Readonly<LccModificationHe
             fullWidth
             label={'ID'}
             value={lccToModify?.id ?? ''}
-            InputProps={{
-                readOnly: true,
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
             }}
             disabled
             {...filledTextField}
@@ -59,7 +61,7 @@ function LccModificationDialogHeader({ lccToModify }: Readonly<LccModificationHe
         />
     );
     return (
-        <Grid container item spacing={2}>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
             <GridItem size={4}>{LccIdField}</GridItem>
             <GridItem size={4}>{LccNameField}</GridItem>
         </Grid>

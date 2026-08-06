@@ -5,11 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useState } from 'react';
+import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { History as HistoryIcon } from '@mui/icons-material';
 import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { NavigationSidebar } from '../common/navigation-sidebar';
+import { NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
+import { HistorySectionContent } from '../common/history-section-content';
 
 interface SldNavigationSidebarProps {
     navigationHistory: string[];
@@ -20,21 +22,29 @@ interface SldNavigationSidebarProps {
 export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
     ({ navigationHistory, currentVoltageLevelId, onNavigate }) => {
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-        const [isCollapsed, setIsCollapsed] = useState(true);
         const hasHistory = navigationHistory.length > 0;
-        const shouldBeCollapsed = isCollapsed || !hasHistory;
-        const isDisabled = !isNodeBuilt(currentNode);
+        const disabled = !isNodeBuilt(currentNode);
 
-        return (
-            <NavigationSidebar
-                navigationHistory={navigationHistory}
-                isCollapsed={shouldBeCollapsed}
-                isDisabled={isDisabled}
-                isAbsolutePositioned
-                isItemSelected={(id) => id === currentVoltageLevelId}
-                onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-                onNavigate={onNavigate}
-            />
+        const sections = useMemo<SidebarSection[]>(
+            () => [
+                {
+                    id: 'history',
+                    icon: <HistoryIcon fontSize="small" />,
+                    titleId: 'history',
+                    disabled: !hasHistory,
+                    content: (
+                        <HistorySectionContent
+                            navigationHistory={navigationHistory}
+                            disabled={disabled}
+                            isItemSelected={(id) => id === currentVoltageLevelId}
+                            onNavigate={onNavigate}
+                        />
+                    ),
+                },
+            ],
+            [hasHistory, navigationHistory, disabled, currentVoltageLevelId, onNavigate]
         );
+
+        return <NavigationSidebar sections={sections} isAbsolutePositioned />;
     }
 );

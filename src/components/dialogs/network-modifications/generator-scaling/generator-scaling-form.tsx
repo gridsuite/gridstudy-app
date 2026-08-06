@@ -11,8 +11,8 @@ import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import VariationForm from './variation/variation-form';
 import { Grid, Theme } from '@mui/material';
 import { getVariationEmptyForm } from './variation/variation-utils';
-import GridItem from '../../commons/grid-item';
-import GridSection from '../../commons/grid-section';
+import { GridItem } from '../../commons/grid-item';
+import { GridSection } from '../../commons/grid-section';
 
 const styles = {
     padding: (theme: Theme) => ({

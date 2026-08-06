@@ -7,7 +7,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { Button, Grid, TextField } from '@mui/material';
+import { Box, Button, Grid, Stack, TextField } from '@mui/material';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
@@ -141,20 +141,22 @@ export function VoltageLevelTopologyModificationForm({
     }, [getValues, setValue]);
 
     return (
-        <Grid container sx={{ height: '100%' }} direction="column">
-            <Grid container item spacing={2}>
-                <Grid item xs={4}>
+        <Stack sx={{ height: '100%' }}>
+            <Grid container spacing={2} sx={{ width: '100%' }}>
+                <Grid size={4}>
                     <TextField
                         fullWidth
                         label="ID"
                         value={selectedId}
                         size="small"
-                        InputProps={{ readOnly: true }}
+                        slotProps={{
+                            input: { readOnly: true },
+                        }}
                         disabled
                         {...filledTextField}
                     />
                 </Grid>
-                <Grid item xs={8} container justifyContent="flex-end">
+                <Grid size={8} container justifyContent="flex-end">
                     <Button
                         variant="outlined"
                         color="primary"
@@ -173,7 +175,7 @@ export function VoltageLevelTopologyModificationForm({
                     </Button>
                 </Grid>
             </Grid>
-            <Grid item xs paddingTop={2}>
+            <Box sx={{ pt: 2, flex: 1, minHeight: 0 }}>
                 <CustomAGGrid
                     rowData={mergedRowData}
                     defaultColDef={defaultColDef}
@@ -183,7 +185,7 @@ export function VoltageLevelTopologyModificationForm({
                     domLayout="normal"
                     headerHeight={48}
                 />
-            </Grid>
-        </Grid>
+            </Box>
+        </Stack>
     );
 }

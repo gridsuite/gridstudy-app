@@ -19,8 +19,7 @@ import {
 import { PARAM_USE_NAME } from '../../../../utils/config-params';
 import { SLD_DISPLAY_MODE } from '../../../network/constants';
 import { useDiagramNotifications } from '../common/use-diagram-notifications';
-import { isNodeBuilt, isStatusBuilt } from '../../../graph/util/model-functions';
-import { NodeType } from '../../../graph/tree-node.type';
+import { isNodeBuilt } from '../../../graph/util/model-functions';
 
 interface UseSldDiagramProps {
     diagramType: DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
@@ -53,11 +52,7 @@ export const useSldDiagram = ({
     const [loading, setLoading] = useState(false);
     const [globalError, setGlobalError] = useState<ErrorMessageDescriptor | undefined>();
 
-    // Keep ref synced to check node build status in async callbacks (avoids stale closures)
-    const currentNodeRef = useRef(currentNode);
-    useEffect(() => {
-        currentNodeRef.current = currentNode;
-    }, [currentNode]);
+    const abortControllerRef = useRef<AbortController | undefined>(undefined);
 
     // Helper to process SVG data - extracted to reduce nesting
     const processSvgData = useCallback((svgData: any) => {
@@ -75,7 +70,18 @@ export const useSldDiagram = ({
     }, []);
 
     const fetchDiagram = useCallback(() => {
-        if (!currentNode || !isNodeBuilt(currentNode)) return;
+        if (!currentNode || !isNodeBuilt(currentNode)) {
+            // Abort any still pending fetch so its late response can't overwrite this error
+            abortControllerRef.current?.abort();
+            setGlobalError({ descriptor: { id: 'InvalidNode' } });
+            setLoading(false);
+            return;
+        }
+
+        // Abort any still pending fetch so its response can be ignored
+        abortControllerRef.current?.abort();
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
 
         setLoading(true);
         setGlobalError(undefined);
@@ -100,10 +106,13 @@ export const useSldDiagram = ({
                             centerLabel: networkVisuParams?.singleLineDiagramParameters.centerLabel,
                             diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
                             componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
+                            useStateEstimationVisualisation:
+                                networkVisuParams?.singleLineDiagramParameters.stateEstimation,
                             sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
                             topologicalColoring: true,
                             language,
                         }),
+                        signal: abortController.signal,
                     };
                 } else if (currentDiagram.type === DiagramType.SUBSTATION) {
                     url = getSubstationSingleLineDiagramUrl({
@@ -121,17 +130,29 @@ export const useSldDiagram = ({
                             diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
                             substationLayout: networkVisuParams?.singleLineDiagramParameters.substationLayout,
                             componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
+                            useStateEstimationVisualisation:
+                                networkVisuParams?.singleLineDiagramParameters.stateEstimation,
                             topologicalColoring: true,
                             language,
                         }),
+                        signal: abortController.signal,
                     };
                 }
 
                 if (url && fetchOptions) {
                     fetchSvg(url, fetchOptions)
                         .then(processSvgData)
-                        .catch(handleFetchError)
-                        .finally(handleFetchComplete);
+                        .catch((error) => {
+                            // a newer fetchDiagram call already aborted this request, so its response is no longer relevant
+                            if (!abortController.signal.aborted) {
+                                handleFetchError(error);
+                            }
+                        })
+                        .finally(() => {
+                            if (!abortController.signal.aborted) {
+                                handleFetchComplete();
+                            }
+                        });
                 } else {
                     setLoading(false);
                 }
@@ -158,13 +179,6 @@ export const useSldDiagram = ({
     // Fetch when diagram metadata or node changes
     useEffect(() => {
         if (!currentNode?.id) return;
-
-        if (currentNode.type !== NodeType.ROOT && !isStatusBuilt(currentNode?.data?.globalBuildStatus)) {
-            setGlobalError({ descriptor: { id: 'InvalidNode' } });
-            return;
-        }
-
-        setGlobalError(undefined);
 
         // Update diagram from equipmentId
         setDiagram(
