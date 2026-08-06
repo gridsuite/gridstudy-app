@@ -43,7 +43,6 @@ import {
 } from '@mui/material';
 import { useController, useFieldArray, UseFieldArrayReturn, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from '../../utils/field-constants';
 import * as yup from 'yup';
 import { UUID } from 'node:crypto';
@@ -304,9 +303,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                             </StepLabel>
                         </Step>
                     </Stepper>
-
                     <Divider sx={{ mt: 2 }} />
-
                     {/* ======================================================
                         STEP 1 — SELECTION
                         ====================================================== */}
