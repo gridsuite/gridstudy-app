@@ -500,7 +500,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             row[field.id] = null;
         });
         selectedProperties.forEach((propertyName) => {
-            row[PROPERTY_CSV_COLUMN_PREFIX + propertyName] = '';
+            row[PROPERTY_CSV_COLUMN_PREFIX + propertyName] = null;
         });
         return row;
     }, [csvFields, selectedProperties]);
@@ -526,7 +526,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     delete newRow[col];
                 });
                 addedPropertyColumns.forEach((col) => {
-                    newRow[col] = '';
+                    newRow[col] = null;
                 });
                 return newRow;
             });
