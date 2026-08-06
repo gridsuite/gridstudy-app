@@ -14,7 +14,7 @@ import {
     POWER_FACTOR,
 } from '../../../../../utils/field-constants';
 import type { UUID } from 'node:crypto';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import { GridSection } from '../../../../commons/grid-section';
 import { GridItem } from '../../../../commons/grid-item';
