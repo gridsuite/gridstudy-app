@@ -18,8 +18,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
 import { useBaseVoltages } from '../../../../../hooks/use-base-voltages';
 import { addToGlobalFilterOptions } from '../../../../../redux/actions';
-import { fetchNetworkExistence } from '../../../../services/study/network';
-import { HttpStatusCode } from '../../../../utils/http-status-code';
+import { fetchNetworkExistence } from 'services/study/network';
+import { HttpStatusCode } from 'utils/http-status-code';
 
 /**
  * Custom hook that manages global filter options for tables.
@@ -92,6 +92,7 @@ export const useGlobalFilterOptions = () => {
                 // propertiesFilter may be empty or contain several subtypes, depending on the user configuration
                 dispatch(addToGlobalFilterOptions(propertiesGlobalFilters.map(addGlobalFilterId)));
             });
-        }
+        };
+        run();
     }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id, dispatch]);
 };
