@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { Grid2 as Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import { Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorSelector } from '@gridsuite/commons-ui';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { useCustomAggridColumnFilter } from '@gridsuite/commons-ui';
 
 import { CustomAggridFilterParams } from '../../../types/custom-aggrid-types';
@@ -149,12 +149,14 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                         value={minutes}
                         onChange={handleMinutesChange}
                         placeholder={intl.formatMessage({ id: 'filter.filterOoo' })}
-                        InputProps={{
-                            type: 'number',
-                            endAdornment: <InputAdornment position="end">min</InputAdornment>,
-                            inputProps: { min: 0 },
-                        }}
                         sx={styles.noArrows}
+                        slotProps={{
+                            input: {
+                                type: 'number',
+                                endAdornment: <InputAdornment position="end">min</InputAdornment>,
+                                inputProps: { min: 0 },
+                            },
+                        }}
                     />
                 </Grid>
                 <Grid size={1} sx={styles.flexCenter}>
@@ -167,12 +169,14 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                         value={seconds}
                         onChange={handleSecondsChange}
                         placeholder={intl.formatMessage({ id: 'filter.filterOoo' })}
-                        InputProps={{
-                            type: 'number',
-                            endAdornment: <InputAdornment position="end">s</InputAdornment>,
-                            inputProps: { min: 0, max: 59 },
-                        }}
                         sx={styles.noArrows}
+                        slotProps={{
+                            input: {
+                                type: 'number',
+                                endAdornment: <InputAdornment position="end">s</InputAdornment>,
+                                inputProps: { min: 0, max: 59 },
+                            },
+                        }}
                     />
                 </Grid>
                 {selectedFilterData !== undefined && selectedFilterData !== '' && (

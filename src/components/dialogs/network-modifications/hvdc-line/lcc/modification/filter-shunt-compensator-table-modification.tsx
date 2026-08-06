@@ -93,10 +93,12 @@ function ShuntRowForm({ id, deletionMark, previousValues }: Readonly<RowFormProp
                 name={`${id}.${SHUNT_COMPENSATOR_SELECTED}`}
                 disabled
                 variant="standard"
-                InputProps={{
-                    disableUnderline: true,
-                }}
                 sx={{ marginLeft: '20%' }}
+                slotProps={{
+                    input: {
+                        disableUnderline: true,
+                    },
+                }}
             />
         );
     }, [id, intl, previousValues]);
