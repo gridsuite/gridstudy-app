@@ -12,7 +12,7 @@ import {
     ElementType,
     EquipmentType,
     ErrorMessage,
-    ExcludedNetworkModifications,
+    NetworkModificationApplicabilities,
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
@@ -91,7 +91,7 @@ import { createCompositeModifications, updateCompositeModifications } from '../.
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
     assembleModificationsIntoComposite,
-    fetchExcludedNetworkModifications,
+    fetchNetworkModificationApplicabilities,
     fetchNetworkModifications,
     stashModifications,
 } from '../../../../services/study/network-modifications';
@@ -161,7 +161,7 @@ const NetworkModificationNodeEditor = () => {
     const createdRootNetworksPreviousLength = usePrevious(createdRootNetworks.length);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
-    const [modificationsToExclude, setModificationsToExclude] = useState<ExcludedNetworkModifications[]>([]);
+    const [applicabilities, setApplicabilities] = useState<NetworkModificationApplicabilities>({});
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
@@ -769,18 +769,18 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
 
-    const dofetchExcludedNetworkModifications = useCallback(() => {
+    const dofetchNetworkModificationApplicabilities = useCallback(() => {
         // Do not fetch modifications status on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
         }
         setIsFetchingModifications(true);
-        fetchExcludedNetworkModifications(studyUuid, currentNode.id)
-            .then((res: ExcludedNetworkModifications[]) => {
+        fetchNetworkModificationApplicabilities(studyUuid, currentNode.id)
+            .then((res: NetworkModificationApplicabilities) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
-                    setModificationsToExclude(res);
+                    setApplicabilities(res);
                 }
             })
             .catch((error: Error) => {
@@ -809,10 +809,10 @@ const NetworkModificationNodeEditor = () => {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
             setModifications([]);
-            setModificationsToExclude([]);
+            setApplicabilities({});
             setModificationsToRestore([]);
             dofetchNetworkModifications();
-            dofetchExcludedNetworkModifications();
+            dofetchNetworkModificationApplicabilities();
         }
     }, [
         createdRootNetworksLength,
@@ -820,9 +820,9 @@ const NetworkModificationNodeEditor = () => {
         currentNode,
         dispatch,
         dofetchNetworkModifications,
-        dofetchExcludedNetworkModifications,
+        dofetchNetworkModificationApplicabilities,
         modifications,
-        modificationsToExclude,
+        applicabilities,
     ]);
 
     const handleNameChange = useCallback(
@@ -873,7 +873,7 @@ const NetworkModificationNodeEditor = () => {
                 // Do not clear the modifications list, because currentNode is the concerned one
                 // this allows to append new modifications to the existing list.
                 dofetchNetworkModifications();
-                dofetchExcludedNetworkModifications();
+                dofetchNetworkModificationApplicabilities();
                 dispatch(removeNotificationByNode([eventData.headers.parentNode, ...(eventData.headers.nodes ?? [])]));
             }
             if (isModificationsDeleteFinishedNotification(eventData)) {
@@ -884,7 +884,13 @@ const NetworkModificationNodeEditor = () => {
                 dofetchNetworkModifications();
             }
         },
-        [dispatch, dofetchNetworkModifications, manageNotification, cleanClipboard, dofetchExcludedNetworkModifications]
+        [
+            dispatch,
+            dofetchNetworkModifications,
+            manageNotification,
+            cleanClipboard,
+            dofetchNetworkModificationApplicabilities,
+        ]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
@@ -1178,8 +1184,8 @@ const NetworkModificationNodeEditor = () => {
                 currentNodeId={currentNode?.id}
                 currentRootNetworkUuid={currentRootNetworkUuid ?? undefined}
                 rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
-                modificationsToExclude={modificationsToExclude}
-                setModificationsToExclude={setModificationsToExclude}
+                applicabilities={applicabilities}
+                setApplicabilities={setApplicabilities}
                 isDisabled={isAnyNodeBuilding || mapDataLoading}
             />
         );
