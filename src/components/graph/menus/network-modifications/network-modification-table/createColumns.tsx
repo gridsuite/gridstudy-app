@@ -75,7 +75,6 @@ export const createBaseColumns = (
         size: 40,
         minSize: 32,
     },
-
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.SWITCH.id,
         cell: SwitchCellRenderer,
