@@ -287,6 +287,7 @@ export interface CompositesToBeInserted {
     id: UUID;
     name: string;
     isShared: boolean;
+    description?: string;
 }
 
 export const insertCompositeModifications = (

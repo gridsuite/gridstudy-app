@@ -249,7 +249,7 @@ Global filters are equipment-level filters from the filter library (e.g., "sub
       - `isExternalFilterPresent()`:
         returns `true` when any filter is active.
       - `doesExternalFilterPass(node)`:
-        returns `true` if `node.data.id` is in the filtered set.
+        returns `true` if `node.data.id` is in the filtered set and if our custom filtering is not pending.
 5.  When filters change, the hook
     calls `gridApi.onFilterChanged()` to trigger a re-filter pass.
 

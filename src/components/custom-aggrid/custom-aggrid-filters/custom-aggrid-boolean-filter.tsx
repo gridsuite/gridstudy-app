@@ -9,7 +9,7 @@ import { FunctionComponent } from 'react';
 import { IconButton, MenuItem, Select } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { useCustomAggridColumnFilter } from '@gridsuite/commons-ui';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
@@ -51,7 +51,7 @@ export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterPara
             value={typeof selectedFilterData === 'string' ? selectedFilterData : ''}
             onChange={handleValueChange}
             sx={mergeSx(styles.input, {
-                '& .MuiSelect-iconOutlined': {
+                '& .MuiSelect-outlined ~ .MuiSelect-icon': {
                     display: selectedFilterData ? 'none' : '',
                 },
             })}

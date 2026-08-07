@@ -10,9 +10,8 @@ import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
-import { GsLangUser, backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import { GsLangUser, backendFetch, backendFetchJson, backendFetchText, GlobalFilters } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
 import { Selector } from 'components/results/common/utils';
 
 const PREFIX_SHORTCIRCUIT_QUERIES = PREFIX_STUDY_QUERIES + '/v1/shortcircuit';
