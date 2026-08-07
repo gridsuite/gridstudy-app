@@ -8,7 +8,7 @@
 import type { RefObject } from 'react';
 import { type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { ColumnsConfig } from './columns-config';
 import ColumnCreationButton from './column-creation-button';

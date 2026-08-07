@@ -266,10 +266,12 @@ export const LccModificationDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 titleId="ModifyLcc"
-                PaperProps={{
-                    sx: {
-                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
-                        maxWidth: '75%',
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                            maxWidth: '75%',
+                        },
                     },
                 }}
                 open={open}
