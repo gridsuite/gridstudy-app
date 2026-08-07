@@ -6,8 +6,7 @@
  */
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText, GsLangUser } from '@gridsuite/commons-ui';
-import { GlobalFilters } from 'components/results/common/global-filter/types/global-filter.type';
+import { backendFetch, backendFetchJson, backendFetchText, GsLangUser, GlobalFilters } from '@gridsuite/commons-ui';
 import { PccMinPagedResults } from 'components/results/pccmin/pcc-min-result.type';
 import { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';

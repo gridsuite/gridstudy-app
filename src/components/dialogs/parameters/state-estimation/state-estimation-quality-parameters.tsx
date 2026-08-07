@@ -21,7 +21,7 @@ import {
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
 import { useMemo } from 'react';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import { useIntl } from 'react-intl';
 import {

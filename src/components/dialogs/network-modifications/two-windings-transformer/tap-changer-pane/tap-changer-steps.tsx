@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
-import { Grid2 as Grid, IconButton, Tooltip } from '@mui/material';
+import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import type Papa from 'papaparse';
 import { useIntl } from 'react-intl';
