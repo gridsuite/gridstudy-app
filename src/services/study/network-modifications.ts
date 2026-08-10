@@ -33,11 +33,10 @@ import {
     BatteryModificationDto,
     LineCreationDto,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
-    PREFIX_STUDY_QUERIES,
     LineModificationDto,
     ModificationByFormulaDto,
 } from '@gridsuite/commons-ui';
-import { getStudyUrlWithNodeUuid } from './index';
+import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
