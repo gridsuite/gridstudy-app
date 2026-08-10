@@ -208,6 +208,8 @@ import {
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+    SET_NODE_ACTIVITIES,
+    SetNodeActivitiesAction,
     UPDATE_NODE_ALIASES,
     UPDATE_SPREADSHEET_PARTIAL_DATA,
     UPDATE_TABLE_COLUMNS,
@@ -489,6 +491,7 @@ const initialState: AppState = {
     },
     tables: initialTablesState,
     nodeAliases: [],
+    nodeActivities: [],
     calculationSelections: {},
     mapEquipments: undefined,
     geoData: null,
@@ -705,6 +708,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.studyUuid = null;
         state.geoData = null;
         state.networkModificationTreeModel = null;
+        state.nodeActivities = [];
     });
 
     builder.addCase(MAP_EQUIPMENTS_CREATED, (state, action: MapEquipmentsCreatedAction) => {
@@ -874,7 +878,6 @@ export const reducer = createReducer(initialState, (builder) => {
         LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
         (state, action: LoadNetworkModificationTreeSuccessAction) => {
             state.networkModificationTreeModel = action.networkModificationTreeModel;
-            state.networkModificationTreeModel.setBuildingStatus();
             state.isNetworkModificationTreeModelUpToDate = true;
             state.reloadMapNeeded = true;
         }
@@ -988,7 +991,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 let newModel = state.networkModificationTreeModel.newSharedForUpdate();
                 newModel.updateNodes(action.networkModificationTreeNodes);
                 state.networkModificationTreeModel = newModel;
-                state.networkModificationTreeModel?.setBuildingStatus();
                 // check if current node is in the nodes updated list
                 if (action.networkModificationTreeNodes.find((node) => node.id === state.currentTreeNode?.id)) {
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
@@ -1624,6 +1626,9 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_NODE_ALIASES, (state, action: UpdateNodeAliasesAction) => {
         state.nodeAliases = action.nodeAliases;
+    });
+    builder.addCase(SET_NODE_ACTIVITIES, (state, action: SetNodeActivitiesAction) => {
+        state.nodeActivities = action.nodeActivities;
     });
     builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
         const { filterType, filterSubType, filters } = action;

@@ -22,14 +22,10 @@ import { PARAM_USE_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
-import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { getServersInfos } from '../services/study';
 import { fetchVersion } from '../services/utils';
-import { RunButtonContainer } from './run-button-container';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import StudyNavigationSyncToggle from './study-navigation-sync-toggle';
 import { WorkspaceToolbar } from './workspace/core/workspace-toolbar';
-import { WorkspaceSwitcher } from './workspace/core/workspace-switcher';
 
 const styles = {
     boxContent: (theme) => ({
@@ -39,23 +35,12 @@ const styles = {
         width: '100%',
         marginLeft: theme.spacing(1),
     }),
-    runButtonContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        marginRight: 1.5,
-    },
-    syncToggleContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        marginRight: 1.5,
-    },
 };
 
 const AppTopBar = ({ userProfile, userManager }) => {
     const dispatch = useDispatch();
     const theme = useSelector((state) => state[PARAM_THEME]);
     const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
@@ -97,22 +82,8 @@ const AppTopBar = ({ userProfile, userManager }) => {
         >
             {userProfile && studyUuid && currentRootNetworkUuid && (
                 <Box sx={styles.boxContent}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1.5, marginRight: 'auto' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1.5 }}>
                         <WorkspaceToolbar />
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1.5, marginLeft: 'auto' }}>
-                        <WorkspaceSwitcher />
-                    </Box>
-                    <Box sx={styles.runButtonContainer}>
-                        <RunButtonContainer
-                            studyUuid={studyUuid}
-                            currentNode={currentNode}
-                            currentRootNetworkUuid={currentRootNetworkUuid}
-                            disabled={!isNodeBuilt(currentNode) || isNodeReadOnly(currentNode)}
-                        />
-                    </Box>
-                    <Box sx={styles.syncToggleContainer}>
-                        <StudyNavigationSyncToggle />
                     </Box>
                 </Box>
             )}

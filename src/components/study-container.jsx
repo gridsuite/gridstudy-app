@@ -45,6 +45,7 @@ import { getFirstNodeOfType } from './graph/util/model-functions';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { useTreeModelSync } from '../hooks/use-tree-model-sync';
+import { useNodeActivitySync } from '../hooks/use-node-activity-sync';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
@@ -164,6 +165,7 @@ export function StudyContainer() {
 
     useExportNotification();
     useTreeModelSync(studyUuid);
+    useNodeActivitySync(studyUuid);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {

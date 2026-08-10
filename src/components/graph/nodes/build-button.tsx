@@ -7,7 +7,7 @@
 
 import React, { useCallback, useState } from 'react';
 import { PlayCircleFilled, StopCircleOutlined } from '@mui/icons-material';
-import { Button, CircularProgress } from '@mui/material';
+import { Button } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
 import type { UUID } from 'node:crypto';
 import { type MuiStyles, snackWithFallback, BuildStatus, useSnackMessage } from '@gridsuite/commons-ui';
@@ -18,6 +18,7 @@ type BuildButtonProps = {
     currentRootNetworkUuid: UUID | null;
     nodeUuid: UUID;
     onClick?: () => void;
+    disabled?: boolean;
 };
 
 const styles = {
@@ -35,6 +36,7 @@ export const BuildButton = ({
     currentRootNetworkUuid,
     nodeUuid,
     onClick,
+    disabled,
 }: BuildButtonProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
@@ -69,9 +71,6 @@ export const BuildButton = ({
     );
 
     const getIcon = () => {
-        if (isLoading) {
-            return <CircularProgress size={24} color="primary" />;
-        }
         return !buildStatus || buildStatus === BuildStatus.NOT_BUILT ? (
             <PlayCircleFilled sx={styles.playColor} />
         ) : (
@@ -79,7 +78,7 @@ export const BuildButton = ({
         );
     };
 
-    const isButtonDisabled = isLoading || !studyUuid || !currentRootNetworkUuid;
+    const isButtonDisabled = isLoading || !studyUuid || !currentRootNetworkUuid || disabled;
 
     return (
         <Button size="small" onClick={handleClick} sx={styles.button} disabled={isButtonDisabled}>

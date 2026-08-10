@@ -190,3 +190,32 @@ export function getAllChildren(elements: NetworkModificationTreeModel | null, no
 export const getNetworkModificationNode = (treeModel: NetworkModificationTreeModel | null, nodeId: UUID) => {
     return treeModel?.treeNodes.find((n) => n.id === nodeId);
 };
+
+export function getAncestorsByNode(treeModel: NetworkModificationTreeModel | null): Map<UUID, Set<UUID>> {
+    const ancestorsByNode = new Map<UUID, Set<UUID>>();
+    if (!treeModel) {
+        return ancestorsByNode;
+    }
+    const parentByNode = new Map<UUID, UUID | undefined>(
+        treeModel.treeNodes.map((node) => [node.id as UUID, node.parentId as UUID | undefined])
+    );
+
+    function ancestorsOf(nodeId: UUID): Set<UUID> {
+        const known = ancestorsByNode.get(nodeId);
+        if (known) {
+            return known;
+        }
+        const ancestors = new Set<UUID>();
+        // registered before walking up, so each chain is walked once
+        ancestorsByNode.set(nodeId, ancestors);
+        const parentId = parentByNode.get(nodeId);
+        if (parentId) {
+            ancestors.add(parentId);
+            ancestorsOf(parentId).forEach((ancestor) => ancestors.add(ancestor));
+        }
+        return ancestors;
+    }
+
+    treeModel.treeNodes.forEach((node) => ancestorsOf(node.id as UUID));
+    return ancestorsByNode;
+}

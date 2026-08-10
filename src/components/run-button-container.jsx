@@ -47,6 +47,8 @@ import {
 } from '../services/study/dynamic-security-analysis';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { isSecurityModificationNode } from './graph/tree-node.type';
+import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
+import { useCanBuildOrComputeOnNode, useCanRunLoadFlow } from './utils/use-node-activity';
 import { PaginationType } from 'types/custom-aggrid-types';
 import { usePaginationReset } from 'hooks/use-pagination-selector';
 import { useLogsPaginationResetByType } from './report-viewer/use-logs-pagination';
@@ -65,8 +67,11 @@ const COMPUTATIONS_WITH_PAGINATION = [
     ComputingType.SHORT_CIRCUIT,
 ];
 
-export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
+export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const isNodeRunnable = isNodeBuilt(currentNode) && !isNodeReadOnly(currentNode);
+    const canRunOnNode = useCanBuildOrComputeOnNode(currentNode?.id);
+    const canRunLoadFlow = useCanRunLoadFlow(currentNode?.id, currentNode?.data);
     const loadFlowStatusInfos = useSelector((state) => state.computingStatusParameters[ComputingType.LOAD_FLOW]);
 
     // only one of those type can be different from idle, depending on loadFlowStatusInfos.withRatioTapChangers
@@ -524,6 +529,15 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         subscribeDebug,
     ]);
 
+    const canRun = useCallback(
+        (runnableType) =>
+            runnableType === 'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS' ||
+            runnableType === 'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS'
+                ? canRunLoadFlow
+                : canRunOnNode,
+        [canRunLoadFlow, canRunOnNode]
+    );
+
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(
         (runnableType) => {
@@ -608,15 +622,14 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     ]);
 
     return (
-        <>
-            <RunButton
-                runnables={runnables}
-                activeRunnables={activeRunnables}
-                getStatus={getRunningStatus}
-                computationStopped={computationStopped}
-                disabled={isModificationsInProgress || disabled}
-            />
-        </>
+        <RunButton
+            runnables={runnables}
+            activeRunnables={activeRunnables}
+            getStatus={getRunningStatus}
+            computationStopped={computationStopped}
+            disabled={isModificationsInProgress || !isNodeRunnable}
+            canRun={canRun}
+        />
     );
 }
 
@@ -624,5 +637,4 @@ RunButtonContainer.propTypes = {
     studyUuid: PropTypes.string.isRequired,
     currentNode: PropTypes.object,
     currentRootNetworkUuid: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
 };

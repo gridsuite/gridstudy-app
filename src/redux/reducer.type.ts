@@ -54,6 +54,7 @@ import type {
 } from '../components/graph/menus/network-modifications/network-modification-menu.type';
 import type { CalculationType } from '../components/spreadsheet-view/types/calculation.type';
 import type { RootNetworkIndexationStatus } from '../types/notification-types';
+import type { NodeActivity } from '../types/node-activity.type';
 import type { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import {
@@ -227,6 +228,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     tableSort: TableSort;
     tables: TablesState;
     nodeAliases: NodeAlias[];
+    nodeActivities: NodeActivity[];
 
     nodeSelectionForCopy: NodeSelectionForCopy;
     copiedNetworkModifications: CopiedNetworkModifications;

@@ -364,10 +364,7 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
                         fetchContingencyCount={fetchContingencyCountBackend}
-                        isBuiltCurrentNode={
-                            currentNodeBuildStatus !== BuildStatus.NOT_BUILT &&
-                            currentNodeBuildStatus !== BuildStatus.BUILDING
-                        }
+                        isBuiltCurrentNode={currentNodeBuildStatus !== BuildStatus.NOT_BUILT}
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
                     />

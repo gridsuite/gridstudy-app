@@ -64,6 +64,7 @@ import type { RootNetworkMetadata } from 'components/graph/menus/network-modific
 import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import type { NodeActivity } from '../types/node-activity.type';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -1412,6 +1413,18 @@ export function selectSyncEnabled(syncEnabled: boolean): SelectSyncEnabledAction
     return {
         type: SELECT_SYNC_ENABLED,
         syncEnabled,
+    };
+}
+
+export const SET_NODE_ACTIVITIES = 'SET_NODE_ACTIVITIES';
+export type SetNodeActivitiesAction = Readonly<Action<typeof SET_NODE_ACTIVITIES>> & {
+    nodeActivities: NodeActivity[];
+};
+
+export function setNodeActivities(nodeActivities: NodeActivity[]): SetNodeActivitiesAction {
+    return {
+        type: SET_NODE_ACTIVITIES,
+        nodeActivities,
     };
 }
 

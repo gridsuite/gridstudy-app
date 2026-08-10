@@ -33,6 +33,7 @@ export enum NotificationType {
     NODES_UPDATED = 'nodeUpdated',
     NODE_EDITED = 'nodeEdited',
     NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
+    NODE_ACTIVITIES_UPDATED = 'nodeActivitiesUpdated',
     SUBTREE_MOVED = 'subtreeMoved',
     SUBTREE_CREATED = 'subtreeCreated',
     NODES_COLUMN_POSITION_CHANGED = 'nodesColumnPositionsChanged',
@@ -781,6 +782,10 @@ export function isStudyNetworkRecreationNotification(
 
 export function isMetadataUpdatedNotification(notif: CommonStudyEventData): notif is MetadataUpdatedEventData {
     return notif.headers?.updateType === NotificationType.METADATA_UPDATED;
+}
+
+export function isNodeActivitiesUpdatedNotification(notif: CommonStudyEventData): boolean {
+    return notif.headers?.updateType === NotificationType.NODE_ACTIVITIES_UPDATED;
 }
 
 export function isSpreadsheetNodeAliasesUpdatedNotification(notif: CommonStudyEventData): boolean {

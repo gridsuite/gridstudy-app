@@ -225,7 +225,7 @@ const SplitButton = ({
 
     return (
         <>
-            <ButtonGroup sx={getStyle(runningStatus)} ref={anchorRef}>
+            <ButtonGroup ref={anchorRef}>
                 <Button
                     variant="outlined"
                     startIcon={getRunningIcon(runningStatus)}

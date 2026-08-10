@@ -19,7 +19,7 @@ import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/mater
 import { FormattedMessage, useIntl } from 'react-intl';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
+import { useCanEditEvents } from '../../../utils/use-node-activity';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
 import type { UUID } from 'node:crypto';
 import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
@@ -196,7 +196,7 @@ const EventModificationScenarioEditor = memo(() => {
         listenerCallbackMessage: handleEvent,
     });
 
-    const isAnyNodeBuilding = useIsAnyNodeBuilding();
+    const isCurrentNodeBlocked = !useCanEditEvents(currentNode?.id);
 
     const doDeleteEvent = useCallback(() => {
         if (!studyUuid || !currentNode?.id) {
@@ -250,7 +250,7 @@ const EventModificationScenarioEditor = memo(() => {
 
     const handleSecondaryAction = useCallback(
         (item: Event, isItemHovered?: boolean) =>
-            isItemHovered && !isAnyNodeBuilding ? (
+            isItemHovered && !isCurrentNodeBlocked ? (
                 <IconButton
                     onClick={() => doEditEvent(item)}
                     size={'small'}
@@ -260,7 +260,7 @@ const EventModificationScenarioEditor = memo(() => {
                     <EditIcon />
                 </IconButton>
             ) : null,
-        [isAnyNodeBuilding, isLoading]
+        [isCurrentNodeBlocked, isLoading]
     );
 
     const renderEventList = () => {
@@ -358,7 +358,7 @@ const EventModificationScenarioEditor = memo(() => {
                 <IconButton
                     onClick={doDeleteEvent}
                     size={'small'}
-                    disabled={selectedItems.length === 0 || isAnyNodeBuilding || !currentNode}
+                    disabled={selectedItems.length === 0 || isCurrentNodeBlocked || !currentNode}
                 >
                     <DeleteIcon />
                 </IconButton>

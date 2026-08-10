@@ -16,7 +16,7 @@ import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from '../utils/dialogs';
 import { DialogContentText } from '@mui/material';
 
-const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
+const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled, canRun = () => true }) => {
     const intl = useIntl();
     const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
     const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
@@ -55,6 +55,10 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     }, [selectedRunnable, getStatus]);
 
     function isButtonDisable() {
+        if (!canRun(selectedRunnable)) {
+            return true;
+        }
+
         if (
             selectedRunnable === 'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS' ||
             selectedRunnable === 'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS'
@@ -156,6 +160,7 @@ RunButton.propTypes = {
     getStatus: PropTypes.func.isRequired,
     computationStopped: PropTypes.bool.isRequired,
     disabled: PropTypes.bool,
+    canRun: PropTypes.func,
 };
 
 export default RunButton;

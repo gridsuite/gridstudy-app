@@ -28,7 +28,7 @@ import {
     SLDMetadata,
 } from '@powsybl/network-viewer';
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
-import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
+import { useCanEditNode } from '../../../../utils/use-node-activity';
 import { darken, lighten, Theme, useTheme } from '@mui/material/styles';
 import {
     ComputingType,
@@ -124,7 +124,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const [modificationInProgress, setModificationInProgress] = useState(false);
-    const isAnyNodeBuilding = useIsAnyNodeBuilding();
+    const isCurrentNodeBlocked = !useCanEditNode(currentNode?.id);
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState<EventTarget | null>(null);
@@ -361,7 +361,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     useLayoutEffect(() => {
         if (svg && svgRef.current) {
             const isReadyForInteraction =
-                !computationStarting && !isAnyNodeBuilding && !modificationInProgress && !loadingState;
+                !computationStarting && !isCurrentNodeBlocked && !modificationInProgress && !loadingState;
 
             const diagramViewer = new SingleLineDiagramViewer(
                 svgRef.current, //container
@@ -425,7 +425,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         svg,
         svgMetadata,
         currentNode,
-        isAnyNodeBuilding,
+        isCurrentNodeBlocked,
         showEquipmentMenu,
         showBusMenu,
         isDeveloperMode,

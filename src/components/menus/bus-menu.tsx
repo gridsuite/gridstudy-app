@@ -8,11 +8,10 @@
 import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import { FunctionComponent, MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
+import { FunctionComponent, MouseEvent as ReactMouseEvent, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
+import { useCanModifyEquipment } from './use-can-modify-equipment';
 import { RunningStatus } from 'components/utils/running-status';
 import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
@@ -82,11 +81,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const isAnyNodeBuilding = useIsAnyNodeBuilding();
-    const isNodeEditable = useMemo(
-        () => isNodeBuilt(currentNode) && !isNodeReadOnly(currentNode) && !isAnyNodeBuilding,
-        [currentNode, isAnyNodeBuilding]
-    );
+    const isNodeEditable = useCanModifyEquipment();
 
     useEffect(() => {
         fetchNetworkElementInfos(

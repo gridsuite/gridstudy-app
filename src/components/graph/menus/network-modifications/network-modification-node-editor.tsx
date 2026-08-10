@@ -35,7 +35,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Alert, Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
+import { Alert, Box, CircularProgress, Divider, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -80,7 +80,7 @@ import {
     setModificationsInProgress,
 } from '../../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
-import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
+import { useCanBuildOrUnbuildNode, useCanEditNode } from '../../../utils/use-node-activity';
 
 import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from '../../../dialogs/import-composite/import-modification-dialog';
@@ -129,6 +129,7 @@ import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/c
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
 import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level/topology-creation/create-voltage-level-topology-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
+import { BuildButton } from 'components/graph/nodes/build-button';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
@@ -893,7 +894,8 @@ const NetworkModificationNodeEditor = () => {
 
     const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] = useState(false);
 
-    const isAnyNodeBuilding = useIsAnyNodeBuilding();
+    const isCurrentNodeBlocked = !useCanEditNode(currentNode?.id);
+    const canBuildOrUnbuild = useCanBuildOrUnbuildNode(currentNode?.id, currentNode?.data);
 
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
 
@@ -1129,8 +1131,8 @@ const NetworkModificationNodeEditor = () => {
 
     const isModificationClickable = useCallback(
         (modification: NetworkModificationMetadata) =>
-            !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
-        [isAnyNodeBuilding, mapDataLoading, isDragging]
+            !isCurrentNodeBlocked && !mapDataLoading && !isDragging && isEditableModification(modification),
+        [isCurrentNodeBlocked, mapDataLoading, isDragging]
     );
 
     const columns = useMemo<ColumnDef<ComposedModificationMetadata>[]>(
@@ -1165,7 +1167,7 @@ const NetworkModificationNodeEditor = () => {
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 onSelectedRowsChange={handleRowSelected}
-                isRowDragDisabled={isImpactedByNotification() || isAnyNodeBuilding || mapDataLoading}
+                isRowDragDisabled={isImpactedByNotification() || isCurrentNodeBlocked || mapDataLoading}
                 isImpactedByNotification={isImpactedByNotification}
                 notificationMessageId={notificationMessageId}
                 isFetchingModifications={isFetchingModifications}
@@ -1180,7 +1182,7 @@ const NetworkModificationNodeEditor = () => {
                 rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
                 modificationsToExclude={modificationsToExclude}
                 setModificationsToExclude={setModificationsToExclude}
-                isDisabled={isAnyNodeBuilding || mapDataLoading}
+                isDisabled={isCurrentNodeBlocked || mapDataLoading}
             />
         );
     };
@@ -1236,12 +1238,12 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const isPasteButtonDisabled = useMemo(() => {
-        return networkModificationsToCopy.length <= 0 || isAnyNodeBuilding || mapDataLoading || !currentNode;
-    }, [networkModificationsToCopy.length, isAnyNodeBuilding, mapDataLoading, currentNode]);
+        return networkModificationsToCopy.length <= 0 || isCurrentNodeBlocked || mapDataLoading || !currentNode;
+    }, [networkModificationsToCopy.length, isCurrentNodeBlocked, mapDataLoading, currentNode]);
 
     const isRestoreButtonDisabled = useMemo(() => {
-        return modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress;
-    }, [modificationsToRestore.length, isAnyNodeBuilding, deleteInProgress]);
+        return modificationsToRestore.length === 0 || isCurrentNodeBlocked || deleteInProgress;
+    }, [modificationsToRestore.length, isCurrentNodeBlocked, deleteInProgress]);
 
     const isCompositeNestingLimitReached = useMemo(
         () => selectedNetworkModifications.some((row) => (row.maxDepth ?? 0) >= MAX_COMPOSITE_NESTING_DEPTH),
@@ -1249,8 +1251,14 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const disabledCompositeCreation: boolean = useMemo(() => {
-        return selectedNetworkModifications?.length === 0 || saveInProgress || isRootNode || isAssemblyDepthExceeded;
-    }, [selectedNetworkModifications, saveInProgress, isRootNode, isAssemblyDepthExceeded]);
+        return (
+            selectedNetworkModifications?.length === 0 ||
+            saveInProgress ||
+            isRootNode ||
+            isAssemblyDepthExceeded ||
+            isCurrentNodeBlocked
+        );
+    }, [selectedNetworkModifications, saveInProgress, isRootNode, isAssemblyDepthExceeded, isCurrentNodeBlocked]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
         return (
@@ -1262,13 +1270,25 @@ const NetworkModificationNodeEditor = () => {
         <>
             <Toolbar sx={styles.toolbar}>
                 <Box sx={styles.filler} />
+                {currentNode?.type === NodeType.NETWORK_MODIFICATION && (
+                    <>
+                        <BuildButton
+                            buildStatus={currentNode.data.localBuildStatus}
+                            studyUuid={studyUuid}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
+                            nodeUuid={currentNode.id}
+                            disabled={!canBuildOrUnbuild}
+                        />
+                        <Divider orientation="vertical" flexItem sx={{ marginX: 0.5 }} />
+                    </>
+                )}
                 <Tooltip title={<FormattedMessage id={'addNetworkModification'} />}>
                     <span>
                         <IconButton
                             size={'small'}
                             ref={buttonAddRef}
                             onClick={openNetworkModificationConfiguration}
-                            disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
+                            disabled={isCurrentNodeBlocked || mapDataLoading || isRootNode}
                         >
                             <AddIcon />
                         </IconButton>
@@ -1301,7 +1321,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openImportModificationsDialog}
                             size={'small'}
-                            disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
+                            disabled={isCurrentNodeBlocked || mapDataLoading || isRootNode}
                         >
                             <FileUpload />
                         </IconButton>
@@ -1336,7 +1356,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             disabled={
                                 selectedNetworkModifications.length === 0 ||
-                                isAnyNodeBuilding ||
+                                isCurrentNodeBlocked ||
                                 mapDataLoading ||
                                 !currentNode ||
                                 isRootNode ||
@@ -1354,7 +1374,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             disabled={
                                 selectedNetworkModifications.length === 0 ||
-                                isAnyNodeBuilding ||
+                                isCurrentNodeBlocked ||
                                 mapDataLoading ||
                                 isRootNode ||
                                 selectionContainsShared
@@ -1392,7 +1412,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             disabled={
                                 selectedNetworkModifications.length === 0 ||
-                                isAnyNodeBuilding ||
+                                isCurrentNodeBlocked ||
                                 mapDataLoading ||
                                 deleteInProgress ||
                                 !currentNode ||
