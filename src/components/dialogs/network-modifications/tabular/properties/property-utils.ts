@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import * as yup from 'yup';
+import { DUPLICATED_PROPS_ERROR } from '@gridsuite/commons-ui';
 import { TABULAR_PROPERTIES, NAME, PREDEFINED, SELECTED } from 'components/utils/field-constants';
 
 export const PROPERTY_CSV_COLUMN_PREFIX = 'property_';
@@ -55,7 +56,7 @@ export const propertiesSchema = yup.object({
                 [SELECTED]: yup.boolean().required(),
             })
         )
-        .test('checkUniqueProperties', 'DuplicatedPropsError', (values) => checkUniquePropertyNames(values)),
+        .test('checkUniqueProperties', DUPLICATED_PROPS_ERROR, (values) => checkUniquePropertyNames(values)),
 });
 
 const checkUniquePropertyNames = (

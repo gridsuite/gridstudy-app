@@ -34,6 +34,7 @@ import {
     LineCreationDto,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     LineModificationDto,
+    ModificationByFormulaDto,
     CreateVoltageLevelTopologyInfos,
 } from '@gridsuite/commons-ui';
 import { getBaseNetworkModificationUrl, getStudyUrlWithNodeUuid } from './index';
@@ -42,9 +43,9 @@ import type { UUID } from 'node:crypto';
 import {
     AttachLineInfo,
     BalancesAdjustmentInfos,
-    ByFormulaModificationInfos,
     CreateCouplingDeviceInfos,
     CreateVoltageLevelSectionInfos,
+    CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
@@ -1678,7 +1679,7 @@ export function modifyVsc({
 export function modifyByFormula(
     studyUuid: string,
     nodeUuid: UUID,
-    byFormulaModificationInfos: ByFormulaModificationInfos,
+    modificationByFormulaDto: ModificationByFormulaDto,
     uuid?: UUID
 ) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
@@ -1696,7 +1697,7 @@ export function modifyByFormula(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(byFormulaModificationInfos),
+        body: JSON.stringify(modificationByFormulaDto),
     });
 }
 

@@ -358,9 +358,11 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 titleId="MOVE_VOLTAGE_LEVEL_FEEDER_BAYS"
                 open={open}
                 keepMounted={true}
-                PaperProps={{
-                    sx: {
-                        height: '95vh',
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '95vh',
+                        },
                     },
                 }}
                 isDataFetching={

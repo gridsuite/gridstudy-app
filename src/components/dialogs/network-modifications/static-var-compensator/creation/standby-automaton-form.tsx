@@ -24,7 +24,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { WarningAmber } from '@mui/icons-material';
 import { SusceptanceArea } from './susceptance-area';
-import { TextField, Tooltip, Grid2 as Grid, Box } from '@mui/material';
+import { TextField, Tooltip, Grid, Box } from '@mui/material';
 
 type FieldKeys = 'standby' | 'lVoltageSetLimit' | 'hVoltageSetLimit' | 'lVoltageThreshold' | 'hVoltageThreshold';
 export const StandbyAutomatonForm = () => {
