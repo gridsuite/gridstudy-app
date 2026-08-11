@@ -438,7 +438,8 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
         </Grid>
     );
 
-    const { paper: slotPropsPaper, ...slotProps } = dialogProps?.slotProps ?? {};
+    const { slotProps, ...otherDialogProps } = dialogProps;
+    const { paper: slotPropsPaper, ...otherSlotProps } = slotProps;
 
     return (
         <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
@@ -461,9 +462,9 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                         },
                         ...slotPropsPaper,
                     },
-                    ...slotProps,
+                    ...otherSlotProps,
                 }}
-                {...dialogProps}
+                {...otherDialogProps}
             >
                 <StaticVarCompensatorCreationForm
                     studyUuid={studyUuid}

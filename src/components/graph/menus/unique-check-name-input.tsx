@@ -151,7 +151,8 @@ export function UniqueCheckNameInput({
 
     const helperText = max_length && `${inputWatch?.length}/${max_length}`;
 
-    const { input: slotPropsInput, htmlInput: slotPropsHtmlInput, ...slotProps } = formProps?.slotProps ?? {};
+    const { slotProps, ...otherFormProps } = formProps ?? {};
+    const { input: slotPropsInput, htmlInput: slotPropsHtmlInput, ...otherSlotProps } = slotProps ?? {};
 
     return (
         <TextField
@@ -169,9 +170,9 @@ export function UniqueCheckNameInput({
             slotProps={{
                 input: { endAdornment, ...slotPropsInput },
                 htmlInput: { ...inputProps, ...slotPropsHtmlInput },
-                ...slotProps,
+                ...otherSlotProps,
             }}
-            {...formProps}
+            {...otherFormProps}
         />
     );
 }
