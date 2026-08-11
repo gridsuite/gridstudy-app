@@ -8,7 +8,7 @@
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../../redux/reducer.type';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type OptionalLoadingParameters = Record<SpreadsheetEquipmentType, boolean>;
 
@@ -32,6 +32,15 @@ const initialOptionalLoadingParameters: Record<SpreadsheetEquipmentType, boolean
     [SpreadsheetEquipmentType.BOUNDARY_LINE]: false,
     [SpreadsheetEquipmentType.BUSBAR_SECTION]: false,
 };
+
+const TRACKED_TYPES = [
+    SpreadsheetEquipmentType.BRANCH,
+    SpreadsheetEquipmentType.LINE,
+    SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER,
+    SpreadsheetEquipmentType.GENERATOR,
+    SpreadsheetEquipmentType.BATTERY,
+    SpreadsheetEquipmentType.BUS,
+] as const;
 
 export function useOptionalLoadingParametersForEquipments() {
     const remoteBranchOlg = useSelector(
@@ -58,12 +67,15 @@ export function useOptionalLoadingParametersForEquipments() {
     const remoteBusNetworkComponents = useSelector(
         (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BUS].networkComponents
     );
-    const [branchOlg, setBranchOlg] = useState<boolean>(remoteBranchOlg);
-    const [lineOlg, setLineOlg] = useState<boolean>(remoteLineOlg);
-    const [twtOlg, setTwtOlg] = useState<boolean>(remoteTwtOlg);
-    const [generatorRegTerm, setGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
-    const [batteryRegTerm, setBatteryRegTerm] = useState<boolean>(remoteBatteryRegTerm);
-    const [busNetworkComponents, setBusNetworkComponents] = useState<boolean>(remoteBusNetworkComponents);
+
+    const previousValuesRef = useRef<boolean[]>([
+        remoteBranchOlg,
+        remoteLineOlg,
+        remoteTwtOlg,
+        remoteGeneratorRegTerm,
+        remoteBatteryRegTerm,
+        remoteBusNetworkComponents,
+    ]);
 
     const [loadOptional, setLoadOptional] = useState<OptionalLoadingParameters>(initialOptionalLoadingParameters);
     const [cleanOptional, setCleanOptional] = useState<OptionalLoadingParameters>(initialOptionalLoadingParameters);
@@ -81,79 +93,59 @@ export function useOptionalLoadingParametersForEquipments() {
     }, []);
 
     useEffect(() => {
-        if (remoteBranchOlg !== branchOlg && remoteBranchOlg) {
-            setLoadOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.BRANCH]: true };
-            });
-        } else if (remoteBranchOlg !== branchOlg && !remoteBranchOlg) {
-            setCleanOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.BRANCH]: true };
-            });
-        }
-        if (remoteLineOlg !== lineOlg && remoteLineOlg) {
-            setLoadOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.LINE]: true };
-            });
-        } else if (remoteLineOlg !== lineOlg && !remoteLineOlg) {
-            setCleanOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.LINE]: true };
-            });
-        }
-        if (remoteTwtOlg !== twtOlg && remoteTwtOlg) {
-            setLoadOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: true };
-            });
-        } else if (remoteTwtOlg !== twtOlg && !remoteTwtOlg) {
-            setCleanOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: true };
-            });
-        }
-        if (remoteGeneratorRegTerm !== generatorRegTerm && remoteGeneratorRegTerm) {
-            setLoadOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.GENERATOR]: true };
-            });
-        } else if (remoteGeneratorRegTerm !== generatorRegTerm && !remoteGeneratorRegTerm) {
-            setCleanOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.GENERATOR]: true };
+        const currentValues = [
+            remoteBranchOlg,
+            remoteLineOlg,
+            remoteTwtOlg,
+            remoteGeneratorRegTerm,
+            remoteBatteryRegTerm,
+            remoteBusNetworkComponents,
+        ];
+        const previousValues = previousValuesRef.current;
+
+        const toLoad: SpreadsheetEquipmentType[] = [];
+        const toClean: SpreadsheetEquipmentType[] = [];
+
+        TRACKED_TYPES.forEach((type, index) => {
+            const current = currentValues[index];
+            if (current === previousValues[index]) {
+                return;
+            }
+            if (current) {
+                toLoad.push(type);
+            } else {
+                toClean.push(type);
+            }
+        });
+
+        if (toLoad.length > 0) {
+            setLoadOptional((prev) => {
+                const next = { ...prev };
+                toLoad.forEach((type) => {
+                    next[type] = true;
+                });
+                return next;
             });
         }
-        if (remoteBatteryRegTerm !== batteryRegTerm && remoteBatteryRegTerm) {
-            setLoadOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.BATTERY]: true };
-            });
-        } else if (remoteBatteryRegTerm !== batteryRegTerm && !remoteBatteryRegTerm) {
-            setCleanOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.BATTERY]: true };
-            });
-        }
-        if (remoteBusNetworkComponents !== busNetworkComponents && remoteBusNetworkComponents) {
-            setLoadOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.BUS]: true };
-            });
-        } else if (remoteBusNetworkComponents !== busNetworkComponents && !remoteBusNetworkComponents) {
-            setCleanOptional((prevState) => {
-                return { ...prevState, [SpreadsheetEquipmentType.BUS]: true };
+
+        if (toClean.length > 0) {
+            setCleanOptional((prev) => {
+                const next = { ...prev };
+                toClean.forEach((type) => {
+                    next[type] = true;
+                });
+                return next;
             });
         }
-        setBranchOlg(remoteBranchOlg);
-        setLineOlg(remoteLineOlg);
-        setTwtOlg(remoteTwtOlg);
-        setGeneratorRegTerm(remoteGeneratorRegTerm);
-        setBatteryRegTerm(remoteBatteryRegTerm);
-        setBusNetworkComponents(remoteBusNetworkComponents);
+
+        previousValuesRef.current = currentValues;
     }, [
-        batteryRegTerm,
-        branchOlg,
-        busNetworkComponents,
-        generatorRegTerm,
-        lineOlg,
-        remoteBatteryRegTerm,
         remoteBranchOlg,
-        remoteBusNetworkComponents,
-        remoteGeneratorRegTerm,
         remoteLineOlg,
         remoteTwtOlg,
-        twtOlg,
+        remoteGeneratorRegTerm,
+        remoteBatteryRegTerm,
+        remoteBusNetworkComponents,
     ]);
 
     return {
