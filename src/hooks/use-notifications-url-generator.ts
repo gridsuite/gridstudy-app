@@ -20,6 +20,7 @@ const useNotificationsUrlGenerator = (): Partial<Record<NotificationsUrlKeys, st
     // The websocket API doesn't allow relative urls
     const wsBase = getWsBase();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     // return a mapColumns with NOTIFICATIONS_URL_KEYS and undefined value if URL is not yet buildable (studyUuid)
     // it will be used to register listeners as soon as possible.
@@ -30,6 +31,9 @@ const useNotificationsUrlGenerator = (): Partial<Record<NotificationsUrlKeys, st
             [NotificationsUrlKeys.STUDY]: studyUuid
                 ? `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(studyUuid)}`
                 : undefined,
+            [NotificationsUrlKeys.QUOTA]: userId
+                ? `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/quota?userId=${encodeURIComponent(userId)}`
+                : undefined,
             [NotificationsUrlKeys.DIRECTORY_DELETE_STUDY]: studyUuid
                 ? `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=deleteElement&elementUuid=${encodeURIComponent(
                       studyUuid
@@ -37,7 +41,7 @@ const useNotificationsUrlGenerator = (): Partial<Record<NotificationsUrlKeys, st
                 : undefined,
             [NotificationsUrlKeys.DIRECTORY]: `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=directories`,
         }),
-        [wsBase, studyUuid]
+        [wsBase, studyUuid, userId]
     );
 };
 
