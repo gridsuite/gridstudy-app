@@ -749,6 +749,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                         ),
                                         voltageLevelId: getValues(`${PHASE_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
                                     }),
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
                                         twt as EquipmentWithProperties,
                                         getValues
@@ -761,6 +762,9 @@ const TwoWindingsTransformerModificationDialog = ({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                         if (editData?.equipmentId !== equipmentId) {
                             setTwtToModify(null);
                         }
