@@ -6,9 +6,8 @@
  */
 import React from 'react';
 import { Box, Grid, Stack } from '@mui/material';
-import { FloatInput, IntegerInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { FloatInput, GridSection, IntegerInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 
-import { GridSection } from '../../commons/grid-section';
 import CountriesAutocomplete from './countries-autocomplete';
 import {
     BALANCES_ADJUSTMENT,

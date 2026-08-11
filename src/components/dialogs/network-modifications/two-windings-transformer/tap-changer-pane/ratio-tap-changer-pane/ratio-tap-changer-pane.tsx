@@ -24,6 +24,7 @@ import {
     CheckboxNullableInput,
     FieldConstants,
     FloatInput,
+    GridSection,
     Identifiable,
     SelectInput,
     SwitchInput,
@@ -38,7 +39,6 @@ import {
     getComputedTapSideId,
 } from './ratio-tap-changer-pane-utils';
 import { GridItem } from '../../../../commons/grid-item';
-import { GridSection } from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
 import {
     TapChangerMapInfos,
