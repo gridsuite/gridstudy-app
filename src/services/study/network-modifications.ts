@@ -35,6 +35,7 @@ import {
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     LineModificationDto,
     ModificationByFormulaDto,
+    VoltageLevelSectionCreationDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -43,7 +44,6 @@ import {
     AttachLineInfo,
     BalancesAdjustmentInfos,
     CreateCouplingDeviceInfos,
-    CreateVoltageLevelSectionInfos,
     CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
@@ -1232,7 +1232,7 @@ export function createVoltageLevelSection({
     modificationUuid,
     isUpdate,
 }: {
-    voltageLevelSectionInfos: CreateVoltageLevelSectionInfos;
+    voltageLevelSectionInfos: VoltageLevelSectionCreationDto;
     studyUuid: UUID;
     nodeUuid?: UUID;
     modificationUuid: string | null;
