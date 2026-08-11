@@ -243,7 +243,11 @@ const TwoWindingsTransformerModificationDialog = ({
                     ratedU2: twtModification.ratedU2?.value ?? null,
                     ratedS: twtModification.ratedS?.value ?? null,
                 },
-                stateEstimation: getBranchActiveReactivePowerEditDataProperties(twtModification), // tODO DBR toBeEstim
+                stateEstimation: getBranchActiveReactivePowerEditDataProperties(twtModification),
+                toBeEstimated: {
+                    ratioTapChangerStatus: twtModification.ratioTapChangerToBeEstimated?.value ?? null,
+                    phaseTapChangerStatus: twtModification.phaseTapChangerToBeEstimated?.value ?? null,
+                },
                 ...getAllLimitsFormData(
                     formatOpLimitGroupsToFormInfos(twtModification.operationalLimitsGroups),
                     twtModification.selectedOperationalLimitsGroupId1?.value ?? null,
@@ -556,8 +560,12 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedU2: toModificationOperation(characteristics?.[RATED_U2]),
                 ratioTapChanger: computeRatioTapForSubmit(twt) as unknown as RatioTapChangerModificationDto,
                 phaseTapChanger: computePhaseTapForSubmit(twt) as unknown as PhaseTapChangerModificationDto,
-                ratioTapChangerToBeEstimated: twt?.[TO_BE_ESTIMATED]?.[RATIO_TAP_CHANGER_STATUS],
-                phaseTapChangerToBeEstimated: twt?.[TO_BE_ESTIMATED]?.[PHASE_TAP_CHANGER_STATUS],
+                ratioTapChangerToBeEstimated: toModificationOperation(
+                    twt?.[TO_BE_ESTIMATED]?.[RATIO_TAP_CHANGER_STATUS]
+                ),
+                phaseTapChangerToBeEstimated: toModificationOperation(
+                    twt?.[TO_BE_ESTIMATED]?.[PHASE_TAP_CHANGER_STATUS]
+                ),
             };
             modifyTwoWindingsTransformer(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: Error) => {
                 snackWithFallback(snackError, error, { headerId: 'TwoWindingsTransformerModificationError' });
