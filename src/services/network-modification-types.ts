@@ -543,13 +543,6 @@ export type CouplingDeviceInfos = {
     busbarSectionId2: string;
 };
 
-export interface CreateCouplingDeviceInfos {
-    type: ModificationType;
-    uuid?: string;
-    voltageLevelId: string;
-    couplingDeviceInfos: CouplingDeviceInfos;
-}
-
 export interface CreateVoltageLevelTopologyInfos {
     type: ModificationType;
     uuid?: string;

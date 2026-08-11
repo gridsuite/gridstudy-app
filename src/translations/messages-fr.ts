@@ -1343,12 +1343,8 @@ const messages_fr = {
 
     CREATE_COUPLING_DEVICE: 'Ajouter un couplage ou un omnibus',
     CreateVoltageLevelSection: 'Ajouter un tronçon ou une section',
-    CreateCouplingDeviceDiagramButton: 'Voir le poste',
     builtNodeTooltipForDiagram: 'Diagramme courant prenant en compte toutes les modifications réalisées',
     notBuiltNodeTooltipForDiagram: 'Diagramme du dernier nœud réalisé de la branche courante',
-    CouplingDeviceText: 'Sections de jeu de barre',
-    CouplingDeviceBusBarSectionToolTipText:
-        'Si les deux sections de barre sélectionnées ont des numéros de tronçon/section différents la modification crée un omnibus, autrement elle crée un couplage',
     BalancesAdjustment: 'Équilibrage bilan',
     BalancesAdjustmentError: "Erreur lors de la création de l'équilibrage bilan",
     BalancesAdjustmentZone: 'Nom de la zone',

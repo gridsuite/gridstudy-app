@@ -1324,12 +1324,8 @@ const messages_en = {
 
     CREATE_COUPLING_DEVICE: 'Add a coupling device',
     CreateVoltageLevelSection: 'Add busbar section',
-    CreateCouplingDeviceDiagramButton: 'Show voltage level',
     builtNodeTooltipForDiagram: 'Current diagram taking into account all applied modifications',
     notBuiltNodeTooltipForDiagram: 'Diagram from last build node in current branch',
-    CouplingDeviceText: 'Bus bar sections',
-    CouplingDeviceBusBarSectionToolTipText:
-        'If both bus bar sections have a different section number it creates an omnibus otherwise a coupling device',
     BalancesAdjustment: 'Balances adjustment',
     BalancesAdjustmentError: 'Error while creating a balances adjustment',
     BalancesAdjustmentZone: 'Zone name',
