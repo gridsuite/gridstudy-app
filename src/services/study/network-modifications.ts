@@ -35,7 +35,7 @@ import {
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     LineModificationDto,
     ModificationByFormulaDto,
-    CreateVoltageLevelTopologyInfos,
+    CreateVoltageLevelTopologyDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -1787,13 +1787,13 @@ export function balancesAdjustment({
 }
 
 export function createVoltageLevelTopology({
-    createVoltageLevelTopologyInfos,
+    CreateVoltageLevelTopologyDto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    createVoltageLevelTopologyInfos: CreateVoltageLevelTopologyInfos;
+    CreateVoltageLevelTopologyDto: CreateVoltageLevelTopologyDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
@@ -1813,7 +1813,7 @@ export function createVoltageLevelTopology({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(createVoltageLevelTopologyInfos),
+        body: JSON.stringify(CreateVoltageLevelTopologyDto),
     });
 }
 

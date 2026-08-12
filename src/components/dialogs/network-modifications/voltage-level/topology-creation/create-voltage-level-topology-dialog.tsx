@@ -16,7 +16,7 @@ import {
     createVoltageLevelTopologyEmptyFormData,
     createVoltageLevelTopologyDtoToForm,
     createVoltageLevelTopologyFormToDto,
-    CreateVoltageLevelTopologyInfos,
+    CreateVoltageLevelTopologyDto,
     CreateVoltageLevelTopologyDialogSchemaForm,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
@@ -34,7 +34,7 @@ import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 
 export type CreateVoltageLevelTopologyDialogProps = EquipmentModificationDialogProps & {
-    editData?: CreateVoltageLevelTopologyInfos;
+    editData?: CreateVoltageLevelTopologyDto;
 };
 export default function CreateVoltageLevelTopologyDialog({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
@@ -81,12 +81,12 @@ export default function CreateVoltageLevelTopologyDialog({
 
     const onSubmit = useCallback(
         (voltageLevelTopology: CreateVoltageLevelTopologyDialogSchemaForm) => {
-            const createVoltageLevelTopologyInfos = createVoltageLevelTopologyFormToDto(
+            const CreateVoltageLevelTopologyDto = createVoltageLevelTopologyFormToDto(
                 voltageLevelTopology,
                 selectedId
             );
             createVoltageLevelTopology({
-                createVoltageLevelTopologyInfos: createVoltageLevelTopologyInfos,
+                CreateVoltageLevelTopologyDto: CreateVoltageLevelTopologyDto,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid,
