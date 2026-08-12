@@ -33,6 +33,9 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
     const gridRef = useRef<AgGridReact>(null);
     const { snackError } = useSnackMessage();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const isEquipmentFetching = useSelector(
+        (state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]?.isFetching ?? false
+    );
 
     const columnsDefinitions = useMemo(
         () => mapColumns(tableDefinition, snackError, loadFlowStatus, isSecurityModificationNode(currentNode)),
@@ -54,7 +57,8 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
         gridRef,
         tableDefinition,
         disabled,
-        isGlobalFilterPending,
+        // the row counter stays loading until both the equipment fetch and the global filter evaluation are done
+        isDataPending: isEquipmentFetching || isGlobalFilterPending,
     });
 
     const displayedColsDefs = useMemo(() => {
