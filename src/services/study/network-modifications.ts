@@ -45,7 +45,6 @@ import {
     BalancesAdjustmentInfos,
     CreateCouplingDeviceInfos,
     CreateVoltageLevelSectionInfos,
-    CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
