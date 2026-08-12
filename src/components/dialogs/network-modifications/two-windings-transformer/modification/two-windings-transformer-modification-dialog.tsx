@@ -725,13 +725,14 @@ const TwoWindingsTransformerModificationDialog = ({
                                         highTapPosition: getValues(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
                                         tapPosition: getValues(`${RATIO_TAP_CHANGER}.${TAP_POSITION}`),
                                         steps: addSelectedFieldToRows(getRatioTapChangerSteps(twt)),
-                                        equipmentId: getValues(
-                                            `${RATIO_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${ID}`
-                                        ),
-                                        equipmentType: getValues(
-                                            `${RATIO_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${TYPE}`
-                                        ),
-                                        voltageLevelId: getValues(`${RATIO_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
+                                        equipmentId:
+                                            getValues(`${RATIO_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${ID}`) ??
+                                            undefined,
+                                        equipmentType:
+                                            getValues(`${RATIO_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${TYPE}`) ??
+                                            undefined,
+                                        voltageLevelId:
+                                            getValues(`${RATIO_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`) ?? undefined,
                                     }),
                                     ...getPhaseTapChangerFormData({
                                         enabled: isPhaseTapChangerEnabled(twt),
@@ -749,13 +750,14 @@ const TwoWindingsTransformerModificationDialog = ({
                                         highTapPosition: getValues(`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
                                         tapPosition: getValues(`${PHASE_TAP_CHANGER}.${TAP_POSITION}`),
                                         steps: addSelectedFieldToRows(getPhaseTapChangerSteps(twt)),
-                                        equipmentID: getValues(
-                                            `${PHASE_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${ID}`
-                                        ),
-                                        equipmentType: getValues(
-                                            `${PHASE_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${TYPE}`
-                                        ),
-                                        voltageLevelId: getValues(`${PHASE_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
+                                        equipmentID:
+                                            getValues(`${PHASE_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${ID}`) ??
+                                            undefined,
+                                        equipmentType:
+                                            getValues(`${PHASE_TAP_CHANGER}.${FieldConstants.EQUIPMENT}.${TYPE}`) ??
+                                            undefined,
+                                        voltageLevelId:
+                                            getValues(`${PHASE_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`) ?? undefined,
                                     }),
                                     [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
