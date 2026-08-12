@@ -137,7 +137,8 @@ export type AppActions =
     | UpdateColumnFiltersAction
     | AddGlobalFiltersAction
     | RemoveGlobalFiltersAction
-    | ClearGlobalFiltersAction;
+    | ClearGlobalFiltersAction
+    | SetNodeActivitiesAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {

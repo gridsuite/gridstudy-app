@@ -89,15 +89,6 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
                     break;
                 }
 
-                case NotificationType.SUBTREE_CREATED: {
-                    invalidateClipboardIfImpacted(
-                        [eventData.headers.parentNode],
-                        nodeSelectionForCopyRef.current,
-                        resetNodeClipboard
-                    );
-                    break;
-                }
-
                 case NotificationType.NODE_MOVED:
                 case NotificationType.SUBTREE_MOVED: {
                     invalidateClipboardIfImpacted(
@@ -126,7 +117,9 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
                     );
                     break;
                 }
-                //creating, updating or deleting modifications must invalidate the node clipboard
+                //a subtree insertion, and creating, updating or deleting modifications, all invalidate
+                //the node clipboard through the parent node
+                case NotificationType.SUBTREE_CREATED:
                 case NotificationType.MODIFICATIONS_UPDATE_FINISHED:
                 case NotificationType.MODIFICATIONS_DELETE_FINISHED: {
                     invalidateClipboardIfImpacted(

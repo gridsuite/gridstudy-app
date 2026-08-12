@@ -1481,7 +1481,7 @@ const messages_fr = {
     'nodeActivityInProgress.BUILDING': 'En cours de réalisation',
     'nodeActivityInProgress.UNBUILDING': 'En cours de déréalisation',
     'nodeActivityInProgress.COMPUTING': 'En cours de calcul',
-    nodeActivityOnRootNetwork: 'Sur racine {rootNetwork}',
+    nodeActivityOnRootNetwork: 'Sur le réseau racine {rootNetwork}',
     CONSTRUCTION: 'Construction',
     SECURITY: 'Sécurité',
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS: 'Déplacer les départs',

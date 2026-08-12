@@ -10,8 +10,8 @@ import type { UUID } from 'node:crypto';
 import type { NodeActivity } from '../../types/node-activity.type';
 import { getStudyUrl } from './index';
 
-export function fetchNodeActivities(studyUuid: UUID): Promise<NodeActivity[]> {
+export function fetchNodeActivities(studyUuid: UUID, abortSignal?: AbortSignal): Promise<NodeActivity[]> {
     const url = getStudyUrl(studyUuid) + '/tree/node-activities';
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchJson(url, { signal: abortSignal });
 }

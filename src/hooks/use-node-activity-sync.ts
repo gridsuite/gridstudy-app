@@ -7,7 +7,7 @@
 
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { setNodeActivities } from '../redux/actions';
 import { fetchNodeActivities } from '../services/study/node-activities';
@@ -19,19 +19,30 @@ import {
 
 export function useNodeActivitySync(studyUuid: UUID | null) {
     const dispatch = useDispatch();
+    const abortControllerRef = useRef<AbortController | undefined>(undefined);
 
     useEffect(() => {
-        if (studyUuid) {
-            fetchNodeActivities(studyUuid)
-                .then((activities) => dispatch(setNodeActivities(activities)))
-                .catch((error) => console.error('Failed to fetch node activities', error));
+        if (!studyUuid) {
+            return;
         }
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
+        fetchNodeActivities(studyUuid, abortController.signal)
+            .then((activities) => dispatch(setNodeActivities(activities)))
+            .catch((error) => {
+                if (!abortController.signal.aborted) {
+                    console.error('Failed to fetch node activities', error);
+                }
+            });
+        return () => abortController.abort();
     }, [studyUuid, dispatch]);
 
     const handleNodeActivitiesNotification = useCallback(
         (event: MessageEvent) => {
             const eventData = parseEventData<CommonStudyEventData>(event);
             if (eventData && isNodeActivitiesUpdatedNotification(eventData)) {
+                // this payload is newer than any snapshot still in flight
+                abortControllerRef.current?.abort();
                 dispatch(setNodeActivities(JSON.parse(eventData.payload)));
             }
         },
