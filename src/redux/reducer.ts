@@ -531,6 +531,9 @@ const initialState: AppState = {
         [SpreadsheetEquipmentType.BUS]: {
             networkComponents: false,
         },
+        [SpreadsheetEquipmentType.BATTERY]: {
+            regulatingTerminal: false,
+        },
     },
     networkVisualizationsParameters: null,
     highlightedModificationUuid: null,
