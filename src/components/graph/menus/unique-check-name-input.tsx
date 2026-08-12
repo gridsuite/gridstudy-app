@@ -152,7 +152,6 @@ export function UniqueCheckNameInput({
     const helperText = max_length && `${inputWatch?.length}/${max_length}`;
 
     const { slotProps, ...otherFormProps } = formProps ?? {};
-    const { input: slotPropsInput, htmlInput: slotPropsHtmlInput, ...otherSlotProps } = slotProps ?? {};
 
     return (
         <TextField
@@ -168,9 +167,9 @@ export function UniqueCheckNameInput({
             error={!!error}
             helperText={translatedError || <Typography variant="caption">{helperText}</Typography>}
             slotProps={{
-                input: { endAdornment, ...slotPropsInput },
-                htmlInput: { ...inputProps, ...slotPropsHtmlInput },
-                ...otherSlotProps,
+                input: { endAdornment },
+                htmlInput: inputProps,
+                ...slotProps,
             }}
             {...otherFormProps}
         />

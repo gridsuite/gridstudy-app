@@ -439,7 +439,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     );
 
     const { slotProps, ...otherDialogProps } = dialogProps;
-    const { paper: slotPropsPaper, ...otherSlotProps } = slotProps;
 
     return (
         <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
@@ -460,9 +459,8 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                         sx: {
                             height: '75vh', // we want the dialog height to be fixed even when switching tabs
                         },
-                        ...slotPropsPaper,
                     },
-                    ...otherSlotProps,
+                    ...slotProps,
                 }}
                 {...otherDialogProps}
             >
