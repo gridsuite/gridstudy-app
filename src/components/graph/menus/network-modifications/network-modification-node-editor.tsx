@@ -83,6 +83,7 @@ import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-m
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
 import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
+
 import ImportModificationDialog from '../../../dialogs/import-composite/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
@@ -142,6 +143,7 @@ const nonEditableModificationTypes = new Set([
     'GROOVY_SCRIPT',
     'OPERATING_STATUS_MODIFICATION',
     'COMPOSITE_MODIFICATION',
+    'MODIFICATION_REFERENCE',
 ]);
 
 const isEditableModification = (modif: NetworkModificationMetadata) => {
@@ -1128,7 +1130,7 @@ const NetworkModificationNodeEditor = () => {
     }, [notificationIdList, currentNode?.id]);
 
     const isModificationClickable = useCallback(
-        (modification: NetworkModificationMetadata) =>
+        (modification: ComposedModificationMetadata) =>
             !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
@@ -1218,7 +1220,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleCellClick = useCallback(
-        (modification: NetworkModificationMetadata) => {
+        (modification: ComposedModificationMetadata) => {
             if (isModificationClickable(modification)) {
                 // Check if the clicked column is the 'modificationName' column
                 doEditModification(modification.uuid, modification.type);
