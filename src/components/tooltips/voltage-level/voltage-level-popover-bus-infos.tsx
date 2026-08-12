@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid2 as Grid, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
+import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
 import { VoltageLevelTooltipBusInfos } from '../equipment-popover-type';
 import { CellRender } from '../cell-render';
 import { formatValue, styles as genericStyles } from '../generic-equipment-popover-utils';

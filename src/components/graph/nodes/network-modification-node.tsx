@@ -165,7 +165,6 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
         <>
             <NodeHandle type={'source'} position={Position.Bottom} />
             <NodeHandle type={'target'} position={Position.Top} />
-
             {props.data.globalBuildStatus !== props.data.localBuildStatus && (
                 <BuildStatusChip
                     buildStatus={props.data.globalBuildStatus}
@@ -174,18 +173,17 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     onClick={(e) => e.stopPropagation()}
                 />
             )}
-
             <Tooltip
                 title={tooltipContent}
                 disableFocusListener
                 disableTouchListener
-                componentsProps={{
-                    tooltip: { sx: { maxWidth: '720px' } },
-                }}
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
                 placement="left"
+                slotProps={{
+                    tooltip: { sx: { maxWidth: '720px' } },
+                }}
             >
                 <ForwardRefBox
                     sx={[

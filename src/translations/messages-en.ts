@@ -280,6 +280,7 @@ const messages_en = {
     DynamicSimulationTimelineEventModelName: 'Equipment/Model',
     DynamicSimulationTimelineEventModelMessage: 'Message',
 
+    startSecurityAnalysisError: 'An error occurred while starting the security analysis',
     startDynamicSecurityAnalysisError: 'An error occurred while starting the dynamic security analysis',
     DynamicSecurityAnalysis: 'Dynamic security analysis',
     DynamicSecurityAnalysisRunError: 'An error occurred while executing the dynamic security analysis',

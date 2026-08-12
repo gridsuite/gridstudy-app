@@ -225,7 +225,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             () => startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
             () => {},
             null,
-            null
+            'startSecurityAnalysisError'
         );
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid, startComputationAsync]);
 

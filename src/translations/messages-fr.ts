@@ -284,6 +284,7 @@ const messages_fr = {
     DynamicSimulationTimelineEventModelName: 'Ouvrage/Modèle',
     DynamicSimulationTimelineEventModelMessage: 'Message',
 
+    startSecurityAnalysisError: "Une erreur est survenue lors du lancement de l'analyse de sécurité",
     startDynamicSecurityAnalysisError: "Une erreur est survenue lors du lancement de l'analyse de sécurité dynamique",
     DynamicSecurityAnalysis: 'Analyse de sécurité dynamique',
     DynamicSecurityAnalysisRunError: "Une erreur est survenue lors de l'exécution de l'analyse de sécurité dynamique",
