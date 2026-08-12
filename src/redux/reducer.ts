@@ -39,12 +39,10 @@ import {
 
 import {
     ADD_GLOBAL_FILTERS,
-    ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_SPREADSHEET_LOADED_NODES_IDS,
     ADD_TO_GLOBAL_FILTER_OPTIONS,
     AddGlobalFiltersAction,
-    type AddNotificationAction,
     type AddSortForNewSpreadsheetAction,
     AddSpreadsheetLoadedNodesIdsAction,
     type AddToGlobalFilterOptionsAction,
@@ -115,7 +113,6 @@ import {
     REMOVE_FROM_GLOBAL_FILTER_OPTIONS,
     REMOVE_GLOBAL_FILTERS,
     REMOVE_NODE_DATA,
-    REMOVE_NOTIFICATION_BY_NODE,
     REMOVE_SPREADSHEET_LOADED_NODES_IDS,
     REMOVE_TABLE_DEFINITION,
     type RemoveColumnDefinitionAction,
@@ -123,7 +120,6 @@ import {
     type RemoveFromGlobalFilterOptionsAction,
     RemoveGlobalFiltersAction,
     type RemoveNodeDataAction,
-    type RemoveNotificationByNodeAction,
     RemoveSpreadsheetLoadedNodesIdsAction,
     type RemoveTableDefinitionAction,
     RENAME_TABLE_DEFINITION,
@@ -172,7 +168,6 @@ import {
     SET_COMPUTING_STATUS_INFOS,
     SET_DIRTY_COMPUTATION_PARAMETERS,
     SET_LAST_COMPLETED_COMPUTATION,
-    SET_MODIFICATIONS_IN_PROGRESS,
     SET_MONO_ROOT_STUDY,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT,
     SET_OPTIONAL_SERVICES,
@@ -191,7 +186,6 @@ import {
     type SetComputingStatusParametersAction,
     type SetDirtyComputationParametersAction,
     type SetLastCompletedComputationAction,
-    type SetModificationsInProgressAction,
     type SetMonoRootStudyAction,
     type SetOneBusShortcircuitAnalysisContextAction,
     type SetOptionalServicesAction,
@@ -506,8 +500,6 @@ const initialState: AppState = {
     mapDataLoading: false,
     isExplorerDrawerOpen: true,
     centerOnSubstation: undefined,
-    notificationIdList: [],
-    isModificationsInProgress: false,
     isMonoRootStudy: true,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
@@ -1119,20 +1111,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CENTER_ON_SUBSTATION, (state, action: CenterOnSubstationAction) => {
         state.centerOnSubstation = action.centerOnSubstation;
-    });
-
-    builder.addCase(ADD_NOTIFICATION, (state, action: AddNotificationAction) => {
-        state.notificationIdList = [...state.notificationIdList, ...action.notificationIds];
-    });
-
-    builder.addCase(REMOVE_NOTIFICATION_BY_NODE, (state, action: RemoveNotificationByNodeAction) => {
-        state.notificationIdList = [
-            ...state.notificationIdList.filter((nodeId) => !action.notificationIds.includes(nodeId)),
-        ];
-    });
-
-    builder.addCase(SET_MODIFICATIONS_IN_PROGRESS, (state, action: SetModificationsInProgressAction) => {
-        state.isModificationsInProgress = action.isModificationsInProgress;
     });
 
     builder.addCase(SET_MONO_ROOT_STUDY, (state, action: SetMonoRootStudyAction) => {

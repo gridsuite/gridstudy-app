@@ -22,6 +22,7 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
         borderRadius: '8px',
+        minHeight: 32,
         px: 1,
     },
     label: (theme) => ({

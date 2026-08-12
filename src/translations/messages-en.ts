@@ -272,9 +272,6 @@ const messages_en = {
     DynamicSimulationEventCount:
         '{hide, select, false {{count, plural, =0 {no event} =1 {{count} event} other {{count} events}}} other {...}}',
     DynamicSimulationEventUpdatingList: 'Updating event list ...',
-    DynamicSimulationEventCreating: 'Creating event ...',
-    DynamicSimulationEventUpdating: 'Updating event ...',
-    DynamicSimulationEventDeleting: 'Deleting event ...',
 
     DynamicSimulationTabTimeSeries: 'Curves',
     DynamicSimulationTabTimeline: 'Chronology',

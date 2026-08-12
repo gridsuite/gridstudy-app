@@ -14,7 +14,7 @@ import { findActivityOnNode, findConflictingActivity } from 'components/graph/ut
 import { NetworkModificationNodeType, NodeType } from 'components/graph/tree-node.type';
 import { AppState } from 'redux/reducer.type';
 import type { BuildStatus } from '@gridsuite/commons-ui';
-import { NODE_ACTIVITY_LABEL_IDS, type NodeActivity } from 'types/node-activity.type';
+import { NODE_ACTIVITY_LABEL_IDS, NodeActivityLabel, type NodeActivity } from 'types/node-activity.type';
 
 type NodeBuildData = {
     nodeType?: NetworkModificationNodeType;
@@ -98,6 +98,10 @@ export function useNodeActivity(nodeId: UUID | undefined): NodeActivity | undefi
     return useSelector((state: AppState) =>
         findActivityOnNode(state.nodeActivities, nodeId, state.currentRootNetworkUuid)
     );
+}
+
+export function useIsNodeBeingEdited(nodeId: UUID | undefined): boolean {
+    return useNodeActivity(nodeId)?.label === NodeActivityLabel.UPDATING;
 }
 
 export function useNodeActivityLabel(activity: NodeActivity | undefined): string | undefined {

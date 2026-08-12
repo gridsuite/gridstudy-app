@@ -74,6 +74,7 @@ import {
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 import { fetchContingencyCount } from '../services/study';
+import { useIsNodeBeingEdited } from './utils/use-node-activity';
 import {
     fetchDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
@@ -119,6 +120,7 @@ const ParametersTabs: FunctionComponent = () => {
     const currentNodeBuildStatus = useSelector((state: AppState) => state.currentTreeNode?.data.globalBuildStatus);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
+    const isNodeBeingEdited = useIsNodeBeingEdited(currentNode?.id);
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
@@ -364,7 +366,7 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
                         fetchContingencyCount={fetchContingencyCountBackend}
-                        isBuiltCurrentNode={currentNodeBuildStatus !== BuildStatus.NOT_BUILT}
+                        isBuiltCurrentNode={!isNodeBeingEdited && currentNodeBuildStatus !== BuildStatus.NOT_BUILT}
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
                     />
@@ -380,7 +382,9 @@ const ParametersTabs: FunctionComponent = () => {
                         globalBuildStatus={
                             // to avoid bad current node globalBuildStatus at root network change
                             // pass not built status by defaut to avoid unwanted fetch
-                            isTreeModelUpToDate ? currentNode?.data?.globalBuildStatus : BuildStatus.NOT_BUILT
+                            isTreeModelUpToDate && !isNodeBeingEdited
+                                ? currentNode?.data?.globalBuildStatus
+                                : BuildStatus.NOT_BUILT
                         }
                         isRootNode={currentNode?.type === NodeType.ROOT}
                         isDeveloperMode={isDeveloperMode}
@@ -472,6 +476,7 @@ const ParametersTabs: FunctionComponent = () => {
         securityAnalysisParametersBackend,
         fetchContingencyCountBackend,
         currentNodeBuildStatus,
+        isNodeBeingEdited,
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,

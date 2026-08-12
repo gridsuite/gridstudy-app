@@ -111,8 +111,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const isModificationsInProgress = useSelector((state) => state.isModificationsInProgress);
-
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
 
@@ -627,7 +625,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             activeRunnables={activeRunnables}
             getStatus={getRunningStatus}
             computationStopped={computationStopped}
-            disabled={isModificationsInProgress || !isNodeRunnable}
+            disabled={!isNodeRunnable}
             canRun={canRun}
         />
     );

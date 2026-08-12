@@ -220,7 +220,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     computationStarting: boolean;
     optionalServices: IOptionalService[];
     oneBusShortCircuitAnalysisContext: OneBusShortCircuitAnalysisContext | null;
-    notificationIdList: UUID[];
     globalFilterOptions: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramDepth: number;
@@ -240,7 +239,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nadTextNodeMovements: NadTextMovement[];
     isExplorerDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
-    isModificationsInProgress: boolean;
     isMonoRootStudy: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;

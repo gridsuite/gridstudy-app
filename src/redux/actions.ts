@@ -21,7 +21,6 @@ import {
     GlobalFilter,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import type { UnknownArray } from 'type-fest';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
@@ -101,9 +100,6 @@ export type AppActions =
     | CopiedNetworkModificationsAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
-    | AddNotificationAction
-    | RemoveNotificationByNodeAction
-    | SetModificationsInProgressAction
     | SetComputingStatusAction
     | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
@@ -784,42 +780,6 @@ export function centerOnSubstation(substationId: string): CenterOnSubstationActi
     return {
         type: CENTER_ON_SUBSTATION,
         centerOnSubstation: { to: substationId },
-    };
-}
-
-export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
-export type AddNotificationAction = Readonly<Action<typeof ADD_NOTIFICATION>> & {
-    notificationIds: UUID[];
-};
-
-export function addNotification(notificationIds: UUID[]): AddNotificationAction {
-    return {
-        type: ADD_NOTIFICATION,
-        notificationIds: notificationIds,
-    };
-}
-
-export const REMOVE_NOTIFICATION_BY_NODE = 'REMOVE_NOTIFICATION_BY_NODE';
-export type RemoveNotificationByNodeAction = Readonly<Action<typeof REMOVE_NOTIFICATION_BY_NODE>> & {
-    notificationIds: UnknownArray;
-};
-
-export function removeNotificationByNode(notificationIds: UnknownArray): RemoveNotificationByNodeAction {
-    return {
-        type: REMOVE_NOTIFICATION_BY_NODE,
-        notificationIds: notificationIds,
-    };
-}
-
-export const SET_MODIFICATIONS_IN_PROGRESS = 'SET_MODIFICATIONS_IN_PROGRESS';
-export type SetModificationsInProgressAction = Readonly<Action<typeof SET_MODIFICATIONS_IN_PROGRESS>> & {
-    isModificationsInProgress: boolean;
-};
-
-export function setModificationsInProgress(isModificationsInProgress: boolean): SetModificationsInProgressAction {
-    return {
-        type: SET_MODIFICATIONS_IN_PROGRESS,
-        isModificationsInProgress: isModificationsInProgress,
     };
 }
 

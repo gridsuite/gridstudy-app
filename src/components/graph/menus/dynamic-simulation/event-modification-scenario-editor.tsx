@@ -14,13 +14,12 @@ import {
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { useCanEditEvents } from '../../../utils/use-node-activity';
-import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
+import { useCanEditEvents, useIsNodeBeingEdited } from '../../../utils/use-node-activity';
 import type { UUID } from 'node:crypto';
 import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
@@ -29,17 +28,7 @@ import { isChecked, isPartial, styles } from '../network-modifications/network-m
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { AppState } from '../../../../redux/reducer.type';
-import { AppDispatch } from '../../../../redux/store';
-import {
-    EventCreatingInProgressEventData,
-    EventDeletingInProgressEventData,
-    EventUpdatingInProgressEventData,
-    isEventCrudFinishedNotification,
-    isEventNotification,
-    NotificationType,
-    parseEventData,
-    CommonStudyEventData,
-} from 'types/notification-types';
+import { isEventCrudFinishedNotification, parseEventData, CommonStudyEventData } from 'types/notification-types';
 import {
     deleteDynamicSimulationEvents,
     fetchDynamicSimulationEvents,
@@ -56,14 +45,12 @@ const paperStyles = {
 
 const EventModificationScenarioEditor = memo(() => {
     const intl = useIntl();
-    const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const currentNodeIdRef = useRef<UUID>(null); // initial empty to get first update
-    const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState<Event[]>([]);
 
@@ -76,50 +63,11 @@ const EventModificationScenarioEditor = memo(() => {
         | undefined
     >();
 
-    const dispatch = useDispatch<AppDispatch>();
-    const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
     const handleCloseDialog = () => {
         setEditDialogOpen(undefined);
     };
-
-    const fillNotification = useCallback(
-        (
-            eventData:
-                | EventCreatingInProgressEventData
-                | EventUpdatingInProgressEventData
-                | EventDeletingInProgressEventData,
-            messageId: string
-        ) => {
-            // (work for all users)
-            // specific message id for each action type
-            setMessageId(messageId);
-
-            dispatch(addNotification([eventData.headers.parentNode, ...(eventData.headers.nodes ?? [])]));
-        },
-        [dispatch]
-    );
-
-    const manageNotification = useCallback(
-        (
-            eventData:
-                | EventCreatingInProgressEventData
-                | EventUpdatingInProgressEventData
-                | EventDeletingInProgressEventData
-        ) => {
-            let messageId = '';
-            if (eventData.headers.updateType === NotificationType.EVENT_CREATING_IN_PROGRESS) {
-                messageId = 'DynamicSimulationEventCreating';
-            } else if (eventData.headers.updateType === NotificationType.EVENT_UPDATING_IN_PROGRESS) {
-                messageId = 'DynamicSimulationEventUpdating';
-            } else if (eventData.headers.updateType === NotificationType.EVENT_DELETING_IN_PROGRESS) {
-                messageId = 'DynamicSimulationEventDeleting';
-            }
-            fillNotification(eventData, messageId);
-        },
-        [fillNotification]
-    );
 
     const updateSelectedItems = useCallback((events: Event[]) => {
         const toKeepIdsSet = new Set(events.map((e) => e.uuid));
@@ -147,11 +95,9 @@ const EventModificationScenarioEditor = memo(() => {
                 snackWithFallback(snackError, error);
             })
             .finally(() => {
-                setPendingState(false);
                 setLaunchLoader(false);
-                dispatch(setModificationsInProgress(false));
             });
-    }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
+    }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError]);
 
     useEffect(() => {
         // first time with currentNode initialized then fetch events
@@ -171,25 +117,15 @@ const EventModificationScenarioEditor = memo(() => {
             if (!eventData) {
                 return;
             }
-            if (isEventNotification(eventData)) {
-                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
-                    return;
-                }
-
-                dispatch(setModificationsInProgress(true));
-                setPendingState(true);
-                manageNotification(eventData);
-            } else if (isEventCrudFinishedNotification(eventData)) {
-                // notify  finished action (success or error => we remove the loader)
-                // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
+            // the data changed, whatever the outcome: the spinner comes from the node activity
+            if (isEventCrudFinishedNotification(eventData)) {
                 // fetch events because it must have changed
                 // Do not clear the events list, because currentNode is the concerned one
                 // this allows to append new events to the existing list.
                 doFetchEvents();
-                dispatch(removeNotificationByNode([eventData.headers.parentNode, ...(eventData.headers.nodes ?? [])]));
             }
         },
-        [dispatch, doFetchEvents, manageNotification]
+        [doFetchEvents]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
@@ -197,6 +133,7 @@ const EventModificationScenarioEditor = memo(() => {
     });
 
     const isCurrentNodeBlocked = !useCanEditEvents(currentNode?.id);
+    const isNodeBeingEdited = useIsNodeBeingEdited(currentNode?.id);
 
     const doDeleteEvent = useCallback(() => {
         if (!studyUuid || !currentNode?.id) {
@@ -219,10 +156,6 @@ const EventModificationScenarioEditor = memo(() => {
     const toggleSelectAllEvents = useCallback(() => {
         setSelectedItems((oldVals: Event[]) => (oldVals.length === 0 ? events : []));
     }, [events]);
-
-    const isLoading = useCallback(() => {
-        return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
-    }, [currentNode?.id, notificationIdList]);
 
     const getItemLabel = (item: Event) => {
         if (!studyUuid || !currentNode || !item) {
@@ -251,16 +184,11 @@ const EventModificationScenarioEditor = memo(() => {
     const handleSecondaryAction = useCallback(
         (item: Event, isItemHovered?: boolean) =>
             isItemHovered && !isCurrentNodeBlocked ? (
-                <IconButton
-                    onClick={() => doEditEvent(item)}
-                    size={'small'}
-                    sx={styles.iconEdit}
-                    disabled={isLoading()}
-                >
+                <IconButton onClick={() => doEditEvent(item)} size={'small'} sx={styles.iconEdit}>
                     <EditIcon />
                 </IconButton>
             ) : null,
-        [isCurrentNodeBlocked, isLoading]
+        [isCurrentNodeBlocked]
     );
 
     const renderEventList = () => {
@@ -281,22 +209,9 @@ const EventModificationScenarioEditor = memo(() => {
                 getItemId={(v: Event) => v.equipmentId}
                 getItemLabel={getItemLabel}
                 secondaryAction={handleSecondaryAction}
-                isDisabled={() => isLoading()}
+                isDisabled={() => isCurrentNodeBlocked}
                 divider
             />
-        );
-    };
-
-    const renderEventListTitleLoading = () => {
-        return (
-            <Box sx={styles.modificationsTitle}>
-                <Box sx={styles.icon}>
-                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
-                </Box>
-                <Typography noWrap>
-                    <FormattedMessage id={messageId} />
-                </Typography>
-            </Box>
         );
     };
 
@@ -317,14 +232,14 @@ const EventModificationScenarioEditor = memo(() => {
         return (
             <Box sx={styles.modificationsTitle}>
                 <Box sx={styles.icon}>
-                    {pendingState && <CircularProgress size={'1em'} sx={styles.circularProgress} />}
+                    {isNodeBeingEdited && <CircularProgress size={'1em'} sx={styles.circularProgress} />}
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'DynamicSimulationEventCount'}
                         values={{
                             count: events ? events?.length : '',
-                            hide: pendingState,
+                            hide: isNodeBeingEdited,
                         }}
                     />
                 </Typography>
@@ -333,9 +248,6 @@ const EventModificationScenarioEditor = memo(() => {
     };
 
     const renderPaneSubtitle = () => {
-        if (isLoading() && messageId) {
-            return renderEventListTitleLoading();
-        }
         if (launchLoader) {
             return renderEventListTitleUpdating();
         }

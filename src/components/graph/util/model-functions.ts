@@ -160,13 +160,6 @@ export function isNodeEdited(node1: CurrentTreeNode | null, node2: CurrentTreeNo
     return isDescriptionNodeEdited(node1, node2) || isNodeRenamed(node1, node2);
 }
 
-export function isNodeInNotificationList(node: CurrentTreeNode, notificationIdList: UUID[]) {
-    if (!node || !notificationIdList) {
-        return false;
-    }
-    return notificationIdList.includes(node.id);
-}
-
 export function isSameNodeAndBuilt(node1: CurrentTreeNode | null, node2: CurrentTreeNode | null) {
     return isSameNode(node1, node2) && isNodeBuilt(node1);
 }

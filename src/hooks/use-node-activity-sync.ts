@@ -7,7 +7,7 @@
 
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setNodeActivities } from '../redux/actions';
 import { fetchNodeActivities } from '../services/study/node-activities';
@@ -19,34 +19,23 @@ import {
 
 export function useNodeActivitySync(studyUuid: UUID | null) {
     const dispatch = useDispatch();
-    const latestRequest = useRef(0);
-
-    const refresh = useCallback(() => {
-        if (!studyUuid) {
-            return;
-        }
-        const request = ++latestRequest.current;
-        fetchNodeActivities(studyUuid)
-            .then((activities) => {
-                if (request === latestRequest.current) {
-                    dispatch(setNodeActivities(activities));
-                }
-            })
-            .catch((error) => console.error('Failed to fetch node activities', error));
-    }, [studyUuid, dispatch]);
 
     useEffect(() => {
-        refresh();
-    }, [refresh]);
+        if (studyUuid) {
+            fetchNodeActivities(studyUuid)
+                .then((activities) => dispatch(setNodeActivities(activities)))
+                .catch((error) => console.error('Failed to fetch node activities', error));
+        }
+    }, [studyUuid, dispatch]);
 
     const handleNodeActivitiesNotification = useCallback(
         (event: MessageEvent) => {
             const eventData = parseEventData<CommonStudyEventData>(event);
             if (eventData && isNodeActivitiesUpdatedNotification(eventData)) {
-                refresh();
+                dispatch(setNodeActivities(JSON.parse(eventData.payload)));
             }
         },
-        [refresh]
+        [dispatch]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {

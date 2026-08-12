@@ -34,12 +34,7 @@ import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/ind
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import NetworkModificationNodeDialog from './graph/menus/network-modifications/network-modification-node-dialog';
 import { CopyType } from './network-modification.type';
-import {
-    NodeSequenceType,
-    NotificationType,
-    parseEventData,
-    PENDING_MODIFICATION_NOTIFICATION_TYPES,
-} from 'types/notification-types';
+import { NodeSequenceType, NotificationType, parseEventData } from 'types/notification-types';
 import useExportSubscription from '../hooks/use-export-subscription';
 import { exportNetworkFile } from '../services/study/network.js';
 import { useCopiedNodes } from 'hooks/copy-paste/use-copied-nodes';
@@ -132,16 +127,17 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
                     break;
                 }
                 //creating, updating or deleting modifications must invalidate the node clipboard
-                default: {
-                    if (PENDING_MODIFICATION_NOTIFICATION_TYPES.includes(eventData.headers.updateType)) {
-                        invalidateClipboardIfImpacted(
-                            [eventData.headers.parentNode],
-                            nodeSelectionForCopyRef.current,
-                            resetNodeClipboard
-                        );
-                    }
+                case NotificationType.MODIFICATIONS_UPDATE_FINISHED:
+                case NotificationType.MODIFICATIONS_DELETE_FINISHED: {
+                    invalidateClipboardIfImpacted(
+                        [eventData.headers.parentNode],
+                        nodeSelectionForCopyRef.current,
+                        resetNodeClipboard
+                    );
                     break;
                 }
+                default:
+                    break;
             }
         },
         [studyUuid, resetNodeClipboard]

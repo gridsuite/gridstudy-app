@@ -276,9 +276,6 @@ const messages_fr = {
     DynamicSimulationEventCount:
         '{hide, select, false {{count, plural, =0 {aucun évènement} =1 {# évènement} other {# évènements}}} other {...}}',
     DynamicSimulationEventUpdatingList: 'Mise à jour de la liste des évènements en cours ...',
-    DynamicSimulationEventCreating: "Création d'un évènement en cours ...",
-    DynamicSimulationEventUpdating: "Mise à jour d'un évènement en cours ...",
-    DynamicSimulationEventDeleting: "Suppression d'un évènement en cours ...",
 
     DynamicSimulationTabTimeSeries: 'Courbes',
     DynamicSimulationTabTimeline: 'Chronologie',
