@@ -14,7 +14,6 @@ import {
     downloadSecurityAnalysisResultZippedCsv,
     fetchSecurityAnalysisResult,
 } from '../../../services/study/security-analysis';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import {
     ComputingType,
     EquipmentType,
@@ -32,6 +31,7 @@ import {
     GlobalFilterType,
     isCriteriaFilterType,
     buildValidGlobalFilters,
+    RESULTS_LOADING_DELAY,
 } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { ComputationReportViewer } from '../common/computation-report-viewer';

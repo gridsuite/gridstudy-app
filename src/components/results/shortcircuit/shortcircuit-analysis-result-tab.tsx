@@ -27,10 +27,10 @@ import {
     useOpenLoaderShortWait,
     useSnackMessage,
     buildValidGlobalFilters,
+    RESULTS_LOADING_DELAY,
 } from '@gridsuite/commons-ui';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import type { UUID } from 'node:crypto';
 import { ColDef, DisplayedColumnsChangedEvent, GridApi, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';

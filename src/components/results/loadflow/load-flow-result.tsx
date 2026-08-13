@@ -17,6 +17,7 @@ import {
     DefaultCellRenderer,
     getNoRowsMessage,
     getRows,
+    RESULTS_LOADING_DELAY,
     RunningStatus,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
@@ -24,7 +25,6 @@ import {
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 
 import LinearProgress from '@mui/material/LinearProgress';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult, formatCountryAdequaciesResult, formatExchangesResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';

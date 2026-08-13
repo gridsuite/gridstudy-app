@@ -21,9 +21,9 @@ import {
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
     RunningStatus,
+    RESULTS_LOADING_DELAY,
 } from '@gridsuite/commons-ui';
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
-import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
 import { DisplayedColumnsChangedEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';

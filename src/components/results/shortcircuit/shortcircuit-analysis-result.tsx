@@ -31,10 +31,10 @@ import {
     useOpenLoaderShortWait,
     useSnackMessage,
     buildValidGlobalFilters,
+    RESULTS_LOADING_DELAY,
 } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { DisplayedColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
