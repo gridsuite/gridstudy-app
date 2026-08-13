@@ -24,11 +24,11 @@ import {
     AutocompleteInput,
     filledTextField,
     getObjectId,
+    GridSection,
     Option,
     SelectInput,
     SwitchInput,
 } from '@gridsuite/commons-ui';
-import { GridSection } from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from 'components/grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';

@@ -18,7 +18,7 @@ import {
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { PHASE_REGULATION_MODES } from 'components/network/constants';
-import { ActivePowerAdornment, AmpereAdornment, FloatInput, SelectInput } from '@gridsuite/commons-ui';
+import { ActivePowerAdornment, AmpereAdornment, FloatInput, GridSection, SelectInput } from '@gridsuite/commons-ui';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import {
     getComputedPhaseTapChangerRegulationMode,
@@ -26,7 +26,6 @@ import {
 } from './phase-tap-changer-pane-utils';
 import { useMemo } from 'react';
 import { GridItem } from '../../../../commons/grid-item';
-import { GridSection } from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
 import { TapChangerMapInfos, TapChangerPaneProps } from '../../two-windings-transformer.types';
 
