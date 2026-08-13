@@ -22,6 +22,7 @@ import {
     NetworkModificationMetadata,
     NetworkModificationsTable,
     NotificationsUrlKeys,
+    ReferenceModificationInfos,
     removeNullFields,
     setModificationMetadata,
     snackWithFallback,
@@ -178,14 +179,6 @@ const NetworkModificationNodeEditor = () => {
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
         []
     );
-
-    // TODO : this is temporary, until copy/paste/save is done for the shared modifications in GRD-4785 :
-    const selectionContainsShared: boolean = useMemo(() => {
-        return selectedNetworkModifications.some(
-            (modification: ComposedModificationMetadata) =>
-                modification.type === ModificationType.MODIFICATION_REFERENCE
-        );
-    }, [selectedNetworkModifications]);
 
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
@@ -970,10 +963,21 @@ const NetworkModificationNodeEditor = () => {
         folderName,
         folderId,
     }: IElementCreationDialog) => {
-        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
-
         setSaveInProgress(true);
-        createCompositeModifications(name, description, folderId, selectedModificationsUuid)
+
+        Promise.all(
+            selectedNetworkModifications.map((item) =>
+                item.type === MODIFICATION_TYPES.MODIFICATION_REFERENCE.type
+                    ? fetchNetworkModification(item.uuid as UUID)
+                          .then((res) => res.json())
+                          .then((detail: ReferenceModificationInfos) => detail.referenceId ?? null)
+                    : Promise.resolve(item.uuid)
+            )
+        )
+            .then((uuids) => uuids.filter((uuid): uuid is UUID => uuid !== null))
+            .then((selectedModificationsUuid) =>
+                createCompositeModifications(name, description, folderId, selectedModificationsUuid)
+            )
             .then(() => {
                 snackInfo({
                     headerId: 'infoCreateModificationsMsg',
@@ -1325,7 +1329,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            disabled={disabledCompositeExport || selectionContainsShared}
+                            disabled={disabledCompositeExport}
                         >
                             <SaveIcon />
                         </IconButton>
@@ -1341,8 +1345,7 @@ const NetworkModificationNodeEditor = () => {
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
                                 !currentNode ||
-                                isRootNode ||
-                                selectionContainsShared
+                                isRootNode
                             }
                         >
                             <ContentCutIcon />
@@ -1358,8 +1361,7 @@ const NetworkModificationNodeEditor = () => {
                                 selectedNetworkModifications.length === 0 ||
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
-                                isRootNode ||
-                                selectionContainsShared
+                                isRootNode
                             }
                         >
                             <ContentCopyIcon />
@@ -1381,7 +1383,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            disabled={isPasteButtonDisabled || isRootNode || selectionContainsShared}
+                            disabled={isPasteButtonDisabled || isRootNode}
                         >
                             <ContentPasteIcon />
                         </IconButton>
