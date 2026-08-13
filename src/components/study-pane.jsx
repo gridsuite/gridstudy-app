@@ -58,7 +58,6 @@ const styles = {
 };
 
 const StudyPane = () => {
-    const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
@@ -78,7 +77,6 @@ const StudyPane = () => {
     return (
         <CustomAggridReduxProvider>
             <Box sx={styles.paneContainer}>
-                <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
                 <Box sx={styles.breadCrumbs}>
                     <StudyPathBreadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
                     <Box sx={styles.studyControls}>

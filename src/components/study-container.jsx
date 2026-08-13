@@ -158,6 +158,7 @@ export function StudyContainer() {
 
     const currentNodeRef = useRef();
     const currentRootNetworkUuidRef = useRef();
+    const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
 
     useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
@@ -546,7 +547,12 @@ export function StudyContainer() {
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || errorMessage}
-            loading={studyPending || !paramsLoaded || !isFirstRootNetworkIndexationFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            loading={
+                studyPending ||
+                !paramsLoaded ||
+                !isFirstRootNetworkIndexationFound ||
+                !isNetworkModificationTreeModelUpToDate
+            } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
             <StudyPane />
