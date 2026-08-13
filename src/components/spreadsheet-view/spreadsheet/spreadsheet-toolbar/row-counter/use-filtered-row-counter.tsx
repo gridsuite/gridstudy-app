@@ -22,7 +22,9 @@ type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact | null>;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
-    isGlobalFilterPending: boolean;
+    // true while the grid data is not yet trustworthy: the global filter is still being evaluated and/or the
+    // equipments are still being fetched. The counter must not finalize a count until it turns false.
+    isDataPending: boolean;
 };
 
 export type UseFilteredRowCounterInfoReturn = {
@@ -38,7 +40,7 @@ export function useFilteredRowCounterInfo({
     gridRef,
     tableDefinition,
     disabled,
-    isGlobalFilterPending,
+    isDataPending,
 }: UseFilteredRowCounterInfoParams): UseFilteredRowCounterInfoReturn {
     const intl = useIntl();
     const [displayedRows, setDisplayedRows] = useState<number | null>(null);
@@ -54,15 +56,15 @@ export function useFilteredRowCounterInfo({
         (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet]?.[tableDefinition?.uuid]
     );
 
-    const isGlobalFilterPendingRef = useRef(isGlobalFilterPending);
+    const isDataPendingRef = useRef(isDataPending);
 
     // Update is debounced to avoid displayed row count falsely set to 0 because of AG Grid internal behaviour which briefly set row count to 0 in between filters
     const debouncedUpdateRowCounter = useMemo(
         () =>
             debounce(() => {
-                // the grid rejects every row while the global filter is evaluated: skip that intermediate count,
-                // the counter is refreshed once the evaluation has resolved
-                if (isGlobalFilterPendingRef.current) {
+                // the grid rejects every row while the data is being evaluated:
+                // skip that intermediate count, the counter is refreshed once data is ready
+                if (isDataPendingRef.current) {
                     return;
                 }
                 if (!gridRef.current?.api || !currentNode || disabled) {
@@ -84,14 +86,15 @@ export function useFilteredRowCounterInfo({
     }, [currentRootNetworkUuid]);
 
     // A global filter evaluation makes the grid go through two filtering passes (rows dropped while pending, then
-    // restored with the evaluated ids). Stay loading across both, so the counter spins once instead of twice.
+    // restored with the evaluated ids). Stay loading across both — and across the equipment fetch — so the counter
+    // spins once instead of twice.
     useEffect(() => {
-        isGlobalFilterPendingRef.current = isGlobalFilterPending;
-        if (!isGlobalFilterPending) {
+        isDataPendingRef.current = isDataPending;
+        if (!isDataPending) {
             // the updates skipped while pending are replayed here, even if AG Grid emits no further event
             debouncedUpdateRowCounter();
         }
-    }, [debouncedUpdateRowCounter, isGlobalFilterPending]);
+    }, [debouncedUpdateRowCounter, isDataPending]);
 
     const onFilterChanged = useCallback((event: FilterChangedEvent) => {
         setIsAnyFilterPresent(event.api.isAnyFilterPresent());
@@ -124,7 +127,7 @@ export function useFilteredRowCounterInfo({
         }
     }, [currentNode, debouncedUpdateRowCounter, disabled, gridRef]);
 
-    const isCounterLoading = isLoading || isGlobalFilterPending;
+    const isCounterLoading = isLoading || isDataPending;
 
     const rowCountLabel = useMemo(() => {
         if (displayedRows === 0 && isAnyFilterPresent) {
