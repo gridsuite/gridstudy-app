@@ -6,7 +6,7 @@
  */
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson, backendFetchText, GlobalFilters } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import {
     CsvConfig,
@@ -15,7 +15,6 @@ import {
     SensitivityResultFilterOptions,
 } from './sensitivity-analysis.type';
 import { FilterConfig } from '../../types/custom-aggrid-types';
-import { GlobalFilters } from 'components/results/common/global-filter/types/global-filter.type';
 
 export function startSensitivityAnalysis(
     studyUuid: UUID,

@@ -19,7 +19,12 @@ import {
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
-import { CHARACTERISTICS_CHOICES, FieldConstants, REGULATION_TYPES } from '@gridsuite/commons-ui';
+import {
+    CHARACTERISTICS_CHOICES,
+    FieldConstants,
+    MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
+    REGULATION_TYPES,
+} from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { Schema } from 'yup';
 
@@ -70,7 +75,7 @@ export const getReactiveFormValidationSchema = () =>
         [FieldConstants.VOLTAGE_SET_POINT]: yup
             .number()
             .nullable()
-            .min(0, 'mustBeGreaterOrEqualToZero')
+            .min(0, MUST_BE_GREATER_OR_EQUAL_TO_ZERO)
             .when([VOLTAGE_REGULATION_MODE], {
                 is: (voltageRegulationMode: string) => voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id,
                 then: (schema) => schema.required(),

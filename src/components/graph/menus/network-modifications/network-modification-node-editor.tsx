@@ -84,6 +84,7 @@ import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-m
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
 import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
+
 import ImportModificationDialog from '../../../dialogs/import-composite/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
@@ -106,7 +107,7 @@ import {
 } from './network-modification-menu.type';
 import StaticVarCompensatorCreationDialog from '../../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
 import ModificationByAssignmentDialog from '../../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
-import ByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
+import ModificationByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by-formula/modification-by-formula-dialog';
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
@@ -143,6 +144,7 @@ const nonEditableModificationTypes = new Set([
     'GROOVY_SCRIPT',
     'OPERATING_STATUS_MODIFICATION',
     'COMPOSITE_MODIFICATION',
+    'MODIFICATION_REFERENCE',
 ]);
 
 const isEditableModification = (modif: NetworkModificationMetadata) => {
@@ -634,7 +636,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                             label: 'BY_FORMULA',
-                            action: () => withDefaultParams(ByFormulaDialog),
+                            action: () => withDefaultParams(ModificationByFormulaDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
@@ -1139,7 +1141,7 @@ const NetworkModificationNodeEditor = () => {
     }, [notificationIdList, currentNode?.id]);
 
     const isModificationClickable = useCallback(
-        (modification: NetworkModificationMetadata) =>
+        (modification: ComposedModificationMetadata) =>
             !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
@@ -1230,7 +1232,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleCellClick = useCallback(
-        (modification: NetworkModificationMetadata) => {
+        (modification: ComposedModificationMetadata) => {
             if (isModificationClickable(modification)) {
                 // Check if the clicked column is the 'modificationName' column
                 doEditModification(modification.uuid, modification.type);

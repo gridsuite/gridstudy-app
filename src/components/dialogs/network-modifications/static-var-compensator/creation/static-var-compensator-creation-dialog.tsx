@@ -70,7 +70,7 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import { createStaticVarCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import StaticVarCompensatorCreationDialogTabs from './static-var-compensator-creation-dialog-tabs';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import StaticVarCompensatorCreationForm from './static-var-compensator-creation-form';
 import StaticVarCompensatorCreationDialogHeader from './static-var-compensator-creation-dialog-header';
 import {
@@ -438,6 +438,8 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
         </Grid>
     );
 
+    const { slotProps, ...otherDialogProps } = dialogProps;
+
     return (
         <CustomFormProvider isNodeBuilt={isNodeBuilt(currentNode)} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -451,12 +453,16 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 searchCopy={searchCopy}
                 onValidationError={onValidationError}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
-                PaperProps={{
-                    sx: {
-                        height: '75vh', // we want the dialog height to be fixed even when switching tabs
+
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '75vh', // we want the dialog height to be fixed even when switching tabs
+                        },
                     },
+                    ...slotProps,
                 }}
-                {...dialogProps}
+                {...otherDialogProps}
             >
                 <StaticVarCompensatorCreationForm
                     studyUuid={studyUuid}

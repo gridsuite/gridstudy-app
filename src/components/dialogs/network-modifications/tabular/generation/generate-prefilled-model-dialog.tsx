@@ -6,7 +6,7 @@
  */
 import { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Button, Checkbox, FormControlLabel, FormGroup, Grid2 as Grid, Stack } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, FormGroup, Grid, Stack } from '@mui/material';
 import {
     CustomFormProvider,
     DirectoryItemsInput,
@@ -110,7 +110,7 @@ export default function GeneratePrefilledModelDialog({
                 open={open.value}
                 closeAndClear={closeAndClear}
                 submitButton={submitButton}
-                PaperProps={{ sx: styles.dialogContent }}
+                slotProps={{ paper: { sx: styles.dialogContent } }}
             >
                 <Stack spacing={2}>
                     <Grid>

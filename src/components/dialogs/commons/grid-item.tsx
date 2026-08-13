@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { PropsWithChildren, ReactNode } from 'react';
-import { Grid2 as Grid, Grid2Props as GridProps, Tooltip } from '@mui/material';
+import { Grid, GridProps, Tooltip } from '@mui/material';
 import { mergeSx } from '@gridsuite/commons-ui';
 
 export interface GridItemProps extends PropsWithChildren {

@@ -7,7 +7,7 @@
 
 import { filledTextField, IntegerInput, SwitchesBetweenSections } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
-import { Box, Grid2 as Grid, Stack, TextField, Tooltip } from '@mui/material';
+import { Box, Grid, Stack, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -50,8 +50,10 @@ export default function CreateVoltageLevelTopologyForm({
                 fullWidth
                 label={intl.formatMessage({ id: 'VoltageLevelId' })}
                 value={voltageLevelId}
-                InputProps={{
-                    readOnly: true,
+                slotProps={{
+                    input: {
+                        readOnly: true,
+                    },
                 }}
                 disabled
                 {...filledTextField}
