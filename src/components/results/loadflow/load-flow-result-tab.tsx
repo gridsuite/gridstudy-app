@@ -13,7 +13,6 @@ import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { LoadFlowTabProps, OverloadedEquipment } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
-import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer.type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -30,7 +29,13 @@ import {
     mappingTabs,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
-import { LimitViolationResult } from './limit-violation-result';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
+import {
+    LimitViolationResult,
+    RESULTS_LOADING_DELAY,
+    RunningStatus,
+    useOpenLoaderShortWait,
+} from '@gridsuite/commons-ui';
 import { StatusCellRender } from '../common/result-cell-renderers';
 import {
     ComputingType,
@@ -53,10 +58,9 @@ import { Button, LinearProgress } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 const styles = {
     flexWrapper: {
@@ -85,10 +89,12 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const [tabIndex, setTabIndex] = useState(0);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const onGridReadyLimitViolations = useAgGridInitialColumnFilters(TableType.Loadflow, mappingTabs(tabIndex));
 
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
     );
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
 
     const { filters } = useComputationColumnFilters(TableType.Loadflow, mappingTabs(tabIndex));
 
@@ -299,8 +305,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         tableName={intl.formatMessage({
                             id: 'LoadFlowResultsCurrentViolations',
                         })}
+                        language={language}
+                        computationStatus={loadFlowStatus}
                         computationSubType={mappingTabs(tabIndex)}
                         exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                        onGridReady={onGridReadyLimitViolations}
                     />
                 </GlassPane>
             )}
@@ -313,8 +322,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         tableName={intl.formatMessage({
                             id: 'LoadFlowResultsVoltageViolations',
                         })}
+                        language={language}
+                        computationStatus={loadFlowStatus}
                         computationSubType={mappingTabs(tabIndex)}
                         exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                        onGridReady={onGridReadyLimitViolations}
                     />
                 </GlassPane>
             )}
@@ -328,6 +340,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     tableName={intl.formatMessage({
                         id: 'LoadFlowResultsSummary',
                     })}
+                    language={language}
                     computationSubType={mappingTabs(tabIndex)}
                     exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                 />

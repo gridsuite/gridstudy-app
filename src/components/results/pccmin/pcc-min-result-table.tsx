@@ -11,12 +11,19 @@ import { Box, Button, LinearProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
-import { ComputingType, CustomAGGrid, DefaultCellRenderer, OverflowableText } from '@gridsuite/commons-ui';
-import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
+import {
+    ComputingType,
+    CustomAGGrid,
+    DefaultCellRenderer,
+    getRows,
+    getNoRowsMessage,
+    OverflowableText,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
+    RunningStatus,
+    RESULTS_LOADING_DELAY,
+} from '@gridsuite/commons-ui';
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
-import { RESULTS_LOADING_DELAY } from 'components/network/constants';
-import RunningStatus from 'components/utils/running-status';
-import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
 import { DisplayedColumnsChangedEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';

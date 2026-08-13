@@ -18,15 +18,17 @@ import {
     ValueFormatterParams,
     ValueGetterParams,
 } from 'ag-grid-community';
-import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
 import {
     ComputingType,
     CustomAGGrid,
     DefaultCellRenderer,
+    getNoRowsMessage,
+    getRows,
     OverflowableText,
     unitToKiloUnit,
+    useIntlResultStatusMessages,
 } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
