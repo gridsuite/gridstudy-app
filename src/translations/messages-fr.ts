@@ -631,9 +631,6 @@ const messages_fr = {
     HighVoltageThreshold: 'U activation haut',
     b0: 'Susceptance fixe',
     LimitsTab: 'Limites',
-    EstimateTapPositionSection: 'Estimer prise',
-    RatioTapChangerEstimateTapPosition: 'Régleur',
-    PhaseTapChangerEstimateTapPosition: 'Déphaseur',
 
     ShuntSusceptancePerSection: 'Susceptance par section',
     ShuntIdenticalSections: 'Sections identiques',
@@ -745,12 +742,6 @@ const messages_fr = {
         'La valeur de la puissance active doit être inférieure à la valeur de la puissance active max',
     PermanentCurrentLimitText1: 'PATL 1',
     PermanentCurrentLimitText2: 'PATL 2',
-
-    ModifyTwoWindingsTransformer: 'Modifier un transformateur à 2 enroulements',
-    TwoWindingsTransformerModificationError: "Erreur lors de la modification d'un transformateur à 2 enroulement",
-    TwoWindingsTransformerCharacteristicsTab: 'Caractéristiques',
-    TwoWindingsTransformerRatioTapChangerTab: 'Régleur',
-    TwoWindingsTransformerPhaseTapChangerTab: 'Déphaseur',
 
     Regulating: 'En réglage',
     [TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'La valeur de la bande morte doit être supérieure ou égale à 0',
