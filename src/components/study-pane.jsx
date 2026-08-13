@@ -13,7 +13,6 @@ import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-
 import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-spreadsheet-on-root-network';
 import { useNodeAliasesUpdateOnNotification } from './spreadsheet-view/hooks/use-node-aliases-update-on-notification';
 import { useSpreadsheetEquipments } from './spreadsheet-view/hooks/use-spreadsheet-equipments';
-import WaitingLoader from './utils/waiting-loader';
 import { WorkspaceContainer } from './workspace/core/workspace-container';
 import useStudyPath from 'hooks/use-study-path';
 import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
