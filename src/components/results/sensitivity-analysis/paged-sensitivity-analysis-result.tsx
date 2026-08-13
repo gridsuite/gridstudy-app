@@ -20,6 +20,7 @@ import { useIntl } from 'react-intl';
 import {
     ComputingType,
     CustomTablePagination,
+    RunningStatus,
     snackWithFallback,
     useDebounce,
     useSnackMessage,
@@ -30,7 +31,6 @@ import {
     fetchSensitivityAnalysisResult,
 } from '../../../services/study/sensitivity-analysis';
 import { useSelector } from 'react-redux';
-import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { PaginationType, SensitivityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';

@@ -16,8 +16,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { TableType } from '../types/custom-aggrid-types';
 
-import RunningStatus from './utils/running-status';
-
 import { PARAM_PROVIDER_DYNAFLOW, PARAM_PROVIDER_DYNAWO } from '../utils/config-params';
 import {
     ComputingType,
@@ -25,6 +23,7 @@ import {
     PARAM_DEVELOPER_MODE,
     snackWithFallback,
     useSnackMessage,
+    RunningStatus,
 } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import { startSensitivityAnalysis, stopSensitivityAnalysis } from '../services/study/sensitivity-analysis';

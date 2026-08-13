@@ -35,6 +35,7 @@ import {
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     LineModificationDto,
     ModificationByFormulaDto,
+    StaticVarCompensatorCreationDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -53,7 +54,6 @@ import {
     LinesAttachToSplitLinesInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    StaticVarCompensatorCreationInfo,
     TopologyVoltageLevelModificationInfos,
     TwoWindingsTransformerCreationInfo,
     TwoWindingsTransformerModificationInfo,
@@ -529,89 +529,28 @@ export function modifyShuntCompensator({
     });
 }
 
-export function createStaticVarCompensator(staticVarCompensatorCreationParameters: StaticVarCompensatorCreationInfo) {
-    const {
-        studyUuid,
-        nodeUuid,
-        staticCompensatorId,
-        staticCompensatorName,
-        voltageLevelId,
-        busOrBusbarSectionId,
-        connectionName,
-        connectionDirection,
-        connectionPosition,
-        terminalConnected,
-        maxSusceptance,
-        minSusceptance,
-        maxQAtNominalV,
-        minQAtNominalV,
-        regulationMode,
-        isRegulating,
-        voltageSetpoint,
-        reactivePowerSetpoint,
-        voltageRegulationType,
-        regulatingTerminalId,
-        regulatingTerminalType,
-        regulatingTerminalVlId,
-        standbyAutomatonOn,
-        standby,
-        lowVoltageSetpoint,
-        highVoltageSetpoint,
-        lowVoltageThreshold,
-        highVoltageThreshold,
-        b0,
-        q0,
-        isUpdate,
-        modificationUuid,
-        properties,
-    } = staticVarCompensatorCreationParameters;
-    let createShuntUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+export function createStaticVarCompensator(
+    studyUuid: string,
+    nodeUuid: UUID,
+    staticVarCompensatorCreationDto: StaticVarCompensatorCreationDto,
+    uuid?: UUID
+) {
+    let createStaticVarCompensatorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
-        createShuntUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        createStaticVarCompensatorUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating static var compensator creation');
     } else {
         console.info('Creating static var compensator creation');
     }
 
-    return backendFetchText(createShuntUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+    return backendFetchText(createStaticVarCompensatorUrl, {
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_CREATION.type,
-            equipmentId: staticCompensatorId,
-            equipmentName: staticCompensatorName,
-            voltageLevelId: voltageLevelId,
-            busOrBusbarSectionId: busOrBusbarSectionId,
-            connectionDirection: connectionDirection,
-            connectionName: connectionName,
-            connectionPosition: connectionPosition,
-            terminalConnected: terminalConnected,
-            maxSusceptance: maxSusceptance,
-            minSusceptance: minSusceptance,
-            maxQAtNominalV: maxQAtNominalV,
-            minQAtNominalV: minQAtNominalV,
-            regulationMode: regulationMode,
-            isRegulating: isRegulating,
-            voltageSetpoint: voltageSetpoint,
-            reactivePowerSetpoint: reactivePowerSetpoint,
-            voltageRegulationType: voltageRegulationType,
-            regulatingTerminalId: regulatingTerminalId,
-            regulatingTerminalType: regulatingTerminalType,
-            regulatingTerminalVlId: regulatingTerminalVlId,
-            standbyAutomatonOn: standbyAutomatonOn,
-            standby: standby,
-            lowVoltageSetpoint: lowVoltageSetpoint,
-            highVoltageSetpoint: highVoltageSetpoint,
-            lowVoltageThreshold: lowVoltageThreshold,
-            highVoltageThreshold: highVoltageThreshold,
-            b0: b0,
-            q0: q0,
-            properties,
-        }),
+        body: JSON.stringify(staticVarCompensatorCreationDto),
     });
 }
 
