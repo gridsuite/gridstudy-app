@@ -81,10 +81,7 @@ export default function CreateVoltageLevelTopologyDialog({
 
     const onSubmit = useCallback(
         (voltageLevelTopology: CreateVoltageLevelTopologyDialogSchemaForm) => {
-            const CreateVoltageLevelTopologyDto = createVoltageLevelTopologyFormToDto(
-                voltageLevelTopology,
-                selectedId
-            );
+            const CreateVoltageLevelTopologyDto = createVoltageLevelTopologyFormToDto(voltageLevelTopology, selectedId);
             createVoltageLevelTopology({
                 CreateVoltageLevelTopologyDto: CreateVoltageLevelTopologyDto,
                 studyUuid: studyUuid,
