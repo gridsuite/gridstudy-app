@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+    directoriesNotificationType,
     fetchDirectoryElementPath,
     NotificationsUrlKeys,
     snackWithFallback,
@@ -15,7 +16,6 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../utils/compute-title';
-import { directoriesNotificationType } from '../utils/directories-notification-type';
 import type { UUID } from 'node:crypto';
 import { isMetadataUpdatedNotification, parseEventData, CommonStudyEventData } from 'types/notification-types';
 import { DIRECTORIES_INFOS, DirectoryInfos } from '../types/directory-server-types';
