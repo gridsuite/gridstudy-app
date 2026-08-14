@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { GridSection } from '../../commons/grid-section';
 import { qualityParametersFields, TabValue } from './state-estimation-parameters-utils';
 import {
     QUALITY_PER_REGION,
@@ -27,6 +26,7 @@ import { useIntl } from 'react-intl';
 import {
     CustomVoltageLevelTable,
     FieldLabel,
+    GridSection,
     LimitReductionIColumnsDef,
     ParameterFloat,
     SwitchInput,

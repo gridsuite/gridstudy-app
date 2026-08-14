@@ -25,7 +25,6 @@ import {
     LOAD_TYPE,
     MAX_P,
     MAX_Q_AT_NOMINAL_V,
-    MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
     MIN_P,
     P0,
@@ -171,7 +170,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
             options: Object.keys(SHUNT_COMPENSATOR_TYPES),
         },
         { id: MAX_Q_AT_NOMINAL_V, requiredIf: { id: SHUNT_COMPENSATOR_TYPE }, type: NUMBER },
-        { id: MAX_SUSCEPTANCE, required: false, type: NUMBER },
+        { id: FieldConstants.MAX_SUSCEPTANCE, required: false, type: NUMBER },
     ],
 };
 

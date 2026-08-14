@@ -56,42 +56,6 @@ export interface VscModificationInfo {
     terminalConnected?: boolean | null;
 }
 
-export interface StaticVarCompensatorCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    staticCompensatorId: string;
-    staticCompensatorName?: string | null;
-    voltageLevelId: string;
-    busOrBusbarSectionId?: string;
-    connectionDirection?: string | null;
-    connectionName?: string | null;
-    connectionPosition?: string | null;
-    terminalConnected?: boolean | null;
-    maxSusceptance: number | null;
-    minSusceptance: number | null;
-    maxQAtNominalV: number | null;
-    minQAtNominalV: number | null;
-    regulationMode: string;
-    isRegulating: boolean;
-    voltageSetpoint: number;
-    reactivePowerSetpoint: number;
-    voltageRegulationType: string;
-    regulatingTerminalId: string | null;
-    regulatingTerminalType: string | null;
-    regulatingTerminalVlId: string | null;
-    standbyAutomatonOn: boolean;
-    standby: boolean;
-    lowVoltageSetpoint: number | null;
-    highVoltageSetpoint: number | null;
-    lowVoltageThreshold: number | null;
-    highVoltageThreshold: number | null;
-    b0: number | null;
-    q0: number | null;
-    isUpdate?: boolean;
-    modificationUuid: string;
-    properties?: Property[] | null;
-}
-
 export interface TapChangerModificationInfos {
     enabled: AttributeModification<boolean> | null;
     regulationType: AttributeModification<string> | null;
@@ -578,13 +542,6 @@ export type CouplingDeviceInfos = {
     busbarSectionId1: string;
     busbarSectionId2: string;
 };
-
-export interface CreateCouplingDeviceInfos {
-    type: ModificationType;
-    uuid?: string;
-    voltageLevelId: string;
-    couplingDeviceInfos: CouplingDeviceInfos;
-}
 
 export interface CreateVoltageLevelTopologyInfos {
     type: ModificationType;
