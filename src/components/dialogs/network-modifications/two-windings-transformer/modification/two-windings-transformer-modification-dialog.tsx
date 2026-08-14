@@ -398,6 +398,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         fetchVoltageLevelEquipments={fetchVoltageLevelEquipmentsCallback}
                         isModification
                         twtToModify={twtToModify}
+                        editData={editData}
                     />
                 )}
             </ModificationDialog>
