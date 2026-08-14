@@ -11,6 +11,7 @@ import {
     ConnectivityForm,
     FieldConstants,
     FloatInput,
+    GridSection,
     PercentageAdornment,
     ReactiveLimitsForm,
     ReactivePowerAdornment,
@@ -33,7 +34,6 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
 import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import { GridSection } from '../../../../commons/grid-section';
 import { GridItem } from '../../../../commons/grid-item';
 import { ConverterStationElementModificationInfos } from './converter-station-type';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';

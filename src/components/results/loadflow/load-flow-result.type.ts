@@ -9,7 +9,7 @@ import { Key } from 'react';
 import { ColDef } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { BranchSide } from '../../utils/constants';
-import { LimitTypes } from '@gridsuite/commons-ui';
+import { LimitTypes, GsLangUser } from '@gridsuite/commons-ui';
 
 export interface ComponentResult {
     componentResultUuid: UUID;
@@ -78,6 +78,7 @@ export interface LoadflowResultProps extends LoadflowResultTap {
     countryAdequaciesColumnDefs: ColDef<any>[];
     exchangesColumnDefs: ColDef<any>[];
     computationSubType: string;
+    language: GsLangUser;
 }
 
 export interface LimitViolationResultProps extends LoadflowResultTap {
