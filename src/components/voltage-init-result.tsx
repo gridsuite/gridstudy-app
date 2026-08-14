@@ -16,6 +16,7 @@ import {
     EquipmentType,
     mergeSx,
     type MuiStyles,
+    RESULTS_LOADING_DELAY,
     RunningStatus,
     snackWithFallback,
     unscrollableDialogStyles,
@@ -33,7 +34,6 @@ import VoltageInitModificationDialog, {
 } from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import { FetchStatus } from '../services/utils';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
-import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 import GlobalFilterSelector from './results/common/global-filter/global-filter-selector.js';
 import {

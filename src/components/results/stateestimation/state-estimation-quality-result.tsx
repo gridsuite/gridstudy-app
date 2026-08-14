@@ -14,6 +14,7 @@ import {
     ComputingType,
     DefaultCellRenderer,
     getNoRowsMessage,
+    RESULTS_LOADING_DELAY,
     RunningStatus,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
@@ -21,7 +22,6 @@ import {
 import { AppState } from '../../../redux/reducer.type';
 
 import LinearProgress from '@mui/material/LinearProgress';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';

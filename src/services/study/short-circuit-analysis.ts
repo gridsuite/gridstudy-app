@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
@@ -14,10 +14,10 @@ import { GsLangUser, backendFetch, backendFetchJson, backendFetchText, GlobalFil
 import type { UUID } from 'node:crypto';
 import { Selector } from 'components/results/common/utils';
 
-const PREFIX_SHORTCIRCUIT_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/shortcircuit';
+const PREFIX_SHORTCIRCUIT_QUERIES = PREFIX_STUDY_QUERIES + '/v1/shortcircuit';
 
 export function getShortCircuitUrl() {
-    return `${PREFIX_SHORTCIRCUIT_SERVER_QUERIES}/v1/`;
+    return `${PREFIX_SHORTCIRCUIT_QUERIES}/`;
 }
 
 interface ShortCircuitAnalysisResult {

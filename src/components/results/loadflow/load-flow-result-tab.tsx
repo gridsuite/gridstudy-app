@@ -30,7 +30,12 @@ import {
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
-import { LimitViolationResult, RunningStatus, useOpenLoaderShortWait } from '@gridsuite/commons-ui';
+import {
+    LimitViolationResult,
+    RESULTS_LOADING_DELAY,
+    RunningStatus,
+    useOpenLoaderShortWait,
+} from '@gridsuite/commons-ui';
 import { StatusCellRender } from '../common/result-cell-renderers';
 import {
     ComputingType,
@@ -53,7 +58,6 @@ import { Button, LinearProgress } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';

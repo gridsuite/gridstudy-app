@@ -50,11 +50,11 @@ import {
     useSnackMessage,
     SegmentInfoFormData,
     SegmentsFormData,
+    GridSection,
 } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog, getLineTypeWithLimits } from '../../../services/network-modification';
 import { GridItem } from '../commons/grid-item';
 import { ColDef } from 'ag-grid-community';
-import { GridSection } from '../commons/grid-section';
 
 const styles = {
     h3: {

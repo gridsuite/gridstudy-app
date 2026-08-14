@@ -81,6 +81,8 @@ export function SpreadsheetModelGlobalEditorDialog({
         }
     }, [open.value, columnsModel, reset]);
 
+    const { slotProps, ...otherDialogProps } = dialogProps;
+
     return (
         <CustomFormProvider validationSchema={columnsModelFormSchema} {...formMethods}>
             <ModificationDialog
@@ -89,8 +91,8 @@ export function SpreadsheetModelGlobalEditorDialog({
                 onClose={onClose}
                 onSave={onSave}
                 onClear={onClear}
-                slotProps={{ paper: { sx: styles.dialogContent } }}
-                {...dialogProps}
+                slotProps={{ paper: { sx: styles.dialogContent }, ...slotProps }}
+                {...otherDialogProps}
             >
                 <FormulaSearchProvider>
                     <Stack>
