@@ -49,6 +49,8 @@ import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
+import { PanelType } from '../../workspace/types/workspace.types';
+import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -243,6 +245,14 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         onGridColumnsChanged
     );
 
+    const { openSLD } = useWorkspacePanelActions();
+    const handleVoltageLevelClick = useCallback(
+        (voltageLevelId: string) => {
+            openSLD({ equipmentId: voltageLevelId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+        },
+        [openSLD]
+    );
+
     return (
         <>
             <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
@@ -255,6 +265,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 onDisplayedColumnsChanged={onDisplayedColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
                 onGridReady={onGridReady}
+                onVoltageLevelClick={handleVoltageLevelClick}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
