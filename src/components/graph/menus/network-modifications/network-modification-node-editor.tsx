@@ -192,8 +192,8 @@ const NetworkModificationNodeEditor = () => {
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
 
     // Shared modifications the user has no write permission on, and whether the current selection reaches
-    // inside one of them: acting on such a content is denied, acting on the shared modification as a whole isn't.
-    const { readOnlySharedModificationUuids } = useSharedModificationsPermissions(modifications);
+    // inside one of them: acting on such a content is denied, acting on the reference modification as a whole isn't.
+    const { readOnlyReferenceModificationUuids } = useSharedModificationsPermissions(modifications);
     const [selectionContainsLockedModification, setSelectionContainsLockedModification] = useState(false);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
@@ -1194,7 +1194,7 @@ const NetworkModificationNodeEditor = () => {
                 modificationsToExclude={modificationsToExclude}
                 setModificationsToExclude={setModificationsToExclude}
                 isDisabled={isAnyNodeBuilding || mapDataLoading}
-                readOnlySharedModificationUuids={readOnlySharedModificationUuids}
+                readOnlyReferenceModificationUuids={readOnlyReferenceModificationUuids}
             />
         );
     };
@@ -1268,8 +1268,8 @@ const NetworkModificationNodeEditor = () => {
             saveInProgress ||
             isRootNode ||
             isAssemblyDepthExceeded ||
-            // assembling is denied as soon as the selection covers part of a shared modification content,
-            // but stays allowed on shared modifications taken as a whole
+            // assembling is denied as soon as the selection covers part of a reference modification content,
+            // but stays allowed on reference modifications taken as a whole
             selectionContainsLockedModification
         );
     }, [
@@ -1431,7 +1431,7 @@ const NetworkModificationNodeEditor = () => {
                                 deleteInProgress ||
                                 !currentNode ||
                                 isRootNode ||
-                                // deleting a shared modification as a whole stays allowed
+                                // deleting a reference modification as a whole stays allowed
                                 selectionContainsLockedModification
                             }
                         >
