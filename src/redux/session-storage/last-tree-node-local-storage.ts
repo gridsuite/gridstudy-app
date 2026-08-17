@@ -19,6 +19,11 @@ export function saveLastTreeNodeUuid(studyUuid: UUID, treeNodeUuid: UUID): void 
 }
 
 export function getLastTreeNodeUuid(studyUuid: UUID): UUID | null {
-    const stored = localStorage.getItem(`${LAST_TREE_NODE_KEY}:${studyUuid}`);
-    return stored ? (stored as UUID) : null;
+    try {
+        const stored = localStorage.getItem(`${LAST_TREE_NODE_KEY}:${studyUuid}`);
+        return stored ? (stored as UUID) : null;
+    } catch (err) {
+        console.warn('Failed to get last tree node uuid:', err);
+        return null;
+    }
 }
