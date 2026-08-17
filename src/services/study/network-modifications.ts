@@ -56,8 +56,6 @@ import {
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
     TopologyVoltageLevelModificationInfos,
-    TwoWindingsTransformerCreationInfo,
-    TwoWindingsTransformerModificationInfo,
     Variations,
     VariationType,
     VoltageLevelCreationInfo,
