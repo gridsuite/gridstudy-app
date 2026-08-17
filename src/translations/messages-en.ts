@@ -1320,6 +1320,7 @@ const messages_en = {
 
     CREATE_COUPLING_DEVICE: 'Add a coupling device',
     CreateVoltageLevelSection: 'Add busbar section',
+    CreateCouplingDeviceDiagramButton: 'Show voltage level',
     builtNodeTooltipForDiagram: 'Current diagram taking into account all applied modifications',
     notBuiltNodeTooltipForDiagram: 'Diagram from last build node in current branch',
     BalancesAdjustment: 'Balances adjustment',

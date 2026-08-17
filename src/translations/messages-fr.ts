@@ -1339,6 +1339,7 @@ const messages_fr = {
 
     CREATE_COUPLING_DEVICE: 'Ajouter un couplage ou un omnibus',
     CreateVoltageLevelSection: 'Ajouter un tronçon ou une section',
+    CreateCouplingDeviceDiagramButton: 'Voir le poste',
     builtNodeTooltipForDiagram: 'Diagramme courant prenant en compte toutes les modifications réalisées',
     notBuiltNodeTooltipForDiagram: 'Diagramme du dernier nœud réalisé de la branche courante',
     BalancesAdjustment: 'Équilibrage bilan',
