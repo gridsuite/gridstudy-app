@@ -41,7 +41,7 @@ export default function LineTypeSegmentCreation({
             name={`${name}.${index}.${SEGMENT_DISTANCE_VALUE}`}
             label={'SegmentDistance'}
             adornment={KilometerAdornment}
-            dataTestId="LengthInput"
+            dataTestId="SegmentDistanceInput"
         />
     );
 
