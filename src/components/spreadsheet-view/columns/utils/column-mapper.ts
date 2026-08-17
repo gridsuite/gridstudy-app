@@ -16,9 +16,8 @@ import {
 import { isValidationError, validateFormulaResult } from './formula-validator';
 import { ColumnDefinition, SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
-import { ErrorCellRenderer, SnackInputs } from '@gridsuite/commons-ui';
+import { ErrorCellRenderer, RunningStatus, SnackInputs } from '@gridsuite/commons-ui';
 import { COLUMN_TYPES, CustomAggridValue, CustomColDef } from '../../../../types/custom-aggrid-types';
-import { RunningStatus } from 'components/utils/running-status';
 
 export const SPREADSHEET_INVALID_CELL_CLASS = 'spreadsheet-invalid-cell';
 

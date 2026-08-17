@@ -54,7 +54,6 @@ import {
     LOW_VOLTAGE_LIMIT,
     MAX_P,
     MAX_Q_AT_NOMINAL_V,
-    MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
     MIN_P,
     MODIFICATION_TYPE,
@@ -294,7 +293,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         { id: SECTION_COUNT, type: NUMBER },
         { id: SHUNT_COMPENSATOR_TYPE, type: ENUM, options: Object.keys(SHUNT_COMPENSATOR_TYPES) },
         { id: MAX_Q_AT_NOMINAL_V, type: NUMBER },
-        { id: MAX_SUSCEPTANCE, type: NUMBER },
+        { id: FieldConstants.MAX_SUSCEPTANCE, type: NUMBER },
     ],
 };
 

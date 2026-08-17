@@ -36,6 +36,9 @@ import {
     ModificationByFormulaDto,
     TwoWindingsTransformerCreationDto,
     TwoWindingsTransformerModificationDto,
+    StaticVarCompensatorCreationDto,
+    CouplingDeviceCreationDto,
+    CreateVoltageLevelTopologyDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -43,9 +46,7 @@ import type { UUID } from 'node:crypto';
 import {
     AttachLineInfo,
     BalancesAdjustmentInfos,
-    CreateCouplingDeviceInfos,
     CreateVoltageLevelSectionInfos,
-    CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
@@ -54,7 +55,6 @@ import {
     LinesAttachToSplitLinesInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    StaticVarCompensatorCreationInfo,
     TopologyVoltageLevelModificationInfos,
     Variations,
     VariationType,
@@ -527,89 +527,28 @@ export function modifyShuntCompensator({
     });
 }
 
-export function createStaticVarCompensator(staticVarCompensatorCreationParameters: StaticVarCompensatorCreationInfo) {
-    const {
-        studyUuid,
-        nodeUuid,
-        staticCompensatorId,
-        staticCompensatorName,
-        voltageLevelId,
-        busOrBusbarSectionId,
-        connectionName,
-        connectionDirection,
-        connectionPosition,
-        terminalConnected,
-        maxSusceptance,
-        minSusceptance,
-        maxQAtNominalV,
-        minQAtNominalV,
-        regulationMode,
-        isRegulating,
-        voltageSetpoint,
-        reactivePowerSetpoint,
-        voltageRegulationType,
-        regulatingTerminalId,
-        regulatingTerminalType,
-        regulatingTerminalVlId,
-        standbyAutomatonOn,
-        standby,
-        lowVoltageSetpoint,
-        highVoltageSetpoint,
-        lowVoltageThreshold,
-        highVoltageThreshold,
-        b0,
-        q0,
-        isUpdate,
-        modificationUuid,
-        properties,
-    } = staticVarCompensatorCreationParameters;
-    let createShuntUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+export function createStaticVarCompensator(
+    studyUuid: string,
+    nodeUuid: UUID,
+    staticVarCompensatorCreationDto: StaticVarCompensatorCreationDto,
+    uuid?: UUID
+) {
+    let createStaticVarCompensatorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (isUpdate) {
-        createShuntUrl += '/' + encodeURIComponent(modificationUuid);
+    if (uuid) {
+        createStaticVarCompensatorUrl += '/' + encodeURIComponent(uuid);
         console.info('Updating static var compensator creation');
     } else {
         console.info('Creating static var compensator creation');
     }
 
-    return backendFetchText(createShuntUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+    return backendFetchText(createStaticVarCompensatorUrl, {
+        method: uuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_CREATION.type,
-            equipmentId: staticCompensatorId,
-            equipmentName: staticCompensatorName,
-            voltageLevelId: voltageLevelId,
-            busOrBusbarSectionId: busOrBusbarSectionId,
-            connectionDirection: connectionDirection,
-            connectionName: connectionName,
-            connectionPosition: connectionPosition,
-            terminalConnected: terminalConnected,
-            maxSusceptance: maxSusceptance,
-            minSusceptance: minSusceptance,
-            maxQAtNominalV: maxQAtNominalV,
-            minQAtNominalV: minQAtNominalV,
-            regulationMode: regulationMode,
-            isRegulating: isRegulating,
-            voltageSetpoint: voltageSetpoint,
-            reactivePowerSetpoint: reactivePowerSetpoint,
-            voltageRegulationType: voltageRegulationType,
-            regulatingTerminalId: regulatingTerminalId,
-            regulatingTerminalType: regulatingTerminalType,
-            regulatingTerminalVlId: regulatingTerminalVlId,
-            standbyAutomatonOn: standbyAutomatonOn,
-            standby: standby,
-            lowVoltageSetpoint: lowVoltageSetpoint,
-            highVoltageSetpoint: highVoltageSetpoint,
-            lowVoltageThreshold: lowVoltageThreshold,
-            highVoltageThreshold: highVoltageThreshold,
-            b0: b0,
-            q0: q0,
-            properties,
-        }),
+        body: JSON.stringify(staticVarCompensatorCreationDto),
     });
 }
 
@@ -1587,13 +1526,13 @@ export function modifyByAssignment(
 }
 
 export function createCouplingDevice({
-    createCouplingDeviceInfos,
+    couplingDeviceCreationDto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    createCouplingDeviceInfos: CreateCouplingDeviceInfos;
+    couplingDeviceCreationDto: CouplingDeviceCreationDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
@@ -1614,7 +1553,7 @@ export function createCouplingDevice({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(createCouplingDeviceInfos),
+        body: JSON.stringify(couplingDeviceCreationDto),
     });
 }
 
@@ -1648,13 +1587,13 @@ export function balancesAdjustment({
 }
 
 export function createVoltageLevelTopology({
-    createVoltageLevelTopologyInfos,
+    CreateVoltageLevelTopologyDto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    createVoltageLevelTopologyInfos: CreateVoltageLevelTopologyInfos;
+    CreateVoltageLevelTopologyDto: CreateVoltageLevelTopologyDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
@@ -1674,7 +1613,7 @@ export function createVoltageLevelTopology({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(createVoltageLevelTopologyInfos),
+        body: JSON.stringify(CreateVoltageLevelTopologyDto),
     });
 }
 
