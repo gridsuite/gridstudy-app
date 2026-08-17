@@ -53,7 +53,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                 <Grid>
                     <SwitchInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`}
-                        data-testid="LoadFlowControlButton"
+                        dataTestId="LoadFlowControlButton"
                     />
                 </Grid>
             </Grid>
@@ -96,7 +96,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         formProps={{
                             disabled: !withLoadFlow,
                         }}
-                        data-testid="LoadFlowRatioTapChangersControlButton"
+                        dataTestId="LoadFlowRatioTapChangersControlButton"
                     />
                 </Grid>
             </Grid>
@@ -131,7 +131,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                             <SwitchInput
                                 name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING}`}
                                 formProps={{ disabled: !withLoadFlow }}
-                                data-testid="LoadFlowBalancingControlButton"
+                                dataTestId="LoadFlowBalancingControlButton"
                             />
                         </Grid>
                     </Grid>
