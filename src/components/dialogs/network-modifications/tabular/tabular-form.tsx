@@ -36,7 +36,7 @@ import {
     TABULAR_PROPERTIES,
     TYPE,
 } from 'components/utils/field-constants';
-import { Alert, Button, Grid2 as Grid, Stack } from '@mui/material';
+import { Alert, Button, Grid, Stack } from '@mui/material';
 import Papa from 'papaparse';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
@@ -500,7 +500,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             row[field.id] = null;
         });
         selectedProperties.forEach((propertyName) => {
-            row[PROPERTY_CSV_COLUMN_PREFIX + propertyName] = '';
+            row[PROPERTY_CSV_COLUMN_PREFIX + propertyName] = null;
         });
         return row;
     }, [csvFields, selectedProperties]);
@@ -511,10 +511,26 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 (property: TabularProperty) => property.name
             ) ?? [];
         if (newSelectedProperties.toString() !== selectedProperties.toString()) {
-            // new columns => reset table
+            // sync property columns on existing rows without discarding their data
             clearErrors(MODIFICATIONS_TABLE);
-            tableRef.current?.replace([]);
-            setValue(CSV_FILENAME, undefined);
+            const removedPropertyColumns = selectedProperties
+                .filter((name) => !newSelectedProperties.includes(name))
+                .map((name) => PROPERTY_CSV_COLUMN_PREFIX + name);
+            const addedPropertyColumns = newSelectedProperties
+                .filter((name) => !selectedProperties.includes(name))
+                .map((name) => PROPERTY_CSV_COLUMN_PREFIX + name);
+            const currentRows = (getValues(MODIFICATIONS_TABLE) ?? []) as Record<string, unknown>[];
+            const updatedRows = currentRows.map((row) => {
+                const newRow = { ...row };
+                removedPropertyColumns.forEach((col) => {
+                    delete newRow[col];
+                });
+                addedPropertyColumns.forEach((col) => {
+                    newRow[col] = null;
+                });
+                return newRow;
+            });
+            tableRef.current?.replace(updatedRows);
         }
         setValue(TABULAR_PROPERTIES, formData[TABULAR_PROPERTIES], { shouldDirty: true });
     };

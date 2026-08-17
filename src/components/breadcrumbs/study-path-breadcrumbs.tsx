@@ -56,13 +56,6 @@ export default function StudyPathBreadcrumbs({
             sx={{ p: 0.25 }}
         >
             <Tooltip
-                componentsProps={{
-                    tooltip: {
-                        sx: {
-                            maxWidth: 'none', //  to override background of text is auto cut
-                        },
-                    },
-                }}
                 title={
                     <Box sx={styles.tooltipItem}>
                         {parentDirectoriesNames?.map((directoryName: string, index) => (
@@ -84,6 +77,13 @@ export default function StudyPathBreadcrumbs({
                         )}
                     </Box>
                 }
+                slotProps={{
+                    tooltip: {
+                        sx: {
+                            maxWidth: 'none', //  to override background of text is auto cut
+                        },
+                    },
+                }}
             >
                 <MoreHoriz sx={{ display: 'flex', alignItems: 'center' }} />
             </Tooltip>

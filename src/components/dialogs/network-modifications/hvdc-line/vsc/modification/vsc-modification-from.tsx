@@ -16,14 +16,13 @@ import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import type { UUID } from 'node:crypto';
 import { VscModificationInfo } from 'services/network-modification-types';
-import { PowerMeasurementsForm, TextInput } from '@gridsuite/commons-ui';
-import { Box, Grid2 as Grid, TextField } from '@mui/material';
+import { GridSection, PowerMeasurementsForm, TextInput } from '@gridsuite/commons-ui';
+import { Box, Grid, TextField } from '@mui/material';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
 import { GridItem } from '../../../../commons/grid-item';
 import { VSC_TABS } from '../vsc-utils';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
-import { GridSection } from '../../../../commons/grid-section';
 
 interface VscModificationFormProps {
     tabIndex: number;
@@ -54,11 +53,13 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
             fullWidth
             label={'ID'}
             value={equipmentId || ''}
-            InputProps={{
-                readOnly: true,
-            }}
             disabled
             variant="filled"
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
+            }}
         />
     );
 

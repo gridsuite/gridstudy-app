@@ -11,6 +11,7 @@ import {
     ConnectivityForm,
     FieldConstants,
     FloatInput,
+    GridSection,
     PercentageAdornment,
     ReactiveLimitsForm,
     ReactivePowerAdornment,
@@ -28,12 +29,11 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
 import type { UUID } from 'node:crypto';
-import { Grid2 as Grid, TextField } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
 import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import { GridSection } from '../../../../commons/grid-section';
 import { GridItem } from '../../../../commons/grid-item';
 import { ConverterStationElementModificationInfos } from './converter-station-type';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
@@ -94,10 +94,12 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             fullWidth
             label={'ID'}
             value={previousValues?.id}
-            InputProps={{
-                readOnly: true,
-            }}
             disabled
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
+            }}
         />
     ) : (
         <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />

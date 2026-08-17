@@ -25,7 +25,6 @@ import {
     LOAD_TYPE,
     MAX_P,
     MAX_Q_AT_NOMINAL_V,
-    MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
     MIN_P,
     P0,
@@ -89,6 +88,14 @@ const CONNECTION_FIELDS: TabularField[] = [
     { id: CONNECTION_POSITION, required: false, type: NUMBER },
 ];
 
+const VOLTAGE_REGULATION_FIELDS: TabularField[] = [
+    { id: VOLTAGE_REGULATION_ON, required: true, type: BOOLEAN },
+    { id: TARGET_V, required: false, type: NUMBER },
+    { id: REGULATING_TERMINAL_ID, required: false },
+    { id: REGULATING_TERMINAL_TYPE, required: false, type: ENUM, options: REGULATING_TERMINAL_TYPES },
+    { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID, required: false },
+];
+
 export const TABULAR_CREATION_FIELDS: TabularFields = {
     GENERATOR: [
         { id: EQUIPMENT_ID, required: true },
@@ -105,11 +112,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         ...REACTIVE_CAPABILITY_CURVE_FIELDS,
         { id: TARGET_P, required: true, type: NUMBER },
         { id: TARGET_Q, required: true, type: NUMBER },
-        { id: VOLTAGE_REGULATION_ON, required: true, type: BOOLEAN },
-        { id: TARGET_V, required: false, type: NUMBER },
-        { id: REGULATING_TERMINAL_ID, required: false },
-        { id: REGULATING_TERMINAL_TYPE, required: false, type: ENUM, options: REGULATING_TERMINAL_TYPES },
-        { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID, required: false },
+        ...VOLTAGE_REGULATION_FIELDS,
         { id: FieldConstants.Q_PERCENT, required: false, type: NUMBER },
         { id: PARTICIPATE, required: true, type: BOOLEAN },
         { id: FieldConstants.DROOP, required: false, type: NUMBER },
@@ -150,6 +153,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         { id: TARGET_Q, required: true, type: NUMBER },
         { id: PARTICIPATE, required: true, type: BOOLEAN },
         { id: FieldConstants.DROOP, required: false, type: NUMBER },
+        ...VOLTAGE_REGULATION_FIELDS,
     ],
     SHUNT_COMPENSATOR: [
         { id: EQUIPMENT_ID, required: true },
@@ -166,7 +170,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
             options: Object.keys(SHUNT_COMPENSATOR_TYPES),
         },
         { id: MAX_Q_AT_NOMINAL_V, requiredIf: { id: SHUNT_COMPENSATOR_TYPE }, type: NUMBER },
-        { id: MAX_SUSCEPTANCE, required: false, type: NUMBER },
+        { id: FieldConstants.MAX_SUSCEPTANCE, required: false, type: NUMBER },
     ],
 };
 

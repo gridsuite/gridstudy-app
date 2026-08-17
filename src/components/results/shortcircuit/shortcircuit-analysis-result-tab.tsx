@@ -22,14 +22,15 @@ import {
     ComputingType,
     EquipmentType,
     ManagedExportCsvButton,
+    RunningStatus,
     snackWithFallback,
+    useOpenLoaderShortWait,
     useSnackMessage,
+    buildValidGlobalFilters,
+    RESULTS_LOADING_DELAY,
 } from '@gridsuite/commons-ui';
-import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import type { UUID } from 'node:crypto';
 import { ColDef, DisplayedColumnsChangedEvent, GridApi, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
@@ -52,7 +53,6 @@ import {
     ShortCircuitCsvExportParams,
 } from '../../../services/study/short-circuit-analysis';
 import { downloadZipFile } from '../../../services/utils';
-import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { getSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 
 interface ShortCircuitAnalysisResultTabProps {

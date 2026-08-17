@@ -6,7 +6,7 @@
  */
 
 import { useEffect } from 'react';
-import { Grid2 as Grid, Stack } from '@mui/material';
+import { Grid, Stack } from '@mui/material';
 import { CustomFormProvider, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -81,6 +81,8 @@ export function SpreadsheetModelGlobalEditorDialog({
         }
     }, [open.value, columnsModel, reset]);
 
+    const { slotProps, ...otherDialogProps } = dialogProps;
+
     return (
         <CustomFormProvider validationSchema={columnsModelFormSchema} {...formMethods}>
             <ModificationDialog
@@ -89,8 +91,8 @@ export function SpreadsheetModelGlobalEditorDialog({
                 onClose={onClose}
                 onSave={onSave}
                 onClear={onClear}
-                PaperProps={{ sx: styles.dialogContent }}
-                {...dialogProps}
+                slotProps={{ paper: { sx: styles.dialogContent }, ...slotProps }}
+                {...otherDialogProps}
             >
                 <FormulaSearchProvider>
                     <Stack>

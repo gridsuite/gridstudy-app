@@ -26,7 +26,18 @@ import {
     type UserAction,
     type UserValidationErrorAction,
     EquipmentType,
+    RunningStatus,
+    addGlobalFilterId,
+    getGlobalFilterId,
+    GlobalFilter,
+    RecentGlobalFilter,
+    addSelectedGlobalFiltersToTableState,
+    clearSelectedGlobalFiltersFromTableState,
+    markNotFoundGlobalFiltersAsDeletedInState,
+    MAX_RECENT_GLOBAL_FILTERS,
+    removeSelectedGlobalFiltersFromTableState,
 } from '@gridsuite/commons-ui';
+
 import {
     ADD_GLOBAL_FILTERS,
     ADD_NOTIFICATION,
@@ -224,7 +235,6 @@ import { getLocalStorageSyncEnabled } from './session-storage/navigation-local-s
 import { PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
-import { RunningStatus } from 'components/utils/running-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import {
     ALL_BUSES,
@@ -290,21 +300,6 @@ import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
-import {
-    addGlobalFilterId,
-    getGlobalFilterId,
-} from '../components/results/common/global-filter/utils/global-filter-utils';
-import type {
-    GlobalFilter,
-    RecentGlobalFilter,
-} from '../components/results/common/global-filter/types/global-filter.type';
-import {
-    addSelectedGlobalFiltersToTableState,
-    clearSelectedGlobalFiltersFromTableState,
-    markNotFoundGlobalFiltersAsDeletedInState,
-    MAX_RECENT_GLOBAL_FILTERS,
-    removeSelectedGlobalFiltersFromTableState,
-} from '../components/results/common/global-filter/utils/global-filter-state.utils';
 
 // Types are defined in reducer.type.ts — import them directly from there
 import {
@@ -535,6 +530,9 @@ const initialState: AppState = {
         },
         [SpreadsheetEquipmentType.BUS]: {
             networkComponents: false,
+        },
+        [SpreadsheetEquipmentType.BATTERY]: {
+            regulatingTerminal: false,
         },
     },
     networkVisualizationsParameters: null,

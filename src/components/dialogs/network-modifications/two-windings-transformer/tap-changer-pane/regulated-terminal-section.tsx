@@ -10,6 +10,7 @@ import {
     REGULATION_TYPES,
     RegulatingTerminalForm,
     SelectInput,
+    GridSection,
 } from '@gridsuite/commons-ui';
 import {
     PHASE_TAP_CHANGER,
@@ -20,9 +21,8 @@ import {
 import { SIDE } from '../../../../network/constants';
 import { getRegulationTypeLabel, getTapSideLabel } from './tap-changer-pane-utils';
 import { useIntl } from 'react-intl';
-import { GridSection } from '../../../commons/grid-section';
 import { GridItem } from '../../../commons/grid-item';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { getTapChangerEquipmentSectionTypeValue } from '../../../../utils/utils';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';

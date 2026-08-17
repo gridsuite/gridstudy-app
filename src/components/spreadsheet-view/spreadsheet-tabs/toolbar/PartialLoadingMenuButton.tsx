@@ -49,6 +49,10 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
     );
+    const remoteBatteryRegTerm = useSelector(
+        (state: AppState) =>
+            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BATTERY].regulatingTerminal
+    );
     const remoteBusNetworkComponents = useSelector(
         (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BUS].networkComponents
     );
@@ -56,6 +60,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
     const [localLineOlg, setLocalLineOlg] = useState<boolean>(remoteLineOlg);
     const [localTwtOlg, setLocalTwtOlg] = useState<boolean>(remoteTwtOlg);
     const [localGeneratorRegTerm, setLocalGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
+    const [localBatteryRegTerm, setLocalBatteryRegTerm] = useState<boolean>(remoteBatteryRegTerm);
     const [localBusNetworkComponents, setLocalBusNetworkComponents] = useState<boolean>(remoteBusNetworkComponents);
 
     const handleClick = useCallback<NonNullable<TooltipIconButtonProps['onClick']>>(
@@ -65,9 +70,17 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             setLocalLineOlg(remoteLineOlg);
             setLocalTwtOlg(remoteTwtOlg);
             setLocalGeneratorRegTerm(remoteGeneratorRegTerm);
+            setLocalBatteryRegTerm(remoteBatteryRegTerm);
             setLocalBusNetworkComponents(remoteBusNetworkComponents);
         },
-        [remoteBranchOlg, remoteBusNetworkComponents, remoteGeneratorRegTerm, remoteLineOlg, remoteTwtOlg]
+        [
+            remoteBatteryRegTerm,
+            remoteBranchOlg,
+            remoteBusNetworkComponents,
+            remoteGeneratorRegTerm,
+            remoteLineOlg,
+            remoteTwtOlg,
+        ]
     );
 
     const handleClose = useCallback(() => {
@@ -77,6 +90,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             localLineOlg !== remoteLineOlg ||
             localTwtOlg !== remoteTwtOlg ||
             localGeneratorRegTerm !== remoteGeneratorRegTerm ||
+            localBatteryRegTerm !== remoteBatteryRegTerm ||
             localBusNetworkComponents !== remoteBusNetworkComponents
         ) {
             if (studyUuid) {
@@ -92,6 +106,9 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
                     [SpreadsheetEquipmentType.BUS]: {
                         networkComponents: localBusNetworkComponents,
                     },
+                    [SpreadsheetEquipmentType.BATTERY]: {
+                        regulatingTerminal: localBatteryRegTerm,
+                    },
                 });
             }
         }
@@ -104,6 +121,8 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         remoteTwtOlg,
         localGeneratorRegTerm,
         remoteGeneratorRegTerm,
+        localBatteryRegTerm,
+        remoteBatteryRegTerm,
         localBusNetworkComponents,
         remoteBusNetworkComponents,
         studyUuid,
@@ -112,8 +131,21 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
     const open = anchorEl !== undefined;
 
     const isOptionalData = useMemo(
-        () => remoteBranchOlg || remoteLineOlg || remoteTwtOlg || remoteGeneratorRegTerm || remoteBusNetworkComponents,
-        [remoteBranchOlg, remoteBusNetworkComponents, remoteGeneratorRegTerm, remoteLineOlg, remoteTwtOlg]
+        () =>
+            remoteBranchOlg ||
+            remoteLineOlg ||
+            remoteTwtOlg ||
+            remoteGeneratorRegTerm ||
+            remoteBatteryRegTerm ||
+            remoteBusNetworkComponents,
+        [
+            remoteBatteryRegTerm,
+            remoteBranchOlg,
+            remoteBusNetworkComponents,
+            remoteGeneratorRegTerm,
+            remoteLineOlg,
+            remoteTwtOlg,
+        ]
     );
 
     return (
@@ -132,17 +164,18 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
                     </span>
                 </Tooltip>
             </Badge>
-
             <Menu
                 id="lazy-loading-menu"
                 open={open}
                 onClose={handleClose}
                 anchorEl={anchorEl}
-                MenuListProps={{
-                    'aria-labelledby': 'lazy-loading-button',
-                    sx: { py: 0 },
-                }}
                 variant="menu"
+                slotProps={{
+                    list: {
+                        'aria-labelledby': 'lazy-loading-button',
+                        sx: { py: 0 },
+                    },
+                }}
             >
                 <ListSubheader sx={styles.headers}>
                     <FormattedMessage id="BRANCH" />
@@ -178,6 +211,15 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
                     value={localGeneratorRegTerm}
                     labelId="spreadsheet/tabs/lazy_loading/labels/regulatingTerminal"
                     onChange={setLocalGeneratorRegTerm}
+                />
+
+                <ListSubheader sx={styles.headers}>
+                    <FormattedMessage id="BATTERY" />
+                </ListSubheader>
+                <PartialLoadingMenuItem
+                    value={localBatteryRegTerm}
+                    labelId="spreadsheet/tabs/lazy_loading/labels/regulatingTerminal"
+                    onChange={setLocalBatteryRegTerm}
                 />
 
                 <ListSubheader sx={styles.headers}>

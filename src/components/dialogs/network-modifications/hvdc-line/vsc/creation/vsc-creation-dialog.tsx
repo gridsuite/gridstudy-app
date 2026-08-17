@@ -41,7 +41,7 @@ import {
     P0,
     R,
 } from '../../../../../utils/field-constants';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import VscTabs from '../vsc-tabs';
 import * as yup from 'yup';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
@@ -248,9 +248,11 @@ export default function VscCreationDialog({
                 titleId="CreateVsc"
                 subtitle={headersAndTabs}
                 searchCopy={searchCopy}
-                PaperProps={{
-                    sx: {
-                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                slotProps={{
+                    paper: {
+                        sx: {
+                            height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                        },
                     },
                 }}
                 open={open}
