@@ -34,7 +34,7 @@ export default function BalancesAdjustmentTable() {
                 type: DndColumnType.TEXT as const,
                 initialValue: '',
                 width: '110px',
-                dataTestId: 'ZoneNameInput',
+                'data-testid': 'ZoneNameInput',
             },
             {
                 label: 'BalancesAdjustmentCountry',
@@ -90,7 +90,7 @@ export default function BalancesAdjustmentTable() {
                 type: DndColumnType.NUMERIC as const,
                 initialValue: 0,
                 width: '110px',
-                dataTestId: 'NetPositionTargetInput',
+                'data-testid': 'NetPositionTargetInput',
             },
         ].map((column) => ({
             ...column,

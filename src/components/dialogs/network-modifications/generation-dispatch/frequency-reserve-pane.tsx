@@ -44,7 +44,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<F
                 initialValue: null,
                 editable: true,
                 type: DndColumnType.NUMERIC,
-                dataTestId: 'FrequencyReserveInput',
+                'data-testid': 'FrequencyReserveInput',
             },
         ] satisfies DndColumn[];
     }, [intl]);
