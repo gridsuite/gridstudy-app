@@ -38,6 +38,7 @@ import {
     StaticVarCompensatorCreationDto,
     CouplingDeviceCreationDto,
     CreateVoltageLevelTopologyDto,
+    TopologyVoltageLevelModificationDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -54,7 +55,6 @@ import {
     LinesAttachToSplitLinesInfo,
     MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
-    TopologyVoltageLevelModificationInfos,
     TwoWindingsTransformerCreationInfo,
     TwoWindingsTransformerModificationInfo,
     Variations,
@@ -1035,19 +1035,12 @@ export function modifyVoltageLevel({
     });
 }
 
-export function modifyVoltageLevelTopology({
-    topologyVoltageLevelModificationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    topologyVoltageLevelModificationInfos: TopologyVoltageLevelModificationInfos;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid: string | null;
-    isUpdate: boolean;
-}) {
+export function modifyVoltageLevelTopology(
+    topologyVoltageLevelModificationDto: TopologyVoltageLevelModificationDto,
+    modificationUuid: string | null | undefined,
+    studyUuid: UUID,
+    nodeUuid?: UUID
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1056,12 +1049,12 @@ export function modifyVoltageLevelTopology({
         console.info('Creating voltage level topology modification');
     }
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(topologyVoltageLevelModificationInfos),
+        body: JSON.stringify(topologyVoltageLevelModificationDto),
     });
 }
 

@@ -1322,22 +1322,11 @@ const messages_fr = {
     RegulationSection: 'Réglage',
     TapsSection: 'Prises',
     VOLTAGE_LEVEL_TOPOLOGY: 'Modifier la topologie',
-    ModifyVoltageLevelTopology: "Modifier la topologie d'un poste",
     TopologyNotRetrieved: "La topologie du poste n'a pas pu être récupérée",
     VoltageLevelTopologyModificationError: 'Erreur lors de la modification de la topologie de poste',
-    builtNodeTooltipVlTopoModif: 'Liste des organes de coupure tenant compte de toutes les modifications réalisées',
-    notBuiltNodeTooltipVlTopoModif:
-        "Liste des organes de coupure d'après le dernier nœud réalisé de la branche courante",
-    copyPreviousTopologyStatus: 'Compléter avec la topologie précédente',
-    modifiedSwitchesSeparatorTitle: 'OC modifiés',
-    unModifiedSwitchesSeparatorTitle: 'OC non-modifiés',
-    switchId: "ID de l'organe de coupure",
-    previousStatus: 'État précédent',
-    currentStatus: 'État modifié',
-    Open: 'Ouvert',
+
     areSwitchesOpen: 'Ouverts',
     areSwitchesClosed: 'Fermés',
-    Closed: 'Fermé',
     GridLayoutPanel: 'Grille des images',
     GridLayoutPanelAndTree: 'Grille des images et arbre décisionnel',
 

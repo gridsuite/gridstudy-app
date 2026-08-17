@@ -8,10 +8,19 @@
 import {
     CustomFormProvider,
     EquipmentType,
-    MODIFICATION_TYPES,
-    ModificationType,
     snackWithFallback,
     useSnackMessage,
+    voltageLevelTopologyModificationEmptyFormData,
+    voltageLevelTopologyModificationFormSchema,
+    VoltageLevelTopologyModificationFormSchemaType,
+    voltageLevelTopologyModificationFormToDto,
+    VoltageLevelTopologyModificationForm,
+    TopologyVoltageLevelModificationDto,
+    TOPOLOGY_MODIFICATION_TABLE,
+    SWITCH_ID,
+    PREV_CONNECTION_STATUS,
+    CURRENT_CONNECTION_STATUS,
+    voltageLevelTopologyModificationDtoToForm, FieldConstants,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
@@ -21,49 +30,15 @@ import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import * as yup from 'yup';
-import {
-    CURRENT_CONNECTION_STATUS,
-    PREV_CONNECTION_STATUS,
-    SWITCH_ID,
-    TOPOLOGY_MODIFICATION_TABLE,
-} from '../../../../utils/field-constants';
-import { VoltageLevelTopologyModificationForm } from './voltage-level-topology-modification-form';
 import { modifyVoltageLevelTopology } from '../../../../../services/study/network-modifications';
-import { TopologyVoltageLevelModificationInfos } from '../../../../../services/network-modification-types';
 import { fetchSwitchesOfVoltageLevel } from '../../../../../services/study/network';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { SwitchInfos } from '../../../../../services/study/network-map.type';
-import { useIntl } from 'react-intl';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
-const formSchema = yup.object().shape({
-    [TOPOLOGY_MODIFICATION_TABLE]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [SWITCH_ID]: yup.string(),
-                [PREV_CONNECTION_STATUS]: yup.boolean().nullable(), // presents 'open'
-                [CURRENT_CONNECTION_STATUS]: yup.boolean().nullable(), // presents 'close'
-            })
-        )
-        .required(),
-});
-
-const emptyFormData = {
-    [TOPOLOGY_MODIFICATION_TABLE]: [
-        {
-            [SWITCH_ID]: '',
-            [PREV_CONNECTION_STATUS]: null,
-            [CURRENT_CONNECTION_STATUS]: null,
-        },
-    ],
-};
-
 export type VoltageLevelTopologyModificationDialogProps = EquipmentModificationDialogProps & {
-    editData: TopologyVoltageLevelModificationInfos;
+    editData?: TopologyVoltageLevelModificationDto;
 };
-export type VoltageLevelTopologyModificationFormSchemaType = yup.InferType<typeof formSchema>;
 
 /**
  * Dialog to delete a list of equipment by filter.
@@ -91,20 +66,25 @@ export default function VoltageLevelTopologyModificationDialog({
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [switchesToModify, setSwitchesToModify] = useState<SwitchInfos[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
-    const intl = useIntl();
 
     const formMethods = useFormWithDirtyTracking<VoltageLevelTopologyModificationFormSchemaType>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<VoltageLevelTopologyModificationFormSchemaType>(formSchema),
+        defaultValues: voltageLevelTopologyModificationEmptyFormData,
+        resolver: yupResolver<VoltageLevelTopologyModificationFormSchemaType>(
+            voltageLevelTopologyModificationFormSchema
+        ),
     });
 
-    const { reset, getValues, setValue } = formMethods;
+    const { reset } = formMethods;
 
     useEffect(() => {
-        if (editData?.equipmentId) {
-            setSelectedId(editData.equipmentId);
+        if (editData) {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
+            const form = voltageLevelTopologyModificationDtoToForm(editData);
+           reset(form);
         }
-    }, [editData]);
+    }, [editData, reset]);
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: string) => {
@@ -118,6 +98,7 @@ export default function VoltageLevelTopologyModificationDialog({
                             setSwitchesToModify(switchesInfos);
                             reset(
                                 {
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [TOPOLOGY_MODIFICATION_TABLE]: switchesInfos?.map((row) => ({
                                         [SWITCH_ID]: row.id,
                                         [PREV_CONNECTION_STATUS]: row.open,
@@ -130,11 +111,17 @@ export default function VoltageLevelTopologyModificationDialog({
                         } else {
                             setSwitchesToModify([]);
                             setDataFetchStatus(FetchStatus.SUCCEED);
+                            reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                                keepDirty: true,
+                            });
                         }
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
                         setSwitchesToModify([]);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                     });
             }
         },
@@ -148,45 +135,14 @@ export default function VoltageLevelTopologyModificationDialog({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (topologyVLModificationInfos: VoltageLevelTopologyModificationFormSchemaType) => {
-            let equipmentAttributeModificationInfos: {
-                type: ModificationType;
-                equipmentId: string;
-                equipmentAttributeName: string;
-                equipmentAttributeValue: boolean;
-                equipmentType: EquipmentType;
-            }[] = [];
-            if (topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE]?.length > 0) {
-                equipmentAttributeModificationInfos = topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE].filter(
-                    (item) => {
-                        return item?.currentConnectionStatus != null;
-                    }
-                ).map((item) => ({
-                    type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
-                    equipmentId: item.switchId ?? '',
-                    equipmentAttributeName: 'open',
-                    // Note that 'currentConnectionStatus' which presents 'close' should be inverted when submitting open attribute
-                    equipmentAttributeValue: Boolean(!item.currentConnectionStatus),
-                    equipmentType: EquipmentType.SWITCH,
-                }));
-            }
-            const voltageLevelTopologyModificationInfos = {
-                type: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
-                uuid: editData?.uuid,
-                equipmentId: selectedId,
-                equipmentAttributeModificationList: equipmentAttributeModificationInfos,
-            };
-            modifyVoltageLevelTopology({
-                topologyVoltageLevelModificationInfos: voltageLevelTopologyModificationInfos,
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
-                isUpdate: !!editData,
-            }).catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'VoltageLevelTopologyModificationError' });
-            });
-        },
-        [editData, selectedId, studyUuid, currentNodeUuid, snackError]
+        (voltageLevelTopologyModificationFormData: VoltageLevelTopologyModificationFormSchemaType) => {
+            const dto = voltageLevelTopologyModificationFormToDto(voltageLevelTopologyModificationFormData, editData?.uuid);
+            modifyVoltageLevelTopology(dto, editData?.uuid, studyUuid, currentNodeUuid)
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'VoltageLevelTopologyModificationError' });
+                });
+            },
+        [editData, studyUuid, currentNodeUuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({
@@ -198,114 +154,13 @@ export default function VoltageLevelTopologyModificationDialog({
     });
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(voltageLevelTopologyModificationEmptyFormData);
     }, [reset]);
 
-    const isSwitchModified = useCallback(
-        (switchId: string): boolean => {
-            return editData?.equipmentAttributeModificationList?.some((mod) => mod.equipmentId === switchId) ?? false;
-        },
-        [editData]
-    );
-
-    const mergedRowData = useMemo(() => {
-        const SEPARATOR_TYPE = 'SEPARATOR';
-        const SWITCH_TYPE = 'SWITCH';
-        const result = [];
-        const watchTable = getValues(TOPOLOGY_MODIFICATION_TABLE);
-        if (watchTable?.length > 0) {
-            const sortedWatchTable = [...watchTable].sort((a, b) => (a.switchId ?? '').localeCompare(b.switchId ?? ''));
-
-            const modifiedSwitches = sortedWatchTable
-                .filter((sw) => sw.switchId && isSwitchModified(sw.switchId))
-                .sort((a, b) => a.switchId!.localeCompare(b.switchId!));
-
-            const unmodifiedSwitches = sortedWatchTable
-                .filter((sw) => sw.switchId && !isSwitchModified(sw.switchId))
-                .sort((a, b) => a.switchId!.localeCompare(b.switchId!));
-
-            if (modifiedSwitches.length > 0) {
-                result.push({
-                    type: SEPARATOR_TYPE,
-                    id: 'modified-separator',
-                    title:
-                        intl.formatMessage({ id: 'modifiedSwitchesSeparatorTitle' }) + ` (${modifiedSwitches.length})`,
-                    count: modifiedSwitches.length,
-                    [SWITCH_ID]: '',
-                    [PREV_CONNECTION_STATUS]: null,
-                    [CURRENT_CONNECTION_STATUS]: null,
-                });
-
-                modifiedSwitches.forEach((sw) => {
-                    const matchingSwitchInfos = switchesToModify?.find((attr) => attr.id === sw.switchId);
-                    const matchingAttributeEditData = editData?.equipmentAttributeModificationList?.find(
-                        (attr) => attr.equipmentId === sw.switchId
-                    );
-
-                    const open = isNodeBuilt(currentNode)
-                        ? matchingSwitchInfos?.open
-                        : (matchingAttributeEditData?.equipmentAttributeValue ?? matchingSwitchInfos?.open);
-
-                    // Note that 'open' should be inverted when initializing CURRENT_CONNECTION_STATUS which presents 'close'
-                    result.push({
-                        ...sw,
-                        type: SWITCH_TYPE,
-                        isModified: false,
-                        [CURRENT_CONNECTION_STATUS]: !open,
-                    });
-                    const formValues = getValues(TOPOLOGY_MODIFICATION_TABLE);
-                    const index = formValues?.findIndex((item) => item.switchId === sw.switchId);
-                    if (index !== -1) {
-                        setValue(`${TOPOLOGY_MODIFICATION_TABLE}.${index}.${CURRENT_CONNECTION_STATUS}`, !open);
-                    }
-                });
-
-                if (unmodifiedSwitches.length > 0) {
-                    result.push({
-                        type: SEPARATOR_TYPE,
-                        id: 'unmodified-separator',
-                        title:
-                            intl.formatMessage({ id: 'unModifiedSwitchesSeparatorTitle' }) +
-                            ` (${unmodifiedSwitches.length})`,
-                        count: unmodifiedSwitches.length,
-                        [SWITCH_ID]: '',
-                        [PREV_CONNECTION_STATUS]: null,
-                        [CURRENT_CONNECTION_STATUS]: null,
-                    });
-
-                    unmodifiedSwitches.forEach((sw) => {
-                        result.push({
-                            ...sw,
-                            type: SWITCH_TYPE,
-                            isModified: false,
-                        });
-                    });
-                }
-            } else {
-                unmodifiedSwitches.forEach((sw) => {
-                    result.push({
-                        ...sw,
-                        type: SWITCH_TYPE,
-                        isModified: false,
-                    });
-                });
-            }
-            return result;
-        }
-        return [];
-    }, [
-        getValues,
-        isSwitchModified,
-        intl,
-        switchesToModify,
-        editData?.equipmentAttributeModificationList,
-        currentNode,
-        setValue,
-    ]);
 
     return (
         <CustomFormProvider
-            validationSchema={formSchema}
+            validationSchema={voltageLevelTopologyModificationFormSchema}
             removeOptional={true}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -344,10 +199,9 @@ export default function VoltageLevelTopologyModificationDialog({
                 )}
                 {selectedId != null && (
                     <VoltageLevelTopologyModificationForm
-                        currentNode={currentNode}
-                        selectedId={selectedId}
-                        mergedRowData={mergedRowData}
-                        isUpdate={isUpdate}
+                        voltageLevelToModify={editData}
+                        switchesToModify={switchesToModify}
+                        isModification={isUpdate}
                     />
                 )}
             </ModificationDialog>
