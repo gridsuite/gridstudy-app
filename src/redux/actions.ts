@@ -18,6 +18,7 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    RunningStatus,
     GlobalFilter,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
@@ -42,7 +43,6 @@ import {
     SortConfig,
     TableType,
 } from '../types/custom-aggrid-types';
-import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
 import {
     LOGS_PAGINATION_STORE_FIELD,

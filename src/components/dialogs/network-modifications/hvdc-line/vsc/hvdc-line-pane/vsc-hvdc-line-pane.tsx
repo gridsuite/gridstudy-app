@@ -10,6 +10,7 @@ import {
     CheckboxNullableInput,
     FieldConstants,
     FloatInput,
+    GridSection,
     OhmAdornment,
     PropertiesForm,
     SelectInput,
@@ -33,7 +34,6 @@ import { Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { useIntl } from 'react-intl';
-import { GridSection } from '../../../../commons/grid-section';
 import { GridItem } from '../../../../commons/grid-item';
 
 interface VscHvdcLinePaneProps {
