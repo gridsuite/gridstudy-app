@@ -118,7 +118,6 @@ const messages_fr = {
     panelsCount: '{count, plural, =0 {aucun panneau} =1 {# panneau} other {# panneaux}}',
     panels: 'Panneaux',
     NetworkVisualizations: 'Images réseau',
-    None: 'Aucun',
     NoneUpcomingOverload: 'Aucune',
     Feeders: 'Départs',
     NominalVoltage: 'Tension nominale',

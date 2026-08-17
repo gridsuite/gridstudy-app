@@ -114,7 +114,6 @@ const messages_en = {
     panelsCount: '{count, plural, =0 {no panel} =1 {# panel} other {# panels}}',
     panels: 'Panels',
     NetworkVisualizations: 'Network visualizations',
-    None: 'None',
     NoneUpcomingOverload: 'None',
     Feeders: 'Feeder',
     NominalVoltage: 'Nominal voltage',
