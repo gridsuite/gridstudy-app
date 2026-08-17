@@ -48,15 +48,17 @@ export default function HeaderWithTooltip({
                         title={tooltipTitle}
                         placement="right"
                         arrow
-                        PopperProps={{
-                            modifiers: [
-                                {
-                                    name: 'offset',
-                                    options: {
-                                        offset: [0, -10],
+                        slotProps={{
+                            popper: {
+                                modifiers: [
+                                    {
+                                        name: 'offset',
+                                        options: {
+                                            offset: [0, -10],
+                                        },
                                     },
-                                },
-                            ],
+                                ],
+                            },
                         }}
                     >
                         <span style={{ display: 'flex', alignItems: 'center' }}>

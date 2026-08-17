@@ -6,7 +6,7 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { CustomFormProvider, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -38,12 +38,7 @@ const toCustomColumnNodesDialogFormValues = (nodeAliases: NodeAlias[]) => {
     return { [NODES_ALIASES]: nodeAliases };
 };
 
-export default function NodesConfigDialog({
-    open,
-    nodeAliases,
-    updateNodeAliases,
-    ...dialogProps
-}: Readonly<NodesConfigDialogProps>) {
+export default function NodesConfigDialog({ open, nodeAliases, updateNodeAliases }: Readonly<NodesConfigDialogProps>) {
     const formMethods = useForm<NodesForm>({
         defaultValues: initialNodesForm,
         resolver: yupResolver(nodesFormSchema),
@@ -95,8 +90,7 @@ export default function NodesConfigDialog({
                 onClose={onClose}
                 onSave={onValidate}
                 onClear={() => null}
-                PaperProps={{ sx: styles.dialogContent }}
-                {...dialogProps}
+                slotProps={{ paper: { sx: styles.dialogContent } }}
             >
                 <Grid container>
                     <NodeConfigTable />

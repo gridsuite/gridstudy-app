@@ -7,7 +7,6 @@
 
 import { memo, useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import RunningStatus from 'components/utils/running-status';
 import {
     buildPositionsFromNadMetadata,
     equipmentsWithContextualMenu,
@@ -40,6 +39,7 @@ import {
     IElementCreationDialog,
     IElementUpdateDialog,
     mergeSx,
+    RunningStatus,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';

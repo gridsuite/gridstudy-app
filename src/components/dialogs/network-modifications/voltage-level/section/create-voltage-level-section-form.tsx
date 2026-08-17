@@ -16,7 +16,7 @@ import {
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
-import { Box, Button, Grid2 as Grid, Slider, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Grid, Slider, TextField, Tooltip, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import {
@@ -24,11 +24,11 @@ import {
     AutocompleteInput,
     filledTextField,
     getObjectId,
+    GridSection,
     Option,
     SelectInput,
     SwitchInput,
 } from '@gridsuite/commons-ui';
-import { GridSection } from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from 'components/grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
@@ -88,8 +88,10 @@ export function CreateVoltageLevelSectionForm({
             fullWidth
             label={intl.formatMessage({ id: 'VoltageLevelId' })}
             value={voltageLevelId}
-            InputProps={{
-                readOnly: true,
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
             }}
             disabled
             {...filledTextField}
