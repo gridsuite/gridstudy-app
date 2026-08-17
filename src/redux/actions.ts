@@ -64,6 +64,7 @@ import type { RootNetworkMetadata } from 'components/graph/menus/network-modific
 import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import type { NodeValidity } from '../components/spreadsheet-view/columns/utils/column-validity';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -1424,5 +1425,19 @@ export function updateNodeAliases(nodeAliases: NodeAlias[]): UpdateNodeAliasesAc
     return {
         type: UPDATE_NODE_ALIASES,
         nodeAliases,
+    };
+}
+
+export const UPDATE_ALIASED_NODES_VALIDITY = 'UPDATE_ALIASED_NODES_VALIDITY';
+export type UpdateAliasedNodesValidityAction = Readonly<Action<typeof UPDATE_ALIASED_NODES_VALIDITY>> & {
+    aliasedNodesValidity: Record<string, NodeValidity>;
+};
+
+export function updateAliasedNodesValidity(
+    aliasedNodesValidity: Record<string, NodeValidity>
+): UpdateAliasedNodesValidityAction {
+    return {
+        type: UPDATE_ALIASED_NODES_VALIDITY,
+        aliasedNodesValidity,
     };
 }

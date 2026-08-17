@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { all, create } from 'mathjs';
+import { all, create, parse } from 'mathjs';
 import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 
 const instance = create(all);
@@ -25,8 +25,14 @@ function transformExpression(expr: string): string {
 }
 
 const originalEvaluate = instance.evaluate;
+
+const normalizeFormula = (expr: string): string => transformExpression(expr.replace(/\\/g, '\\\\'));
+
+// runs nothing ; the instance below is what formulas are evaluated against
+export const parseFormula = (expr: string) => parse(normalizeFormula(expr));
+
 export const limitedEvaluate = (expr: string | string[], scope?: object) => {
-    const transformedExpression: string | string[] = typeof expr === 'string' ? transformExpression(expr) : expr;
+    const transformedExpression: string | string[] = typeof expr === 'string' ? normalizeFormula(expr) : expr;
     const result = originalEvaluate(transformedExpression, scope);
     if (typeof result === 'function') {
         throw new MathJsValidationError('spreadsheet/formula/function-reference/disabled');
