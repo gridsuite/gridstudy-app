@@ -58,7 +58,7 @@ export default function LineTypeSegmentCreation({
 
     const segmentTypeField = (
         <ButtonReadOnlyInput name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}>
-            <IconButton onClick={handleEditButtonClick} data-testid="EditBTN">
+            <IconButton onClick={handleEditButtonClick} data-testid="SegmentTypeEditButton">
                 <EditIcon />
             </IconButton>
         </ButtonReadOnlyInput>
