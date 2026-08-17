@@ -26,7 +26,7 @@ function transformExpression(expr: string): string {
 
 const originalEvaluate = instance.evaluate;
 
-const normalizeFormula = (expr: string): string => transformExpression(expr.replace(/\\/g, '\\\\'));
+const normalizeFormula = (expr: string): string => transformExpression(expr.replaceAll('\\', '\\\\'));
 
 // runs nothing ; the instance below is what formulas are evaluated against
 export const parseFormula = (expr: string) => parse(normalizeFormula(expr));

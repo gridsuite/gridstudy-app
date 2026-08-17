@@ -15,12 +15,12 @@ import { fetchLoadFlowStatus } from '../../../services/study/loadflow';
 import { getLoadFlowRunningStatus } from '../../utils/running-status';
 import { isSecurityModificationNode } from '../../graph/tree-node.type';
 import { loadFlowStatusInvalidations } from '../../computing-status/use-all-computing-status';
-import { parseEventData, StudyUpdatedEventData } from '../../../types/notification-types';
+import { ComputationStatusEventData, NotificationType, parseEventData } from '../../../types/notification-types';
 import { NodeValidity } from '../columns/utils/column-validity';
 import { useNodeAliases, validAlias } from './use-node-aliases';
 import { useBuiltNodesIds } from './use-built-nodes-ids';
 
-const REFRESH_ON = new Set<string>([...loadFlowStatusInvalidations, 'all_computation_status']);
+const REFRESH_ON = new Set<string>([...loadFlowStatusInvalidations, NotificationType.ALL_COMPUTATION_STATUS]);
 
 export function useNodeAliasesLoadFlowStatus() {
     const dispatch = useDispatch();
@@ -78,7 +78,7 @@ export function useNodeAliasesLoadFlowStatus() {
 
     const onNotification = useCallback(
         (event: MessageEvent) => {
-            const headers = parseEventData<StudyUpdatedEventData>(event)?.headers;
+            const headers = parseEventData<ComputationStatusEventData>(event)?.headers;
             if (!headers?.updateType || !REFRESH_ON.has(headers.updateType)) {
                 return;
             }
