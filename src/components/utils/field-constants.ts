@@ -13,8 +13,6 @@ export const ADD_SUBSTATION_CREATION = 'addSubstationCreationId';
 export const SUBSTATION_CREATION = 'substationCreation';
 export const LOAD_TYPE = 'loadType';
 export const CONNECTIVITY = 'connectivity';
-export const SETPOINTS_LIMITS = 'setpointsLimits';
-export const AUTOMATON = 'automaton';
 export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
@@ -150,27 +148,15 @@ export const REGULATING_TERMINAL_CONNECTABLE_ID = 'regulatingTerminalConnectable
 export const REGULATING_TERMINAL_CONNECTABLE_TYPE = 'regulatingTerminalConnectableType';
 
 //ShuntCompensator
-export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
 export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
-export const VOLTAGE_REGULATION_MODE = 'voltageRegulationMode';
-export const VOLTAGE_REGULATION_MODES = {
-    VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
-    REACTIVE_POWER: { id: 'REACTIVE_POWER', label: 'ReactivePowerRegulationText' },
-    // used in order to set regulating to false but doesn't exist in powsybl => should not be sent to the back
-    OFF: { id: 'OFF', label: 'Off' },
-} as const;
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
 export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
-export const MAX_SUSCEPTANCE = 'maxSusceptance';
-export const MIN_SUSCEPTANCE = 'minSusceptance';
 export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
 export const SHUNT_COMPENSATOR_ID = 'shuntCompensatorId';
 export const SHUNT_COMPENSATOR_NAME = 'shuntCompensatorName';
-export const MIN_Q_AT_NOMINAL_V = 'minQAtNominalV';
 //line
 export const G1 = 'g1';
-export const B0 = 'b0';
 export const B1 = 'b1';
 export const G2 = 'g2';
 export const B2 = 'b2';
@@ -324,17 +310,6 @@ export const CONVERTER_STATION_1 = 'converterStation1';
 export const CONVERTER_STATION_2 = 'converterStation2';
 
 export const EQUIPMENT_TYPE_FIELD = 'equipmentType';
-export const ADD_STAND_BY_AUTOMATON = 'addStandbyAutomaton';
-export const LOW_VOLTAGE_SET_POINT = 'lowVoltageSetpoint';
-export const HIGH_VOLTAGE_SET_POINT = 'highVoltageSetpoint';
-export const LOW_VOLTAGE_THRESHOLD = 'lowVoltageThreshold';
-export const HIGH_VOLTAGE_THRESHOLD = 'highVoltageThreshold';
-export const CHARACTERISTICS_CHOICE_AUTOMATON = 'characteristicsChoiceAutomaton';
-export const MIN_Q_AUTOMATON = 'minQAutomaton';
-export const MAX_Q_AUTOMATON = 'maxQAutomaton';
-export const MIN_S_AUTOMATON = 'minSAutomaton';
-export const MAX_S_AUTOMATON = 'maxSAutomaton';
-export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
 
 /* State estimation parameters fields */

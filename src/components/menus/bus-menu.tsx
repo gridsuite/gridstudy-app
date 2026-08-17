@@ -13,7 +13,6 @@ import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functio
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
-import { RunningStatus } from 'components/utils/running-status';
 import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
@@ -27,6 +26,7 @@ import {
     EquipmentType,
     type MuiStyles,
     PARAM_DEVELOPER_MODE,
+    RunningStatus,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
