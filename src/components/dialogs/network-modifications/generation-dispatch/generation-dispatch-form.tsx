@@ -60,7 +60,12 @@ const GenerationDispatchForm = ({
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const lossCoefficientField = (
-        <FloatInput name={LOSS_COEFFICIENT} label={'LossCoefficient'} adornment={PercentageAdornment} />
+        <FloatInput
+            name={LOSS_COEFFICIENT}
+            label={'LossCoefficient'}
+            adornment={PercentageAdornment}
+            dataTestId="LossCoefficientInput"
+        />
     );
 
     const generatorsWithFixedActivePowerField = (
@@ -88,7 +93,12 @@ const GenerationDispatchForm = ({
                 </Typography>
             </Grid>
             <Grid>
-                <FloatInput name={DEFAULT_OUTAGE_RATE} label={'DefaultOutageRate'} adornment={PercentageAdornment} />
+                <FloatInput
+                    name={DEFAULT_OUTAGE_RATE}
+                    label={'DefaultOutageRate'}
+                    adornment={PercentageAdornment}
+                    dataTestId="DefaultOutageRateInput"
+                />
             </Grid>
         </Grid>
     );

@@ -34,6 +34,7 @@ export default function BalancesAdjustmentTable() {
                 type: DndColumnType.TEXT as const,
                 initialValue: '',
                 width: '110px',
+                dataTestId: 'ZoneNameInput',
             },
             {
                 label: 'BalancesAdjustmentCountry',
@@ -89,6 +90,7 @@ export default function BalancesAdjustmentTable() {
                 type: DndColumnType.NUMERIC as const,
                 initialValue: 0,
                 width: '110px',
+                dataTestId: 'NetPositionTargetInput',
             },
         ].map((column) => ({
             ...column,
@@ -117,6 +119,7 @@ export default function BalancesAdjustmentTable() {
             columnsDefinition={columnsDefinition}
             tableHeight={450}
             withAddRowsDialog={false}
+            rowDataTestIdPrefix="AreaLigne"
         />
     );
 }

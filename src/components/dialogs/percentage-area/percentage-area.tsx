@@ -68,6 +68,7 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
             acceptValue={isValidPercentage}
             outputTransform={handleLeftPercentageValueChange}
             formProps={standardTextField}
+            dataTestId="Line1PositionInput"
         />
     );
 
@@ -78,6 +79,7 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
             acceptValue={isValidPercentage}
             outputTransform={handleRightPercentageValueChange}
             formProps={standardTextField}
+            dataTestId="Line2PositionInput"
         />
     );
 

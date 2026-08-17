@@ -10,7 +10,7 @@ import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { styles } from './styles';
 import { useController } from 'react-hook-form';
 import { SyntheticEvent } from 'react';
-import { Autocomplete, AutocompleteProps, TextField, TextFieldProps } from '@mui/material';
+import { Autocomplete, AutocompleteProps, IconButtonProps, TextField, TextFieldProps } from '@mui/material';
 
 type CountriesAutocompleteProps = Pick<AutocompleteProps<string, true, false, false>, 'limitTags' | 'disabled'> & {
     name: AutocompleteInputProps['name'];
@@ -54,6 +54,7 @@ export default function CountriesAutocomplete({ name, label, disabled, ...props 
             getOptionLabel={(value) => translate(value)}
             autoHighlight={true}
             disableCloseOnSelect={true}
+            slotProps={{ popupIndicator: { 'data-testid': 'ExpandList' } as Partial<IconButtonProps> }}
             {...props}
         />
     );
