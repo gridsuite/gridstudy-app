@@ -9,7 +9,6 @@ import {
     CustomFormProvider,
     EquipmentType,
     snackWithFallback,
-    toModificationProperties,
     useSnackMessage,
     DeepNullable,
     FieldConstants,
@@ -40,14 +39,11 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import { UUID } from 'node:crypto';
-import {
-    AttachedSubstationCreationInfo,
-    VoltageLevelCreationInfo,
-} from '../../../../../services/network-modification-types';
+import { VoltageLevelCreationInfo } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { fetchEquipmentsIds } from 'services/study/network-map';
 
-const voltageLevelDtoToForm = (formInfos: VoltageLevelDto, intl?: IntlShape) => ({
+const voltageLevelDtoToForm = (formInfos: VoltageLevelDto, intl?: IntlShape): VoltageLevelCreationFormData => ({
     [FieldConstants.EQUIPMENT_ID]: formInfos?.id,
     [FieldConstants.EQUIPMENT_NAME]: formInfos?.name ?? '',
     [FieldConstants.TOPOLOGY_KIND]: formInfos?.topologyKind ?? null,
@@ -85,9 +81,9 @@ interface VoltageLevelCreationEditData extends VoltageLevelCreationDto {
     uuid?: UUID;
 }
 interface VoltageLevelCreationDialogProps {
-    editData?: VoltageLevelCreationEditData;
+    editData?: VoltageLevelCreationEditData | null;
     currentNode: CurrentTreeNode;
-    studyUuid: string;
+    studyUuid: UUID;
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
     editDataFetchStatus?: string;
@@ -147,22 +143,28 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     const intl = useIntl();
 
     const applyAttachmentPointOverrides = useCallback(
-        (formData: Record<string, any>) => {
-            if (isAttachmentPointModification) {
-                formData[FieldConstants.HIDE_NOMINAL_VOLTAGE] = true;
-                formData[FieldConstants.HIDE_BUS_BAR_SECTION] = true;
-                formData[FieldConstants.ADD_SUBSTATION_CREATION] = true;
-            }
-        },
+        (formData: VoltageLevelCreationFormData): VoltageLevelCreationFormData =>
+            isAttachmentPointModification
+                ? {
+                      ...formData,
+                      [FieldConstants.HIDE_NOMINAL_VOLTAGE]: true,
+                      [FieldConstants.HIDE_BUS_BAR_SECTION]: true,
+                      [FieldConstants.ADD_SUBSTATION_CREATION]: true,
+                  }
+                : formData,
         [isAttachmentPointModification]
     );
 
     const fromSearchCopyToFormValues = useCallback(
         (voltageLevel: VoltageLevelDto) => {
             const formData = voltageLevelDtoToForm(voltageLevel, intl);
-            formData[FieldConstants.EQUIPMENT_ID] += '(1)';
-            applyAttachmentPointOverrides(formData);
-            reset(formData, { keepDefaultValues: true });
+            reset(
+                applyAttachmentPointOverrides({
+                    ...formData,
+                    [FieldConstants.EQUIPMENT_ID]: `${formData[FieldConstants.EQUIPMENT_ID]}(1)`,
+                }),
+                { keepDefaultValues: true }
+            );
 
             if (!voltageLevel.isSymmetrical) {
                 snackWarning({
@@ -175,9 +177,9 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
     const fromEditDataToFormValues = useCallback(
         (editDto: VoltageLevelCreationDto) => {
-            const formData = voltageLevelCreationDtoToForm(editDto, intl, true);
-            applyAttachmentPointOverrides(formData);
-            reset(formData, { keepDefaultValues: true });
+            reset(applyAttachmentPointOverrides(voltageLevelCreationDtoToForm(editDto, intl, true)), {
+                keepDefaultValues: true,
+            });
         },
         [applyAttachmentPointOverrides, intl, reset]
     );
@@ -185,7 +187,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
             fetchEquipmentsIds(
-                studyUuid as UUID,
+                studyUuid,
                 currentNodeUuid,
                 currentRootNetworkUuid,
                 undefined,
@@ -258,26 +260,12 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
     const onSubmit = useCallback(
         (voltageLevel: VoltageLevelCreationFormData) => {
-            const dto = voltageLevelCreationFormToDto(voltageLevel);
             onCreateVoltageLevel({
-                studyUuid: studyUuid as UUID,
+                ...voltageLevelCreationFormToDto(voltageLevel),
+                studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                equipmentId: dto.equipmentId,
-                equipmentName: dto.equipmentName ?? undefined,
-                substationId: dto.substationId,
-                substationCreation: dto.substationCreation as AttachedSubstationCreationInfo | null,
-                nominalV: dto.nominalV,
-                lowVoltageLimit: dto.lowVoltageLimit,
-                highVoltageLimit: dto.highVoltageLimit,
-                ipMin: dto.ipMin,
-                ipMax: dto.ipMax,
-                busbarCount: dto.busbarCount,
-                sectionCount: dto.sectionCount,
-                switchKinds: dto.switchKinds,
-                couplingDevices: dto.couplingDevices,
                 isUpdate: !!editData,
                 modificationUuid: editData?.uuid,
-                properties: toModificationProperties(voltageLevel),
             }).catch((error: Error) => {
                 snackWithFallback(snackError, error, { headerId: 'VoltageLevelCreationError' });
             });

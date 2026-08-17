@@ -16,10 +16,9 @@ import {
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
-    SUBSTATION_CREATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import {
     AddButton,
     AddButtonMode,
@@ -28,6 +27,7 @@ import {
     VoltageLevelOption,
     LineCreationDto,
     GridSection,
+    VoltageLevelCreationDto,
 } from '@gridsuite/commons-ui';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
@@ -36,10 +36,7 @@ import { useWatch } from 'react-hook-form';
 import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import {
-    ExtendedVoltageLevelCreationInfo,
-    VoltageLevelCreationInfo,
-} from '../../../../services/network-modification-types';
+import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
@@ -50,10 +47,10 @@ interface LineAttachToVoltageLevelFormProps {
     onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationDto }) => Promise<string>;
     lineToEdit?: LineCreationDto;
     onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
-    voltageLevelToEdit?: ExtendedVoltageLevelCreationInfo;
+    voltageLevelToEdit?: VoltageLevelCreationDto;
     onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
-    attachmentPoint: ExtendedVoltageLevelCreationInfo;
-    setAttachmentPoint: Dispatch<SetStateAction<ExtendedVoltageLevelCreationInfo>>;
+    attachmentPoint: VoltageLevelCreationDto;
+    setAttachmentPoint: Dispatch<SetStateAction<VoltageLevelCreationDto>>;
     allVoltageLevelOptions: VoltageLevelOption[];
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;
@@ -175,10 +172,7 @@ const LineAttachToVoltageLevelForm = ({
 
     // as equipmentId and equipmentName are synchronized to check if the icon is add or edit
     // other attributes than id and name must be present
-    const hasSubstationCreation = useMemo(
-        () => attachmentPoint != null && Object.keys(attachmentPoint).some((key) => key === SUBSTATION_CREATION),
-        [attachmentPoint]
-    );
+    const hasSubstationCreation = attachmentPoint?.substationCreation != null;
 
     return (
         <>
@@ -236,7 +230,7 @@ const LineAttachToVoltageLevelForm = ({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onAttachmentPointModificationDo}
-                    editData={attachmentPoint as any}
+                    editData={attachmentPoint}
                     isAttachmentPointModification={true}
                     titleId={'SpecifyAttachmentPoint'}
                     isUpdate={isUpdate}
@@ -251,7 +245,7 @@ const LineAttachToVoltageLevelForm = ({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={isVoltageLevelEdit && voltageLevelToEdit ? (voltageLevelToEdit as any) : undefined}
+                    editData={isVoltageLevelEdit ? voltageLevelToEdit : undefined}
                     isUpdate={isUpdate}
                     editDataFetchStatus={editDataFetchStatus}
                 />
