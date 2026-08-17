@@ -488,7 +488,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 initialValue={emptyLineSegment}
                 deleteCallback={handleSegmentDelete}
                 alignItems="center"
-                rowDataTestIdPrefix="LineDefinition"
+                rowDataTestId="LineDefinition"
             />
             <hr />
             <Grid container spacing={2}>

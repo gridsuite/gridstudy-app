@@ -119,7 +119,7 @@ export default function BalancesAdjustmentTable() {
             columnsDefinition={columnsDefinition}
             tableHeight={450}
             withAddRowsDialog={false}
-            rowDataTestIdPrefix="AreaLigne"
+            rowDataTestId="AreaLigne"
         />
     );
 }

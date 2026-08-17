@@ -89,7 +89,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<F
             columnsDefinition={completedColumnsDefinition}
             tableHeight={270}
             withAddRowsDialog={false}
-            rowDataTestIdPrefix="FrequencyReserveLigne"
+            rowDataTestId="FrequencyReserveLigne"
         />
     );
 };
