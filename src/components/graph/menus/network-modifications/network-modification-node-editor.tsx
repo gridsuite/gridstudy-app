@@ -1431,7 +1431,6 @@ const NetworkModificationNodeEditor = () => {
                                 deleteInProgress ||
                                 !currentNode ||
                                 isRootNode ||
-                                // deleting a reference modification as a whole stays allowed
                                 selectionContainsLockedModification
                             }
                         >
