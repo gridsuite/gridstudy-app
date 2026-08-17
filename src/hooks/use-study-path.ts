@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    directoriesNotificationType,
+    DirectoriesNotificationType,
     fetchDirectoryElementPath,
     NotificationsUrlKeys,
     snackWithFallback,
@@ -62,7 +62,7 @@ export default function useStudyPath(studyUuid: UUID | null) {
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             if (eventData.headers) {
-                if (eventData.headers['notificationType'] === directoriesNotificationType.UPDATE_DIRECTORY) {
+                if (eventData.headers['notificationType'] === DirectoriesNotificationType.UPDATE_DIRECTORY) {
                     // TODO: this receives notifications for all the public directories and all the user's private directories
                     // At least we don't fetch everytime a notification is received, but we should instead limit the
                     // number of notifications (they are sent to all the clients every time). Here we are only
