@@ -76,6 +76,7 @@ const GenerationDispatchForm = ({
             <Grid size={4}>
                 <DirectoryItemsInput
                     name={GENERATORS_WITH_FIXED_ACTIVE_POWER}
+                    dataTestId="GeneratorsWithFixedActivePowerInput"
                     equipmentTypes={[EquipmentType.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
@@ -111,6 +112,7 @@ const GenerationDispatchForm = ({
             <Grid size={4}>
                 <DirectoryItemsInput
                     name={GENERATORS_WITHOUT_OUTAGE}
+                    dataTestId="GeneratorsWithoutOutageInput"
                     equipmentTypes={[EquipmentType.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
