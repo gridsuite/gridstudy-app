@@ -162,7 +162,12 @@ const LineAttachToVoltageLevelForm = ({
     );
 
     const lineToIdField = (
-        <TextInput name={ATTACHMENT_LINE_ID} label={'AttachedLineId'} formProps={{ disabled: true }} />
+        <TextInput
+            name={ATTACHMENT_LINE_ID}
+            label={'AttachedLineId'}
+            formProps={{ disabled: true }}
+            dataTestId="AttachedLineIDInput"
+        />
     );
 
     const newLine1IdField = <TextInput name={LINE1_ID} label={'Line1ID'} dataTestId="AttachmentLine1IDInput" />;
