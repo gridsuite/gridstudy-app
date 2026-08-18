@@ -8,7 +8,6 @@
 import { Box, Stack } from '@mui/material';
 import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { GridSection } from '../../../../commons/grid-section';
 import {
     RATIO_TAP_CHANGER_STATUS,
     PHASE_TAP_CHANGER_STATUS,
@@ -16,7 +15,7 @@ import {
     TO_BE_ESTIMATED,
 } from '../../../../../utils/field-constants';
 import { ToBeEstimatedProps } from './to-be-estimated.type';
-import { CheckboxNullableInput } from '@gridsuite/commons-ui';
+import { CheckboxNullableInput, GridSection } from '@gridsuite/commons-ui';
 
 export const ToBeEstimatedForm: FunctionComponent<ToBeEstimatedProps> = ({ toBeEstimated }) => {
     const intl = useIntl();

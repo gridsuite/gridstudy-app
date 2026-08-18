@@ -10,20 +10,23 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
 import { RowClassParams } from 'ag-grid-community';
-
-import { ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    DefaultCellRenderer,
+    getNoRowsMessage,
+    RESULTS_LOADING_DELAY,
+    RunningStatus,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
+} from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 
-import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-
 import LinearProgress from '@mui/material/LinearProgress';
-import { RunningStatus } from '../../utils/running-status';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';
 import { TableType } from 'types/custom-aggrid-types';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({
     result,
@@ -41,6 +44,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
 
     //We give each tab its own loader, so we don't have a loader spinning because another tab is still doing some work
     const openLoaderTab = useOpenLoaderShortWait({
@@ -109,6 +113,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
                     computationType={TableType.StateEstimation}
                     computationSubType={tableName}
                     exportCsvResetKey={exportCsvResetKey}
+                    language={language}
                 />
             </>
         );
