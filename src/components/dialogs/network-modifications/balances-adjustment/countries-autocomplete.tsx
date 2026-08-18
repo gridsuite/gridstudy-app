@@ -10,15 +10,22 @@ import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { styles } from './styles';
 import { useController } from 'react-hook-form';
 import { SyntheticEvent } from 'react';
-import { Autocomplete, AutocompleteProps, IconButtonProps, TextField, TextFieldProps } from '@mui/material';
+import { Autocomplete, AutocompleteProps, TextField, TextFieldProps } from '@mui/material';
 
 type CountriesAutocompleteProps = Pick<AutocompleteProps<string, true, false, false>, 'limitTags' | 'disabled'> & {
     name: AutocompleteInputProps['name'];
     label?: TextFieldProps['label'];
     disabled?: boolean;
+    dataTestId?: string;
 };
 
-export default function CountriesAutocomplete({ name, label, disabled, ...props }: CountriesAutocompleteProps) {
+export default function CountriesAutocomplete({
+    name,
+    label,
+    disabled,
+    dataTestId,
+    ...props
+}: CountriesAutocompleteProps) {
     const { countryCodes, translate } = useLocalizedCountries();
 
     const {
@@ -32,6 +39,7 @@ export default function CountriesAutocomplete({ name, label, disabled, ...props 
 
     return (
         <Autocomplete
+            data-testid={dataTestId}
             multiple
             disabled={disabled}
             value={value}
@@ -54,7 +62,6 @@ export default function CountriesAutocomplete({ name, label, disabled, ...props 
             getOptionLabel={(value) => translate(value)}
             autoHighlight={true}
             disableCloseOnSelect={true}
-            slotProps={{ popupIndicator: { 'data-testid': 'ExpandList' } as Partial<IconButtonProps> }}
             {...props}
         />
     );

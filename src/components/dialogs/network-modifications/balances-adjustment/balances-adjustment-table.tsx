@@ -44,6 +44,7 @@ export default function BalancesAdjustmentTable() {
                 component: (rowIndex: number) =>
                     CountriesAutocomplete({
                         name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_COUNTRIES}`,
+                        dataTestId: 'CountriesInput',
                     }),
                 initialValue: [],
                 width: '280px',
@@ -62,6 +63,7 @@ export default function BalancesAdjustmentTable() {
                         }),
                         disableClearable: true,
                         sx: styles.autocomplete,
+                        dataTestId: 'ShiftEquipmentTypeInput',
                     }),
                 initialValue: ShiftEquipmentType.GENERATOR,
                 width: '150px',
@@ -79,6 +81,7 @@ export default function BalancesAdjustmentTable() {
                         }),
                         disableClearable: true,
                         sx: styles.autocomplete,
+                        dataTestId: 'ShiftTypeInput',
                     }),
                 initialValue: ShiftType.PROPORTIONAL,
                 width: '150px',

@@ -34,6 +34,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<F
                 equipmentTypes: [EquipmentType.GENERATOR],
                 elementType: ElementType.FILTER,
                 titleId: 'FiltersListsSelection',
+                dataTestId: 'GeneratorFilterInput',
             },
             {
                 label: intl
