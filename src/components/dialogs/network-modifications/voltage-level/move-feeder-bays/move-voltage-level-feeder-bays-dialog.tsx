@@ -7,12 +7,13 @@
 
 import {
     CustomFormProvider,
+    DeepNullable,
     EquipmentType,
     Identifiable,
     MODIFICATION_TYPES,
+    ProblemDetailError,
     snackWithFallback,
     useSnackMessage,
-    DeepNullable,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
@@ -282,6 +283,14 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         setDataFetchStatus(FetchStatus.FAILED);
                     }
                 } catch (error) {
+                    if (error instanceof ProblemDetailError && error.status === 404) {
+                        // Voltage level does not exist yet in the built network
+                        // (likely created by a pending modification on an unbuilt node).
+                        setDataFetchStatus(FetchStatus.SUCCEED);
+                        // Feed empty built network data to reach the unbuilt-node merge path.
+                        handleVoltageLevelDataFetch({}, []);
+                        return;
+                    }
                     console.error(error);
                     setDataFetchStatus(FetchStatus.FAILED);
                 }
