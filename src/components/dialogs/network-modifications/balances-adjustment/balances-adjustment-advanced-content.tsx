@@ -65,6 +65,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         limitTags={3}
                         label={intl.formatMessage({ id: 'descLfCountriesToBalance' })}
                         disabled={!withLoadFlow}
+                        dataTestId="BalancingCountriesInput"
                     />
                 </Box>
                 <Box sx={{ width: '100%' }}>
@@ -75,6 +76,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         sx={styles.autocomplete}
                         disabled={!withLoadFlow}
                         disableClearable={true}
+                        dataTestId="BalanceTypeInput"
                     />
                 </Box>
             </Stack>
