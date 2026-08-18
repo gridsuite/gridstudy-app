@@ -489,6 +489,7 @@ export const LineTypeSegmentForm: FunctionComponent<LineTypeSegmentFormProps> = 
                 deleteCallback={handleSegmentDelete}
                 alignItems="center"
                 rowDataTestId="LineDefinition"
+                addButtonDataTestId="AddSegmentButton"
             />
             <hr />
             <Grid container spacing={2}>

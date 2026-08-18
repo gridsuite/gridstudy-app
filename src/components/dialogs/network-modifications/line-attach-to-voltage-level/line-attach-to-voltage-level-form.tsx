@@ -203,6 +203,7 @@ const LineAttachToVoltageLevelForm = ({
                         onClick={openAttachmentPointDialog}
                         mode={hasSubstationCreation ? AddButtonMode.EDIT : AddButtonMode.ADD}
                         label="SpecifyAttachmentPoint"
+                        data-testid="AttachmentPointButton"
                     />
                 </GridItem>
             </Grid>
@@ -214,6 +215,7 @@ const LineAttachToVoltageLevelForm = ({
                         onClick={openVoltageLevelDialog}
                         mode={isVoltageLevelEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
                         label="NewVoltageLevel"
+                        data-testid="NewVoltageLevelButton"
                     />
                 </GridItem>
             </Grid>
@@ -225,6 +227,7 @@ const LineAttachToVoltageLevelForm = ({
                         onClick={openLineDialog}
                         mode={lineToEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
                         label="AttachedLine"
+                        data-testid="AttachedLineButton"
                     />
                 </GridItem>
             </Grid>
