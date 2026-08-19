@@ -1803,6 +1803,25 @@ export function assembleModificationsIntoComposite(
     });
 }
 
+/**
+ * Moves a composite modification of the node out of the study into a directory of GridExplore,
+ * and replaces it in the node by a reference to the newly shared composite modification.
+ */
+export function shareCompositeModification(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuid: UUID,
+    name: string,
+    description: string,
+    parentDirectoryUuid: UUID
+) {
+    console.info('Sharing composite modification');
+    const url = `${getNetworkModificationUrl(studyUuid, nodeUuid)}/${safeEncodeURIComponent(
+        modificationUuid
+    )}/share?${new URLSearchParams({ name, description, parentDirectoryUuid }).toString()}`;
+    return backendFetch(url, { method: 'POST' });
+}
+
 export function getNetworkModificationsFromComposite(
     compositeModificationUuids: string[],
     onlyMetadata: boolean = true
