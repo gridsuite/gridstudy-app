@@ -22,6 +22,7 @@ import {
     NetworkModificationMetadata,
     NetworkModificationsTable,
     NotificationsUrlKeys,
+    ReferenceModificationInfos,
     removeNullFields,
     setModificationMetadata,
     snackWithFallback,
@@ -179,7 +180,7 @@ const NetworkModificationNodeEditor = () => {
         []
     );
 
-    // TODO : this is temporary, until copy/paste/save is done for the shared modifications in GRD-4785 :
+    // TODO : this is temporary, until merge/delete is done for the shared modification
     const selectionContainsShared: boolean = useMemo(() => {
         return selectedNetworkModifications.some(
             (modification: ComposedModificationMetadata) =>
@@ -970,10 +971,25 @@ const NetworkModificationNodeEditor = () => {
         folderName,
         folderId,
     }: IElementCreationDialog) => {
-        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
-
         setSaveInProgress(true);
-        createCompositeModifications(name, description, folderId, selectedModificationsUuid)
+
+        Promise.all(
+            selectedNetworkModifications.map((item) =>
+                item.type === MODIFICATION_TYPES.MODIFICATION_REFERENCE.type
+                    ? fetchNetworkModification(item.uuid as UUID)
+                          .then((res) => res.json())
+                          .then((detail: ReferenceModificationInfos) => {
+                              if (detail.referenceId == null) {
+                                  throw new Error(`Missing referenceId for modification reference ${item.uuid}`);
+                              }
+                              return detail.referenceId;
+                          })
+                    : Promise.resolve(item.uuid)
+            )
+        )
+            .then((selectedModificationsUuid) =>
+                createCompositeModifications(name, description, folderId, selectedModificationsUuid)
+            )
             .then(() => {
                 snackInfo({
                     headerId: 'infoCreateModificationsMsg',
@@ -1251,8 +1267,20 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const disabledCompositeCreation: boolean = useMemo(() => {
-        return selectedNetworkModifications?.length === 0 || saveInProgress || isRootNode || isAssemblyDepthExceeded;
-    }, [selectedNetworkModifications, saveInProgress, isRootNode, isAssemblyDepthExceeded]);
+        return (
+            selectedNetworkModifications?.length === 0 ||
+            saveInProgress ||
+            isRootNode ||
+            isAssemblyDepthExceeded ||
+            selectionContainsShared
+        );
+    }, [
+        selectedNetworkModifications?.length,
+        saveInProgress,
+        isRootNode,
+        isAssemblyDepthExceeded,
+        selectionContainsShared,
+    ]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
         return (
@@ -1325,7 +1353,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            disabled={disabledCompositeExport || selectionContainsShared}
+                            disabled={disabledCompositeExport}
                         >
                             <SaveIcon />
                         </IconButton>
@@ -1341,8 +1369,7 @@ const NetworkModificationNodeEditor = () => {
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
                                 !currentNode ||
-                                isRootNode ||
-                                selectionContainsShared
+                                isRootNode
                             }
                         >
                             <ContentCutIcon />
@@ -1358,8 +1385,7 @@ const NetworkModificationNodeEditor = () => {
                                 selectedNetworkModifications.length === 0 ||
                                 isAnyNodeBuilding ||
                                 mapDataLoading ||
-                                isRootNode ||
-                                selectionContainsShared
+                                isRootNode
                             }
                         >
                             <ContentCopyIcon />
@@ -1381,7 +1407,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            disabled={isPasteButtonDisabled || isRootNode || selectionContainsShared}
+                            disabled={isPasteButtonDisabled || isRootNode}
                         >
                             <ContentPasteIcon />
                         </IconButton>
