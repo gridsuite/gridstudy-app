@@ -180,6 +180,14 @@ const NetworkModificationNodeEditor = () => {
         []
     );
 
+    // TODO : this is temporary, until merge/delete is done for the shared modification
+    const selectionContainsShared: boolean = useMemo(() => {
+        return selectedNetworkModifications.some(
+            (modification: ComposedModificationMetadata) =>
+                modification.type === ModificationType.MODIFICATION_REFERENCE
+        );
+    }, [selectedNetworkModifications]);
+
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
 
@@ -970,11 +978,15 @@ const NetworkModificationNodeEditor = () => {
                 item.type === MODIFICATION_TYPES.MODIFICATION_REFERENCE.type
                     ? fetchNetworkModification(item.uuid as UUID)
                           .then((res) => res.json())
-                          .then((detail: ReferenceModificationInfos) => detail.referenceId ?? null)
+                          .then((detail: ReferenceModificationInfos) => {
+                              if (detail.referenceId == null) {
+                                  throw new Error(`Missing referenceId for modification reference ${item.uuid}`);
+                              }
+                              return detail.referenceId;
+                          })
                     : Promise.resolve(item.uuid)
             )
         )
-            .then((uuids) => uuids.filter((uuid): uuid is UUID => uuid !== null))
             .then((selectedModificationsUuid) =>
                 createCompositeModifications(name, description, folderId, selectedModificationsUuid)
             )
@@ -1255,8 +1267,20 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const disabledCompositeCreation: boolean = useMemo(() => {
-        return selectedNetworkModifications?.length === 0 || saveInProgress || isRootNode || isAssemblyDepthExceeded;
-    }, [selectedNetworkModifications, saveInProgress, isRootNode, isAssemblyDepthExceeded]);
+        return (
+            selectedNetworkModifications?.length === 0 ||
+            saveInProgress ||
+            isRootNode ||
+            isAssemblyDepthExceeded ||
+            selectionContainsShared
+        );
+    }, [
+        selectedNetworkModifications?.length,
+        saveInProgress,
+        isRootNode,
+        isAssemblyDepthExceeded,
+        selectionContainsShared,
+    ]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
         return (
