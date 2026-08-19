@@ -44,7 +44,7 @@ export interface Selector {
     page: number;
     size: number;
     filter: FilterConfig[] | null;
-    sort: SortConfig[] | null | undefined;
+    sort: SortConfig[];
 }
 
 export const resultsStyles = {

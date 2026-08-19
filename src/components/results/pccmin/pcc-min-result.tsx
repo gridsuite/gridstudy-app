@@ -17,6 +17,7 @@ import {
     snackWithFallback,
     useSnackMessage,
     buildValidGlobalFilters,
+    RESULT_PAGE_OPTIONS,
 } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
@@ -26,7 +27,6 @@ import { useIntl } from 'react-intl';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { Box } from '@mui/material';
-import { PAGE_OPTIONS } from '../securityanalysis/security-analysis-result-utils';
 import PccMinResultTable from './pcc-min-result-table';
 import { PaginationType, TableType } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
@@ -217,7 +217,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}
             />
             <CustomTablePagination
-                rowsPerPageOptions={PAGE_OPTIONS}
+                rowsPerPageOptions={RESULT_PAGE_OPTIONS}
                 count={count}
                 rowsPerPage={rowsPerPage}
                 page={page}

@@ -6,22 +6,9 @@
  */
 
 import { useSelector } from 'react-redux';
-import {
-    SCAFaultResult,
-    SCAFeederResult,
-    SCAPagedResults,
-    ShortCircuitAnalysisType,
-} from './shortcircuit-analysis-result.type';
 import { AppState } from 'redux/reducer.type';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
-import {
-    convertFilterValues,
-    FROM_COLUMN_TO_FIELD,
-    FROM_COLUMN_TO_FIELD_ONE_BUS,
-    mappingTabs,
-    PAGE_OPTIONS,
-} from './shortcircuit-analysis-result-content';
 import {
     ComputingType,
     CustomTablePagination,
@@ -32,6 +19,15 @@ import {
     buildValidGlobalFilters,
     RESULTS_LOADING_DELAY,
     ShortCircuitAnalysisResultTable,
+    RESULT_PAGE_OPTIONS,
+    ShortCircuitAnalysisType,
+    SCAFaultResult,
+    SCAFeederResult,
+    FROM_COLUMN_TO_FIELD_ONE_BUS,
+    FROM_COLUMN_TO_FIELD,
+    mappingTabs,
+    convertFilterValues,
+    SCAPagedResults,
 } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
@@ -268,7 +264,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 onVoltageLevelClick={handleVoltageLevelClick}
             />
             <CustomTablePagination
-                rowsPerPageOptions={PAGE_OPTIONS}
+                rowsPerPageOptions={RESULT_PAGE_OPTIONS}
                 count={count}
                 rowsPerPage={rowsPerPage}
                 page={page}
