@@ -232,6 +232,7 @@ import {
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
 import { getLocalStorageSyncEnabled } from './session-storage/navigation-local-storage';
+import { saveLastTreeNodeUuid } from './session-storage/last-tree-node-local-storage';
 import { PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
@@ -1074,6 +1075,10 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
         state.reloadMapNeeded = true;
+        // keep track of the selected node to restore it when the study is opened again (page reload for example)
+        if (state.studyUuid && action.currentTreeNode?.id) {
+            saveLastTreeNodeUuid(state.studyUuid, action.currentTreeNode.id);
+        }
     });
 
     builder.addCase(HIGHLIGHT_MODIFICATION, (state, action: HighlightModificationAction) => {
@@ -1768,8 +1773,12 @@ function synchCurrentTreeNode(state: Draft<AppState>, nextCurrentNodeUuid?: UUID
          * we need to sync the current tree node uuid to localStorage
          * to avoid having deleted node selected in other tabs for example.
          */
-        if (state.syncEnabled && state.studyUuid) {
-            saveStudyNavigationSync(state.studyUuid, { treeNodeUuid: nextCurrentNode.id });
+        if (state.studyUuid) {
+            saveLastTreeNodeUuid(state.studyUuid, nextCurrentNode.id);
+
+            if (state.syncEnabled) {
+                saveStudyNavigationSync(state.studyUuid, { treeNodeUuid: nextCurrentNode.id });
+            }
         }
     }
 }
