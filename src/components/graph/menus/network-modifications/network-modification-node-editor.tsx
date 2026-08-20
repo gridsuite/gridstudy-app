@@ -1181,11 +1181,13 @@ const NetworkModificationNodeEditor = () => {
             ? (JSON.parse(selectedNetworkModifications[0]?.messageValues)?.name ?? null)
             : null;
 
-    // sharing moves the selected composite itself into gridexplore : it needs exactly one composite, and an
-    // already shared one (a reference) cannot be shared again
+    // Sharing moves the selected composite itself into gridexplore : it needs exactly one composite, and an
+    // already shared one (a reference) cannot be shared again. Only a composite of the node itself can be shared,
+    // not one nested in another composite, so the third condition: the modifications list holds the modifications of the node only
     const isSharingAvailable =
         selectedNetworkModifications.length === 1 &&
-        selectedNetworkModifications[0].type === ModificationType.COMPOSITE_MODIFICATION;
+        selectedNetworkModifications[0].type === ModificationType.COMPOSITE_MODIFICATION &&
+        modifications.some((modification) => modification.uuid === selectedNetworkModifications[0].uuid);
 
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
