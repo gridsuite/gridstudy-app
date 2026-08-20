@@ -23,11 +23,10 @@ import LoopIcon from '@mui/icons-material/Loop';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PlayIcon from '@mui/icons-material/PlayArrow';
-import RunningStatus from './running-status';
 import { useSelector } from 'react-redux';
 import { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
 import { AppState } from 'redux/reducer.type';
-import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import { mergeSx, RunningStatus, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     expand: (theme) => ({

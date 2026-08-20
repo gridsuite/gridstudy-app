@@ -18,6 +18,7 @@ import type {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    RunningStatus,
     GlobalFilter,
     RecentGlobalFilter,
 } from '@gridsuite/commons-ui';
@@ -33,7 +34,6 @@ import type {
     ShortcircuitAnalysisTab,
     TableSort,
 } from '../types/custom-aggrid-types';
-import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
 import type { CopyType } from '../components/network-modification.type';
 import type {

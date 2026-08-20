@@ -5,9 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { ModificationDialog } from '../../../commons/modificationDialog';
@@ -16,36 +14,29 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { createCouplingDevice } from '../../../../../services/study/network-modifications';
 import {
+    CouplingDeviceCreationDto,
+    couplingDeviceCreationDtoToForm,
+    CouplingDeviceCreationForm,
+    CouplingDeviceCreationFormData,
+    couplingDeviceCreationFormSchema,
+    couplingDeviceCreationFormToDto,
     CustomFormProvider,
+    DeepNullable,
+    emptyCouplingDeviceCreationFormData,
     EquipmentType,
-    MODIFICATION_TYPES,
+    FieldConstants,
     Option,
     snackWithFallback,
     useSnackMessage,
-    DeepNullable,
 } from '@gridsuite/commons-ui';
-import * as yup from 'yup';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
-import CreateCouplingDeviceForm from './create-coupling-device-form';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { CreateCouplingDeviceInfos } from '../../../../../services/network-modification-types';
-import { CreateCouplingDeviceDialogSchemaForm } from '../coupling-device-dialog.type';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { useForm } from 'react-hook-form';
 
-const emptyFormData = {
-    [BUS_BAR_SECTION_ID1]: null,
-    [BUS_BAR_SECTION_ID2]: null,
-};
-const formSchema = yup.object().shape({
-    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
-    [BUS_BAR_SECTION_ID2]: yup
-        .string()
-        .nullable()
-        .required()
-        .notOneOf([yup.ref(BUS_BAR_SECTION_ID1), null], 'CreateCouplingDeviceIdenticalBusBar'),
-});
 export type CreateCouplingDeviceDialogProps = EquipmentModificationDialogProps & {
-    editData?: CreateCouplingDeviceInfos;
+    editData?: CouplingDeviceCreationDto;
 };
 export default function CreateCouplingDeviceDialog({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
@@ -63,9 +54,9 @@ export default function CreateCouplingDeviceDialog({
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState<Option[]>([]);
 
-    const formMethods = useForm<DeepNullable<CreateCouplingDeviceDialogSchemaForm>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<CreateCouplingDeviceDialogSchemaForm>>(formSchema),
+    const formMethods = useForm<DeepNullable<CouplingDeviceCreationFormData>>({
+        defaultValues: emptyCouplingDeviceCreationFormData,
+        resolver: yupResolver<DeepNullable<CouplingDeviceCreationFormData>>(couplingDeviceCreationFormSchema),
     });
 
     const { reset, trigger, getValues, subscribe } = formMethods;
@@ -73,14 +64,14 @@ export default function CreateCouplingDeviceDialog({
     // Watch BUS_BAR_SECTION_ID1 changed
     useEffect(() => {
         const unsubscribe = subscribe({
-            name: [BUS_BAR_SECTION_ID1],
+            name: [FieldConstants.BUS_BAR_SECTION_ID1],
             formState: {
                 values: true,
             },
             callback: () => {
                 // force trigger validation on BUS_BAR_SECTION_ID2 if it has a value
-                if (getValues(BUS_BAR_SECTION_ID2)) {
-                    trigger(BUS_BAR_SECTION_ID2);
+                if (getValues(FieldConstants.BUS_BAR_SECTION_ID2)) {
+                    trigger(FieldConstants.BUS_BAR_SECTION_ID2);
                 }
             },
         });
@@ -92,15 +83,12 @@ export default function CreateCouplingDeviceDialog({
             if (editData?.voltageLevelId) {
                 setSelectedId(editData.voltageLevelId);
             }
-            reset({
-                [BUS_BAR_SECTION_ID1]: editData?.couplingDeviceInfos?.busbarSectionId1 ?? '',
-                [BUS_BAR_SECTION_ID2]: editData?.couplingDeviceInfos?.busbarSectionId2 ?? '',
-            });
+            reset(couplingDeviceCreationDtoToForm(editData));
         }
     }, [editData, reset]);
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(emptyCouplingDeviceCreationFormData);
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
@@ -112,17 +100,9 @@ export default function CreateCouplingDeviceDialog({
     });
 
     const onSubmit = useCallback(
-        (couplingDevice: CreateCouplingDeviceDialogSchemaForm) => {
-            const createCouplingDeviceInfos = {
-                type: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
-                voltageLevelId: selectedId,
-                couplingDeviceInfos: {
-                    busbarSectionId1: couplingDevice[BUS_BAR_SECTION_ID1],
-                    busbarSectionId2: couplingDevice[BUS_BAR_SECTION_ID2],
-                },
-            } satisfies CreateCouplingDeviceInfos;
+        (formData: CouplingDeviceCreationFormData) => {
             createCouplingDevice({
-                createCouplingDeviceInfos: createCouplingDeviceInfos,
+                couplingDeviceCreationDto: couplingDeviceCreationFormToDto(formData),
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid,
@@ -131,12 +111,16 @@ export default function CreateCouplingDeviceDialog({
                 snackWithFallback(snackError, error, { headerId: 'CreateCouplingDeviceError' });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError, selectedId]
+        [editData, studyUuid, currentNodeUuid, snackError]
     );
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: string) => {
             if (equipmentId) {
+                reset((formValues) => ({
+                    ...formValues,
+                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
+                }));
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchBusesOrBusbarSectionsForVoltageLevel(
                     studyUuid,
@@ -157,7 +141,7 @@ export default function CreateCouplingDeviceDialog({
                 setBusOrBusbarSectionOptions([]);
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, setDataFetchStatus]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset]
     );
 
     useEffect(() => {
@@ -168,7 +152,7 @@ export default function CreateCouplingDeviceDialog({
 
     return (
         <CustomFormProvider
-            validationSchema={formSchema}
+            validationSchema={couplingDeviceCreationFormSchema}
             removeOptional={true}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -196,10 +180,10 @@ export default function CreateCouplingDeviceDialog({
                     />
                 )}
                 {selectedId != null && (
-                    <CreateCouplingDeviceForm
+                    <CouplingDeviceCreationForm
                         sectionOptions={busOrBusbarSectionOptions}
-                        voltageLevelId={selectedId}
-                        currentNode={currentNode}
+                        PositionDiagramPane={PositionDiagramPane}
+                        canOpenPositionDiagramPane={isNodeBuilt(currentNode)}
                     />
                 )}
             </ModificationDialog>

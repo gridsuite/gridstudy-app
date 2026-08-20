@@ -16,7 +16,7 @@ import {
 import { IntlShape } from 'react-intl';
 import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
-import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
+import { makeAgGridCustomHeaderColumn, RunningStatus } from '@gridsuite/commons-ui';
 import { JSX, useEffect, useState } from 'react';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
@@ -29,7 +29,6 @@ import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import RunningStatus from 'components/utils/running-status';
 import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import {

@@ -4,9 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { areIdsEqual, AutocompleteInput, CATEGORIES_TABS, LineTypeInfo, Option } from '@gridsuite/commons-ui';
+import {
+    areIdsEqual,
+    AutocompleteInput,
+    CATEGORIES_TABS,
+    GridSection,
+    LineTypeInfo,
+    Option,
+} from '@gridsuite/commons-ui';
 import { GridItem } from '../commons/grid-item';
-import { GridSection } from '../commons/grid-section';
 import { Grid, Tab, Tabs } from '@mui/material';
 import {
     AERIAL_AREAS,

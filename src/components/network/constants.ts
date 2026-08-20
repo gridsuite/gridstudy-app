@@ -7,7 +7,6 @@
 import { LOAD_TYPES, UNDEFINED_LOAD_TYPE } from '@gridsuite/commons-ui';
 
 export const FORM_LOADING_DELAY = 200;
-export const RESULTS_LOADING_DELAY = 500;
 
 // For load tabular creations/modifications, we allow the UNDEFINED value
 export const LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION = [
@@ -97,11 +96,6 @@ export const VARIATION_TYPES = {
 export const SWITCH_TYPE = {
     BREAKER: { id: 'BREAKER', label: 'Breaker' },
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
-} as const;
-
-export const POSITION_NEW_SECTION_SIDE = {
-    BEFORE: { id: 'BEFORE', label: 'Before' },
-    AFTER: { id: 'AFTER', label: 'After' },
 } as const;
 
 export enum VscConverterMode {

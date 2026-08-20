@@ -12,7 +12,6 @@ import { FunctionComponent, MouseEvent as ReactMouseEvent, useCallback, useEffec
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { useCanModifyEquipment } from './use-can-modify-equipment';
-import { RunningStatus } from 'components/utils/running-status';
 import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
@@ -26,6 +25,7 @@ import {
     EquipmentType,
     type MuiStyles,
     PARAM_DEVELOPER_MODE,
+    RunningStatus,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';

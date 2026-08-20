@@ -8,7 +8,6 @@
 import { memo, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { RunningStatus } from '../../../../utils/running-status';
 import {
     equipmentsWithPopover,
     getEquipmentTypeFromFeederType,
@@ -35,6 +34,7 @@ import {
     EquipmentType,
     mergeSx,
     PARAM_DEVELOPER_MODE,
+    RunningStatus,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
