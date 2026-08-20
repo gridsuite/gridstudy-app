@@ -231,7 +231,7 @@ export default function VscCreationDialog({
                 modificationUuid: editData?.uuid,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'VscCreationError' });
+                snackWithFallback(snackError, error, { headerId: 'HvdcCreationError' });
             });
         },
         [studyUuid, currentNodeUuid, editData, snackError]

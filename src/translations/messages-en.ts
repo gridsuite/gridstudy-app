@@ -610,7 +610,6 @@ const messages_en = {
     reactiveCapabilityCurvePmax: 'Pmax',
     reactiveCapabilityCurveQminPmax: 'QminPmax',
     reactiveCapabilityCurveQmaxPmax: 'QmaxPmax',
-    CreateVsc: 'Create HVDC (VSC)',
     CreateLcc: 'Create HVDC (LCC)',
     Filters: 'Filters',
     Side: 'Side',
@@ -1081,8 +1080,6 @@ const messages_en = {
 
     converterStationId: 'Converter station ID',
     converterStationName: 'Converter station name',
-    converterStation1: 'Converter station 1',
-    converterStation2: 'Converter station 2',
     dcNominalVoltageLabel: 'DC nominal voltage',
     dcResistanceLabel: 'DC resistance',
     operatorActivePowerLimitSide2Label: 'Operator active power limit (Side2->Side1)',
