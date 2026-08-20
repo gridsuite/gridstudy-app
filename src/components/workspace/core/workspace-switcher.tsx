@@ -318,7 +318,7 @@ export const WorkspaceSwitcher = memo(() => {
             >
                 {workspaces.map((workspace, index) => (
                     <Tooltip key={workspace.id} title={workspace.name || `Workspace ${index + 1}`}>
-                        <ToggleButton value={workspace.id} sx={styles.toggleButton}>
+                        <ToggleButton value={workspace.id} sx={styles.toggleButton} data-testid="WorkSpace">
                             <Dashboard fontSize="small" />
                             <Typography className="workspace-number" variant="caption" component="span">
                                 {index + 1}
@@ -334,6 +334,7 @@ export const WorkspaceSwitcher = memo(() => {
                             e.stopPropagation();
                             setMenuAnchor(e.currentTarget);
                         }}
+                        data-testid="ManageWS"
                     >
                         <MoreVertIcon fontSize="small" />
                     </ToggleButton>
@@ -372,6 +373,7 @@ export const WorkspaceSwitcher = memo(() => {
                                                 handleOpenRenameDialog(workspace.id);
                                             }}
                                             sx={styles.actionButton}
+                                            data-testid="RenameWS"
                                         >
                                             <EditIcon fontSize="small" />
                                         </IconButton>
@@ -388,6 +390,7 @@ export const WorkspaceSwitcher = memo(() => {
                                                 setMenuAnchor(null);
                                             }}
                                             sx={{ flexShrink: 0 }}
+                                            data-testid="SaveWS"
                                         >
                                             <SaveIcon fontSize="small" />
                                         </IconButton>
@@ -404,6 +407,7 @@ export const WorkspaceSwitcher = memo(() => {
                                                 setMenuAnchor(null);
                                             }}
                                             sx={{ flexShrink: 0 }}
+                                            data-testid="UploadWS"
                                         >
                                             <Upload fontSize="small" />
                                         </IconButton>
@@ -419,6 +423,7 @@ export const WorkspaceSwitcher = memo(() => {
                                                 });
                                             }}
                                             sx={styles.actionButton}
+                                            data-testid="ResetWS"
                                         >
                                             <RestartAltIcon fontSize="small" />
                                         </IconButton>

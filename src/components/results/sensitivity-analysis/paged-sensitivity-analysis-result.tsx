@@ -12,7 +12,6 @@ import {
     DATA_KEY_TO_SORT_KEY,
     FUNCTION_TYPES,
     mappingTabs,
-    PAGE_OPTIONS,
     SensitivityResultTabs,
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
@@ -25,6 +24,7 @@ import {
     useDebounce,
     useSnackMessage,
     buildValidGlobalFilters,
+    RESULT_PAGE_OPTIONS,
 } from '@gridsuite/commons-ui';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -226,7 +226,7 @@ function PagedSensitivityAnalysisResult({
                 computationSubType={mappingTabs(sensiKind, nOrNkIndex)}
             />
             <CustomTablePagination
-                rowsPerPageOptions={PAGE_OPTIONS}
+                rowsPerPageOptions={RESULT_PAGE_OPTIONS}
                 count={count}
                 rowsPerPage={typeof rowsPerPage === 'number' ? rowsPerPage : rowsPerPage.value}
                 page={page}
