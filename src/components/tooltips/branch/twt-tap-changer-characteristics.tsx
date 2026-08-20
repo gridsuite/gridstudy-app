@@ -9,12 +9,24 @@ import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mu
 import { CellRender } from '../cell-render';
 import { formatValue, styles } from '../generic-equipment-popover-utils';
 import { TwtEquipmentInfos } from '../equipment-popover-type';
-import { getComputedRegulationMode } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
-import { getComputedPhaseTapChangerRegulationMode } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
+import { REGULATING } from '../../utils/field-constants';
+import { getComputedPhaseTapChangerRegulationMode, RATIO_REGULATION_MODES } from '@gridsuite/commons-ui';
 
 interface TwtTapChangerCharacteristicsProps {
     equipmentInfos: TwtEquipmentInfos;
 }
+
+const getComputedRegulationMode = (twt: TwtEquipmentInfos) => {
+    const ratioTapChangerValues = twt?.ratioTapChanger;
+    if (!ratioTapChangerValues) {
+        return null;
+    }
+    if (ratioTapChangerValues[REGULATING]) {
+        return RATIO_REGULATION_MODES.VOLTAGE_REGULATION;
+    } else {
+        return RATIO_REGULATION_MODES.FIXED_RATIO;
+    }
+};
 
 export const TwtTapChangerCharacteristics: React.FC<TwtTapChangerCharacteristicsProps> = ({ equipmentInfos }) => {
     const ratioTapChanger = equipmentInfos.ratioTapChanger;

@@ -107,7 +107,7 @@ export default function GeneratorCreationDialog({
                     reactiveCapabilityCurvePoints: generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
                 }),
                 ...getRegulatingTerminalFormData({
-                    equipmentId: generator.regulatingTerminalConnectableId || generator.regulatingTerminalId,
+                    equipmentID: generator.regulatingTerminalConnectableId || generator.regulatingTerminalId,
                     equipmentType: generator.regulatingTerminalConnectableType,
                     voltageLevelId: generator.regulatingTerminalVlId,
                 }),
