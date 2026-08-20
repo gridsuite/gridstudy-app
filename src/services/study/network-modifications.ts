@@ -39,6 +39,7 @@ import {
     StaticVarCompensatorCreationDto,
     CouplingDeviceCreationDto,
     CreateVoltageLevelTopologyDto,
+    VoltageLevelSectionCreationDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -46,7 +47,6 @@ import type { UUID } from 'node:crypto';
 import {
     AttachLineInfo,
     BalancesAdjustmentInfos,
-    CreateVoltageLevelSectionInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
@@ -1032,7 +1032,7 @@ export function createVoltageLevelSection({
     modificationUuid,
     isUpdate,
 }: {
-    voltageLevelSectionInfos: CreateVoltageLevelSectionInfos;
+    voltageLevelSectionInfos: VoltageLevelSectionCreationDto;
     studyUuid: UUID;
     nodeUuid?: UUID;
     modificationUuid: string | null;
