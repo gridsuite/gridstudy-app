@@ -606,7 +606,6 @@ const messages_fr = {
     'withoutunit.stepUpTransformerX': 'Réactance du transformateur',
     plannedActivePowerSetPoint: 'P imposée (MW)',
     'withoutunit.plannedActivePowerSetPoint': 'P imposée',
-    RatedNominalPowerMustBeGreaterThanZero: 'La valeur de la puissance nominale doit être supérieure à 0',
     reactiveCapabilityCurvePmin: 'Pmin',
     reactiveCapabilityCurveQminPmin: 'QminPmin',
     reactiveCapabilityCurveQmaxPmin: 'QmaxPmin',
@@ -719,47 +718,21 @@ const messages_fr = {
     PermanentCurrentLimitText1: 'PATL 1',
     PermanentCurrentLimitText2: 'PATL 2',
 
-    CreateTwoWindingsTransformer: 'Créer un transformateur à 2 enroulements',
     ModifyTwoWindingsTransformer: 'Modifier un transformateur à 2 enroulements',
     TwoWindingsTransformerModificationError: "Erreur lors de la modification d'un transformateur à 2 enroulement",
     TwoWindingsTransformerCharacteristicsTab: 'Caractéristiques',
     TwoWindingsTransformerRatioTapChangerTab: 'Régleur',
     TwoWindingsTransformerPhaseTapChangerTab: 'Déphaseur',
-    ConfigureRatioTapChanger: 'Créer régleur',
-    WithRatioTapChanger: 'Avec régleur',
-    ConfigurePhaseTapChanger: 'Créer déphaseur',
-    WithPhaseTapChanger: 'Avec déphaseur',
-    RegulatedSide: 'Côté réglé',
-    RatioRegulatedSide: 'Côté réglé régleur',
-    PhaseRegulatedSide: 'Côté réglé déphaseur',
-    RegulatedSide1: 'côté 1',
-    RegulatedSide2: 'côté 2',
 
-    OnLoad: 'Passage de prises en charge',
-    VoltageRegulation: 'Réglage de tension',
-    ResetRegulationRule: 'Réinitialiser la loi de réglage',
     Regulating: 'En réglage',
-    TargetVoltage: 'Consigne de tension',
-    TargetVoltageMustBeGreaterThanZero: 'La tension doit être supérieure à 0',
-    Deadband: 'Bande morte',
     [TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'La valeur de la bande morte doit être supérieure ou égale à 0',
-    LowTapPosition: 'Prise min',
-    HighTapPosition: 'Prise max',
-    TapPosition: 'Prise courante',
     HighTapPositionError: 'La valeur de la prise max doit être comprise entre la prise min et 100',
-    TapPositionMustBeBetweenLowAndHighTapPositionValue:
-        'La valeur de la prise courante doit être comprise entre la valeur de Prise min et Prise max',
-    RegulatedTerminal: 'Terminal réglé',
-    GenerateRatioTapRowsError: 'Veuillez générer les prises du régleur',
-    GeneratePhaseTapRowsError: 'Veuillez générer les prises du déphaseur',
     IncoherentRatioTapPositionError:
         "La valeur du champ Prise courante du régleur n'est pas présente dans les données de ses prises",
     IncoherentPhaseTapPositionError:
         "La valeur du champ Prise courante du déphaseur n'est pas présente dans les données de ses prises",
     IncoherentRatioRegulatingTerminalError: 'La valeur du Terminal distant réglé du régleur doit être renseignée',
     IncoherentPhaseRegulatingTerminalError: 'La valeur du Terminal distant réglé du déphaseur doit être renseignée',
-    RatioValuesError: 'Les rapports de transformation doivent être ordonnés et sans duplication',
-    PhaseShiftValuesError: 'Les valeurs de déphasage doivent être ordonnés et sans duplication',
     IncoherentLowTapPositionError: 'La valeur doit correspondre à la plus petite prise générée',
     IncoherentHighTapPositionError: 'La valeur doit correspondre à la plus grande prise générée',
 
@@ -781,46 +754,12 @@ const messages_fr = {
     FilterUpdateSuccess: 'Filtre mis à jour avec succès',
     FilterUpdateError: 'Erreur lors de la mise à jour du filtre',
 
-    Tap: 'Prise',
-    DeltaResistance: 'Δ Résistance (%)',
-    DeltaReactance: 'Δ Réactance (%)',
-    DeltaConductance: 'Δ Conductance (%)',
-    DeltaSusceptance: 'Δ Susceptance (%)',
-    Ratio: 'Rapport',
-    Alpha: 'Déphasage (°)',
-
-    ImportFileResistance: 'Resistance',
-    ImportFileReactance: 'Reactance',
-    ImportFileConductance: 'Conductance',
-    ImportFileSusceptance: 'Susceptance',
-    ImportFileAlpha: 'Dephasage',
-
-    RegulationMode: 'Mode de réglage',
     RatioRegulationMode: 'Mode de réglage régleur',
 
     FixedTap: 'Déphasage constant',
-    CurrentLimiter: 'Limitation de courant',
-    PhaseActivePowerControl: 'Suivi de transit',
-
-    FixedRatio: 'Rapport fixe',
-
-    RegulatingValueCurrentLimiter: 'Limitation du courant',
-    CurrentLimiterMustBeGreaterThanZero: 'La valeur de la limitation du courant doit être supérieure à 0',
-    RegulatingValueActivePowerControl: 'Consigne de transit',
-
-    CreateRegulationRule: 'Créer une loi de régleur',
-    LowTapRatio: 'Rapport (prise min)',
-    HighTapRatio: 'Rapport (prise max)',
-    ImportRegulationRule: 'Importer une loi de régleur',
 
     DeleteRows: 'Supprimer',
 
-    CreateDephasingRule: 'Créer une loi de déphasage',
-    LowTapAlpha: 'Déphasage (prise min)',
-    HighTapAlpha: 'Déphasage (prise max)',
-    ImportDephasingRule: 'Importer une loi de déphasage',
-
-    GenerateSkeleton: 'Générer le modèle',
     GenerateTemplateFromFilter: 'Générer depuis un filtre',
     GenerateFromFilterError: 'Erreur lors de la génération du modèle depuis le filtre',
     uploadMessage: ' Aucun fichier sélectionné',
@@ -841,8 +780,6 @@ const messages_fr = {
     'PrefilledColumn.ReactivePowerLimits': 'Limites puissance réactive',
     'PrefilledColumn.ReactiveCapabilityCurve': 'Diagramme de groupe',
 
-    RatedVoltage: "Tension d'enroulement",
-    TwoWindingsTransformerCreationError: "Erreur lors de la création d'un transformateur à 2 enroulements",
     NewName: 'Nouveau nom',
 
     CopyFromExisting: 'Copier depuis un ouvrage existant',
@@ -1317,8 +1254,6 @@ const messages_fr = {
 
     confirmRootNetworkCreation:
         "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
-    RegulationSection: 'Réglage',
-    TapsSection: 'Prises',
     VOLTAGE_LEVEL_TOPOLOGY: 'Modifier la topologie',
     ModifyVoltageLevelTopology: "Modifier la topologie d'un poste",
     TopologyNotRetrieved: "La topologie du poste n'a pas pu être récupérée",

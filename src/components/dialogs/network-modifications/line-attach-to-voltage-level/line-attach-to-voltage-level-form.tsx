@@ -27,6 +27,7 @@ import {
     TextInput,
     VoltageLevelOption,
     LineCreationDto,
+    LineCreationDtoWithId,
     GridSection,
 } from '@gridsuite/commons-ui';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
@@ -48,7 +49,7 @@ interface LineAttachToVoltageLevelFormProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationDto }) => Promise<string>;
-    lineToEdit?: LineCreationDto;
+    lineToEdit?: LineCreationDtoWithId;
     onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     voltageLevelToEdit?: ExtendedVoltageLevelCreationInfo;
     onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
