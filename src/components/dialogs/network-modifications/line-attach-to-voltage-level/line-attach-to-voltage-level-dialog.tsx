@@ -13,6 +13,7 @@ import {
     getConnectivityWithoutPositionEmptyFormData,
     getNewVoltageLevelData,
     LineCreationDto,
+    LineCreationDtoWithId,
     ModificationType,
     sanitizeString,
     snackWithFallback,
@@ -139,7 +140,7 @@ const LineAttachToVoltageLevelDialog = ({
 }: LineAttachToVoltageLevelDialogProps) => {
     const currentNodeUuid = currentNode?.id;
 
-    const [attachmentLine, setAttachmentLine] = useState<LineCreationDto>();
+    const [attachmentLine, setAttachmentLine] = useState<LineCreationDtoWithId>();
     const [newVoltageLevel, setNewVoltageLevel] = useState<VoltageLevelCreationDto>();
     const [attachmentPoint, setAttachmentPoint] = useState<VoltageLevelCreationDto>(emptyAttachmentPoint);
 
