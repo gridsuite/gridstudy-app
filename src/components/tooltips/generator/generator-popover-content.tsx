@@ -11,7 +11,7 @@ import { CellRender } from '../cell-render';
 import { GeneratorEquipmentInfos } from '../equipment-popover-type';
 import { GeneratorActivePowerTable } from './generator-active-power-table';
 import { GeneratorVoltageRegulationTable } from './generator-voltage-regulation-table';
-import RunningStatus from 'components/utils/running-status';
+import { RunningStatus } from '@gridsuite/commons-ui';
 interface GeneratorPopoverContentProps {
     equipmentInfos: GeneratorEquipmentInfos;
     loadFlowStatus?: RunningStatus;

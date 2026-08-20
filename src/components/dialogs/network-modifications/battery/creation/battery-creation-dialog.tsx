@@ -102,7 +102,7 @@ export default function BatteryCreationDialog({
                     reactiveCapabilityCurvePoints: battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
                 }),
                 ...getRegulatingTerminalFormData({
-                    equipmentId: battery.regulatingTerminalConnectableId || battery.regulatingTerminalId,
+                    equipmentID: battery.regulatingTerminalConnectableId || battery.regulatingTerminalId,
                     equipmentType: battery.regulatingTerminalConnectableType,
                     voltageLevelId: battery.regulatingTerminalVlId,
                 }),
