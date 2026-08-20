@@ -29,7 +29,6 @@ import {
     EquipmentType,
     equipmentTypesForPredefinedPropertiesMapper,
     getCsvDelimiter,
-    LANG_FRENCH,
     ModificationType,
     PredefinedProperties,
     Property,
@@ -267,15 +266,6 @@ export const sanitizeRowValue = (value: any, fieldDefinition: TabularField | und
     }
     if (!isFieldTypeOk(value, fieldDefinition)) {
         return null;
-    }
-    return value;
-};
-
-export const transformIfFrenchNumber = (value: string, language: string): string => {
-    value = value.trim();
-    // Only transform if we're in French mode and the value is a number that has a comma
-    if (language === LANG_FRENCH && value.includes(',') && !isNaN(Number(value.replace(',', '.')))) {
-        return value.replace(',', '.');
     }
     return value;
 };
