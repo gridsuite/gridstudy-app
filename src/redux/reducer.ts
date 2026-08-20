@@ -26,7 +26,17 @@ import {
     type UserAction,
     type UserValidationErrorAction,
     EquipmentType,
+    addGlobalFilterId,
+    getGlobalFilterId,
+    GlobalFilter,
+    RecentGlobalFilter,
+    addSelectedGlobalFiltersToTableState,
+    clearSelectedGlobalFiltersFromTableState,
+    markNotFoundGlobalFiltersAsDeletedInState,
+    MAX_RECENT_GLOBAL_FILTERS,
+    removeSelectedGlobalFiltersFromTableState,
 } from '@gridsuite/commons-ui';
+
 import {
     ADD_GLOBAL_FILTERS,
     ADD_NOTIFICATION,
@@ -290,21 +300,6 @@ import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
-import {
-    addGlobalFilterId,
-    getGlobalFilterId,
-} from '../components/results/common/global-filter/utils/global-filter-utils';
-import type {
-    GlobalFilter,
-    RecentGlobalFilter,
-} from '../components/results/common/global-filter/types/global-filter.type';
-import {
-    addSelectedGlobalFiltersToTableState,
-    clearSelectedGlobalFiltersFromTableState,
-    markNotFoundGlobalFiltersAsDeletedInState,
-    MAX_RECENT_GLOBAL_FILTERS,
-    removeSelectedGlobalFiltersFromTableState,
-} from '../components/results/common/global-filter/utils/global-filter-state.utils';
 
 // Types are defined in reducer.type.ts — import them directly from there
 import {
@@ -315,7 +310,6 @@ import {
     type SpreadsheetNetworkState,
     type Substation,
 } from './reducer.type';
-import { isCriteriaFilter } from '../components/results/common/global-filter/types/filter.type';
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
     switch (updateType) {
@@ -365,6 +359,23 @@ function buildSortedRecents(filters: GlobalFilter[]): RecentGlobalFilter[] {
         .map((f) => ({ id: getGlobalFilterId(f), unselectedDate: f.unselectedDate! }))
         .sort((a, b) => b.unselectedDate - a.unselectedDate)
         .slice(0, MAX_RECENT_GLOBAL_FILTERS);
+}
+
+/**
+ * Stores the full filter objects in globalFilterOptions, so that the ids kept in
+ * tableFilters.globalFilters can be resolved right away — without waiting for the asynchronous
+ * option fetches of useGlobalFilterOptions (countries, substation properties, base voltages).
+ * Existing options are left untouched: the ones fetched from the network are the source of truth, and
+ * ADD_TO_GLOBAL_FILTER_OPTIONS overwrites by id anything registered here from a stale collection.
+ */
+function registerGlobalFilterOptions(globalFilterOptions: GlobalFilter[], filters: GlobalFilter[]) {
+    filters.forEach((filter) => {
+        const id = getGlobalFilterId(filter);
+        const alreadyExists = globalFilterOptions.some((opt) => opt.id === id);
+        if (!alreadyExists) {
+            globalFilterOptions.push(addGlobalFilterId(filter));
+        }
+    });
 }
 
 export const DEFAULT_PAGINATION: PaginationConfig = {
@@ -519,6 +530,9 @@ const initialState: AppState = {
         },
         [SpreadsheetEquipmentType.BUS]: {
             networkComponents: false,
+        },
+        [SpreadsheetEquipmentType.BATTERY]: {
+            regulatingTerminal: false,
         },
     },
     networkVisualizationsParameters: null,
@@ -825,13 +839,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 selected: selectedFilters.map(getGlobalFilterId),
                 recents: buildSortedRecents(recentFilters),
             };
-            // Store full objects in globalFilterOptions only if not already present
-            filters.filter(isCriteriaFilter).forEach((filter) => {
-                const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
-                if (!alreadyExists) {
-                    state.globalFilterOptions.push(addGlobalFilterId(filter));
-                }
-            });
+            registerGlobalFilterOptions(state.globalFilterOptions, filters);
         });
     });
 
@@ -1603,13 +1611,7 @@ export const reducer = createReducer(initialState, (builder) => {
             }
         }
 
-        // Store full objects in globalFilterOptions only if not already present (same as above and also preserve the recent status)
-        action.filters.filter(isCriteriaFilter).forEach((filter) => {
-            const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
-            if (!alreadyExists) {
-                state.globalFilterOptions.push(addGlobalFilterId(filter));
-            }
-        });
+        registerGlobalFilterOptions(state.globalFilterOptions, action.filters);
     });
 
     builder.addCase(SET_CALCULATION_SELECTIONS, (state, action: SetCalculationSelectionsAction) => {

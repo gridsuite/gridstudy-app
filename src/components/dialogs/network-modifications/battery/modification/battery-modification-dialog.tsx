@@ -41,6 +41,7 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { WithModificationId } from 'services/network-modification-types';
+import { fetchVoltageLevelEquipments } from '../../../../../services/study/network-map';
 
 interface BatteryModificationDtoWithId extends BatteryModificationDto, WithModificationId {}
 
@@ -221,6 +222,12 @@ export default function BatteryModificationDialog({
         delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in BatteryModificationForm and right after receiving the editData without waiting
     });
 
+    const getVoltageLevelEquipments = useCallback(
+        (voltageLevelId: string) =>
+            fetchVoltageLevelEquipments(studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelId, true),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
+
     return (
         <CustomFormProvider
             validationSchema={batteryModificationFormSchema}
@@ -234,7 +241,7 @@ export default function BatteryModificationDialog({
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
                 maxWidth={'md'}
-                PaperProps={{ sx: { height: '75vh' } }}
+                slotProps={{ paper: { sx: { height: '75vh' } } }}
                 titleId="ModifyBattery"
                 open={open}
                 keepMounted={true}
@@ -259,6 +266,7 @@ export default function BatteryModificationDialog({
                         voltageLevelOptions={voltageLevelOptions}
                         fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                         PositionDiagramPane={PositionDiagramPane}
+                        fetchVoltageLevelEquipments={getVoltageLevelEquipments}
                     />
                 )}
             </ModificationDialog>

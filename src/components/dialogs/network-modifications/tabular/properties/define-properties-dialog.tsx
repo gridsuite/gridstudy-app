@@ -6,7 +6,7 @@
  */
 
 import { useEffect } from 'react';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
     CustomFormProvider,
     type EquipmentType,
@@ -52,7 +52,6 @@ export default function DefinePropertiesDialog({
     currentProperties,
     predefinedEquipmentProperties,
     onValidate,
-    ...dialogProps
 }: Readonly<DefinePropertiesDialogProps>) {
     const formMethods = useForm<PropertiesFormType>({
         defaultValues: emptyProperties,
@@ -93,8 +92,7 @@ export default function DefinePropertiesDialog({
                 onClose={onClose}
                 onSave={onValidate}
                 onClear={() => null}
-                PaperProps={{ sx: styles.dialogContent }}
-                {...dialogProps}
+                slotProps={{ paper: { sx: styles.dialogContent } }}
             >
                 <Grid container>
                     <PropertiesForm />

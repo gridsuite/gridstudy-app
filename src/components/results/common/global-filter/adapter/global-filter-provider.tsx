@@ -6,7 +6,6 @@
  */
 
 import { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
-import { GlobalFilter as GlobalFilterType, RecentGlobalFilter } from '../types/global-filter.type';
 import {
     ElementAttributes,
     ElementType,
@@ -15,6 +14,11 @@ import {
     fetchElementsInfos,
     snackWithFallback,
     useSnackMessage,
+    GlobalFilterContextProvider,
+    GlobalFilterType,
+    isCriteriaFilter,
+    GlobalFilter,
+    RecentGlobalFilter,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../../utils/compute-title';
 import {
@@ -30,14 +34,11 @@ import { AppDispatch } from '../../../../../redux/store';
 import { HttpStatusCode } from '../../../../../utils/http-status-code';
 import { TableType } from '../../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../../redux/reducer.type';
-import GlobalFilterContextProvider from '../context/global-filter-context-provider';
 import type { UUID } from 'node:crypto';
-
-import { FilterType, isCriteriaFilter } from '../types/filter.type';
 
 const EMPTY_ARRAY: RecentGlobalFilter[] = [];
 
-type FilterUpdateResult = { kind: 'updated' | 'notFound'; filter: GlobalFilterType } | { kind: 'unchanged' };
+type FilterUpdateResult = { kind: 'updated' | 'notFound'; filter: GlobalFilter } | { kind: 'unchanged' };
 
 type GlobalFilterProviderProps = PropsWithChildren<{
     tableType: TableType;
@@ -61,13 +62,13 @@ export default function GlobalFilterProvider({ children, tableType, tableUuid }:
             selectedFilterIds
                 ? selectedFilterIds
                       .map((id) => globalFilterOptions.find((opt) => opt.id === id))
-                      .filter((filter): filter is GlobalFilterType => filter !== undefined)
+                      .filter((filter): filter is GlobalFilter => filter !== undefined)
                 : [],
         [selectedFilterIds, globalFilterOptions]
     );
 
     const updateGenericFilter = useCallback(
-        async (genericFilter: GlobalFilterType): Promise<FilterUpdateResult> => {
+        async (genericFilter: GlobalFilter): Promise<FilterUpdateResult> => {
             try {
                 if (!genericFilter.uuid) {
                     return { kind: 'unchanged' };
@@ -98,12 +99,12 @@ export default function GlobalFilterProvider({ children, tableType, tableUuid }:
     // Check the selected global filters and mark them as deleted if they no longer exist.
     useEffect(() => {
         const checkSelectedFilters = async () => {
-            const genericFilters: GlobalFilterType[] = selectedGlobalFilters.filter(
+            const genericFilters: GlobalFilter[] = selectedGlobalFilters.filter(
                 (globalFilter) => isCriteriaFilter(globalFilter) && !globalFilter.deleted
             );
             const results = await Promise.all(genericFilters.map(updateGenericFilter));
-            const updatedFilters: GlobalFilterType[] = [];
-            const notFoundFilters: GlobalFilterType[] = [];
+            const updatedFilters: GlobalFilter[] = [];
+            const notFoundFilters: GlobalFilter[] = [];
             for (const result of results) {
                 if (result.kind === 'updated') updatedFilters.push(result.filter);
                 else if (result.kind === 'notFound') notFoundFilters.push(result.filter);
@@ -147,7 +148,7 @@ export default function GlobalFilterProvider({ children, tableType, tableUuid }:
     const addFiltersToGlobalFiltersOptions = useCallback(
         async (elementIds: UUID[]) => {
             const elements: ElementAttributes[] = await fetchElementsInfos(elementIds);
-            const newlySelectedFilters: GlobalFilterType[] = [];
+            const newlySelectedFilters: GlobalFilter[] = [];
             elements.forEach((element: ElementAttributes) => {
                 // ignore already selected filters and non-generic filters :
                 if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
@@ -160,7 +161,9 @@ export default function GlobalFilterProvider({ children, tableType, tableUuid }:
                         uuid: element.elementUuid,
                         equipmentType: element.specificMetadata?.equipmentType,
                         label: element.elementName,
-                        filterType: substationOrVoltageLevel ? FilterType.SUBSTATION_OR_VL : FilterType.GENERIC_FILTER,
+                        filterType: substationOrVoltageLevel
+                            ? GlobalFilterType.SUBSTATION_OR_VL
+                            : GlobalFilterType.GENERIC_FILTER,
                         filterTypeFromMetadata: element.specificMetadata?.type,
                     });
                 }

@@ -19,7 +19,7 @@ import {
     GENERATORS_WITHOUT_OUTAGE,
     LOSS_COEFFICIENT,
 } from 'components/utils/field-constants';
-import { Box, Grid2 as Grid, Stack, Typography } from '@mui/material';
+import { Box, Grid, Stack, Typography } from '@mui/material';
 import FrequencyReservePane from './frequency-reserve-pane';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
 import { GridItem } from '../../commons/grid-item';

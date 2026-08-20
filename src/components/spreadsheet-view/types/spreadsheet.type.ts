@@ -6,8 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import type { Identifiable } from '@gridsuite/commons-ui';
-import type { GlobalFilter } from '../../results/common/global-filter/types/global-filter.type';
+import type { Identifiable, GlobalFilter } from '@gridsuite/commons-ui';
 import { COLUMN_TYPES, SortConfig } from '../../../types/custom-aggrid-types';
 
 // The order of the enum values is important, do not change it without checking the usage (e.g. in select options in AddEmptySpreadsheetDialog)
@@ -124,6 +123,9 @@ export type SpreadsheetOptionalLoadingParameters = {
     [SpreadsheetEquipmentType.LINE]: BranchOptionalLoadingParameters;
     [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: BranchOptionalLoadingParameters;
     [SpreadsheetEquipmentType.GENERATOR]: {
+        regulatingTerminal: boolean;
+    };
+    [SpreadsheetEquipmentType.BATTERY]: {
         regulatingTerminal: boolean;
     };
     [SpreadsheetEquipmentType.BUS]: {

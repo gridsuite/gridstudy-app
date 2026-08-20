@@ -14,6 +14,7 @@ import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { mapColumns } from '../columns/utils/column-mapper';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
+import { useSpreadsheetGlobalFilter } from './spreadsheet-content/hooks/use-spreadsheet-gs-filter';
 import type { UUID } from 'node:crypto';
 import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import { CustomColDef } from '../../../types/custom-aggrid-types';
@@ -32,6 +33,9 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
     const gridRef = useRef<AgGridReact>(null);
     const { snackError } = useSnackMessage();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const isEquipmentFetching = useSelector(
+        (state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]?.isFetching ?? false
+    );
 
     const columnsDefinitions = useMemo(
         () => mapColumns(tableDefinition, snackError, loadFlowStatus, isSecurityModificationNode(currentNode)),
@@ -43,10 +47,18 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
         gridRef.current?.api?.refreshCells({ force: true, suppressFlash: true });
     }, [columnsDefinitions]);
 
+    const { isExternalFilterPresent, doesFormulaFilteringPass, isGlobalFilterPending } = useSpreadsheetGlobalFilter(
+        gridRef,
+        tableDefinition?.uuid,
+        tableDefinition?.type
+    );
+
     const rowCounterInfos = useFilteredRowCounterInfo({
         gridRef,
         tableDefinition,
         disabled,
+        // the row counter stays loading until both the equipment fetch and the global filter evaluation are done
+        isDataPending: isEquipmentFetching || isGlobalFilterPending,
     });
 
     const displayedColsDefs = useMemo(() => {
@@ -85,6 +97,9 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
                 disabled={disabled}
                 registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
                 active={active}
+                isExternalFilterPresent={isExternalFilterPresent}
+                doesFormulaFilteringPass={doesFormulaFilteringPass}
+                isGlobalFilterPending={isGlobalFilterPending}
             />
         </>
     );

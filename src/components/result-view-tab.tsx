@@ -340,7 +340,14 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     return (
         <Paper sx={styles.table}>
             <Box>
-                <Tabs value={tabIndex} variant="scrollable" onChange={handleChangeTab} TabIndicatorProps={{}}>
+                <Tabs
+                    value={tabIndex}
+                    variant="scrollable"
+                    onChange={handleChangeTab}
+                    slotProps={{
+                        indicator: {},
+                    }}
+                >
                     {services.map((service) => renderTab(service))}
                 </Tabs>
                 {disabled && <AlertCustomMessageNode message={{ descriptor: { id: 'InvalidNode' } }} />}

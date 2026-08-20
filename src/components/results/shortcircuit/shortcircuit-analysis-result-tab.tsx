@@ -24,6 +24,7 @@ import {
     ManagedExportCsvButton,
     snackWithFallback,
     useSnackMessage,
+    buildValidGlobalFilters,
 } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
@@ -52,7 +53,6 @@ import {
     ShortCircuitCsvExportParams,
 } from '../../../services/study/short-circuit-analysis';
 import { downloadZipFile } from '../../../services/utils';
-import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { getSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 
 interface ShortCircuitAnalysisResultTabProps {
