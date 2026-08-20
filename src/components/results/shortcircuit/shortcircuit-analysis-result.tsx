@@ -5,24 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
-import {
-    SCAFaultResult,
-    SCAFeederResult,
-    SCAPagedResults,
-    ShortCircuitAnalysisType,
-} from './shortcircuit-analysis-result.type';
 import { AppState } from 'redux/reducer.type';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
-import {
-    convertFilterValues,
-    FROM_COLUMN_TO_FIELD,
-    FROM_COLUMN_TO_FIELD_ONE_BUS,
-    mappingTabs,
-    PAGE_OPTIONS,
-} from './shortcircuit-analysis-result-content';
 import {
     ComputingType,
     CustomTablePagination,
@@ -32,6 +18,16 @@ import {
     useSnackMessage,
     buildValidGlobalFilters,
     RESULTS_LOADING_DELAY,
+    ShortCircuitAnalysisResultTable,
+    RESULT_PAGE_OPTIONS,
+    ShortCircuitAnalysisType,
+    SCAFaultResult,
+    SCAFeederResult,
+    FROM_COLUMN_TO_FIELD_ONE_BUS,
+    FROM_COLUMN_TO_FIELD,
+    mappingTabs,
+    convertFilterValues,
+    SCAPagedResults,
 } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
@@ -48,6 +44,9 @@ import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
+import { PanelType } from '../../workspace/types/workspace.types';
+import { useWorkspacePanelActions } from '../../workspace/hooks/use-workspace-panel-actions';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -236,6 +235,20 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         delay: RESULTS_LOADING_DELAY,
     });
 
+    const onGridReady = useAgGridInitialColumnFilters(
+        TableType.ShortcircuitAnalysis,
+        mappingTabs(ShortCircuitAnalysisType.ONE_BUS),
+        onGridColumnsChanged
+    );
+
+    const { openSLD } = useWorkspacePanelActions();
+    const handleVoltageLevelClick = useCallback(
+        (voltageLevelId: string) => {
+            openSLD({ equipmentId: voltageLevelId, panelType: PanelType.SLD_VOLTAGE_LEVEL });
+        },
+        [openSLD]
+    );
+
     return (
         <>
             <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
@@ -244,13 +257,14 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 analysisType={analysisType}
                 isFetching={isFetching}
                 filterEnums={filterEnums}
-                onGridColumnsChanged={onGridColumnsChanged}
+                shortCircuitAnalysisStatus={analysisStatus}
                 onDisplayedColumnsChanged={onDisplayedColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
-                computationSubType={mappingTabs(analysisType)}
+                onGridReady={onGridReady}
+                onVoltageLevelClick={handleVoltageLevelClick}
             />
             <CustomTablePagination
-                rowsPerPageOptions={PAGE_OPTIONS}
+                rowsPerPageOptions={RESULT_PAGE_OPTIONS}
                 count={count}
                 rowsPerPage={rowsPerPage}
                 page={page}
