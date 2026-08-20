@@ -36,7 +36,6 @@ import { useWatch } from 'react-hook-form';
 import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
@@ -46,9 +45,9 @@ interface LineAttachToVoltageLevelFormProps {
     currentRootNetworkUuid: UUID;
     onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationDto }) => Promise<string>;
     lineToEdit?: LineCreationDto;
-    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
+    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationDto) => Promise<string>;
     voltageLevelToEdit?: VoltageLevelCreationDto;
-    onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
+    onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationDto) => Promise<string>;
     attachmentPoint: VoltageLevelCreationDto;
     setAttachmentPoint: Dispatch<SetStateAction<VoltageLevelCreationDto>>;
     allVoltageLevelOptions: VoltageLevelOption[];

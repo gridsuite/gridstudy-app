@@ -53,8 +53,6 @@ import { fetchVoltageLevelsListInfos } from '../../../../services/study/network'
 import { getNewVoltageLevelOptions, mergeVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
-import { toVoltageLevelCreationDto } from '../voltage-level/creation/voltage-level-creation.utils';
 
 interface ConnectivityData {
     [VOLTAGE_LEVEL]: { [ID]: string };
@@ -250,9 +248,8 @@ const LineSplitWithVoltageLevelDialog = ({
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     const onVoltageLevelCreationDo = useCallback(
-        (voltageLevelCreation: VoltageLevelCreationInfo) => {
+        (preparedVoltageLevel: VoltageLevelCreationDto) => {
             return new Promise<string>(() => {
-                const preparedVoltageLevel = toVoltageLevelCreationDto(voltageLevelCreation);
                 // we keep the old voltage level id, so it can be removed for from voltage level options
                 const oldVoltageLevelId = newVoltageLevel?.equipmentId;
 

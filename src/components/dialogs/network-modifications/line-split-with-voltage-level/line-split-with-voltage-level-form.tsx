@@ -25,14 +25,13 @@ import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
-import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
 interface LineSplitWithVoltageLevelFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
+    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationDto) => Promise<string>;
     voltageLevelToEdit: VoltageLevelCreationDto | null;
     onVoltageLevelChange?: () => void;
     allVoltageLevelOptions: VoltageLevelOption[];

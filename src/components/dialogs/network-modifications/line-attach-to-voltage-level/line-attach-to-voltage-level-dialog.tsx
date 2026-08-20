@@ -55,8 +55,7 @@ import { getNewVoltageLevelOptions, mergeVoltageLevelOptions } from '../../../ut
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
-import { AttachLineInfo, VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
-import { toVoltageLevelCreationDto } from '../voltage-level/creation/voltage-level-creation.utils';
+import { AttachLineInfo } from '../../../../services/network-modification-types';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -193,7 +192,7 @@ const LineAttachToVoltageLevelDialog = ({
                 setNewVoltageLevel(newVoltageLevelInfos);
                 const formattedVoltageLevel = {
                     id: newVoltageLevelInfos.equipmentId,
-                    name: newVoltageLevelInfos.equipmentName ?? undefined,
+                    name: newVoltageLevelInfos.equipmentName ?? '',
                     exist: false,
                     busbarCount: newVoltageLevelInfos.busbarCount,
                     sectionCount: newVoltageLevelInfos.sectionCount,
@@ -314,16 +313,14 @@ const LineAttachToVoltageLevelDialog = ({
     );
 
     const onVoltageLevelCreationDo = useCallback(
-        (voltageLevelCreation: VoltageLevelCreationInfo) => {
+        (preparedVoltageLevel: VoltageLevelCreationDto) => {
             return new Promise<string>(() => {
-                const preparedVoltageLevel = toVoltageLevelCreationDto(voltageLevelCreation);
-
                 // we keep the old voltage level id, so it can be removed for from voltage level options
                 const oldVoltageLevelId = newVoltageLevel?.equipmentId;
 
                 const formattedVoltageLevel = {
                     id: preparedVoltageLevel.equipmentId,
-                    name: preparedVoltageLevel.equipmentName ?? undefined,
+                    name: preparedVoltageLevel.equipmentName ?? '',
                     exist: false,
                     busbarCount: preparedVoltageLevel.busbarCount,
                     sectionCount: preparedVoltageLevel.sectionCount,
@@ -362,9 +359,8 @@ const LineAttachToVoltageLevelDialog = ({
     );
 
     const onAttachmentPointModificationDo = useCallback(
-        (attachmentPointCreation: VoltageLevelCreationInfo) => {
+        (attachmentPointData: VoltageLevelCreationDto) => {
             return new Promise<string>(() => {
-                const attachmentPointData = toVoltageLevelCreationDto(attachmentPointCreation);
                 setAttachmentPoint(attachmentPointData);
                 setValue(`${ATTACHMENT_POINT_ID}`, attachmentPointData.equipmentId, {
                     shouldValidate: true,

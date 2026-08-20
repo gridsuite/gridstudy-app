@@ -39,7 +39,6 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import { UUID } from 'node:crypto';
-import { VoltageLevelCreationInfo } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { fetchEquipmentsIds } from 'services/study/network-map';
 
@@ -87,7 +86,7 @@ interface VoltageLevelCreationDialogProps {
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
     editDataFetchStatus?: string;
-    onCreateVoltageLevel?: (data: VoltageLevelCreationInfo) => Promise<string>;
+    onCreateVoltageLevel?: (voltageLevel: VoltageLevelCreationDto) => Promise<string>;
     isAttachmentPointModification?: boolean;
     titleId?: string;
     open?: boolean;
@@ -112,7 +111,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
-    onCreateVoltageLevel = createVoltageLevel,
+    onCreateVoltageLevel,
     isAttachmentPointModification = false,
     titleId = 'CreateVoltageLevel',
     ...dialogProps
@@ -258,19 +257,28 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
+    // Without a caller-provided handler the dialog saves the modification itself, and only then the context is needed
+    const saveVoltageLevel = useCallback(
+        (voltageLevel: VoltageLevelCreationDto) =>
+            onCreateVoltageLevel
+                ? onCreateVoltageLevel(voltageLevel)
+                : createVoltageLevel({
+                      ...voltageLevel,
+                      studyUuid: studyUuid,
+                      nodeUuid: currentNodeUuid,
+                      isUpdate: !!editData,
+                      modificationUuid: editData?.uuid,
+                  }),
+        [onCreateVoltageLevel, studyUuid, currentNodeUuid, editData]
+    );
+
     const onSubmit = useCallback(
         (voltageLevel: VoltageLevelCreationFormData) => {
-            onCreateVoltageLevel({
-                ...voltageLevelCreationFormToDto(voltageLevel),
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                isUpdate: !!editData,
-                modificationUuid: editData?.uuid,
-            }).catch((error: Error) => {
+            saveVoltageLevel(voltageLevelCreationFormToDto(voltageLevel)).catch((error: Error) => {
                 snackWithFallback(snackError, error, { headerId: 'VoltageLevelCreationError' });
             });
         },
-        [onCreateVoltageLevel, studyUuid, currentNodeUuid, editData, snackError]
+        [saveVoltageLevel, snackError]
     );
 
     const clear = useCallback(() => {
