@@ -54,6 +54,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode, current
             getOptionLabel={getObjectId}
             outputTransform={getObjectId}
             size={'small'}
+            dataTestId="ExistingLineInput"
         />
     );
     const percentageArea = <PercentageArea upperLeftText={'Line1'} upperRightText={'Line2'} />;
