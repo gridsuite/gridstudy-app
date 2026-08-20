@@ -14,12 +14,12 @@ import {
     VoltageLevelConnectivityForm,
     TextInput,
     VoltageLevelOption,
+    GridSection,
 } from '@gridsuite/commons-ui';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import { CONNECTIVITY, ID, VOLTAGE_LEVEL } from '../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { GridSection } from '../../commons/grid-section';
 import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';

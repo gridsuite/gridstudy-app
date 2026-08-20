@@ -14,9 +14,6 @@ import {
     downloadSecurityAnalysisResultZippedCsv,
     fetchSecurityAnalysisResult,
 } from '../../../services/study/security-analysis';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RunningStatus } from '../../utils/running-status';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import {
     ComputingType,
     EquipmentType,
@@ -25,12 +22,16 @@ import {
     MuiStyles,
     NmkType,
     PARAM_DEVELOPER_MODE,
+    RunningStatus,
     SecurityAnalysisResultNmk,
     snackWithFallback,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
     useSnackMessage,
     GlobalFilterType,
     isCriteriaFilterType,
     buildValidGlobalFilters,
+    RESULTS_LOADING_DELAY,
 } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -56,7 +57,6 @@ import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-c
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import { PERMANENT_LIMIT_NAME } from '../common/utils';
 import { setTableSort } from '../../../redux/actions';
-import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handler';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { downloadZipFile } from 'services/utils';
