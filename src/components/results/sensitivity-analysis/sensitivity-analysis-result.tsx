@@ -8,12 +8,19 @@
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo, useRef } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
-import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { ComputingType, CustomAGGrid, CustomAGGridProps, DefaultCellRenderer } from '@gridsuite/commons-ui';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RunningStatus } from '../../utils/running-status';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import {
+    ComputingType,
+    CustomAGGrid,
+    CustomAGGridProps,
+    DefaultCellRenderer,
+    getNoRowsMessage,
+    getRows,
+    RESULTS_LOADING_DELAY,
+    RunningStatus,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
+} from '@gridsuite/commons-ui';
 import { Box, LinearProgress } from '@mui/material';
 import { mappingTabs, SUFFIX_TYPES } from './sensitivity-analysis-result-utils.js';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';

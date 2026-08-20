@@ -8,13 +8,18 @@
 import type { NonEmptyTuple } from 'type-fest';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { snackWithFallback, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
-import type { GlobalFilter, GlobalFilters } from '../types/global-filter.type';
+import {
+    snackWithFallback,
+    useDebounce,
+    useSnackMessage,
+    GlobalFilter,
+    buildValidGlobalFilters,
+    GlobalFilters,
+} from '@gridsuite/commons-ui';
 import { evaluateGlobalFilter } from '../../../../../services/study/filter';
 import type { AppState } from '../../../../../redux/reducer.type';
 import type { FilterEquipmentType } from '../../../../../types/filter-lib/filter';
 import { isStatusBuilt } from '../../../../graph/util/model-functions';
-import { buildValidGlobalFilters } from '../utils/build-valid-global-filters';
 
 /* Because of ESLint react-hooks/rules-of-hooks, nullable value must be managed inside the hook, because
  * React hooks can't be called conditionally and/or different order. */

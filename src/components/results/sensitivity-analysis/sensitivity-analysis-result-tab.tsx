@@ -11,15 +11,18 @@ import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { RunningStatus } from '../../utils/running-status';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import {
     ComputingType,
     EquipmentType,
     ManagedExportCsvButton,
+    RunningStatus,
     snackWithFallback,
+    useOpenLoaderShortWait,
     useSnackMessage,
+    GlobalFilterType,
+    isCriteriaFilterType,
+    buildValidGlobalFilters,
+    RESULTS_LOADING_DELAY,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 import type { UUID } from 'node:crypto';
@@ -44,13 +47,10 @@ import { PaginationType, SortWay, TableType } from '../../../types/custom-aggrid
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { getColumnFiltersFromStore } from '../../../redux/selectors/filter-store-selectors';
 import { getSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 import { exportSensitivityResultsAsCsv } from 'services/study/sensitivity-analysis';
 import { downloadZipFile } from '../../../services/utils';
-
-import { FilterType, isCriteriaFilterType } from '../common/global-filter/types/filter.type';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -104,8 +104,8 @@ function SensitivityAnalysisResultTab({
         return sensiTab === SENSITIVITY_AT_NODE ? [] : [EquipmentType.TWO_WINDINGS_TRANSFORMER, EquipmentType.LINE];
     }, [sensiTab]);
 
-    const filterTypes: FilterType[] = useMemo(() => {
-        const allFilterTypes = Object.values(FilterType);
+    const filterTypes: GlobalFilterType[] = useMemo(() => {
+        const allFilterTypes = Object.values(GlobalFilterType);
         if (sensiTab === SENSITIVITY_AT_NODE) {
             // in this case we disable generic filters
             return allFilterTypes.filter((filterType) => !isCriteriaFilterType(filterType));

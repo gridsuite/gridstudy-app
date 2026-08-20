@@ -18,6 +18,9 @@ import type {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    RunningStatus,
+    GlobalFilter,
+    RecentGlobalFilter,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { ValueOf } from 'type-fest';
@@ -31,12 +34,7 @@ import type {
     ShortcircuitAnalysisTab,
     TableSort,
 } from '../types/custom-aggrid-types';
-import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
-import type {
-    GlobalFilter,
-    RecentGlobalFilter,
-} from '../components/results/common/global-filter/types/global-filter.type';
 import type { CopyType } from '../components/network-modification.type';
 import type {
     CurrentTreeNode,

@@ -6,12 +6,12 @@
  */
 
 import React from 'react';
-import { Table, TableHead, TableRow, TableBody, TableContainer, Grid2 as Grid } from '@mui/material';
+import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mui/material';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
-import RunningStatus from 'components/utils/running-status';
 import { styles } from '../generic-equipment-popover-utils';
 import { CellRender } from '../cell-render';
 import { generateCurrentLimitsRows } from './branch-utils';
+import { RunningStatus } from '@gridsuite/commons-ui';
 
 interface BranchLimitsTableProps {
     equipmentInfos: BranchEquipmentInfos;

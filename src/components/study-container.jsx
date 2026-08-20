@@ -63,6 +63,7 @@ import useExportNotification from '../hooks/use-export-notification.js';
 import { useWorkspaceNotifications } from './workspace/hooks/use-workspace-notifications';
 import { saveStudyAccessTimestamp } from '../redux/session-storage/local-storage';
 import { getLastRootNetworkUuid } from 'redux/session-storage/last-root-network-local-storage';
+import { getLastTreeNodeUuid } from 'redux/session-storage/last-tree-node-local-storage';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 function useStudy(studyUuidRequest) {
@@ -323,15 +324,19 @@ export function StudyContainer() {
                     // Select root node by default
                     let firstSelectedNode = getFirstNodeOfType(tree, NodeType.ROOT);
                     // if reindexation is ongoing then stay on root node, all variants will be removed
-                    // if indexation is done then look for the next built node.
+                    // if indexation is done then restore the last node selected, or fall back on the first built node.
                     // This is to avoid future fetch on variants removed during reindexation process
                     if (initIndexationStatus === RootNetworkIndexationStatus.INDEXED) {
+                        const lastSelectedNodeUuid = getLastTreeNodeUuid(studyUuid);
                         firstSelectedNode =
+                            // the stored node may not exist anymore (deleted since last visit)
+                            networkModificationTreeModel.treeNodes.find((node) => node.id === lastSelectedNodeUuid) ||
                             getFirstNodeOfType(tree, NodeType.NETWORK_MODIFICATION, [
                                 BuildStatus.BUILT,
                                 BuildStatus.BUILT_WITH_WARNING,
                                 BuildStatus.BUILT_WITH_ERROR,
-                            ]) || firstSelectedNode;
+                            ]) ||
+                            firstSelectedNode;
                     }
 
                     // To get positions we must get the node from the model class

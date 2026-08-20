@@ -13,8 +13,10 @@ import {
     CustomTablePagination,
     ManagedExportCsvButton,
     MuiStyles,
+    RunningStatus,
     snackWithFallback,
     useSnackMessage,
+    buildValidGlobalFilters,
 } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
@@ -22,7 +24,6 @@ import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import RunningStatus from 'components/utils/running-status';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { Box } from '@mui/material';
 import { PAGE_OPTIONS } from '../securityanalysis/security-analysis-result-utils';
@@ -31,7 +32,6 @@ import { PaginationType, TableType } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
-import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { useSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 

@@ -14,9 +14,6 @@ import {
     downloadSecurityAnalysisResultZippedCsv,
     fetchSecurityAnalysisResult,
 } from '../../../services/study/security-analysis';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RunningStatus } from '../../utils/running-status';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import {
     ComputingType,
     EquipmentType,
@@ -25,9 +22,16 @@ import {
     MuiStyles,
     NmkType,
     PARAM_DEVELOPER_MODE,
+    RunningStatus,
     SecurityAnalysisResultNmk,
     snackWithFallback,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
     useSnackMessage,
+    GlobalFilterType,
+    isCriteriaFilterType,
+    buildValidGlobalFilters,
+    RESULTS_LOADING_DELAY,
 } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -50,17 +54,13 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { UUID } from 'node:crypto';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
-import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import { PERMANENT_LIMIT_NAME } from '../common/utils';
 import { setTableSort } from '../../../redux/actions';
-import { useIntlResultStatusMessages } from 'components/utils/aggrid-rows-handler';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { downloadZipFile } from 'services/utils';
 import { SecurityAnalysisCopyButton } from './security-analysis-copy-button';
-
-import { FilterType, isCriteriaFilterType } from '../common/global-filter/types/filter.type';
 
 const styles = {
     toolbarRow: {
@@ -364,8 +364,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         return [];
     }, [tabIndex]);
 
-    const filterTypes: FilterType[] = useMemo(() => {
-        const allFilterTypes = Object.values(FilterType);
+    const filterTypes: GlobalFilterType[] = useMemo(() => {
+        const allFilterTypes = Object.values(GlobalFilterType);
         if (tabIndex === N_RESULTS_TAB_INDEX) {
             // in this case we disable generic filters
             return allFilterTypes.filter((filterType) => !isCriteriaFilterType(filterType));

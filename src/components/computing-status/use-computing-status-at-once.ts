@@ -5,11 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getComputationRunningStatus, RunningStatus } from 'components/utils/running-status';
+import { getComputationRunningStatus } from 'components/utils/running-status';
 import type { UUID } from 'node:crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { BuildStatus, ComputingType, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import {
+    BuildStatus,
+    ComputingType,
+    NotificationsUrlKeys,
+    RunningStatus,
+    useNotificationsListener,
+} from '@gridsuite/commons-ui';
 import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
 import { parseEventData, StudyUpdatedEventData } from '../../types/notification-types';
@@ -165,12 +171,10 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
                     );
                     await Promise.all(
                         Array.from(allStatusInfosMap).map(async ([computingType, statusValue]) => {
-                            if (
-                                !(
-                                    computingType === ComputingType.LOAD_FLOW &&
-                                    updateType === 'all_computation_status_without_loadflow'
-                                )
-                            ) {
+                            if (!(
+                                computingType === ComputingType.LOAD_FLOW &&
+                                updateType === 'all_computation_status_without_loadflow'
+                            )) {
                                 const status = getComputationRunningStatus(statusValue, computingType);
                                 dispatch(setComputingStatus(computingType, status));
                                 await handleComputingStatusParameters(status, canceledRequest, computingType);

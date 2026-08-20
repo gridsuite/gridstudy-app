@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import { Box, Grid2 as Grid, Stack } from '@mui/material';
-import { FloatInput, IntegerInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { Box, Grid, Stack } from '@mui/material';
+import { FloatInput, GridSection, IntegerInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 
-import { GridSection } from '../../commons/grid-section';
 import CountriesAutocomplete from './countries-autocomplete';
 import {
     BALANCES_ADJUSTMENT,

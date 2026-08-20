@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RunningStatus } from 'components/utils/running-status';
 import type { UUID } from 'node:crypto';
 import { RefObject, useCallback, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { ComputingType, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import { ComputingType, NotificationsUrlKeys, RunningStatus, useNotificationsListener } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';

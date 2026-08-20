@@ -20,16 +20,17 @@ import { useIntl } from 'react-intl';
 import {
     ComputingType,
     CustomTablePagination,
+    RunningStatus,
     snackWithFallback,
     useDebounce,
     useSnackMessage,
+    buildValidGlobalFilters,
 } from '@gridsuite/commons-ui';
 import {
     fetchSensitivityAnalysisFilterOptions,
     fetchSensitivityAnalysisResult,
 } from '../../../services/study/sensitivity-analysis';
 import { useSelector } from 'react-redux';
-import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { PaginationType, SensitivityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
@@ -38,7 +39,6 @@ import { AppState } from '../../../redux/reducer.type';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
-import { buildValidGlobalFilters } from '../common/global-filter/utils/build-valid-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 export type PagedSensitivityAnalysisResultProps = {

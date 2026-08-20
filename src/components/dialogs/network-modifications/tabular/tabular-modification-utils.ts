@@ -53,7 +53,6 @@ import {
     LOW_VOLTAGE_LIMIT,
     MAX_P,
     MAX_Q_AT_NOMINAL_V,
-    MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
     MIN_P,
     MODIFICATION_TYPE,
@@ -127,6 +126,14 @@ const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularField[] = [
     { id: REACTIVE_CAPABILITY_CURVE_P_MAX, type: NUMBER },
     { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, type: NUMBER },
     { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, type: NUMBER },
+];
+
+const VOLTAGE_REGULATION_FIELDS: TabularField[] = [
+    { id: VOLTAGE_REGULATION_ON, type: BOOLEAN },
+    { id: TARGET_V, type: NUMBER },
+    { id: REGULATING_TERMINAL_ID },
+    { id: REGULATING_TERMINAL_TYPE, type: ENUM, options: REGULATING_TERMINAL_TYPES },
+    { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID },
 ];
 
 const CONNECTION_FIELDS: TabularField[] = [
@@ -240,11 +247,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         ...REACTIVE_CAPABILITY_CURVE_FIELDS,
         { id: TARGET_P, type: NUMBER },
         { id: TARGET_Q, type: NUMBER },
-        { id: VOLTAGE_REGULATION_ON, type: BOOLEAN },
-        { id: TARGET_V, type: NUMBER },
-        { id: REGULATING_TERMINAL_ID },
-        { id: REGULATING_TERMINAL_TYPE, type: ENUM, options: REGULATING_TERMINAL_TYPES },
-        { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID },
+        ...VOLTAGE_REGULATION_FIELDS,
         { id: FieldConstants.Q_PERCENT, type: NUMBER },
         { id: PARTICIPATE, type: BOOLEAN },
         { id: FieldConstants.DROOP, type: NUMBER },
@@ -280,6 +283,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         { id: TARGET_Q, type: NUMBER },
         { id: PARTICIPATE, type: BOOLEAN },
         { id: FieldConstants.DROOP, type: NUMBER },
+        ...VOLTAGE_REGULATION_FIELDS,
     ],
     SHUNT_COMPENSATOR: [
         { id: EQUIPMENT_ID, required: true },
@@ -289,7 +293,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         { id: SECTION_COUNT, type: NUMBER },
         { id: SHUNT_COMPENSATOR_TYPE, type: ENUM, options: Object.keys(SHUNT_COMPENSATOR_TYPES) },
         { id: MAX_Q_AT_NOMINAL_V, type: NUMBER },
-        { id: MAX_SUSCEPTANCE, type: NUMBER },
+        { id: FieldConstants.MAX_SUSCEPTANCE, type: NUMBER },
     ],
 };
 

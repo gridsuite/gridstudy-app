@@ -56,42 +56,6 @@ export interface VscModificationInfo {
     terminalConnected?: boolean | null;
 }
 
-export interface StaticVarCompensatorCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    staticCompensatorId: string;
-    staticCompensatorName?: string | null;
-    voltageLevelId: string;
-    busOrBusbarSectionId?: string;
-    connectionDirection?: string | null;
-    connectionName?: string | null;
-    connectionPosition?: string | null;
-    terminalConnected?: boolean | null;
-    maxSusceptance: number | null;
-    minSusceptance: number | null;
-    maxQAtNominalV: number | null;
-    minQAtNominalV: number | null;
-    regulationMode: string;
-    isRegulating: boolean;
-    voltageSetpoint: number;
-    reactivePowerSetpoint: number;
-    voltageRegulationType: string;
-    regulatingTerminalId: string | null;
-    regulatingTerminalType: string | null;
-    regulatingTerminalVlId: string | null;
-    standbyAutomatonOn: boolean;
-    standby: boolean;
-    lowVoltageSetpoint: number | null;
-    highVoltageSetpoint: number | null;
-    lowVoltageThreshold: number | null;
-    highVoltageThreshold: number | null;
-    b0: number | null;
-    q0: number | null;
-    isUpdate?: boolean;
-    modificationUuid: string;
-    properties?: Property[] | null;
-}
-
 export interface TapChangerModificationInfos {
     enabled: AttributeModification<boolean> | null;
     regulationType: AttributeModification<string> | null;
@@ -579,32 +543,12 @@ export type CouplingDeviceInfos = {
     busbarSectionId2: string;
 };
 
-export interface CreateCouplingDeviceInfos {
-    type: ModificationType;
-    uuid?: string;
-    voltageLevelId: string;
-    couplingDeviceInfos: CouplingDeviceInfos;
-}
-
 export interface CreateVoltageLevelTopologyInfos {
     type: ModificationType;
     uuid?: string;
     voltageLevelId: string;
     sectionCount?: number | null;
     switchKinds?: string[] | null;
-}
-
-export interface CreateVoltageLevelSectionInfos {
-    type: ModificationType;
-    uuid?: string;
-    voltageLevelId: string;
-    busbarIndex: string | null;
-    busbarSectionId: string | null;
-    allBusbars: boolean;
-    afterBusbarSectionId: boolean;
-    leftSwitchKind: string | null;
-    rightSwitchKind: string | null;
-    switchOpen: boolean;
 }
 
 export type NetworkModificationRequestInfos = {

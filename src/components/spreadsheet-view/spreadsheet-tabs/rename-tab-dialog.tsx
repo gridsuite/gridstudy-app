@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { Grid2 as Grid, Stack } from '@mui/material';
+import { Grid, Stack } from '@mui/material';
 import { CustomFormProvider, TextInput } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -36,7 +36,6 @@ export default function RenameTabDialog({
     currentName,
     tabUuid,
     tablesDefinitions,
-    ...dialogProps
 }: Readonly<RenameTabDialogProps>) {
     const intl = useIntl();
 
@@ -83,8 +82,7 @@ export default function RenameTabDialog({
                 onClose={onClose}
                 onSave={onSubmit}
                 onClear={() => null}
-                PaperProps={{ sx: { width: '30%' } }}
-                {...dialogProps}
+                slotProps={{ paper: { sx: { width: '30%' } } }}
             >
                 <Stack spacing={2} marginTop={2}>
                     <Grid>
