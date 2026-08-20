@@ -6,11 +6,15 @@
  */
 
 import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { getShortCircuitAnalysisTypeFromEnum } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import {
-    getShortCircuitAnalysisTypeFromEnum,
+    GsLangUser,
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    GlobalFilters,
     ShortCircuitAnalysisType,
-} from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
-import { GsLangUser, backendFetch, backendFetchJson, backendFetchText, GlobalFilters } from '@gridsuite/commons-ui';
+} from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { Selector } from 'components/results/common/utils';
 
