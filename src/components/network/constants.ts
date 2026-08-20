@@ -14,34 +14,6 @@ export const LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION = [
     { id: UNDEFINED_LOAD_TYPE, label: 'Undefined' },
 ] as const;
 
-export const PHASE_REGULATION_MODES = {
-    CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
-    ACTIVE_POWER_CONTROL: {
-        id: 'ACTIVE_POWER_CONTROL',
-        label: 'PhaseActivePowerControl',
-    },
-    OFF: { id: 'OFF', label: 'Off' }, // used for the ui but doesn't exist in powsybl => should not be sent to the back
-} as const;
-
-// only useful for the ui, in order to set isRegulating, should not be sent to the back
-export const RATIO_REGULATION_MODES = {
-    FIXED_RATIO: {
-        // isRegulating false
-        id: 'FIXED_RATIO',
-        label: 'FixedRatio',
-    },
-    VOLTAGE_REGULATION: {
-        // isRegulating true
-        id: 'VOLTAGE_REGULATION',
-        label: 'VoltageRegulation',
-    },
-} as const;
-
-export const SIDE = {
-    SIDE1: { id: 'SIDE1', label: 'RegulatedSide1' },
-    SIDE2: { id: 'SIDE2', label: 'RegulatedSide2' },
-} as const;
-
 const PROPORTIONAL = { id: 'PROPORTIONAL', label: 'Proportional' } as const;
 const REGULAR_DISTRIBUTION = {
     id: 'REGULAR_DISTRIBUTION',
