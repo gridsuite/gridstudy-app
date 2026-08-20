@@ -16,6 +16,7 @@ import {
     MODIFICATION_TYPES,
     OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
     ReactiveCapabilityCurvePoints,
+    REGULATION_SIDES,
     SHUNT_COMPENSATOR_TYPES,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
     toModificationOperation,
@@ -53,7 +54,6 @@ import {
     LOW_VOLTAGE_LIMIT,
     MAX_P,
     MAX_Q_AT_NOMINAL_V,
-    MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
     MIN_P,
     MODIFICATION_TYPE,
@@ -105,7 +105,6 @@ import {
     LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
     REGULATING_TERMINAL_TYPES,
-    SIDE as SIDE_CONSTANTS,
 } from '../../../network/constants';
 import {
     convertReactiveCapabilityCurvePointsFromBackToFront,
@@ -232,7 +231,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         {
             id: RATIO_TAP_CHANGER_REGULATION_SIDE,
             type: ENUM,
-            options: Object.values(SIDE_CONSTANTS).map((side) => side.id),
+            options: Object.values(REGULATION_SIDES).map((side) => side.id),
         },
     ],
     GENERATOR: [
@@ -294,7 +293,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
         { id: SECTION_COUNT, type: NUMBER },
         { id: SHUNT_COMPENSATOR_TYPE, type: ENUM, options: Object.keys(SHUNT_COMPENSATOR_TYPES) },
         { id: MAX_Q_AT_NOMINAL_V, type: NUMBER },
-        { id: MAX_SUSCEPTANCE, type: NUMBER },
+        { id: FieldConstants.MAX_SUSCEPTANCE, type: NUMBER },
     ],
 };
 

@@ -27,12 +27,13 @@ import {
     TextInput,
     VoltageLevelOption,
     LineCreationDto,
+    LineCreationDtoWithId,
+    GridSection,
 } from '@gridsuite/commons-ui';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import { useWatch } from 'react-hook-form';
-import { GridSection } from '../../commons/grid-section';
 import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
@@ -48,7 +49,7 @@ interface LineAttachToVoltageLevelFormProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationDto }) => Promise<string>;
-    lineToEdit?: LineCreationDto;
+    lineToEdit?: LineCreationDtoWithId;
     onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
     voltageLevelToEdit?: ExtendedVoltageLevelCreationInfo;
     onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;

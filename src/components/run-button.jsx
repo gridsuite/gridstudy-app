@@ -10,8 +10,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import SplitButton from './utils/split-button';
-import RunningStatus from './utils/running-status';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from '../utils/dialogs';
 import { DialogContentText } from '@mui/material';
