@@ -5,14 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import Menu from '@mui/material/Menu';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
-import { useSelector } from 'react-redux';
-import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
-import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
+import { useCanModifyEquipment } from './use-can-modify-equipment';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
-import { AppState } from 'redux/reducer.type';
 import {
     type EquipmentType,
     type ExtendedEquipmentType,
@@ -49,13 +46,7 @@ const withEquipmentMenu =
     }: MenuBranchProps) => {
         const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-        // to check is node editable
-        const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-        const isAnyNodeBuilding = useIsAnyNodeBuilding();
-        const isNodeEditable = useMemo(
-            () => isNodeBuilt(currentNode) && !isNodeReadOnly(currentNode) && !isAnyNodeBuilding,
-            [currentNode, isAnyNodeBuilding]
-        );
+        const isNodeEditable = useCanModifyEquipment();
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
             (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {

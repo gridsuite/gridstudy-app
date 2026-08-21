@@ -21,6 +21,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { unbuildAllStudyNodes } from 'services/study/study';
+import { useCanUnbuildAllNodes } from 'components/utils/use-node-activity';
 import { NETWORK_MODIFICATION } from '../../../../utils/report/report.constant';
 
 const styles = {
@@ -40,6 +41,8 @@ export const UnbuildAllNodesButton = () => {
 
     const [isValidationDialogOpen, setIsValidationDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    const isUnbuildAllBlocked = !useCanUnbuildAllNodes();
 
     const handleCloseDialog = () => {
         setIsValidationDialogOpen(false);
@@ -81,8 +84,15 @@ export const UnbuildAllNodesButton = () => {
         <>
             <Tooltip title={intl.formatMessage({ id: 'unbuildAllNodesTooltip' })} disableInteractive>
                 <span style={{ display: 'inline-block' }}>
-                    <Button size="small" sx={styles.button} onClick={handleOpenDialog} disabled={allNodesUnBuilt}>
-                        <StopCircleOutlined sx={allNodesUnBuilt ? undefined : styles.playColor} />
+                    <Button
+                        size="small"
+                        sx={styles.button}
+                        onClick={handleOpenDialog}
+                        disabled={allNodesUnBuilt || isUnbuildAllBlocked}
+                    >
+                        <StopCircleOutlined
+                            sx={allNodesUnBuilt || isUnbuildAllBlocked ? undefined : styles.playColor}
+                        />
                     </Button>
                 </span>
             </Tooltip>

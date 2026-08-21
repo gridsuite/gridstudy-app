@@ -5,22 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { alpha, Box, CircularProgress, colors } from '@mui/material';
+import { alpha, Box, CircularProgress, colors, Typography } from '@mui/material';
+import { useNodeActivityLabel } from 'components/utils/use-node-activity';
+import type { NodeActivity } from 'types/node-activity.type';
 
-const NodeOverlaySpinner = () => {
+const NodeOverlaySpinner = ({ activity }: Readonly<{ activity: NodeActivity }>) => {
     return (
         <Box
             sx={(theme) => ({
                 position: 'absolute',
                 inset: 0,
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
+                borderRadius: '8px',
+                gap: 0.5,
                 zIndex: 10,
-                backgroundColor: alpha(theme.node.common.background, 0.6),
+                backgroundColor: alpha(theme.node.common.background, 0.85),
             })}
         >
-            <CircularProgress size={40} style={{ color: colors.blue[600] }} />
+            <CircularProgress size={35} sx={{ color: colors.blue[600] }} />
+            <Typography variant="caption" color="text.primary">
+                {useNodeActivityLabel(activity)}
+            </Typography>
         </Box>
     );
 };

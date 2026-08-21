@@ -33,22 +33,15 @@ export enum NotificationType {
     NODES_UPDATED = 'nodeUpdated',
     NODE_EDITED = 'nodeEdited',
     NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
+    NODE_ACTIVITIES_UPDATED = 'nodeActivitiesUpdated',
     SUBTREE_MOVED = 'subtreeMoved',
     SUBTREE_CREATED = 'subtreeCreated',
     NODES_COLUMN_POSITION_CHANGED = 'nodesColumnPositionsChanged',
     NETWORK_EXPORT_FINISHED = 'networkExportFinished',
     // Modifications
-    MODIFICATIONS_CREATION_IN_PROGRESS = 'creatingInProgress',
-    MODIFICATIONS_UPDATING_IN_PROGRESS = 'updatingInProgress',
-    MODIFICATIONS_STASHING_IN_PROGRESS = 'stashingInProgress',
-    MODIFICATIONS_RESTORING_IN_PROGRESS = 'restoringInProgress',
-    MODIFICATIONS_DELETING_IN_PROGRESS = 'deletingInProgress',
     MODIFICATIONS_UPDATE_FINISHED = 'UPDATE_FINISHED',
     MODIFICATIONS_DELETE_FINISHED = 'DELETE_FINISHED',
     // Events
-    EVENT_CREATING_IN_PROGRESS = 'eventCreatingInProgress',
-    EVENT_UPDATING_IN_PROGRESS = 'eventUpdatingInProgress',
-    EVENT_DELETING_IN_PROGRESS = 'eventDeletingInProgress',
     EVENT_CRUD_FINISHED = 'EVENT_CRUD_FINISHED',
 
     // Computations filters
@@ -105,20 +98,6 @@ export enum NotificationType {
     WORKSPACE_PANELS_DELETED = 'workspacePanelsDeleted',
     WORKSPACE_NAD_CONFIG_UPDATED = 'workspaceNadConfigUpdated',
 }
-
-export const PENDING_MODIFICATION_NOTIFICATION_TYPES = [
-    NotificationType.MODIFICATIONS_CREATION_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_UPDATING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_STASHING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_RESTORING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_DELETING_IN_PROGRESS,
-] as NotificationType[];
-
-export const EVENT_CRUD_NOTIFICATION_TYPES = [
-    NotificationType.EVENT_CREATING_IN_PROGRESS,
-    NotificationType.EVENT_UPDATING_IN_PROGRESS,
-    NotificationType.EVENT_DELETING_IN_PROGRESS,
-] as NotificationType[];
 
 export enum RootNetworkIndexationStatus {
     NOT_INDEXED = 'NOT_INDEXED',
@@ -289,26 +268,6 @@ interface WorkspaceNadConfigUpdatedEventDataHeaders extends CommonStudyEventData
     clientId?: UUID;
 }
 
-interface ModificationsCreationInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
-    updateType: NotificationType.MODIFICATIONS_CREATION_IN_PROGRESS;
-}
-
-interface ModificationsUpdatingInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
-    updateType: NotificationType.MODIFICATIONS_UPDATING_IN_PROGRESS;
-}
-
-interface ModificationsStashingInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
-    updateType: NotificationType.MODIFICATIONS_STASHING_IN_PROGRESS;
-}
-
-interface ModificationsRestoringInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
-    updateType: NotificationType.MODIFICATIONS_RESTORING_IN_PROGRESS;
-}
-
-interface ModificationsDeletingInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
-    updateType: NotificationType.MODIFICATIONS_DELETING_IN_PROGRESS;
-}
-
 interface ModificationsUpdateFinishedEventDataHeaders extends ModificationProgressionEventDataHeaders {
     updateType: NotificationType.MODIFICATIONS_UPDATE_FINISHED;
 }
@@ -316,24 +275,6 @@ interface ModificationsUpdateFinishedEventDataHeaders extends ModificationProgre
 // TODO strange should be extended from ModificationProgressionEventDataHeaders as well ?
 interface ModificationsDeleteFinishedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.MODIFICATIONS_DELETE_FINISHED;
-    parentNode: UUID;
-    nodes: UUID[];
-}
-
-interface EventCreatingInProgressEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.EVENT_CREATING_IN_PROGRESS;
-    parentNode: UUID;
-    nodes: UUID[];
-}
-
-interface EventUpdatingInProgressEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.EVENT_UPDATING_IN_PROGRESS;
-    parentNode: UUID;
-    nodes: UUID[];
-}
-
-interface EventDeletingInProgressEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.EVENT_DELETING_IN_PROGRESS;
     parentNode: UUID;
     nodes: UUID[];
 }
@@ -468,6 +409,10 @@ export interface MetadataUpdatedEventData extends CommonStudyEventData {
     payload: undefined;
 }
 
+export interface NodeActivitiesUpdatedEventData extends CommonStudyEventData {
+    payload: string;
+}
+
 export interface NodeCreatedEventData extends CommonStudyEventData {
     headers: NodeCreatedEventDataHeaders;
     payload: undefined;
@@ -529,31 +474,6 @@ export type TreeModelUpdateEventData =
     | NodesUpdatedEventData
     | NodeEditedEventData;
 
-export interface ModificationsCreationInProgressEventData extends CommonStudyEventData {
-    headers: ModificationsCreationInProgressEventDataHeaders;
-    payload: undefined;
-}
-
-export interface ModificationsUpdatingInProgressEventData extends CommonStudyEventData {
-    headers: ModificationsUpdatingInProgressEventDataHeaders;
-    payload: undefined;
-}
-
-export interface ModificationsStashingInProgressEventData extends CommonStudyEventData {
-    headers: ModificationsStashingInProgressEventDataHeaders;
-    payload: undefined;
-}
-
-export interface ModificationsRestoringInProgressEventData extends CommonStudyEventData {
-    headers: ModificationsRestoringInProgressEventDataHeaders;
-    payload: undefined;
-}
-
-export interface ModificationsDeletingInProgressEventData extends CommonStudyEventData {
-    headers: ModificationsDeletingInProgressEventDataHeaders;
-    payload: undefined;
-}
-
 export interface ModificationsUpdateFinishedEventData extends CommonStudyEventData {
     headers: ModificationsUpdateFinishedEventDataHeaders;
     payload: undefined;
@@ -561,21 +481,6 @@ export interface ModificationsUpdateFinishedEventData extends CommonStudyEventDa
 
 export interface ModificationsDeleteFinishedEventData extends CommonStudyEventData {
     headers: ModificationsDeleteFinishedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface EventCreatingInProgressEventData extends CommonStudyEventData {
-    headers: EventCreatingInProgressEventDataHeaders;
-    payload: undefined;
-}
-
-export interface EventUpdatingInProgressEventData extends CommonStudyEventData {
-    headers: EventUpdatingInProgressEventDataHeaders;
-    payload: undefined;
-}
-
-export interface EventDeletingInProgressEventData extends CommonStudyEventData {
-    headers: EventDeletingInProgressEventDataHeaders;
     payload: undefined;
 }
 
@@ -730,12 +635,6 @@ export function isNetworkVisualizationParametersUpdatedNotification(
     return notif.headers?.updateType === NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED;
 }
 
-export function isEventNotification(
-    notif: CommonStudyEventData
-): notif is EventCreatingInProgressEventData | EventUpdatingInProgressEventData | EventDeletingInProgressEventData {
-    return EVENT_CRUD_NOTIFICATION_TYPES.includes(notif.headers?.updateType);
-}
-
 export function isEventCrudFinishedNotification(notif: CommonStudyEventData): notif is EventCrudFinishedEventData {
     return notif.headers?.updateType === NotificationType.EVENT_CRUD_FINISHED;
 }
@@ -756,17 +655,6 @@ export function isNodeSubTreeCreatedNotification(notif: CommonStudyEventData): n
 
 export function isExportNetworkNotification(notif: CommonStudyEventData): notif is ExportNetworkEventData {
     return notif.headers?.updateType === NotificationType.NETWORK_EXPORT_FINISHED;
-}
-
-export function isPendingModificationNotification(
-    notif: CommonStudyEventData
-): notif is
-    | ModificationsCreationInProgressEventData
-    | ModificationsUpdatingInProgressEventData
-    | ModificationsStashingInProgressEventData
-    | ModificationsRestoringInProgressEventData
-    | ModificationsDeletingInProgressEventData {
-    return PENDING_MODIFICATION_NOTIFICATION_TYPES.includes(notif.headers?.updateType);
 }
 
 export function isModificationsUpdateFinishedNotification(
@@ -793,6 +681,12 @@ export function isStudyNetworkRecreationNotification(
 
 export function isMetadataUpdatedNotification(notif: CommonStudyEventData): notif is MetadataUpdatedEventData {
     return notif.headers?.updateType === NotificationType.METADATA_UPDATED;
+}
+
+export function isNodeActivitiesUpdatedNotification(
+    notif: CommonStudyEventData
+): notif is NodeActivitiesUpdatedEventData {
+    return notif.headers?.updateType === NotificationType.NODE_ACTIVITIES_UPDATED;
 }
 
 export function isSpreadsheetNodeAliasesUpdatedNotification(notif: CommonStudyEventData): boolean {

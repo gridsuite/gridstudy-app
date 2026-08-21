@@ -22,7 +22,6 @@ import {
     GlobalFilter,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import type { UnknownArray } from 'type-fest';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
@@ -64,6 +63,7 @@ import type { RootNetworkMetadata } from 'components/graph/menus/network-modific
 import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import type { NodeActivity } from '../types/node-activity.type';
 import type { NodeValidity } from '../components/spreadsheet-view/columns/utils/column-validity';
 
 export type TableValue<TValue = unknown> = {
@@ -101,9 +101,6 @@ export type AppActions =
     | CopiedNetworkModificationsAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
-    | AddNotificationAction
-    | RemoveNotificationByNodeAction
-    | SetModificationsInProgressAction
     | SetComputingStatusAction
     | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
@@ -142,6 +139,7 @@ export type AppActions =
     | AddGlobalFiltersAction
     | RemoveGlobalFiltersAction
     | ClearGlobalFiltersAction
+    | SetNodeActivitiesAction
     | UpdateAliasedNodesValidityAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
@@ -788,42 +786,6 @@ export function centerOnSubstation(substationId: string): CenterOnSubstationActi
     };
 }
 
-export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
-export type AddNotificationAction = Readonly<Action<typeof ADD_NOTIFICATION>> & {
-    notificationIds: UUID[];
-};
-
-export function addNotification(notificationIds: UUID[]): AddNotificationAction {
-    return {
-        type: ADD_NOTIFICATION,
-        notificationIds: notificationIds,
-    };
-}
-
-export const REMOVE_NOTIFICATION_BY_NODE = 'REMOVE_NOTIFICATION_BY_NODE';
-export type RemoveNotificationByNodeAction = Readonly<Action<typeof REMOVE_NOTIFICATION_BY_NODE>> & {
-    notificationIds: UnknownArray;
-};
-
-export function removeNotificationByNode(notificationIds: UnknownArray): RemoveNotificationByNodeAction {
-    return {
-        type: REMOVE_NOTIFICATION_BY_NODE,
-        notificationIds: notificationIds,
-    };
-}
-
-export const SET_MODIFICATIONS_IN_PROGRESS = 'SET_MODIFICATIONS_IN_PROGRESS';
-export type SetModificationsInProgressAction = Readonly<Action<typeof SET_MODIFICATIONS_IN_PROGRESS>> & {
-    isModificationsInProgress: boolean;
-};
-
-export function setModificationsInProgress(isModificationsInProgress: boolean): SetModificationsInProgressAction {
-    return {
-        type: SET_MODIFICATIONS_IN_PROGRESS,
-        isModificationsInProgress: isModificationsInProgress,
-    };
-}
-
 export const SET_COMPUTING_STATUS = 'SET_COMPUTING_STATUS';
 export type SetComputingStatusAction = Readonly<Action<typeof SET_COMPUTING_STATUS>> & {
     computingType: ComputingType;
@@ -1414,6 +1376,18 @@ export function selectSyncEnabled(syncEnabled: boolean): SelectSyncEnabledAction
     return {
         type: SELECT_SYNC_ENABLED,
         syncEnabled,
+    };
+}
+
+export const SET_NODE_ACTIVITIES = 'SET_NODE_ACTIVITIES';
+export type SetNodeActivitiesAction = Readonly<Action<typeof SET_NODE_ACTIVITIES>> & {
+    nodeActivities: NodeActivity[];
+};
+
+export function setNodeActivities(nodeActivities: NodeActivity[]): SetNodeActivitiesAction {
+    return {
+        type: SET_NODE_ACTIVITIES,
+        nodeActivities,
     };
 }
 
