@@ -104,10 +104,8 @@ const PAGINATION_RESET_DISPATCHERS = {
 export const usePaginationReset = (paginationType: PaginationType) => {
     const dispatch = useDispatch();
 
-    const resetPagination = useCallback(() => {
+    return useCallback(() => {
         const resetAction = PAGINATION_RESET_DISPATCHERS[paginationType]();
         dispatch(resetAction);
     }, [dispatch, paginationType]);
-
-    return resetPagination;
 };

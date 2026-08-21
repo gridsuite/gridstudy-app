@@ -214,6 +214,8 @@ import {
     type UpdateEquipmentsAction,
     type UpdateNetworkVisualizationParametersAction,
     UpdateNodeAliasesAction,
+    UPDATE_ALIASED_NODES_VALIDITY,
+    UpdateAliasedNodesValidityAction,
     type UpdateSpreadsheetPartialDataAction,
     type UpdateTableColumnsAction,
     type UpdateTableDefinitionAction,
@@ -487,6 +489,7 @@ const initialState: AppState = {
     tables: initialTablesState,
     nodeAliases: [],
     nodeActivities: [],
+    aliasedNodesValidity: {},
     calculationSelections: {},
     mapEquipments: undefined,
     geoData: null,
@@ -1615,6 +1618,9 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(SET_NODE_ACTIVITIES, (state, action: SetNodeActivitiesAction) => {
         state.nodeActivities = action.nodeActivities;
+    });
+    builder.addCase(UPDATE_ALIASED_NODES_VALIDITY, (state, action: UpdateAliasedNodesValidityAction) => {
+        state.aliasedNodesValidity = action.aliasedNodesValidity;
     });
     builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
         const { filterType, filterSubType, filters } = action;

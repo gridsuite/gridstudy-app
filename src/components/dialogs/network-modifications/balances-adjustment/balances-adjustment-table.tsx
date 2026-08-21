@@ -34,6 +34,7 @@ export default function BalancesAdjustmentTable() {
                 type: DndColumnType.TEXT as const,
                 initialValue: '',
                 width: '110px',
+                dataTestId: 'ZoneNameInput',
             },
             {
                 label: 'BalancesAdjustmentCountry',
@@ -43,6 +44,7 @@ export default function BalancesAdjustmentTable() {
                 component: (rowIndex: number) =>
                     CountriesAutocomplete({
                         name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_COUNTRIES}`,
+                        dataTestId: 'CountriesInput',
                     }),
                 initialValue: [],
                 width: '280px',
@@ -61,6 +63,7 @@ export default function BalancesAdjustmentTable() {
                         }),
                         disableClearable: true,
                         sx: styles.autocomplete,
+                        dataTestId: 'ShiftEquipmentTypeInput',
                     }),
                 initialValue: ShiftEquipmentType.GENERATOR,
                 width: '150px',
@@ -78,6 +81,7 @@ export default function BalancesAdjustmentTable() {
                         }),
                         disableClearable: true,
                         sx: styles.autocomplete,
+                        dataTestId: 'ShiftTypeInput',
                     }),
                 initialValue: ShiftType.PROPORTIONAL,
                 width: '150px',
@@ -89,6 +93,7 @@ export default function BalancesAdjustmentTable() {
                 type: DndColumnType.NUMERIC as const,
                 initialValue: 0,
                 width: '110px',
+                dataTestId: 'NetPositionTargetInput',
             },
         ].map((column) => ({
             ...column,
@@ -117,6 +122,7 @@ export default function BalancesAdjustmentTable() {
             columnsDefinition={columnsDefinition}
             tableHeight={450}
             withAddRowsDialog={false}
+            rowDataTestId="AreaLine"
         />
     );
 }

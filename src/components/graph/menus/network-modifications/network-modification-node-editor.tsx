@@ -1201,6 +1201,7 @@ const NetworkModificationNodeEditor = () => {
                             ref={buttonAddRef}
                             onClick={openNetworkModificationConfiguration}
                             disabled={isCurrentNodeBlocked || mapDataLoading || isRootNode}
+                            data-testid="AddModification"
                         >
                             <AddIcon />
                         </IconButton>
@@ -1223,6 +1224,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={doAssembleModificationsIntoComposite}
                             size={'small'}
                             disabled={disabledCompositeCreation}
+                            data-testid="CreateComposite"
                         >
                             <ArrowsInputIcon />
                         </IconButton>
@@ -1234,6 +1236,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openImportModificationsDialog}
                             size={'small'}
                             disabled={isCurrentNodeBlocked || mapDataLoading || isRootNode}
+                            data-testid="ImportModification"
                         >
                             <FileUpload />
                         </IconButton>
@@ -1256,6 +1259,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
                             disabled={disabledCompositeExport || selectionContainsShared}
+                            data-testid="SaveModification"
                         >
                             <SaveIcon />
                         </IconButton>
@@ -1274,6 +1278,7 @@ const NetworkModificationNodeEditor = () => {
                                 isRootNode ||
                                 selectionContainsShared
                             }
+                            data-testid="CutModification"
                         >
                             <ContentCutIcon />
                         </IconButton>
@@ -1291,6 +1296,7 @@ const NetworkModificationNodeEditor = () => {
                                 isRootNode ||
                                 selectionContainsShared
                             }
+                            data-testid="CopyModification"
                         >
                             <ContentCopyIcon />
                         </IconButton>
@@ -1312,6 +1318,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={doPasteModifications}
                             size={'small'}
                             disabled={isPasteButtonDisabled || isRootNode || selectionContainsShared}
+                            data-testid="PasteModification"
                         >
                             <ContentPasteIcon />
                         </IconButton>
@@ -1329,6 +1336,7 @@ const NetworkModificationNodeEditor = () => {
                                 !currentNode ||
                                 isRootNode
                             }
+                            data-testid="DeleteModification"
                         >
                             <DeleteIcon />
                         </IconButton>
@@ -1350,6 +1358,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openRestoreModificationDialog}
                             size={'small'}
                             disabled={isRestoreButtonDisabled || isRootNode}
+                            data-testid="RestoreModification"
                         >
                             <RestoreFromTrash />
                         </IconButton>
