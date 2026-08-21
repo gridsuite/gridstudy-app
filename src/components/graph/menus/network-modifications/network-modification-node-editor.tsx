@@ -12,7 +12,6 @@ import {
     ElementType,
     EquipmentType,
     ErrorMessage,
-    NetworkModificationApplicabilities,
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
@@ -92,7 +91,6 @@ import { createCompositeModifications, updateCompositeModifications } from '../.
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
     assembleModificationsIntoComposite,
-    fetchNetworkModificationApplicabilities,
     fetchNetworkModifications,
     stashModifications,
 } from '../../../../services/study/network-modifications';
@@ -163,7 +161,6 @@ const NetworkModificationNodeEditor = () => {
     const createdRootNetworksPreviousLength = usePrevious(createdRootNetworks.length);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
-    const [applicabilities, setApplicabilities] = useState<NetworkModificationApplicabilities>({});
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
@@ -771,30 +768,6 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
 
-    const dofetchNetworkModificationApplicabilities = useCallback(() => {
-        // Do not fetch modifications status on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
-            return;
-        }
-        setIsFetchingModifications(true);
-        fetchNetworkModificationApplicabilities(studyUuid, currentNode.id)
-            .then((res: NetworkModificationApplicabilities) => {
-                // Check if during asynchronous request currentNode has already changed
-                // otherwise accept fetch results
-                if (currentNode.id === currentNodeIdRef.current) {
-                    setApplicabilities(res);
-                }
-            })
-            .catch((error: Error) => {
-                snackWithFallback(snackError, error);
-            })
-            .finally(() => {
-                setPendingState(false);
-                setIsFetchingModifications(false);
-                dispatch(setModificationsInProgress(false));
-            });
-    }, [currentNode?.type, currentNode?.id, studyUuid, snackError, dispatch]);
-
     useEffect(() => {
         if (!currentNode) {
             return;
@@ -802,7 +775,7 @@ const NetworkModificationNodeEditor = () => {
         // first time with currentNode initialized then fetch modifications
         // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
         // OR next time if currentNodeId changed then fetch modifications
-        // OR when number of root networks has changed to fetch new applicabilities
+        // OR when number of root networks has changed
         const hasNodeChanged = !currentNodeIdRef.current || currentNodeIdRef.current !== currentNode.id;
         if (
             hasNodeChanged ||
@@ -811,10 +784,8 @@ const NetworkModificationNodeEditor = () => {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
             setModifications([]);
-            setApplicabilities({});
             setModificationsToRestore([]);
             dofetchNetworkModifications();
-            dofetchNetworkModificationApplicabilities();
         }
     }, [
         createdRootNetworksLength,
@@ -822,9 +793,7 @@ const NetworkModificationNodeEditor = () => {
         currentNode,
         dispatch,
         dofetchNetworkModifications,
-        dofetchNetworkModificationApplicabilities,
         modifications,
-        applicabilities,
     ]);
 
     const handleNameChange = useCallback(
@@ -875,7 +844,6 @@ const NetworkModificationNodeEditor = () => {
                 // Do not clear the modifications list, because currentNode is the concerned one
                 // this allows to append new modifications to the existing list.
                 dofetchNetworkModifications();
-                dofetchNetworkModificationApplicabilities();
                 dispatch(removeNotificationByNode([eventData.headers.parentNode, ...(eventData.headers.nodes ?? [])]));
             }
             if (isModificationsDeleteFinishedNotification(eventData)) {
@@ -886,13 +854,7 @@ const NetworkModificationNodeEditor = () => {
                 dofetchNetworkModifications();
             }
         },
-        [
-            dispatch,
-            dofetchNetworkModifications,
-            manageNotification,
-            cleanClipboard,
-            dofetchNetworkModificationApplicabilities,
-        ]
+        [dispatch, dofetchNetworkModifications, manageNotification, cleanClipboard]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
@@ -1186,8 +1148,6 @@ const NetworkModificationNodeEditor = () => {
                 currentNodeId={currentNode?.id}
                 currentRootNetworkUuid={currentRootNetworkUuid ?? undefined}
                 rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
-                applicabilities={applicabilities}
-                setApplicabilities={setApplicabilities}
                 isDisabled={isAnyNodeBuilding || mapDataLoading}
             />
         );
