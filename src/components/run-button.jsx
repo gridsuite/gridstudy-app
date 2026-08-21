@@ -42,12 +42,21 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
         }
     }
 
+    // only one computation can run at a time on a node, so we can take the first running one found
+    const runningRunnable = useMemo(
+        () => activeRunnables.find((runnable) => getStatus(runnable) === RunningStatus.RUNNING),
+        [activeRunnables, getStatus]
+    );
+
     useEffect(() => {
-        if (!activeRunnables.includes(selectedRunnable)) {
+        if (runningRunnable) {
+            // always show the running computation (ex : when switching to a node with a computation already running)
+            setSelectedRunnable(runningRunnable);
+        } else if (!activeRunnables.includes(selectedRunnable)) {
             // a computation may become unavailable when developer mode is disabled, then switch on first one
             setSelectedRunnable(activeRunnables[0]);
         }
-    }, [activeRunnables, selectedRunnable, setSelectedRunnable]);
+    }, [runningRunnable, activeRunnables, selectedRunnable]);
 
     const getRunningStatus = useCallback(() => {
         return getStatus(selectedRunnable);
