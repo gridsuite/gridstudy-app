@@ -78,10 +78,21 @@ export default function SaveSpreadsheetButton({
 
     const getCsvProps = useCallback(
         (csvCase: SpreadsheetSaveOptionId.COPY_CSV | SpreadsheetSaveOptionId.EXPORT_CSV) => {
-            const gridCsvFunction =
-                csvCase === SpreadsheetSaveOptionId.COPY_CSV
-                    ? gridRef.current?.api.getDataAsCsv
-                    : gridRef.current?.api.exportDataAsCsv;
+            const isCopy = csvCase === SpreadsheetSaveOptionId.COPY_CSV;
+            const gridCsvFunction = (params?: any) => {
+                const exportParams = {
+                    ...params,
+                    shouldRowBeSkipped: (rowParams: any) => {
+                        const rowData: { rowType?: string } = rowParams.node?.data;
+                        // remove lines used to calculate
+                        return !!(rowData && rowData.rowType && rowData?.rowType.includes('calculation'));
+                    },
+                };
+
+                return isCopy
+                    ? gridRef.current?.api.getDataAsCsv(exportParams)
+                    : gridRef.current?.api.exportDataAsCsv(exportParams);
+            };
             if (!gridCsvFunction) {
                 console.error('Csv API is not available.');
                 return;
