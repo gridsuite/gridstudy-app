@@ -85,7 +85,7 @@ export default function SaveSpreadsheetButton({
                     shouldRowBeSkipped: (rowParams: any) => {
                         const rowData: { rowType?: string } = rowParams.node?.data;
                         // remove lines used to calculate
-                        return !!(rowData && rowData.rowType && rowData?.rowType.includes('calculation'));
+                        return rowData?.rowType?.includes('calculation');
                     },
                 };
 
