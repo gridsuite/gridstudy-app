@@ -94,6 +94,7 @@ import {
     assembleModificationsIntoComposite,
     fetchExcludedNetworkModifications,
     fetchNetworkModifications,
+    shareCompositeModification,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
@@ -991,6 +992,37 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
+    const doShareCompositeModificationElement = ({
+        name,
+        description,
+        folderName,
+        folderId,
+    }: IElementCreationDialog) => {
+        const compositeToShare = selectedNetworkModifications[0];
+        // the selection may have been emptied by a refresh while the dialog was open
+        if (!compositeToShare) {
+            return;
+        }
+
+        setSaveInProgress(true);
+        shareCompositeModification(studyUuid, currentNode?.id, compositeToShare.uuid, name, description, folderId)
+            .then(() => {
+                snackInfo({
+                    headerId: 'infoShareModificationMsg',
+                    headerValues: {
+                        item: name,
+                        directory: folderName,
+                    },
+                });
+            })
+            .catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'errShareModificationMsg' });
+            })
+            .finally(() => {
+                setSaveInProgress(false);
+            });
+    };
+
     const doUpdateCompositeModificationsElements = ({
         id,
         name,
@@ -1149,6 +1181,14 @@ const NetworkModificationNodeEditor = () => {
             ? (JSON.parse(selectedNetworkModifications[0]?.messageValues)?.name ?? null)
             : null;
 
+    // Sharing moves the selected composite itself into gridexplore : it needs exactly one composite, and an
+    // already shared one (a reference) cannot be shared again. Only a composite of the node itself can be shared,
+    // not one nested in another composite, so the third condition: the modifications list holds the modifications of the node only
+    const isSharingAvailable =
+        selectedNetworkModifications.length === 1 &&
+        selectedNetworkModifications[0].type === ModificationType.COMPOSITE_MODIFICATION &&
+        modifications.some((modification) => modification.uuid === selectedNetworkModifications[0].uuid);
+
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
             return (
@@ -1204,6 +1244,8 @@ const NetworkModificationNodeEditor = () => {
                 <ElementSaveDialog
                     open={createCompositeModificationDialogOpen}
                     onSave={doCreateCompositeModificationsElements}
+                    onSaveShared={doShareCompositeModificationElement}
+                    createSharedDisabled={!isSharingAvailable}
                     OnUpdate={doUpdateCompositeModificationsElements}
                     onClose={() => setCreateCompositeModificationDialogOpen(false)}
                     type={ElementType.MODIFICATION}
@@ -1213,6 +1255,7 @@ const NetworkModificationNodeEditor = () => {
                     studyUuid={studyUuid}
                     selectorTitleId="SelectCompositeModificationTitle"
                     createLabelId="CreateCompositeModificationLabel"
+                    createSharedLabelId="ShareCompositeModificationLabel"
                     updateLabelId="UpdateCompositeModificationLabel"
                 />
             )
