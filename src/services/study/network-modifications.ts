@@ -40,6 +40,7 @@ import {
     CouplingDeviceCreationDto,
     CreateVoltageLevelTopologyDto,
     VoltageLevelSectionCreationDto,
+    VscHdvLineCreationDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -59,7 +60,6 @@ import {
     Variations,
     VariationType,
     VoltageLevelCreationInfo,
-    VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
@@ -1387,33 +1387,26 @@ export function modifyLcc({
     });
 }
 
-export function createVsc({
-    vscCreationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    vscCreationInfos: VscCreationInfos;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: string | null;
-    isUpdate: boolean;
-}) {
+export function createVscHvdcLine(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: VscHdvLineCreationDto
+) {
     let createVscUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         createVscUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating vsc creation');
+        console.info('Updating vsc hvdc line creation');
     } else {
-        console.info('Creating vsc creation');
+        console.info('Creating vsc hvdc line creation');
     }
     return backendFetchText(createVscUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(vscCreationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
