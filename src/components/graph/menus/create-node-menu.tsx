@@ -496,11 +496,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             subMenuItems: SUBTREE_SUBMENU_ITEMS,
             withDivider: true,
         },
-        EXPORT_NODE: {
-            onRoot: false,
+        EXPORT_NODES: {
+            onRoot: true,
             action: () => exportNodeInfos(),
             id: 'downloadNetworkModifications',
-            hidden: !isDeveloperMode,
+            hidden: !isDeveloperMode || activeNode?.type !== NodeType.ROOT,
             withDivider: true,
         },
         EXPORT_NETWORK_ON_NODE: {
