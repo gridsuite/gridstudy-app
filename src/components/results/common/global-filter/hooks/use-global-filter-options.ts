@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer.type';
 import { useBaseVoltages } from '../../../../../hooks/use-base-voltages';
 import { addToGlobalFilterOptions } from '../../../../../redux/actions';
+import { fetchNetworkExistence } from 'services/study/network';
+import { HttpStatusCode } from 'utils/http-status-code';
 
 /**
  * Custom hook that manages global filter options for tables.
@@ -52,20 +54,27 @@ export const useGlobalFilterOptions = () => {
     }, [baseVoltages, dispatch]);
 
     useEffect(() => {
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
-                .then((countryCodes) => {
+        const run = async () => {
+            if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid) return;
+
+            const response = await fetchNetworkExistence(studyUuid, currentRootNetworkUuid);
+
+            if (response.status === HttpStatusCode.OK) {
+                try {
+                    const countryCodes = await fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid);
+
                     const newCountriesFilter = countryCodes
                         .map((countryCode: string) => ({
                             label: countryCode,
                             filterType: GlobalFilterType.COUNTRY,
                         }))
                         .map(addGlobalFilterId);
+
                     dispatch(addToGlobalFilterOptions(newCountriesFilter));
-                })
-                .catch((error) => {
+                } catch (error) {
                     snackWithFallback(snackError, error, { headerId: 'FetchCountryError' });
-                });
+                }
+            }
 
             fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
                 const propertiesGlobalFilters: GlobalFilterWithoutId[] = [];
@@ -83,6 +92,7 @@ export const useGlobalFilterOptions = () => {
                 // propertiesFilter may be empty or contain several subtypes, depending on the user configuration
                 dispatch(addToGlobalFilterOptions(propertiesGlobalFilters.map(addGlobalFilterId)));
             });
-        }
+        };
+        run();
     }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id, dispatch]);
 };
