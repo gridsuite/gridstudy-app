@@ -101,6 +101,7 @@ import {
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
     MenuSection,
+    ModificationMoveOrCopyInfos,
     NetworkModificationCopyInfos,
     NetworkModificationCopyType,
     NetworkModificationData,
@@ -179,7 +180,7 @@ const NetworkModificationNodeEditor = () => {
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
         []
     );
-
+    console.log('======== ', selectedNetworkModifications);
     // TODO : this is temporary, until merge/delete is done for the shared modification
     const selectionContainsShared: boolean = useMemo(() => {
         return selectedNetworkModifications.some(
@@ -230,7 +231,7 @@ const NetworkModificationNodeEditor = () => {
     // a modification on a public study which is in the clipboard.
     // We don't have precision on notifications to do this for now.
     const handleValidatedDialog = () => {
-        if (editData?.uuid && networkModificationsToCopy.includes(editData?.uuid)) {
+        if (editData?.uuid && networkModificationsToCopy.some((m) => m.uuid === editData?.uuid)) {
             cleanClipboard();
         }
     };
@@ -930,7 +931,7 @@ const NetworkModificationNodeEditor = () => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
                 if (
                     networkModificationsToCopy.some((aCopiedModification) =>
-                        selectedModificationsUuid.includes(aCopiedModification)
+                        selectedModificationsUuid.includes(aCopiedModification.uuid)
                     )
                 ) {
                     cleanClipboard();
@@ -1039,39 +1040,43 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
-    const selectedModificationsIds = useMemo(
-        () => selectedNetworkModifications.map((m) => m.uuid),
-        [selectedNetworkModifications]
-    );
-
     const doCutModifications = useCallback(() => {
         cutNetworkModifications({
-            networkModificationUuids: selectedModificationsIds,
+            networkModifications: selectedNetworkModifications,
             copyInfos: {
                 copyType: NetworkModificationCopyType.MOVE,
                 originStudyUuid: studyUuid ?? undefined,
                 originNodeUuid: currentNode?.id,
             },
         });
-    }, [cutNetworkModifications, currentNode?.id, selectedModificationsIds, studyUuid]);
+    }, [cutNetworkModifications, currentNode?.id, selectedNetworkModifications, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
         copyNetworkModifications({
-            networkModificationUuids: selectedModificationsIds,
+            networkModifications: selectedNetworkModifications,
             copyInfos: {
                 copyType: NetworkModificationCopyType.COPY,
                 originStudyUuid: studyUuid ?? undefined,
                 originNodeUuid: currentNode?.id,
             },
         });
-    }, [copyNetworkModifications, currentNode?.id, selectedModificationsIds, studyUuid]);
+    }, [copyNetworkModifications, currentNode?.id, selectedNetworkModifications, studyUuid]);
 
     const doPasteModifications = useCallback(() => {
         if (!copyInfos || !studyUuid || !currentNode?.id) {
             return;
         }
+        // no source hint: study-server now looks up each modification's real container itself
+        // (network-modification-server owns that data), instead of this having to guess it from
+        // whatever the table's selection happens to expose
+        const modificationsToMoveOrCopy: ModificationMoveOrCopyInfos[] = networkModificationsToCopy.map(
+            (modification) => ({
+                modificationUuid: modification.uuid,
+            })
+        );
+
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
-            copyOrMoveModifications(studyUuid, currentNode.id, networkModificationsToCopy, copyInfos)
+            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos)
                 .then(() => {
                     cleanClipboard(false);
                 })
@@ -1081,7 +1086,7 @@ const NetworkModificationNodeEditor = () => {
                     });
                 });
         } else {
-            copyOrMoveModifications(studyUuid, currentNode.id, networkModificationsToCopy, copyInfos).catch((error) => {
+            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos).catch((error) => {
                 snackWithFallback(snackError, error, {
                     headerId: 'errDuplicateModificationMsg',
                 });

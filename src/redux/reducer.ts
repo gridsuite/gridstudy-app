@@ -485,7 +485,7 @@ const initialState: AppState = {
         allChildren: null,
     },
     copiedNetworkModifications: {
-        networkModificationUuids: [],
+        networkModifications: [],
         copyInfos: null,
     },
     tables: initialTablesState,

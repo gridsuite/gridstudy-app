@@ -14,7 +14,7 @@ import { setCopiedNetworkModifications } from 'redux/actions';
 const networkModificationsCopyChannel = new BroadcastChannel('NetworkModificationsCopyBroadcastChannel');
 
 const emptyCopiedNetworkModificationsSelection: CopiedNetworkModifications = {
-    networkModificationUuids: [],
+    networkModifications: [],
     copyInfos: null,
 };
 
@@ -23,7 +23,7 @@ export const useCopiedNetworkModifications = () => {
     const { snackInfo } = useSnackMessage();
 
     const networkModificationsToCopy = useSelector(
-        (state: AppState) => state.copiedNetworkModifications.networkModificationUuids
+        (state: AppState) => state.copiedNetworkModifications.networkModifications
     );
     const copyInfos = useSelector((state: AppState) => state.copiedNetworkModifications.copyInfos);
     const isInitiatingCopyTab = useRef(false);
