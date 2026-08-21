@@ -23,9 +23,10 @@ interface UseButtonWithTooltipProps {
     handleClick: React.MouseEventHandler<HTMLButtonElement>;
     label: string;
     icon: ReactNode;
+    dataTestId?: string;
 }
 
-export const useButtonWithTooltip = ({ handleClick, label, icon }: UseButtonWithTooltipProps) => {
+export const useButtonWithTooltip = ({ handleClick, label, icon, dataTestId }: UseButtonWithTooltipProps) => {
     return useMemo(() => {
         return (
             <Tooltip
@@ -42,12 +43,12 @@ export const useButtonWithTooltip = ({ handleClick, label, icon }: UseButtonWith
                     },
                 }}
             >
-                <IconButton style={{ padding: '2px' }} onClick={handleClick}>
+                <IconButton style={{ padding: '2px' }} onClick={handleClick} data-testid={dataTestId}>
                     {icon}
                 </IconButton>
             </Tooltip>
         );
-    }, [label, handleClick, icon]);
+    }, [label, handleClick, icon, dataTestId]);
 };
 
 interface UseSimpleTextValueProps {

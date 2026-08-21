@@ -24,7 +24,6 @@ import {
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
-
 import LinearProgress from '@mui/material/LinearProgress';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult, formatCountryAdequaciesResult, formatExchangesResult } from './load-flow-result-utils';
