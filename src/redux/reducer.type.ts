@@ -9,6 +9,7 @@ import type {
     AuthenticationRouterErrorState,
     BaseVoltage,
     CommonStoreState,
+    ComposedModificationMetadata,
     ComputingType,
     GsLang,
     GsLangUser,
@@ -184,7 +185,9 @@ export type NodeSelectionForCopy = {
 };
 
 export type CopiedNetworkModifications = {
-    networkModificationUuids: UUID[];
+    // the raw selection snapshot at copy/cut time; doPasteModifications resolves it into
+    // ModificationMoveOrCopyInfos (per-item source container) right before sending the request
+    networkModifications: ComposedModificationMetadata[];
     copyInfos: NetworkModificationCopyInfos | null;
 };
 
