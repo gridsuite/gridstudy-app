@@ -54,6 +54,12 @@ interface LineModificationDtoWithId extends LineModificationDto, WithModificatio
 
 export type LineModificationDialogProps = EquipmentModificationDialogProps & {
     editData?: LineModificationDtoWithId;
+    /**
+     * When true, the dialog is displayed in read-only mode: all inputs
+     * (including those in nested sub-components) are disabled via a
+     * native <fieldset disabled>, so the form can only be viewed, not edited.
+     */
+    readOnly?: boolean;
 };
 
 /**
@@ -66,6 +72,7 @@ export type LineModificationDialogProps = EquipmentModificationDialogProps & {
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param isUpdate check if edition form
  * @param editDataFetchStatus indicates the status of fetching EditData
+ * @param readOnly if true, disables every input (including nested sub-components) to display the form in view-only mode
  */
 const LineModificationDialog = ({
     editData,
@@ -75,6 +82,7 @@ const LineModificationDialog = ({
     currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
+    readOnly = true,
     ...dialogProps
 }: Readonly<LineModificationDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
@@ -265,11 +273,13 @@ const LineModificationDialog = ({
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
             isUpdate={isUpdate}
+            readOnly={readOnly}
         >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
+                readOnly={readOnly}
                 maxWidth={'xl'}
                 titleId="ModifyLine"
                 open={open}
