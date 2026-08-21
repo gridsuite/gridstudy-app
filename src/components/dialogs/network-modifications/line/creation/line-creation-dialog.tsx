@@ -21,6 +21,7 @@ import {
     getLineCharacteristicsFormData,
     LineCreationDto,
     lineCreationDtoToForm,
+    LineCreationDtoWithId,
     lineCreationEmptyFormData,
     LineCreationFormData,
     lineCreationFormSchema,
@@ -51,7 +52,7 @@ import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../servic
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 
 type LineCreationDialogProps = NetworkModificationDialogProps & {
-    editData?: LineCreationDto;
+    editData?: LineCreationDtoWithId;
     onCreateLine: typeof createLine;
     displayConnectivity?: boolean;
 };

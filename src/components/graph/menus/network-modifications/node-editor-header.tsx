@@ -99,6 +99,7 @@ export const NodeEditorHeader = () => {
                                 onClick={() => setOpenEditDialog(true)}
                                 disabled={isRootNode}
                                 sx={styles.buttonTitle}
+                                data-testid="NodeNameModificationPanel"
                             >
                                 <Typography sx={styles.nodeNameText}>{displayedLabel}</Typography>
                             </Button>

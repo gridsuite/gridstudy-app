@@ -73,6 +73,7 @@ export default function SubstationsAutocomplete({
             )}
             autoHighlight={true}
             disableCloseOnSelect={true}
+            data-testid="SubstationsInput"
             {...props}
         />
     );

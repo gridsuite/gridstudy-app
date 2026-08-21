@@ -679,8 +679,6 @@ export const convertFilterValues = (intl: IntlShape, filterSelector: FilterConfi
     });
 };
 
-export const PAGE_OPTIONS = [25, 100, 500, 1000];
-
 export const getStoreFields = (index: number): string => {
     switch (index) {
         case 0:
