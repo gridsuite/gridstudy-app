@@ -90,6 +90,8 @@ export enum NotificationType {
     PCC_MIN_RESULT = 'pccMinResult',
     PCC_MIN_FAILED = 'pccMin_failed',
     PCC_MIN_STATUS = 'pccMin_status',
+    ALL_COMPUTATION_STATUS = 'all_computation_status',
+    ALL_COMPUTATION_STATUS_WITHOUT_LOADFLOW = 'all_computation_status_without_loadflow',
 
     // spreadsheets
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
@@ -356,6 +358,12 @@ interface ComputationFailedEventDataHeaders extends CommonStudyEventDataHeaders 
     userId: string;
 }
 
+interface ComputationStatusEventDataHeaders extends CommonStudyEventDataHeaders {
+    rootNetworkUuid?: UUID;
+    node?: UUID;
+    nodes?: UUID[];
+}
+
 interface LoadflowResultEventDataHeaders extends ComputationResultEventDataHeaders {
     updateType: NotificationType.LOADFLOW_RESULT;
 }
@@ -578,6 +586,11 @@ export interface EventCrudFinishedEventData extends CommonStudyEventData {
 
 export interface LoadflowResultEventData extends CommonStudyEventData {
     headers: LoadflowResultEventDataHeaders;
+    payload: undefined;
+}
+
+export interface ComputationStatusEventData extends CommonStudyEventData {
+    headers: ComputationStatusEventDataHeaders;
     payload: undefined;
 }
 
