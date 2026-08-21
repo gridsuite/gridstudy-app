@@ -35,13 +35,22 @@ export const NadPanelContent = memo(function NadPanelContent({
 }: NadPanelContentProps) {
     const { addToNadNavigationHistory, associateVoltageLevelWithNad } = useWorkspacePanelActions();
 
-    const { diagram, loading, globalError, updateDiagram, handleSaveNad, replaceNadConfig, moveNode, moveTextNode } =
-        useNadDiagram({
-            panelId,
-            studyUuid,
-            currentNodeId,
-            currentRootNetworkUuid,
-        });
+    const {
+        diagram,
+        loading,
+        globalError,
+        updateDiagram,
+        isEditNadMode,
+        toggleEditNadMode,
+        replaceNadConfig,
+        moveNode,
+        moveTextNode,
+    } = useNadDiagram({
+        panelId,
+        studyUuid,
+        currentNodeId,
+        currentRootNetworkUuid,
+    });
 
     const { handleShowInSpreadsheet } = useDiagramNavigation();
 
@@ -116,7 +125,8 @@ export const NadPanelContent = memo(function NadPanelContent({
                         onMoveNode={moveNode}
                         onMoveTextNode={moveTextNode}
                         onReplaceNad={handleReplaceNad}
-                        onSaveNad={handleSaveNad}
+                        isEditNadMode={isEditNadMode}
+                        onToggleEditNadMode={toggleEditNadMode}
                         nadPanelId={panelId}
                     />
                 </DiagramWrapper>
