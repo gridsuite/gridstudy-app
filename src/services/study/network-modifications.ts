@@ -39,6 +39,7 @@ import {
     StaticVarCompensatorCreationDto,
     CouplingDeviceCreationDto,
     CreateVoltageLevelTopologyDto,
+    MoveVoltageLevelFeederBaysDto,
     VoltageLevelSectionCreationDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
@@ -53,7 +54,6 @@ import {
     LCCCreationInfo,
     LccModificationInfos,
     LinesAttachToSplitLinesInfo,
-    MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
     TopologyVoltageLevelModificationInfos,
     Variations,
@@ -1624,7 +1624,7 @@ export function moveVoltageLevelFeederBays({
     modificationUuid,
     isUpdate,
 }: {
-    moveVoltageLevelFeederBaysInfos: MoveVoltageLevelFeederBaysInfos;
+    moveVoltageLevelFeederBaysInfos: MoveVoltageLevelFeederBaysDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
