@@ -398,9 +398,6 @@ export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustm
 
 // move connections
 export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
-export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
-export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
-export const CONNECTION_SIDE = 'connectionSide';
 
 export const ACTION = 'action';
 export const SELECTED_MODIFICATIONS = 'selectedModifications';

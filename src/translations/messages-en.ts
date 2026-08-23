@@ -116,7 +116,6 @@ const messages_en = {
     NetworkVisualizations: 'Network visualizations',
     None: 'None',
     NoneUpcomingOverload: 'None',
-    Feeders: 'Feeder',
     NominalVoltage: 'Nominal voltage',
     'I_(A)': 'I (A)',
     limit: 'limit',
@@ -1257,8 +1256,6 @@ const messages_en = {
 
     CREATE_COUPLING_DEVICE: 'Add a coupling device',
     CreateVoltageLevelSection: 'Add busbar section',
-    CreateCouplingDeviceDiagramButton: 'Show voltage level',
-    builtNodeTooltipForDiagram: 'Current diagram taking into account all applied modifications',
     notBuiltNodeTooltipForDiagram: 'Diagram from last build node in current branch',
     BalancesAdjustment: 'Balances adjustment',
     BalancesAdjustmentError: 'Error while creating a balances adjustment',
@@ -1343,7 +1340,6 @@ const messages_en = {
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS: 'Move connections',
     TOP: 'Top',
     BOTTOM: 'Bottom',
-    DuplicatedPositionsWarning: 'Duplicated number',
     MissingConnectionsInVoltageLevel:
         'Missing connections in voltage level (Connections removed from list on validation)',
     moveFeederBaysSections: 'Feeder bay will be connected onto the selected busbar section',
