@@ -1304,6 +1304,7 @@ const NetworkModificationNodeEditor = () => {
                             ref={buttonAddRef}
                             onClick={openNetworkModificationConfiguration}
                             disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
+                            data-testid="AddModification"
                         >
                             <AddIcon />
                         </IconButton>
@@ -1326,6 +1327,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={doAssembleModificationsIntoComposite}
                             size={'small'}
                             disabled={disabledCompositeCreation}
+                            data-testid="CreateComposite"
                         >
                             <ArrowsInputIcon />
                         </IconButton>
@@ -1337,6 +1339,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openImportModificationsDialog}
                             size={'small'}
                             disabled={isAnyNodeBuilding || mapDataLoading || isRootNode}
+                            data-testid="ImportModification"
                         >
                             <FileUpload />
                         </IconButton>
@@ -1358,7 +1361,8 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            disabled={disabledCompositeExport}
+                            disabled={disabledCompositeExport || selectionContainsShared}
+                            data-testid="SaveModification"
                         >
                             <SaveIcon />
                         </IconButton>
@@ -1376,6 +1380,7 @@ const NetworkModificationNodeEditor = () => {
                                 !currentNode ||
                                 isRootNode
                             }
+                            data-testid="CutModification"
                         >
                             <ContentCutIcon />
                         </IconButton>
@@ -1392,6 +1397,7 @@ const NetworkModificationNodeEditor = () => {
                                 mapDataLoading ||
                                 isRootNode
                             }
+                            data-testid="CopyModification"
                         >
                             <ContentCopyIcon />
                         </IconButton>
@@ -1413,6 +1419,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={doPasteModifications}
                             size={'small'}
                             disabled={isPasteButtonDisabled || isRootNode}
+                            data-testid="PasteModification"
                         >
                             <ContentPasteIcon />
                         </IconButton>
@@ -1431,6 +1438,7 @@ const NetworkModificationNodeEditor = () => {
                                 !currentNode ||
                                 isRootNode
                             }
+                            data-testid="DeleteModification"
                         >
                             <DeleteIcon />
                         </IconButton>
@@ -1459,6 +1467,7 @@ const NetworkModificationNodeEditor = () => {
                                 onClick={openRestoreModificationDialog}
                                 size={'small'}
                                 disabled={isRestoreButtonDisabled || isRootNode}
+                                data-testid="RestoreModification"
                             >
                                 <RestoreFromTrash />
                             </IconButton>

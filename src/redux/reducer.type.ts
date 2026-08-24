@@ -56,6 +56,7 @@ import type {
 import type { CalculationType } from '../components/spreadsheet-view/types/calculation.type';
 import type { RootNetworkIndexationStatus } from '../types/notification-types';
 import type { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import type { NodeValidity } from '../components/spreadsheet-view/columns/utils/column-validity';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import {
     LOGS_PAGINATION_STORE_FIELD,
@@ -230,6 +231,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
     tableSort: TableSort;
     tables: TablesState;
     nodeAliases: NodeAlias[];
+    // the current node is not in there, computingStatus covers it
+    aliasedNodesValidity: Record<string, NodeValidity>;
 
     nodeSelectionForCopy: NodeSelectionForCopy;
     copiedNetworkModifications: CopiedNetworkModifications;
