@@ -4,13 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import {
     CustomFormProvider,
     ElementType,
     ParameterLayout,
     snackWithFallback,
+    useTabs,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
@@ -53,32 +54,16 @@ export const StateEstimationParameters = ({
     const { reset, handleSubmit, formState } = formMethods;
     const { snackError } = useSnackMessage();
 
-    const handleTabChange = useCallback((_: SyntheticEvent, newValue: TabValue) => {
-        setTabValue(newValue);
-    }, []);
-
-    const [tabValue, setTabValue] = useState(TabValue.GENERAL);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<TabValue[]>([]);
-
-    const onValidationError = useCallback(
-        (errors?: any) => {
-            let tabsInError = [];
-            if (errors?.[TabValue.GENERAL] !== undefined) {
-                tabsInError.push(TabValue.GENERAL);
-            }
-            if (errors?.[TabValue.WEIGHTS] !== undefined) {
-                tabsInError.push(TabValue.WEIGHTS);
-            }
-            if (errors?.[TabValue.QUALITY]) {
-                tabsInError.push(TabValue.QUALITY);
-            }
-            if (errors?.[TabValue.LOADBOUNDS]) {
-                tabsInError.push(TabValue.LOADBOUNDS);
-            }
-            setTabIndexesWithError(tabsInError);
-        },
-        [setTabIndexesWithError]
-    );
+    const {
+        selectedTab: tabValue,
+        tabsWithError: tabIndexesWithError,
+        onTabChange: handleTabChange,
+        onError: onValidationError,
+    } = useTabs<TabValue>({
+        defaultTab: TabValue.GENERAL,
+        tabValues: Object.values(TabValue),
+        errors: formState.errors,
+    });
 
     const resetStateEstimationParameters = useCallback(() => {
         updateStateEstimationParameters(studyUuid, null).catch((error) => {
@@ -88,7 +73,7 @@ export const StateEstimationParameters = ({
 
     const clear = useCallback(() => {
         resetStateEstimationParameters();
-        onValidationError();
+        onValidationError({});
     }, [resetStateEstimationParameters, onValidationError]);
 
     const onSubmit = useCallback(
@@ -100,7 +85,7 @@ export const StateEstimationParameters = ({
                 .catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'updateStateEstimationParametersError' });
                 });
-            onValidationError();
+            onValidationError({});
         },
         [onValidationError, setStateEstimationParams, snackError, studyUuid]
     );
