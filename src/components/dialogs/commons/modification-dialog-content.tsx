@@ -51,11 +51,13 @@ export function ModificationDialogContent({
         label: 'CatalogButtonTooltip',
         handleClick: onOpenCatalogDialog ?? (() => {}),
         icon: <AutoStoriesOutlinedIcon />,
+        dataTestId: 'OpenCatalog',
     });
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: searchCopy?.handleOpenSearchDialog ?? (() => {}),
         icon: <FindInPageIcon />,
+        dataTestId: 'CopyFromExistingEquipment',
     });
 
     const handleClose = (event_: React.MouseEvent, reason: string) => {
