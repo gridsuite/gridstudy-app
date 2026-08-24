@@ -263,21 +263,24 @@ export default function MoveVoltageLevelFeederBaysDialog({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const onSubmit = useCallback(() => {
-        const moveVoltageLevelFeederBaysDto = {
-            ...moveVoltageLevelFeederBaysFormToDto(getValues() as MoveVoltageLevelFeederBaysFormSchemaType),
-            uuid: editData?.uuid,
-        };
-        moveVoltageLevelFeederBays({
-            moveVoltageLevelFeederBaysDto: moveVoltageLevelFeederBaysDto,
-            studyUuid: studyUuid,
-            nodeUuid: currentNodeUuid,
-            modificationUuid: editData?.uuid,
-            isUpdate: !!editData,
-        }).catch((error) => {
-            snackWithFallback(snackError, error, { headerId: 'MoveVoltageLevelFeederBaysError' });
-        });
-    }, [currentNodeUuid, editData, getValues, snackError, studyUuid]);
+    const onSubmit = useCallback(
+        (formData: MoveVoltageLevelFeederBaysFormSchemaType) => {
+            const moveVoltageLevelFeederBaysDto = {
+                ...moveVoltageLevelFeederBaysFormToDto(formData),
+                uuid: editData?.uuid,
+            };
+            moveVoltageLevelFeederBays({
+                moveVoltageLevelFeederBaysDto: moveVoltageLevelFeederBaysDto,
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                isUpdate: !!editData,
+            }).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'MoveVoltageLevelFeederBaysError' });
+            });
+        },
+        [currentNodeUuid, editData, snackError, studyUuid]
+    );
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -332,7 +335,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 )}
                 {selectedId != null && (
                     <MoveVoltageLevelFeederBaysForm
-                        selectedId={selectedId}
                         feederBaysPreviousValues={feederBaysPreviousValues}
                         isNodeBuilt={isNodeBuiltValue}
                         isUpdate={isUpdate}
