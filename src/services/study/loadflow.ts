@@ -86,7 +86,12 @@ export function stopLoadFlow(
     return backendFetch(stopLoadFlowUrl, { method: 'put' });
 }
 
-export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function fetchLoadFlowStatus(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    init?: RequestInit
+) {
     console.info(
         `Fetching loadFlow status on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
@@ -94,7 +99,7 @@ export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID, curr
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/loadflow/status';
     console.debug(url);
-    return backendFetchText(url);
+    return backendFetchText(url, init);
 }
 
 export function fetchLoadFlowComputationInfos(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
