@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, CircularProgress, Paper, Tooltip } from '@mui/material';
+import { Box, Paper, Tooltip } from '@mui/material';
 import { BuildStatusChip, type MuiStyles } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { useIntl } from 'react-intl';
@@ -13,8 +13,8 @@ import { useSelector } from 'react-redux';
 import { CurrentTreeNode, NodeType } from '../graph/tree-node.type';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
 import { AppState } from '../../redux/reducer.type';
-import { NodeActivityChip, NodeActivityDetails } from '../utils/node-activity-display';
-import { useBlockingActivity, useNodeActivity } from '../utils/use-node-activity';
+import { BlockedByActivityIndicator, NodeActivityChip } from 'components/node-activity/node-activity-display';
+import { useNodeActivity } from 'components/node-activity/hooks/use-node-activity';
 import RootNetworkSelect from './root-network-select';
 
 const styles = {
@@ -60,7 +60,6 @@ export default function CurrentSelection() {
     const isRootNode = currentNode?.type === NodeType.ROOT;
     const nodeLabel = isRootNode ? intl.formatMessage({ id: 'root' }) : currentNode?.data.label;
     const activity = useNodeActivity(currentNode?.id);
-    const blockingActivity = useBlockingActivity(currentNode?.id);
 
     return (
         <Paper elevation={1} sx={styles.container}>
@@ -85,11 +84,13 @@ export default function CurrentSelection() {
                     <BuildStatusChip buildStatus={currentNode.data.globalBuildStatus} />
                 )}
             </Box>
-            {!activity && blockingActivity && (
-                <Tooltip title={<NodeActivityDetails activity={blockingActivity} />} placement="bottom">
-                    <CircularProgress size={20} sx={styles.blockedSpinner} />
-                </Tooltip>
-            )}
+            <BlockedByActivityIndicator
+                nodeId={currentNode?.id}
+                ownActivity={activity}
+                size={20}
+                sx={styles.blockedSpinner}
+                placement="bottom"
+            />
         </Paper>
     );
 }

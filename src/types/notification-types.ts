@@ -409,7 +409,12 @@ export interface MetadataUpdatedEventData extends CommonStudyEventData {
     payload: undefined;
 }
 
+interface NodeActivitiesUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NODE_ACTIVITIES_UPDATED;
+}
+
 export interface NodeActivitiesUpdatedEventData extends CommonStudyEventData {
+    headers: NodeActivitiesUpdatedEventDataHeaders;
     payload: string;
 }
 

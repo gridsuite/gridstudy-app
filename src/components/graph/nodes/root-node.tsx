@@ -17,7 +17,7 @@ import NodeHandle from './node-handle';
 import NodeOverlaySpinner from './node-overlay-spinner';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import { UnbuildAllNodesButton } from '../menus/root-network/unbuild-all-nodes-button';
-import { useNodeActivity } from 'components/utils/use-node-activity';
+import { useNodeActivity } from 'components/node-activity/hooks/use-node-activity';
 
 const styles = {
     // full node container styles

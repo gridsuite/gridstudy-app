@@ -19,7 +19,7 @@ import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/mater
 import { FormattedMessage, useIntl } from 'react-intl';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { useCanEditEvents, useIsNodeBeingEdited } from '../../../utils/use-node-activity';
+import { useIsEventEditBlocked, useIsNodeUpdating } from 'components/node-activity/hooks/use-node-activity';
 import type { UUID } from 'node:crypto';
 import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
@@ -117,11 +117,9 @@ const EventModificationScenarioEditor = memo(() => {
             if (!eventData) {
                 return;
             }
-            // the data changed, whatever the outcome: the spinner comes from the node activity
+            // success or error, the events may have changed : the spinner is driven by the node activity
             if (isEventCrudFinishedNotification(eventData)) {
-                // fetch events because it must have changed
-                // Do not clear the events list, because currentNode is the concerned one
-                // this allows to append new events to the existing list.
+                // append to the existing list : currentNode is the concerned one, so it is not cleared
                 doFetchEvents();
             }
         },
@@ -132,8 +130,8 @@ const EventModificationScenarioEditor = memo(() => {
         listenerCallbackMessage: handleEvent,
     });
 
-    const isCurrentNodeBlocked = !useCanEditEvents(currentNode?.id);
-    const isNodeBeingEdited = useIsNodeBeingEdited(currentNode?.id);
+    const isEventEditBlocked = useIsEventEditBlocked(currentNode?.id);
+    const isNodeUpdating = useIsNodeUpdating(currentNode?.id);
 
     const doDeleteEvent = useCallback(() => {
         if (!studyUuid || !currentNode?.id) {
@@ -183,12 +181,12 @@ const EventModificationScenarioEditor = memo(() => {
 
     const handleSecondaryAction = useCallback(
         (item: Event, isItemHovered?: boolean) =>
-            isItemHovered && !isCurrentNodeBlocked ? (
+            isItemHovered && !isEventEditBlocked ? (
                 <IconButton onClick={() => doEditEvent(item)} size={'small'} sx={styles.iconEdit}>
                     <EditIcon />
                 </IconButton>
             ) : null,
-        [isCurrentNodeBlocked]
+        [isEventEditBlocked]
     );
 
     const renderEventList = () => {
@@ -209,7 +207,7 @@ const EventModificationScenarioEditor = memo(() => {
                 getItemId={(v: Event) => v.equipmentId}
                 getItemLabel={getItemLabel}
                 secondaryAction={handleSecondaryAction}
-                isDisabled={() => isCurrentNodeBlocked}
+                isDisabled={() => isEventEditBlocked}
                 divider
             />
         );
@@ -232,14 +230,14 @@ const EventModificationScenarioEditor = memo(() => {
         return (
             <Box sx={styles.modificationsTitle}>
                 <Box sx={styles.icon}>
-                    {isNodeBeingEdited && <CircularProgress size={'1em'} sx={styles.circularProgress} />}
+                    {isNodeUpdating && <CircularProgress size={'1em'} sx={styles.circularProgress} />}
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'DynamicSimulationEventCount'}
                         values={{
                             count: events ? events?.length : '',
-                            hide: isNodeBeingEdited,
+                            hide: isNodeUpdating,
                         }}
                     />
                 </Typography>
@@ -270,7 +268,7 @@ const EventModificationScenarioEditor = memo(() => {
                 <IconButton
                     onClick={doDeleteEvent}
                     size={'small'}
-                    disabled={selectedItems.length === 0 || isCurrentNodeBlocked || !currentNode}
+                    disabled={selectedItems.length === 0 || isEventEditBlocked || !currentNode}
                 >
                     <DeleteIcon />
                 </IconButton>

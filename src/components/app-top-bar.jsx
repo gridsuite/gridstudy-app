@@ -82,9 +82,7 @@ const AppTopBar = ({ userProfile, userManager }) => {
         >
             {userProfile && studyUuid && currentRootNetworkUuid && (
                 <Box sx={styles.boxContent}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1.5 }}>
-                        <WorkspaceToolbar />
-                    </Box>
+                    <WorkspaceToolbar />
                 </Box>
             )}
         </TopBar>

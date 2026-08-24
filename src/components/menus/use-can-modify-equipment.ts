@@ -7,11 +7,11 @@
 
 import { useSelector } from 'react-redux';
 import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
-import { useCanEditNode } from 'components/utils/use-node-activity';
+import { useIsEditBlocked } from 'components/node-activity/hooks/use-node-activity';
 import { AppState } from 'redux/reducer.type';
 
 export function useCanModifyEquipment(): boolean {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const canEditNode = useCanEditNode(currentNode?.id);
-    return !!isNodeBuilt(currentNode) && !isNodeReadOnly(currentNode) && canEditNode;
+    const isEditBlocked = useIsEditBlocked(currentNode?.id);
+    return isNodeBuilt(currentNode) && !isNodeReadOnly(currentNode) && !isEditBlocked;
 }

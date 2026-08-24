@@ -121,8 +121,8 @@ export function isNodeReadOnly(node: CurrentTreeNode | null) {
     return node?.data?.readOnly ? true : false; // ternary operator because of potential undefined
 }
 
-export function isStatusBuilt(status: BuildStatus | undefined) {
-    return status?.startsWith('BUILT');
+export function isStatusBuilt(status: BuildStatus | undefined): boolean {
+    return !!status?.startsWith('BUILT');
 }
 
 export function isNodeBuilt(node: CurrentTreeNode | null) {
@@ -184,13 +184,17 @@ export const getNetworkModificationNode = (treeModel: NetworkModificationTreeMod
     return treeModel?.treeNodes.find((n) => n.id === nodeId);
 };
 
+export function isDescendantOf(nodeId: UUID, ancestorId: UUID, ancestorsByNode: Map<UUID, Set<UUID>>): boolean {
+    return !!ancestorsByNode.get(nodeId)?.has(ancestorId);
+}
+
 export function getAncestorsByNode(treeModel: NetworkModificationTreeModel | null): Map<UUID, Set<UUID>> {
     const ancestorsByNode = new Map<UUID, Set<UUID>>();
     if (!treeModel) {
         return ancestorsByNode;
     }
     const parentByNode = new Map<UUID, UUID | undefined>(
-        treeModel.treeNodes.map((node) => [node.id as UUID, node.parentId as UUID | undefined])
+        treeModel.treeNodes.map((node) => [node.id, node.parentId as UUID | undefined])
     );
 
     function ancestorsOf(nodeId: UUID): Set<UUID> {
@@ -209,6 +213,6 @@ export function getAncestorsByNode(treeModel: NetworkModificationTreeModel | nul
         return ancestors;
     }
 
-    treeModel.treeNodes.forEach((node) => ancestorsOf(node.id as UUID));
+    treeModel.treeNodes.forEach((node) => ancestorsOf(node.id));
     return ancestorsByNode;
 }

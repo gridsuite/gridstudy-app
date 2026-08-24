@@ -63,7 +63,7 @@ import type { RootNetworkMetadata } from 'components/graph/menus/network-modific
 import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
-import type { NodeActivity } from '../types/node-activity.type';
+import type { NodeActivity } from '../components/node-activity/types/node-activity.type';
 import type { NodeValidity } from '../components/spreadsheet-view/columns/utils/column-validity';
 
 export type TableValue<TValue = unknown> = {

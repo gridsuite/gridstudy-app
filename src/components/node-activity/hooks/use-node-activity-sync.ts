@@ -9,13 +9,14 @@ import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commo
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { setNodeActivities } from '../redux/actions';
-import { fetchNodeActivities } from '../services/study/node-activities';
+import { setNodeActivities } from 'redux/actions';
+import { fetchNodeActivities } from 'services/study/node-activities';
+import type { NodeActivity } from '../types/node-activity.type';
 import {
     type CommonStudyEventData,
     isNodeActivitiesUpdatedNotification,
     parseEventData,
-} from '../types/notification-types';
+} from 'types/notification-types';
 
 export function useNodeActivitySync(studyUuid: UUID | null) {
     const dispatch = useDispatch();
@@ -41,9 +42,8 @@ export function useNodeActivitySync(studyUuid: UUID | null) {
         (event: MessageEvent) => {
             const eventData = parseEventData<CommonStudyEventData>(event);
             if (eventData && isNodeActivitiesUpdatedNotification(eventData)) {
-                // this payload is newer than any snapshot still in flight
                 abortControllerRef.current?.abort();
-                dispatch(setNodeActivities(JSON.parse(eventData.payload)));
+                dispatch(setNodeActivities(JSON.parse(eventData.payload) as NodeActivity[]));
             }
         },
         [dispatch]

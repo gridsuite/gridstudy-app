@@ -7,7 +7,7 @@
 
 import { backendFetchJson } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import type { NodeActivity } from '../../types/node-activity.type';
+import type { NodeActivity } from '../../components/node-activity/types/node-activity.type';
 import { getStudyUrl } from './index';
 
 export function fetchNodeActivities(studyUuid: UUID, abortSignal?: AbortSignal): Promise<NodeActivity[]> {

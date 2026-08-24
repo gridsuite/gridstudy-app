@@ -17,11 +17,11 @@ import { ModificationNode } from '../tree-node.type';
 import NodeHandle from './node-handle';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
-import { NodeActivityDetails } from 'components/utils/node-activity-display';
-import { useBlockingActivity, useCanBuildOrUnbuildNode, useNodeActivity } from 'components/utils/use-node-activity';
+import { BlockedByActivityIndicator } from 'components/node-activity/node-activity-display';
+import { useIsBuildBlocked, useNodeActivity } from 'components/node-activity/hooks/use-node-activity';
 
 import { BuildButton } from './build-button';
-import { CircularProgress, Tooltip, Typography } from '@mui/material';
+import { Tooltip, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
@@ -104,8 +104,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const intl = useIntl();
 
     const activity = useNodeActivity(props.id);
-    const blockingActivity = useBlockingActivity(props.id);
-    const canBuildOrUnbuild = useCanBuildOrUnbuildNode(props.id, props.data);
+    const isBuildBlocked = useIsBuildBlocked(props.id, props.data);
 
     const onClipboardCopy = useCallback(() => {
         snackInfo({ headerId: 'uuidCopiedToClipboard' });
@@ -208,7 +207,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                                 studyUuid={studyUuid}
                                 currentRootNetworkUuid={currentRootNetworkUuid}
                                 nodeUuid={props.id}
-                                disabled={!canBuildOrUnbuild}
+                                disabled={isBuildBlocked}
                             />
                         )}
                     </Box>
@@ -217,19 +216,16 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 </ForwardRefBox>
             </Tooltip>
 
-            {!activity && blockingActivity && (
-                <Tooltip
-                    title={<NodeActivityDetails activity={blockingActivity} />}
-                    arrow
-                    enterDelay={TOOLTIP_DELAY}
-                    enterNextDelay={TOOLTIP_DELAY}
-                    placement="right"
-                >
-                    <Box sx={styles.blockedSpinner}>
-                        <CircularProgress size={24} />
-                    </Box>
-                </Tooltip>
-            )}
+            <BlockedByActivityIndicator
+                nodeId={props.id}
+                ownActivity={activity}
+                size={24}
+                sx={styles.blockedSpinner}
+                placement="right"
+                arrow
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
+            />
         </>
     );
 };

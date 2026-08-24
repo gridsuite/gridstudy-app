@@ -5,14 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Chip, CircularProgress } from '@mui/material';
+import { Box, Chip, CircularProgress, type SxProps, type Theme, Tooltip, type TooltipProps } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { getNetworkModificationNode } from 'components/graph/util/model-functions';
-import { useNodeActivityLabel } from 'components/utils/use-node-activity';
+import { useActivityBlockingNode } from './hooks/use-node-activity';
+import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
-import { NODE_ACTIVITY_IN_PROGRESS_IDS, type NodeActivity } from 'types/node-activity.type';
+import { nodeActivityInProgressId, nodeActivityLabelId, type NodeActivity } from './types/node-activity.type';
 
 const styles = {
     rootNetworkLine: { display: 'flex', alignItems: 'center', gap: 0.5 },
@@ -27,10 +28,16 @@ function useOtherRootNetworkTag(activity: NodeActivity): string | undefined {
 }
 
 export function NodeActivityChip({ activity }: Readonly<{ activity: NodeActivity }>) {
-    return <Chip size="small" icon={<CircularProgress size={14} />} label={useNodeActivityLabel(activity)} />;
+    return (
+        <Chip
+            size="small"
+            icon={<CircularProgress size={14} />}
+            label={<FormattedMessage id={nodeActivityLabelId(activity.label)} />}
+        />
+    );
 }
 
-export function NodeActivityDetails({ activity }: Readonly<{ activity: NodeActivity }>) {
+function NodeActivityDetails({ activity }: Readonly<{ activity: NodeActivity }>) {
     const intl = useIntl();
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const otherRootNetworkTag = useOtherRootNetworkTag(activity);
@@ -39,7 +46,7 @@ export function NodeActivityDetails({ activity }: Readonly<{ activity: NodeActiv
     return (
         <Box>
             <Box>{intl.formatMessage({ id: 'nodeActivityNode' }, { nodeName })}</Box>
-            <Box>{intl.formatMessage({ id: NODE_ACTIVITY_IN_PROGRESS_IDS[activity.label] })}</Box>
+            <Box>{intl.formatMessage({ id: nodeActivityInProgressId(activity.label) })}</Box>
             {otherRootNetworkTag && (
                 <Box sx={styles.rootNetworkLine}>
                     <FormattedMessage
@@ -49,5 +56,31 @@ export function NodeActivityDetails({ activity }: Readonly<{ activity: NodeActiv
                 </Box>
             )}
         </Box>
+    );
+}
+
+type BlockedByActivityIndicatorProps = {
+    nodeId: UUID | null | undefined;
+    ownActivity: NodeActivity | undefined;
+    size: number;
+    sx?: SxProps<Theme>;
+} & Pick<TooltipProps, 'placement' | 'arrow' | 'enterDelay' | 'enterNextDelay'>;
+
+export function BlockedByActivityIndicator({
+    nodeId,
+    ownActivity,
+    size,
+    sx,
+    ...tooltipProps
+}: Readonly<BlockedByActivityIndicatorProps>) {
+    const blockingActivity = useActivityBlockingNode(nodeId);
+
+    if (ownActivity || !blockingActivity) {
+        return null;
+    }
+    return (
+        <Tooltip title={<NodeActivityDetails activity={blockingActivity} />} {...tooltipProps}>
+            <CircularProgress size={size} sx={sx} />
+        </Tooltip>
     );
 }

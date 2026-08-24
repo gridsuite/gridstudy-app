@@ -13,7 +13,7 @@ import { ColDef, ColumnMovedEvent, GetRowIdParams, GridOptions, RowClassParams, 
 import { useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
 import { AppState } from '../../../../redux/reducer.type';
-import { useCanEditNode } from 'components/utils/use-node-activity';
+import { useIsEditBlocked } from 'components/node-activity/hooks/use-node-activity';
 import { suppressEventsToPreventEditMode } from '../../../dialogs/commons/utils';
 import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
 import { CalculationRowType } from '../../types/calculation.type';
@@ -89,8 +89,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const isCurrentNodeBlocked = !useCanEditNode(currentNode?.id);
-    const isEditDisabled = currentNode?.type === NodeType.ROOT || !isDataEditable || isCurrentNodeBlocked;
+    const isEditBlocked = useIsEditBlocked(currentNode?.id);
+    const isEditDisabled = currentNode?.type === NodeType.ROOT || !isDataEditable || isEditBlocked;
 
     const { contextMenu, menuItems, openContextMenu, closeContextMenu } = useEquipmentContextMenu({
         equipmentType,

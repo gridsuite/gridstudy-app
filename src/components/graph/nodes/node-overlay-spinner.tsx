@@ -6,8 +6,8 @@
  */
 
 import { alpha, Box, CircularProgress, colors, Typography } from '@mui/material';
-import { useNodeActivityLabel } from 'components/utils/use-node-activity';
-import type { NodeActivity } from 'types/node-activity.type';
+import { FormattedMessage } from 'react-intl';
+import { nodeActivityLabelId, type NodeActivity } from 'components/node-activity/types/node-activity.type';
 
 const NodeOverlaySpinner = ({ activity }: Readonly<{ activity: NodeActivity }>) => {
     return (
@@ -27,7 +27,7 @@ const NodeOverlaySpinner = ({ activity }: Readonly<{ activity: NodeActivity }>) 
         >
             <CircularProgress size={35} sx={{ color: colors.blue[600] }} />
             <Typography variant="caption" color="text.primary">
-                {useNodeActivityLabel(activity)}
+                <FormattedMessage id={nodeActivityLabelId(activity.label)} />
             </Typography>
         </Box>
     );

@@ -20,11 +20,8 @@ import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeTyp
 import { NodeInsertModes } from 'types/notification-types';
 import { Divider } from '@mui/material';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import {
-    useCanBuildOrComputeOnNode,
-    useCanBuildOrUnbuildNode,
-    useCanEditNode,
-} from 'components/utils/use-node-activity';
+import { useIsBuildBlocked, useIsEditBlocked } from 'components/node-activity/hooks/use-node-activity';
+import { isStatusBuilt } from '../util/model-functions';
 
 type SubMenuItem = {
     onRoot: boolean;
@@ -137,10 +134,9 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     disableRestoreNodes,
 }) => {
     const intl = useIntl();
-    const isActiveNodeBlockedForEdit = !useCanEditNode(activeNode?.id);
-    const isClipboardSourceBlockedForEdit = !useCanEditNode(nodeSelectionForCopy?.nodeId ?? undefined);
-    const isActiveNodeBlockedForBuild = !useCanBuildOrComputeOnNode(activeNode?.id);
-    const isActiveNodeBlockedForUnbuild = !useCanBuildOrUnbuildNode(activeNode?.id, activeNode?.data);
+    const isActiveNodeEditBlocked = useIsEditBlocked(activeNode?.id);
+    const isClipboardSourceEditBlocked = useIsEditBlocked(nodeSelectionForCopy?.nodeId);
+    const isActiveNodeBuildBlocked = useIsBuildBlocked(activeNode?.id, activeNode?.data);
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -301,20 +297,16 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         return isConstructionInsertionForbidden || isSecurityInsertionForbidden;
     }
 
-    function isNodeRemovingAllowed() {
-        return !isActiveNodeBlockedForEdit && !mapDataLoading;
+    function isNodeRemovalDisabled() {
+        return isActiveNodeEditBlocked || mapDataLoading;
     }
 
-    function isNodeUnbuildingAllowed() {
-        return (
-            !isActiveNodeBlockedForUnbuild &&
-            !mapDataLoading &&
-            activeNode?.data?.globalBuildStatus?.startsWith('BUILT')
-        );
+    function isNodeUnbuildDisabled() {
+        return isActiveNodeBuildBlocked || mapDataLoading || !isStatusBuilt(activeNode?.data?.globalBuildStatus);
     }
 
-    function isNodeRestorationAllowed() {
-        return !disableRestoreNodes && !isActiveNodeBlockedForEdit;
+    function isNodeRestorationDisabled() {
+        return disableRestoreNodes || isActiveNodeEditBlocked;
     }
 
     function isNodeAlreadySelectedForCut() {
@@ -326,31 +318,39 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             nodeSelectionForCopy?.nodeId === activeNode.id && nodeSelectionForCopy?.copyType === CopyType.SUBTREE_CUT
         );
     }
-    function isCutBlocked(isAlreadySelectedForCut: boolean) {
-        return !isAlreadySelectedForCut && isActiveNodeBlockedForEdit;
+    function isCutDisabled(isAlreadySelectedForCut: boolean) {
+        // cancelling a cut only clears the clipboard, so it stays available while the node is busy
+        return !isAlreadySelectedForCut && isActiveNodeEditBlocked;
     }
 
-    function isInsertionBlocked(insertMode: NodeInsertModes) {
-        return insertMode !== NodeInsertModes.NewBranch && isActiveNodeBlockedForEdit;
+    function isInsertionDisabled(insertMode: NodeInsertModes) {
+        // a new branch only appends a child : it leaves the active node and its subtree untouched
+        return insertMode !== NodeInsertModes.NewBranch && isActiveNodeEditBlocked;
     }
 
-    function isNodePasteBlocked(insertMode: NodeInsertModes) {
+    function isNodePasteDisabled(insertMode: NodeInsertModes) {
         return (
-            isInsertionBlocked(insertMode) ||
-            (nodeSelectionForCopy?.copyType === CopyType.NODE_CUT && isClipboardSourceBlockedForEdit)
+            !isNodePastingAllowed() ||
+            isNodeInsertionForbidden(insertMode) ||
+            isInsertionDisabled(insertMode) ||
+            // a cut moves the source node, so it has to be free too
+            (nodeSelectionForCopy?.copyType === CopyType.NODE_CUT && isClipboardSourceEditBlocked)
         );
     }
 
-    function isSubtreePasteBlocked() {
-        return nodeSelectionForCopy?.copyType === CopyType.SUBTREE_CUT && isClipboardSourceBlockedForEdit;
+    function isSubtreePasteDisabled() {
+        return (
+            !isSubtreePastingAllowed() ||
+            !isSubtreeContentPasteable() ||
+            (nodeSelectionForCopy?.copyType === CopyType.SUBTREE_CUT && isClipboardSourceEditBlocked)
+        );
     }
 
     function isNodeHasChildren(node: CurrentTreeNode, treeModel: NetworkModificationTreeModel | null): boolean {
         return treeModel?.treeNodes.some((item) => item.parentId === node.id) ?? false;
     }
-    function isSubtreeRemovingAllowed() {
-        // check if the subtree has children
-        return !isActiveNodeBlockedForEdit && !mapDataLoading && isNodeHasChildren(activeNode, treeModel);
+    function isSubtreeRemovalDisabled() {
+        return isActiveNodeEditBlocked || mapDataLoading || !isNodeHasChildren(activeNode, treeModel);
     }
 
     const SUBTREE_SUBMENU_ITEMS: Record<string, SubMenuItem> = {
@@ -366,20 +366,20 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             id: isSubtreeAlreadySelectedForCut()
                 ? 'cancelCutNetworkModificationSubtree'
                 : 'cutNetworkModificationSubtree',
-            disabled: isCutBlocked(isSubtreeAlreadySelectedForCut()) || !isNodeHasChildren(activeNode, treeModel),
+            disabled: isCutDisabled(isSubtreeAlreadySelectedForCut()) || !isNodeHasChildren(activeNode, treeModel),
         },
         PASTE_SUBTREE: {
             onRoot: true,
             action: () => pasteSubtree(),
             id: 'pasteNetworkModificationSubtree',
-            disabled: !isSubtreePastingAllowed() || !isSubtreeContentPasteable() || isSubtreePasteBlocked(),
+            disabled: isSubtreePasteDisabled(),
             withDivider: activeNode?.type !== NodeType.ROOT,
         },
         REMOVE_SUBTREE: {
             onRoot: false,
             action: () => removeSubtree(),
             id: 'removeNetworkModificationSubtree',
-            disabled: !isSubtreeRemovingAllowed(),
+            disabled: isSubtreeRemovalDisabled(),
         },
     };
 
@@ -388,13 +388,13 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             onRoot: false,
             action: () => buildNode(),
             id: 'buildNode',
-            disabled: activeNode?.data?.globalBuildStatus?.startsWith('BUILT') || isActiveNodeBlockedForBuild,
+            disabled: isStatusBuilt(activeNode?.data?.globalBuildStatus) || isActiveNodeBuildBlocked,
         },
         UNBUILD_NODE: {
             onRoot: false,
             action: () => unbuildNode(),
             id: 'unbuildNode',
-            disabled: !isNodeUnbuildingAllowed(),
+            disabled: isNodeUnbuildDisabled(),
             withDivider: true,
         },
         RENAME_NODE: {
@@ -413,7 +413,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             action: () =>
                 isNodeAlreadySelectedForCut() ? cancelCutNetworkModificationNode() : cutNetworkModificationNode(),
             id: isNodeAlreadySelectedForCut() ? 'cancelCutNetworkModificationNode' : 'cutNetworkModificationNode',
-            disabled: isCutBlocked(isNodeAlreadySelectedForCut()),
+            disabled: isCutDisabled(isNodeAlreadySelectedForCut()),
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
@@ -424,28 +424,19 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.NewBranch),
                     id: 'insertNodeInNewBranch',
-                    disabled:
-                        !isNodePastingAllowed() ||
-                        isNodeInsertionForbidden(NodeInsertModes.NewBranch) ||
-                        isNodePasteBlocked(NodeInsertModes.NewBranch),
+                    disabled: isNodePasteDisabled(NodeInsertModes.NewBranch),
                 },
                 PASTE_BEFORE: {
                     onRoot: false,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.Before),
                     id: 'insertNodeAbove',
-                    disabled:
-                        !isNodePastingAllowed() ||
-                        isNodeInsertionForbidden(NodeInsertModes.Before) ||
-                        isNodePasteBlocked(NodeInsertModes.Before),
+                    disabled: isNodePasteDisabled(NodeInsertModes.Before),
                 },
                 PASTE_AFTER: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.After),
                     id: 'insertNodeBelow',
-                    disabled:
-                        !isNodePastingAllowed() ||
-                        isNodeInsertionForbidden(NodeInsertModes.After) ||
-                        isNodePasteBlocked(NodeInsertModes.After),
+                    disabled: isNodePasteDisabled(NodeInsertModes.After),
                 },
             },
         },
@@ -453,7 +444,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             onRoot: false,
             action: () => removeNode(),
             id: 'removeNode',
-            disabled: !isNodeRemovingAllowed(),
+            disabled: isNodeRemovalDisabled(),
             sectionEnd: true,
             withDivider: isSecurityModificationNode(activeNode),
         },
@@ -462,7 +453,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             hidden: isSecurityModificationNode(activeNode),
             action: () => restoreNodes(),
             id: 'restoreNodes',
-            disabled: !isNodeRestorationAllowed(),
+            disabled: isNodeRestorationDisabled(),
             withDivider: !isSecurityModificationNode(activeNode),
         },
 
@@ -479,21 +470,21 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                             NetworkModificationNodeType.CONSTRUCTION
                         ),
                     id: 'insertNodeInNewBranch',
-                    disabled: isInsertionBlocked(NodeInsertModes.NewBranch),
+                    disabled: isInsertionDisabled(NodeInsertModes.NewBranch),
                 },
                 INSERT_NODE_BEFORE: {
                     onRoot: false,
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.CONSTRUCTION),
                     id: 'insertNodeAbove',
-                    disabled: isInsertionBlocked(NodeInsertModes.Before),
+                    disabled: isInsertionDisabled(NodeInsertModes.Before),
                 },
                 INSERT_NODE_AFTER: {
                     onRoot: true,
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.After, NetworkModificationNodeType.CONSTRUCTION),
                     id: 'insertNodeBelow',
-                    disabled: isInsertionBlocked(NodeInsertModes.After),
+                    disabled: isInsertionDisabled(NodeInsertModes.After),
                 },
             },
         },
@@ -506,18 +497,18 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.NewBranch, NetworkModificationNodeType.SECURITY),
                     id: 'insertNodeInNewBranch',
-                    disabled: isInsertionBlocked(NodeInsertModes.NewBranch),
+                    disabled: isInsertionDisabled(NodeInsertModes.NewBranch),
                 },
                 INSERT_NODE_BEFORE: {
                     onRoot: false,
-                    disabled: !isSecurityModificationNode(activeNode) || isInsertionBlocked(NodeInsertModes.Before),
+                    disabled: !isSecurityModificationNode(activeNode) || isInsertionDisabled(NodeInsertModes.Before),
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.SECURITY),
                     id: 'insertNodeAbove',
                 },
                 INSERT_NODE_AFTER: {
                     onRoot: true,
-                    disabled: !isSecurityModificationNode(activeNode) || isInsertionBlocked(NodeInsertModes.After),
+                    disabled: !isSecurityModificationNode(activeNode) || isInsertionDisabled(NodeInsertModes.After),
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.After, NetworkModificationNodeType.SECURITY),
                     id: 'insertNodeBelow',
@@ -549,7 +540,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             onRoot: true,
             action: () => exportCaseOnNode(),
             id: 'exportCaseOnNode',
-            disabled: activeNode?.type !== NodeType.ROOT && !activeNode?.data?.globalBuildStatus?.startsWith('BUILT'),
+            disabled: activeNode?.type !== NodeType.ROOT && !isStatusBuilt(activeNode?.data?.globalBuildStatus),
         },
     };
 

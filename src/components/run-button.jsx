@@ -14,6 +14,7 @@ import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from '../utils/dialogs';
 import { DialogContentText } from '@mui/material';
+import { LOAD_FLOW_RUNNABLES } from './run-button.constant';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled, canRun = () => true }) => {
     const intl = useIntl();
@@ -67,10 +68,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             return true;
         }
 
-        if (
-            selectedRunnable === 'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS' ||
-            selectedRunnable === 'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS'
-        ) {
+        if (LOAD_FLOW_RUNNABLES.includes(selectedRunnable)) {
             // We run once loadflow analysis, as it will always return the same result for one hypothesis
             return getRunningStatus() !== RunningStatus.IDLE;
         }
@@ -79,8 +77,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             // Load flow button's status must be "SUCCEED"
             return (
                 getRunningStatus() === RunningStatus.RUNNING ||
-                (getStatus('LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED &&
-                    getStatus('LOAD_FLOW_WITH_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED)
+                !LOAD_FLOW_RUNNABLES.some((runnable) => getStatus(runnable) === RunningStatus.SUCCEED)
             );
         }
 
@@ -96,8 +93,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             // Load flow button's status must be "SUCCEED"
             return (
                 getRunningStatus() === RunningStatus.RUNNING ||
-                (getStatus('LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED &&
-                    getStatus('LOAD_FLOW_WITH_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED)
+                !LOAD_FLOW_RUNNABLES.some((runnable) => getStatus(runnable) === RunningStatus.SUCCEED)
             );
         }
 
