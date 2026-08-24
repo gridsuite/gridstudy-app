@@ -7,7 +7,6 @@
 
 import type { UUID } from 'node:crypto';
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import {
     AssignmentDataType,
     AssignmentFieldValue,
@@ -21,37 +20,6 @@ import { VARIATION_TYPES } from '../components/network/constants';
 
 export interface WithModificationId {
     uuid: UUID;
-}
-
-export interface HvdcAngleDroopActivePowerControlInfo {
-    isEnabled: boolean;
-    droop: number;
-    p0: number;
-}
-
-export interface HvdcOperatorActivePowerRange {
-    oprFromCS1toCS2: number;
-    oprFromCS2toCS1: number;
-}
-
-export interface VscModificationInfo {
-    id: string;
-    name: string;
-    nominalV: number;
-    r: number;
-    maxP: number;
-    hvdcOperatorActivePowerRange: HvdcOperatorActivePowerRange;
-    convertersMode: string;
-    activePowerSetpoint: number;
-    hvdcAngleDroopActivePowerControl: HvdcAngleDroopActivePowerControlInfo;
-    converterStation1: ConverterStationElementModificationInfos;
-    converterStation2: ConverterStationElementModificationInfos;
-    voltageLevelId: string;
-    busOrBusbarSectionId: string;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: string | null;
-    terminalConnected?: boolean | null;
 }
 
 export enum SwitchKind {
@@ -155,22 +123,6 @@ export interface LCCCreationConverterStation {
     connectionPosition?: number;
     terminalConnected?: boolean;
     shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
-}
-
-export interface VSCModificationConverterStation {
-    voltageSetpoint: AttributeModification<number> | null;
-    lossFactor: AttributeModification<number> | null;
-    reactiveCapabilityCurve: AttributeModification<boolean> | null;
-    busOrBusbarSectionId: AttributeModification<string> | null;
-    type: string;
-    minQ: AttributeModification<number> | null;
-    equipmentId: string;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
-    voltageLevelId: AttributeModification<string> | null;
-    reactivePowerSetpoint: AttributeModification<number> | null;
-    equipmentName: AttributeModification<string> | null;
-    voltageRegulationOn: AttributeModification<boolean> | null;
-    maxQ: AttributeModification<number> | null;
 }
 
 export interface Assignment {
@@ -322,28 +274,6 @@ export interface LccModificationInfos {
     converterStation1: LccConverterStationModificationInfos;
     converterStation2: LccConverterStationModificationInfos;
     properties?: Property[] | null;
-}
-
-export interface VSCModificationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string | null;
-    name?: string | null;
-    nominalV: number;
-    r: number;
-    maxP: number;
-    operatorActivePowerLimitSide1: any;
-    operatorActivePowerLimitSide2: any;
-    convertersMode: string;
-    activePowerSetpoint: number;
-    angleDroopActivePowerControl: boolean;
-    p0: number | null;
-    droop: number | null;
-    converterStation1: VSCModificationConverterStation;
-    converterStation2: VSCModificationConverterStation;
-    properties?: Property[] | null;
-    isUpdate: boolean;
-    modificationUuid: UUID;
 }
 
 export type EquipmentAttributeModificationInfos = {

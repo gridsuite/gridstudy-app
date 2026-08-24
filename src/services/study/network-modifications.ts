@@ -16,7 +16,6 @@ import {
     MODIFICATION_TYPES,
     ModificationType,
     safeEncodeURIComponent,
-    toModificationOperation,
     SubstationCreationDto,
     SubstationModificationDto,
     NetworkModificationMetadata,
@@ -41,6 +40,7 @@ import {
     CreateVoltageLevelTopologyDto,
     VoltageLevelSectionCreationDto,
     VscHdvLineCreationDto,
+    VscHdvLineModificationDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -60,7 +60,6 @@ import {
     Variations,
     VariationType,
     VoltageLevelCreationInfo,
-    VSCModificationInfo,
 } from '../network-modification-types';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
@@ -1410,61 +1409,26 @@ export function createVscHvdcLine(
     });
 }
 
-export function modifyVsc({
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    nominalV,
-    r,
-    maxP,
-    operatorActivePowerLimitSide1,
-    operatorActivePowerLimitSide2,
-    convertersMode,
-    activePowerSetpoint,
-    angleDroopActivePowerControl,
-    p0,
-    droop,
-    converterStation1,
-    converterStation2,
-    properties,
-    modificationUuid,
-}: VSCModificationInfo) {
-    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
+export function modifyVscHvdcLine(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: VscHdvLineModificationDto
+) {
+    let updateVscUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
-        modificationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating Vsc modification');
+        updateVscUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating vsc hvdc line modification');
     } else {
-        console.info('Creating Vsc modification');
+        console.info('Creating vsc hvdc line modification');
     }
-
-    const vscModification = {
-        type: MODIFICATION_TYPES.VSC_MODIFICATION.type,
-        equipmentId: id,
-        equipmentName: toModificationOperation(name),
-        nominalV: toModificationOperation(nominalV),
-        r: toModificationOperation(r),
-        maxP: toModificationOperation(maxP),
-        operatorActivePowerLimitFromSide1ToSide2: toModificationOperation(operatorActivePowerLimitSide1),
-        operatorActivePowerLimitFromSide2ToSide1: toModificationOperation(operatorActivePowerLimitSide2),
-        convertersMode: toModificationOperation(convertersMode),
-        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
-        angleDroopActivePowerControl: toModificationOperation(angleDroopActivePowerControl),
-        p0: toModificationOperation(p0),
-        droop: toModificationOperation(droop),
-        converterStation1: converterStation1,
-        converterStation2: converterStation2,
-        properties: properties,
-    }; //add missing informations
-
-    return backendFetchText(modificationUrl, {
+    return backendFetchText(updateVscUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(vscModification),
+        body: JSON.stringify(dto),
     });
 }
 

@@ -626,10 +626,7 @@ const messages_en = {
     shuntCompensatorType: 'Type',
     Information: 'Information',
     FillAllFields: 'Please fill all fields',
-    ModifySubstation: 'Modify substation',
-    ModifyVsc: 'Modify HVDC (VSC)',
     ModifyLcc: 'Modify HVDC (LCC)',
-    SubstationModificationError: 'Error while modifying substation',
 
     CreateVoltageLevel: 'Create a voltage level',
     Substation: 'Substation',

@@ -628,10 +628,7 @@ const messages_fr = {
     shuntCompensatorType: 'Type',
     Information: 'Information',
     FillAllFields: 'Veuillez remplir tous les champs',
-    ModifySubstation: 'Modifier un site',
-    ModifyVsc: 'Modifier une HVDC (VSC)',
     ModifyLcc: 'Modifier une HVDC (LCC)',
-    SubstationModificationError: "Erreur lors de la modification d'un site",
 
     CreateVoltageLevel: 'Créer un poste',
     Substation: 'Site',
