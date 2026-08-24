@@ -80,7 +80,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
         ),
     });
 
-    const { reset, getValues } = formMethods;
+    const { reset } = formMethods;
     const isNodeBuiltValue = useMemo(() => isNodeBuilt(currentNode), [currentNode]);
 
     useEffect(() => {
@@ -336,11 +336,8 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 {selectedId != null && (
                     <MoveVoltageLevelFeederBaysForm
                         feederBaysPreviousValues={feederBaysPreviousValues}
-                        isNodeBuilt={isNodeBuiltValue}
-                        isUpdate={isUpdate}
                         isReady={dataFetchStatus === FetchStatus.SUCCEED}
                         PositionDiagramPane={PositionDiagramPane}
-                        disableTooltip={false}
                     />
                 )}
             </ModificationDialog>
