@@ -114,6 +114,7 @@ import {
     isModificationsUpdateFinishedNotification,
     isNodeDeletedNotification,
     isPendingModificationNotification,
+    isRootNetworksUpdatedNotification,
     ModificationsCreationInProgressEventData,
     ModificationsDeletingInProgressEventData,
     ModificationsRestoringInProgressEventData,
@@ -851,6 +852,10 @@ const NetworkModificationNodeEditor = () => {
                     return;
                 }
                 setDeleteInProgress(false);
+                dofetchNetworkModifications();
+            }
+            // to get potentially updated network tags
+            if (isRootNetworksUpdatedNotification(eventData)) {
                 dofetchNetworkModifications();
             }
         },
