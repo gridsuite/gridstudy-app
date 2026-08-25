@@ -56,7 +56,7 @@ interface VoltageLevelModificationDialogProps {
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
     isUpdate: boolean;
-    editDataFetchStatus: FetchStatusType;
+    editDataFetchStatus?: FetchStatusType;
     [key: string]: any;
 }
 
