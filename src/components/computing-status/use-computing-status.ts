@@ -90,18 +90,6 @@ function isWorthUpdate(
     return false;
 }
 
-const shouldRequestBeCanceled = (
-    canceledRequest: boolean,
-    previousNodeUuid: UUID,
-    currentNodeUuid: UUID,
-    previousRootNetworkUuid: UUID,
-    currentRootNetworkUuid: UUID
-) => {
-    return (
-        canceledRequest || previousNodeUuid !== currentNodeUuid || previousRootNetworkUuid !== currentRootNetworkUuid
-    );
-};
-
 /**
  *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
  * @param studyUuid current study uuid
@@ -127,10 +115,14 @@ export const useComputingStatus: UseComputingStatusProps = (
     computingStatusParametersFetcher,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
-    const nodeUuidRef = useRef<UUID | null>(null);
-    const rootNetworkUuidRef = useRef<UUID | null>(null);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch<AppDispatch>();
+    // Monotonic id identifying the latest in-flight request. A response is only
+    // applied when its id is still the latest one, so an out-of-order response
+    // from a previous fetcher (e.g. another node, another root network, or
+    // another tab with a different result shape) cannot overwrite the current
+    // result and crash consumers.
+    const requestIdRef = useRef<number>(0);
 
     //the callback crosschecks the computation status and the content of the last update reference
     //in order to determine which computation just ended
@@ -146,28 +138,18 @@ export const useComputingStatus: UseComputingStatusProps = (
     );
 
     const handleComputingStatusParameters = useCallback(
-        async (computationStatus: RunningStatus, canceledRequest: boolean) => {
+        async (computationStatus: RunningStatus, isLatestRequest: () => boolean) => {
             if (
                 computingStatusParametersFetcher &&
                 computationStatus !== RunningStatus.IDLE &&
                 isParameterizedComputingType(computingType)
             ) {
-                nodeUuidRef.current = nodeUuid;
-                rootNetworkUuidRef.current = currentRootNetworkUuid;
                 const computingStatusParametersResult = await computingStatusParametersFetcher(
                     studyUuid,
                     nodeUuid,
                     currentRootNetworkUuid
                 );
-                if (
-                    shouldRequestBeCanceled(
-                        canceledRequest,
-                        nodeUuidRef.current,
-                        nodeUuid,
-                        rootNetworkUuidRef.current,
-                        currentRootNetworkUuid
-                    )
-                ) {
+                if (!isLatestRequest()) {
                     return;
                 }
                 dispatch(
@@ -182,15 +164,12 @@ export const useComputingStatus: UseComputingStatusProps = (
     );
 
     const update = useCallback(async () => {
-        // this is used to prevent race conditions from happening
-        // if another request is sent, the previous one won't do anything
-        let canceledRequest = false;
+        const requestId = ++requestIdRef.current;
+        const isLatestRequest = () => requestId === requestIdRef.current;
 
         //upon changing node we reset the last completed computation to prevent results misredirection
         dispatch(setLastCompletedComputation());
 
-        nodeUuidRef.current = nodeUuid;
-        rootNetworkUuidRef.current = currentRootNetworkUuid;
         try {
             // fetch computing status
             const computingStatusResult: string | null = await computingStatusFetcher(
@@ -198,15 +177,7 @@ export const useComputingStatus: UseComputingStatusProps = (
                 nodeUuid,
                 currentRootNetworkUuid
             );
-            if (
-                shouldRequestBeCanceled(
-                    canceledRequest,
-                    nodeUuidRef.current,
-                    nodeUuid,
-                    rootNetworkUuidRef.current,
-                    currentRootNetworkUuid
-                )
-            ) {
+            if (!isLatestRequest()) {
                 return;
             }
             // if request has not been canceled for any reason, fetch if necessary computingStatusParameters
@@ -216,17 +187,13 @@ export const useComputingStatus: UseComputingStatusProps = (
                 dispatch(setLastCompletedComputation(computingType));
             }
 
-            await handleComputingStatusParameters(status, canceledRequest);
+            await handleComputingStatusParameters(status, isLatestRequest);
         } catch (e: any) {
-            if (!canceledRequest) {
+            if (isLatestRequest()) {
                 dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
                 console.error(e?.message);
             }
         }
-
-        return () => {
-            canceledRequest = true;
-        };
     }, [
         dispatch,
         nodeUuid,
