@@ -27,7 +27,6 @@ import {
     snackWithFallback,
     useNotificationsListener,
     usePrevious,
-    useSharedModificationsPermissions,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
@@ -191,9 +190,9 @@ const NetworkModificationNodeEditor = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
 
-    // Shared modifications the user has no write permission on, and whether the current selection reaches
-    // inside one of them: acting on such a content is denied, acting on the reference modification as a whole isn't.
-    const { readOnlySharedModificationUuids } = useSharedModificationsPermissions(modifications);
+    // Whether the current selection reaches inside a shared modification the user can't write into: acting
+    // on such a content is denied, acting on the reference modification as a whole isn't. The permissions
+    // themselves are resolved by the table, which knows the unfolded tree and not just the node's list.
     const [selectionContainsLockedModification, setSelectionContainsLockedModification] = useState(false);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
@@ -1194,7 +1193,6 @@ const NetworkModificationNodeEditor = () => {
                 modificationsToExclude={modificationsToExclude}
                 setModificationsToExclude={setModificationsToExclude}
                 isDisabled={isAnyNodeBuilding || mapDataLoading}
-                readOnlySharedModificationUuids={readOnlySharedModificationUuids}
             />
         );
     };
