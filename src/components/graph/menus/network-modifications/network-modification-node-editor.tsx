@@ -170,7 +170,7 @@ const NetworkModificationNodeEditor = () => {
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
         []
     );
-    console.log('======== ', selectedNetworkModifications);
+
     // TODO : this is temporary, until merge/delete is done for the shared modification
     const selectionContainsShared: boolean = useMemo(() => {
         return selectedNetworkModifications.some(
