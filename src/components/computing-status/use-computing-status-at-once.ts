@@ -34,8 +34,8 @@ interface UseComputingStatusProps {
 
 function isWorthUpdate(
     updateType: string | undefined,
-    nodeUuidRef: RefObject<UUID | null>,
-    rootNetworkUuidRef: RefObject<UUID | null>,
+    nodeUuidRef: RefObject<UUID | undefined>,
+    rootNetworkUuidRef: RefObject<UUID | undefined>,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID
 ): boolean {
@@ -50,18 +50,6 @@ function isWorthUpdate(
     }
     return updateType === 'all_computation_status' || updateType === 'all_computation_status_without_loadflow';
 }
-
-const shouldRequestBeCanceled = (
-    canceledRequest: boolean,
-    previousNodeUuid: UUID,
-    currentNodeUuid: UUID,
-    previousRootNetworkUuid: UUID,
-    currentRootNetworkUuid: UUID
-) => {
-    return (
-        canceledRequest || previousNodeUuid !== currentNodeUuid || previousRootNetworkUuid !== currentRootNetworkUuid
-    );
-};
 
 /**
  *  this hook loads all <computingType> state into redux at once, then updates it according to notifications for all computation
@@ -78,35 +66,30 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
     allComputingStatusFetcher,
     computingStatusParametersFetcherMap
 ) => {
-    const nodeUuidRef = useRef<UUID | null>(null);
-    const rootNetworkUuidRef = useRef<UUID | null>(null);
+    const nodeUuidRef = useRef<UUID>(undefined);
+    const rootNetworkUuidRef = useRef<UUID>(undefined);
     const dispatch = useDispatch<AppDispatch>();
+    // Monotonic id identifying the latest in-flight request. A response is only
+    // applied when its id is still the latest one, so an out-of-order response
+    // from a previous fetcher (e.g. another node, another root network, or
+    // another tab with a different result shape) cannot overwrite the current
+    // result and crash consumers.
+    const requestIdRef = useRef<number>(0);
 
     const handleComputingStatusParameters = useCallback(
-        async (computationStatus: RunningStatus, canceledRequest: boolean, computingType: ComputingType) => {
+        async (computationStatus: RunningStatus, isLatestRequest: () => boolean, computingType: ComputingType) => {
             const computingStatusParametersFetcher = computingStatusParametersFetcherMap.get(computingType);
             if (
                 computingStatusParametersFetcher &&
                 computationStatus !== RunningStatus.IDLE &&
                 isParameterizedComputingType(computingType)
             ) {
-                nodeUuidRef.current = nodeUuid;
-                rootNetworkUuidRef.current = currentRootNetworkUuid;
-
                 const computingStatusParametersResult = await computingStatusParametersFetcher?.(
                     studyUuid,
                     nodeUuid,
                     currentRootNetworkUuid
                 );
-                if (
-                    shouldRequestBeCanceled(
-                        canceledRequest,
-                        nodeUuidRef.current,
-                        nodeUuid,
-                        rootNetworkUuidRef.current,
-                        currentRootNetworkUuid
-                    )
-                ) {
+                if (!isLatestRequest()) {
                     return;
                 }
                 dispatch(
@@ -122,15 +105,14 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
 
     const updateAll = useCallback(
         async (updateType: string | undefined) => {
-            // this is used to prevent race conditions from happening
-            // if another request is sent, the previous one won't do anything
-            let canceledRequest = false;
-
+            // save context of the request for later comparison
+            nodeUuidRef.current = nodeUuid;
+            rootNetworkUuidRef.current = currentRootNetworkUuid;
+            const requestId = ++requestIdRef.current;
+            const isLatestRequest = () => requestId === requestIdRef.current;
             //upon changing node we reset the last completed computation to prevent results misredirection
             dispatch(setLastCompletedComputation());
 
-            nodeUuidRef.current = nodeUuid;
-            rootNetworkUuidRef.current = currentRootNetworkUuid;
             try {
                 // fetch computing statuses
                 const computingStatusesResult: Record<string, string> | null = await allComputingStatusFetcher(
@@ -138,15 +120,7 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
                     nodeUuid,
                     currentRootNetworkUuid
                 );
-                if (
-                    shouldRequestBeCanceled(
-                        canceledRequest,
-                        nodeUuidRef.current,
-                        nodeUuid,
-                        rootNetworkUuidRef.current,
-                        currentRootNetworkUuid
-                    )
-                ) {
+                if (!isLatestRequest()) {
                     return;
                 }
                 // if request has not been canceled for any reason
@@ -163,13 +137,13 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
                             )) {
                                 const status = getComputationRunningStatus(statusValue, computingType);
                                 dispatch(setComputingStatus(computingType, status));
-                                await handleComputingStatusParameters(status, canceledRequest, computingType);
+                                await handleComputingStatusParameters(status, isLatestRequest, computingType);
                             }
                         })
                     );
                 }
             } catch (e: any) {
-                if (!canceledRequest) {
+                if (isLatestRequest()) {
                     // for each status
                     for (const computingType of Object.values(ComputingType)) {
                         dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
@@ -177,10 +151,6 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
                     }
                 }
             }
-
-            return () => {
-                canceledRequest = true;
-            };
         },
         [
             dispatch,
