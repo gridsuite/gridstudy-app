@@ -193,7 +193,7 @@ const NetworkModificationNodeEditor = () => {
 
     // Shared modifications the user has no write permission on, and whether the current selection reaches
     // inside one of them: acting on such a content is denied, acting on the reference modification as a whole isn't.
-    const { readOnlyReferenceModificationUuids } = useSharedModificationsPermissions(modifications);
+    const { readOnlySharedModificationUuids } = useSharedModificationsPermissions(modifications);
     const [selectionContainsLockedModification, setSelectionContainsLockedModification] = useState(false);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
@@ -1194,7 +1194,7 @@ const NetworkModificationNodeEditor = () => {
                 modificationsToExclude={modificationsToExclude}
                 setModificationsToExclude={setModificationsToExclude}
                 isDisabled={isAnyNodeBuilding || mapDataLoading}
-                readOnlyReferenceModificationUuids={readOnlyReferenceModificationUuids}
+                readOnlySharedModificationUuids={readOnlySharedModificationUuids}
             />
         );
     };
