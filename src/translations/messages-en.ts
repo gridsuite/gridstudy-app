@@ -114,7 +114,6 @@ const messages_en = {
     panelsCount: '{count, plural, =0 {no panel} =1 {# panel} other {# panels}}',
     panels: 'Panels',
     NetworkVisualizations: 'Network visualizations',
-    None: 'None',
     NoneUpcomingOverload: 'None',
     Feeders: 'Feeder',
     NominalVoltage: 'Nominal voltage',
@@ -616,9 +615,6 @@ const messages_en = {
     Side: 'Side',
     QatNominalV: 'Q at nominal voltage',
     LimitsTab: 'Limits',
-    EstimateTapPositionSection: 'Estimate tap position',
-    RatioTapChangerEstimateTapPosition: 'Ratio tap changer',
-    PhaseTapChangerEstimateTapPosition: 'Phase tap changer',
 
     shuntCompensatorId: 'Shunt compensator ID',
     shuntCompensatorName: 'Shunt compensator name',
@@ -714,12 +710,6 @@ const messages_en = {
     [ACTIVE_POWER_SETPOINT_MAX_VALUE_ERROR]: 'The active power value must be less than the maximum active power value',
     PermanentCurrentLimitText1: 'IST 1',
     PermanentCurrentLimitText2: 'IST 2',
-
-    ModifyTwoWindingsTransformer: 'Modify a 2 windings transformer',
-    TwoWindingsTransformerModificationError: 'Error while modifying a 2 windings transformer',
-    TwoWindingsTransformerCharacteristicsTab: 'Characteristics',
-    TwoWindingsTransformerRatioTapChangerTab: 'Ratio tap changer',
-    TwoWindingsTransformerPhaseTapChangerTab: 'Phase tap changer',
 
     Regulating: 'Regulating',
     [TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'Deadband value must be greater than or equal to 0',
