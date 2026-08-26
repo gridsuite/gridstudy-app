@@ -63,6 +63,7 @@ import {
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 import { fetchContingencyCount } from '../services/study';
+import { useIsNodeUpdating } from 'components/node-activity/hooks/use-node-activity';
 import {
     fetchDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
@@ -108,6 +109,7 @@ const ParametersTabs: FunctionComponent = () => {
     const currentNodeBuildStatus = useSelector((state: AppState) => state.currentTreeNode?.data.globalBuildStatus);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
+    const isNodeUpdating = useIsNodeUpdating(currentNode?.id);
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
@@ -353,10 +355,7 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
                         fetchContingencyCount={fetchContingencyCountBackend}
-                        isBuiltCurrentNode={
-                            currentNodeBuildStatus !== BuildStatus.NOT_BUILT &&
-                            currentNodeBuildStatus !== BuildStatus.BUILDING
-                        }
+                        isBuiltCurrentNode={!isNodeUpdating && currentNodeBuildStatus !== BuildStatus.NOT_BUILT}
                         setHaveDirtyFields={setDirtyFields}
                         isDeveloperMode={isDeveloperMode}
                     />
@@ -372,7 +371,9 @@ const ParametersTabs: FunctionComponent = () => {
                         globalBuildStatus={
                             // to avoid bad current node globalBuildStatus at root network change
                             // pass not built status by defaut to avoid unwanted fetch
-                            isTreeModelUpToDate ? currentNode?.data?.globalBuildStatus : BuildStatus.NOT_BUILT
+                            isTreeModelUpToDate && !isNodeUpdating
+                                ? currentNode?.data?.globalBuildStatus
+                                : BuildStatus.NOT_BUILT
                         }
                         isRootNode={currentNode?.type === NodeType.ROOT}
                         isDeveloperMode={isDeveloperMode}
@@ -464,6 +465,7 @@ const ParametersTabs: FunctionComponent = () => {
         securityAnalysisParametersBackend,
         fetchContingencyCountBackend,
         currentNodeBuildStatus,
+        isNodeUpdating,
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,

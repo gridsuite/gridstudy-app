@@ -45,6 +45,7 @@ import { getFirstNodeOfType } from './graph/util/model-functions';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { useTreeModelSync } from '../hooks/use-tree-model-sync';
+import { useNodeActivitySync } from 'components/node-activity/hooks/use-node-activity-sync';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
@@ -158,6 +159,7 @@ export function StudyContainer() {
 
     const currentNodeRef = useRef();
     const currentRootNetworkUuidRef = useRef();
+    const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
 
     useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
@@ -165,6 +167,7 @@ export function StudyContainer() {
 
     useExportNotification();
     useTreeModelSync(studyUuid);
+    useNodeActivitySync(studyUuid);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -549,7 +552,13 @@ export function StudyContainer() {
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || errorMessage}
-            loading={studyPending || !paramsLoaded || !isFirstRootNetworkIndexationFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            loading={
+                studyPending ||
+                !paramsLoaded ||
+                !isFirstRootNetworkIndexationFound ||
+                !isNetworkModificationTreeModelUpToDate
+            }
             message={'LoadingRemoteData'}
         >
             <StudyPane />

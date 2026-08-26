@@ -6,16 +6,10 @@
  */
 
 import { MoreHoriz } from '@mui/icons-material';
-import { Box, Breadcrumbs as MuiBreadcrumbs, Tooltip } from '@mui/material';
+import { Box, Breadcrumbs as MuiBreadcrumbs, type Theme, Tooltip, useMediaQuery } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { CurrentTreeNode, NodeType } from '../graph/tree-node.type';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer.type';
-import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
-import type { UUID } from 'node:crypto';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import RootNetworkSelect from './root-network-select';
-import { useIntl } from 'react-intl';
+import CurrentSelection from './current-selection';
 
 const styles = {
     tooltipItem: {
@@ -25,6 +19,12 @@ const styles = {
     },
     breadcrumbItem: {
         maxWidth: 500,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
+    parentDirectoryItem: {
+        maxWidth: 200,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
@@ -40,13 +40,8 @@ export default function StudyPathBreadcrumbs({
     studyName,
     parentDirectoriesNames,
 }: Readonly<StudyPathBreadcrumbsProps>) {
-    const intl = useIntl();
-    const currentNode: CurrentTreeNode | null = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid: UUID | null = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const rootNetworks: RootNetworkMetadata[] = useSelector((state: AppState) => state.rootNetworks);
-    const currentRootNetworkTag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
-    const isRootNode = currentNode?.type === NodeType.ROOT;
-    const nodeLabel = isRootNode ? intl.formatMessage({ id: 'root' }) : currentNode?.data.label;
+    const nearestParentDirectoryName = parentDirectoriesNames?.at(-1);
+    const showParentDirectory = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
 
     return (
         <MuiBreadcrumbs
@@ -64,17 +59,7 @@ export default function StudyPathBreadcrumbs({
                                 <KeyboardArrowRightIcon fontSize="small" />
                             </Box>
                         ))}
-                        <Box sx={styles.tooltipItem}>
-                            {studyName}
-                            <KeyboardArrowRightIcon fontSize="small" />
-                        </Box>
-                        <Box sx={styles.tooltipItem}>{nodeLabel}</Box>
-                        {rootNetworks?.length > 1 && (
-                            <Box sx={styles.tooltipItem}>
-                                <KeyboardArrowRightIcon fontSize="small" />
-                                {currentRootNetworkTag}
-                            </Box>
-                        )}
+                        <Box sx={styles.tooltipItem}>{studyName}</Box>
                     </Box>
                 }
                 slotProps={{
@@ -87,17 +72,15 @@ export default function StudyPathBreadcrumbs({
             >
                 <MoreHoriz sx={{ display: 'flex', alignItems: 'center' }} />
             </Tooltip>
+            {showParentDirectory && nearestParentDirectoryName && (
+                <Tooltip title={nearestParentDirectoryName}>
+                    <Box sx={styles.parentDirectoryItem}>{nearestParentDirectoryName}</Box>
+                </Tooltip>
+            )}
             <Tooltip title={studyName || ''}>
                 <Box sx={styles.breadcrumbItem}>{studyName}</Box>
             </Tooltip>
-            <Tooltip title={nodeLabel || ''}>
-                <Box sx={styles.breadcrumbItem}>{nodeLabel}</Box>
-            </Tooltip>
-            {rootNetworks && rootNetworks.length > 1 && (
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <RootNetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />
-                </Box>
-            )}
+            <CurrentSelection />
         </MuiBreadcrumbs>
     );
 }
