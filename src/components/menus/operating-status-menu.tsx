@@ -125,8 +125,8 @@ const withOperatingStatusMenu =
             }
         }, [studyUuid, currentNode?.id, currentRootNetworkUuid, equipmentType, equipment?.id]);
 
-        const isCurrentNodeEditable = useCanModifyEquipment();
-        const isNodeEditable = !!equipmentInfos && isCurrentNodeEditable && !modificationInProgress;
+        const canModifyEquipment = useCanModifyEquipment();
+        const isNodeEditable = !!equipmentInfos && canModifyEquipment && !modificationInProgress;
 
         function handleError(error: Error, translationKey: string) {
             snackWithFallback(snackError, error, { headerId: getTranslationKey(translationKey) });

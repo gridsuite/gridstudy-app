@@ -13,7 +13,8 @@ import { useSelector } from 'react-redux';
 import { CurrentTreeNode, NodeType } from '../graph/tree-node.type';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
 import { AppState } from '../../redux/reducer.type';
-import { BlockedByActivityIndicator, NodeActivityChip } from 'components/node-activity/node-activity-display';
+import { BlockingActivitySpinner } from 'components/node-activity/components/blocking-activity-spinner';
+import { NodeActivityChip } from 'components/node-activity/components/node-activity-chip';
 import { useNodeActivity } from 'components/node-activity/hooks/use-node-activity';
 import RootNetworkSelect from './root-network-select';
 
@@ -47,7 +48,7 @@ const styles = {
         alignItems: 'center',
         ml: 1,
     },
-    blockedSpinner: {
+    blockingSpinner: {
         ml: 1,
     },
 } as const satisfies MuiStyles;
@@ -84,13 +85,14 @@ export default function CurrentSelection() {
                     <BuildStatusChip buildStatus={currentNode.data.globalBuildStatus} />
                 )}
             </Box>
-            <BlockedByActivityIndicator
-                nodeId={currentNode?.id}
-                ownActivity={activity}
-                size={20}
-                sx={styles.blockedSpinner}
-                placement="bottom"
-            />
+            {!activity && (
+                <BlockingActivitySpinner
+                    nodeId={currentNode?.id}
+                    size={20}
+                    sx={styles.blockingSpinner}
+                    placement="bottom"
+                />
+            )}
         </Paper>
     );
 }

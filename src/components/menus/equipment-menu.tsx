@@ -46,7 +46,7 @@ const withEquipmentMenu =
     }: MenuBranchProps) => {
         const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-        const isNodeEditable = useCanModifyEquipment();
+        const canModifyEquipment = useCanModifyEquipment();
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
             (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {
@@ -85,7 +85,7 @@ const withEquipmentMenu =
                             equipmentId={equipment.id}
                             equipmentType={equipmentType}
                             onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
-                            disabled={!isNodeEditable}
+                            disabled={!canModifyEquipment}
                         />
                     )}
                 </Menu>

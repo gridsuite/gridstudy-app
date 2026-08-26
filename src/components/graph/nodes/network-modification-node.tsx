@@ -17,7 +17,7 @@ import { ModificationNode } from '../tree-node.type';
 import NodeHandle from './node-handle';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
-import { BlockedByActivityIndicator } from 'components/node-activity/node-activity-display';
+import { BlockingActivitySpinner } from 'components/node-activity/components/blocking-activity-spinner';
 import { useIsBuildBlocked, useNodeActivity } from 'components/node-activity/hooks/use-node-activity';
 
 import { BuildButton } from './build-button';
@@ -82,7 +82,7 @@ const styles = {
         left: theme.spacing(1),
         zIndex: 2,
     }),
-    blockedSpinner: (theme) => ({
+    blockingSpinner: (theme) => ({
         position: 'absolute',
         top: '50%',
         right: theme.spacing(-4),
@@ -216,16 +216,17 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 </ForwardRefBox>
             </Tooltip>
 
-            <BlockedByActivityIndicator
-                nodeId={props.id}
-                ownActivity={activity}
-                size={24}
-                sx={styles.blockedSpinner}
-                placement="right"
-                arrow
-                enterDelay={TOOLTIP_DELAY}
-                enterNextDelay={TOOLTIP_DELAY}
-            />
+            {!activity && (
+                <BlockingActivitySpinner
+                    nodeId={props.id}
+                    size={24}
+                    sx={styles.blockingSpinner}
+                    placement="right"
+                    arrow
+                    enterDelay={TOOLTIP_DELAY}
+                    enterNextDelay={TOOLTIP_DELAY}
+                />
+            )}
         </>
     );
 };

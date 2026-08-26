@@ -552,12 +552,13 @@ export function StudyContainer() {
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || errorMessage}
+            // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             loading={
                 studyPending ||
                 !paramsLoaded ||
                 !isFirstRootNetworkIndexationFound ||
                 !isNetworkModificationTreeModelUpToDate
-            } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            }
             message={'LoadingRemoteData'}
         >
             <StudyPane />

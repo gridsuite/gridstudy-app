@@ -117,9 +117,8 @@ const EventModificationScenarioEditor = memo(() => {
             if (!eventData) {
                 return;
             }
-            // success or error, the events may have changed : the spinner is driven by the node activity
+            // success or error, the events may have changed
             if (isEventCrudFinishedNotification(eventData)) {
-                // append to the existing list : currentNode is the concerned one, so it is not cleared
                 doFetchEvents();
             }
         },

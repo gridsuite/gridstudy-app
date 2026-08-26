@@ -10,7 +10,8 @@ import { isDescendantOf } from 'components/graph/util/model-functions';
 import type { NodeActivity } from '../types/node-activity.type';
 
 /**
- * Mirrors only needed NodeActivityType in study-server : keep the flags in sync with it.
+ * Conflict flags of the activity the UI is about to request, mirroring the study-server NodeActivityType : must be kept in sync
+ * Types with the same flags reuse one entry. UNBUILD uses BUILD, EDIT_TREE and DELETE_NODES use EDIT_MODIFICATIONS.
  */
 export const REQUESTED_ACTIVITY = {
     BUILD: { invalidatesChildren: false, affectsAllRootNetworks: false },
@@ -28,14 +29,14 @@ export type RequestedActivity = (typeof REQUESTED_ACTIVITY)[keyof typeof REQUEST
 
 type Activity = Pick<NodeActivity, 'nodeId' | 'rootNetworkId' | 'invalidatesChildren'>;
 
-/** A null rootNetworkId means it affects every root network */
-function hasSameRootNetwork(a: UUID | null, b: UUID | null): boolean {
-    return a === null || b === null || a === b;
+/** A null rootNetworkId means the activity affects every root network of the study. */
+function hasSameRootNetwork(rootNetworkId: UUID | null, otherRootNetworkId: UUID | null): boolean {
+    return rootNetworkId === null || otherRootNetworkId === null || rootNetworkId === otherRootNetworkId;
 }
 
-/** 'a' unbuilds its subtree, and 'b' sits inside it. */
-function invalidates(a: Activity, b: Activity, ancestorsByNode: Map<UUID, Set<UUID>>): boolean {
-    return a.invalidatesChildren && isDescendantOf(b.nodeId, a.nodeId, ancestorsByNode);
+/** The ancestor unbuilds its subtree, and the descendant sits inside it. Called both ways round. */
+function invalidates(ancestor: Activity, descendant: Activity, ancestorsByNode: Map<UUID, Set<UUID>>): boolean {
+    return ancestor.invalidatesChildren && isDescendantOf(descendant.nodeId, ancestor.nodeId, ancestorsByNode);
 }
 
 function hasConflictWith(activity: Activity, other: Activity, ancestorsByNode: Map<UUID, Set<UUID>>): boolean {
@@ -58,9 +59,9 @@ export function findConflictingActivity(
 export function findActivityOnNode(
     activities: NodeActivity[],
     nodeId: UUID,
-    rootNetworkUuid: UUID | null
+    rootNetworkId: UUID | null
 ): NodeActivity | undefined {
     return activities.find(
-        (activity) => activity.nodeId === nodeId && hasSameRootNetwork(activity.rootNetworkId, rootNetworkUuid)
+        (activity) => activity.nodeId === nodeId && hasSameRootNetwork(activity.rootNetworkId, rootNetworkId)
     );
 }

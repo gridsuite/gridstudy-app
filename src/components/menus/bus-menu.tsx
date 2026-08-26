@@ -81,7 +81,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const isNodeEditable = useCanModifyEquipment();
+    const canModifyEquipment = useCanModifyEquipment();
 
     useEffect(() => {
         fetchNetworkElementInfos(
@@ -157,7 +157,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     disabled={
                         computationStarting ||
                         oneBusShortcircuitAnalysisState === RunningStatus.RUNNING ||
-                        !isNodeEditable
+                        !canModifyEquipment
                     }
                 >
                     <ListItemIcon>
@@ -180,14 +180,14 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                         equipmentId={busId}
                         equipmentType={EquipmentType.BUS}
                         onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
-                        disabled={!isNodeEditable}
+                        disabled={!canModifyEquipment}
                     />
                 )}
             <CustomMenuItem
                 sx={styles.menuItem}
                 onClick={handleClickTrip}
                 selected={false}
-                disabled={!isNodeEditable || equipmentInfos?.operatingStatus === 'FORCED_OUTAGE'}
+                disabled={!canModifyEquipment || equipmentInfos?.operatingStatus === 'FORCED_OUTAGE'}
             >
                 <ListItemIcon>
                     <OfflineBoltOutlinedIcon />

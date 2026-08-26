@@ -10,10 +10,10 @@ import { type MuiStyles } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { getNetworkModificationNode } from 'components/graph/util/model-functions';
-import { useActivityBlockingNode } from './hooks/use-node-activity';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
-import { nodeActivityInProgressId, nodeActivityLabelId, type NodeActivity } from './types/node-activity.type';
+import { useBlockingActivity } from '../hooks/use-node-activity';
+import { nodeActivityInProgressId, type NodeActivity } from '../types/node-activity.type';
 
 const styles = {
     rootNetworkLine: { display: 'flex', alignItems: 'center', gap: 0.5 },
@@ -24,16 +24,6 @@ function useOtherRootNetworkTag(activity: NodeActivity): string | undefined {
         activity.rootNetworkId && activity.rootNetworkId !== state.currentRootNetworkUuid
             ? state.rootNetworks.find((rootNetwork) => rootNetwork.rootNetworkUuid === activity.rootNetworkId)?.tag
             : undefined
-    );
-}
-
-export function NodeActivityChip({ activity }: Readonly<{ activity: NodeActivity }>) {
-    return (
-        <Chip
-            size="small"
-            icon={<CircularProgress size={14} />}
-            label={<FormattedMessage id={nodeActivityLabelId(activity.label)} />}
-        />
     );
 }
 
@@ -59,23 +49,16 @@ function NodeActivityDetails({ activity }: Readonly<{ activity: NodeActivity }>)
     );
 }
 
-type BlockedByActivityIndicatorProps = {
+type BlockingActivitySpinnerProps = {
     nodeId: UUID | null | undefined;
-    ownActivity: NodeActivity | undefined;
     size: number;
     sx?: SxProps<Theme>;
 } & Pick<TooltipProps, 'placement' | 'arrow' | 'enterDelay' | 'enterNextDelay'>;
 
-export function BlockedByActivityIndicator({
-    nodeId,
-    ownActivity,
-    size,
-    sx,
-    ...tooltipProps
-}: Readonly<BlockedByActivityIndicatorProps>) {
-    const blockingActivity = useActivityBlockingNode(nodeId);
+export function BlockingActivitySpinner({ nodeId, size, sx, ...tooltipProps }: Readonly<BlockingActivitySpinnerProps>) {
+    const blockingActivity = useBlockingActivity(nodeId);
 
-    if (ownActivity || !blockingActivity) {
+    if (!blockingActivity) {
         return null;
     }
     return (

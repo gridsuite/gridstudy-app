@@ -139,10 +139,6 @@ const nonEditableModificationTypes = new Set([
     'MODIFICATION_REFERENCE',
 ]);
 
-// commons-ui only spins on this when paired with notificationMessageId, which the node activity spinner
-// replaced : the prop is required, so it stays pinned off until commons-ui drops it.
-const NEVER_IMPACTED_BY_NOTIFICATION = () => false;
-
 const isEditableModification = (modif: NetworkModificationMetadata) => {
     if (!modif) {
         return false;
@@ -789,12 +785,11 @@ const NetworkModificationNodeEditor = () => {
                 }
             }
 
-            // success or error, the modifications may have changed : the spinner is driven by the node activity
+            // success or error, the modifications may have changed
             if (isModificationsUpdateFinishedNotification(eventData)) {
                 if (currentNodeIdRef.current !== eventData.headers.parentNode) {
                     return;
                 }
-                // append to the existing list : currentNode is the concerned one, so it is not cleared
                 dofetchNetworkModifications();
                 dofetchExcludedNetworkModifications();
             }
@@ -1085,7 +1080,8 @@ const NetworkModificationNodeEditor = () => {
                 onRowDragEnd={onRowDragEnd}
                 onSelectedRowsChange={handleRowSelected}
                 isRowDragDisabled={isEditBlocked || mapDataLoading}
-                isImpactedByNotification={NEVER_IMPACTED_BY_NOTIFICATION}
+                // the node activity spinner replaced it, but commons-ui still requires the prop
+                isImpactedByNotification={() => false}
                 isFetchingModifications={isFetchingModifications}
                 pendingState={isNodeUpdating}
                 columns={columns}

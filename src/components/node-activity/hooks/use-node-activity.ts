@@ -39,46 +39,51 @@ const selectRootNodeId = createSelector(
     (treeModel) => treeModel?.treeNodes.find((treeNode) => treeNode.type === NodeType.ROOT)?.id
 );
 
-function useBlockingActivity(nodeId: UUID | null | undefined, requested: RequestedActivity): NodeActivity | undefined {
+function useConflictingActivity(
+    nodeId: UUID | null | undefined,
+    requested: RequestedActivity
+): NodeActivity | undefined {
     return useSelector((state: AppState) => {
         if (!nodeId || state.nodeActivities.length === 0) {
             return undefined;
         }
         return findConflictingActivity(state.nodeActivities, selectAncestorsByNode(state), {
             nodeId,
+            // null when the activity affects every root network of the study
             rootNetworkId: requested.affectsAllRootNetworks ? null : state.currentRootNetworkUuid,
             invalidatesChildren: requested.invalidatesChildren,
         });
     });
 }
 
-export function useActivityBlockingNode(nodeId: UUID | null | undefined): NodeActivity | undefined {
-    return useBlockingActivity(nodeId, REQUESTED_ACTIVITY.ANY);
+export function useBlockingActivity(nodeId: UUID | null | undefined): NodeActivity | undefined {
+    return useConflictingActivity(nodeId, REQUESTED_ACTIVITY.ANY);
 }
 
 export function useIsEditBlocked(nodeId: UUID | null | undefined): boolean {
-    return !!useBlockingActivity(nodeId, REQUESTED_ACTIVITY.EDIT_MODIFICATIONS);
+    return !!useConflictingActivity(nodeId, REQUESTED_ACTIVITY.EDIT_MODIFICATIONS);
 }
 
 export function useIsEventEditBlocked(nodeId: UUID | null | undefined): boolean {
-    return !!useBlockingActivity(nodeId, REQUESTED_ACTIVITY.EDIT_EVENTS);
+    return !!useConflictingActivity(nodeId, REQUESTED_ACTIVITY.EDIT_EVENTS);
 }
 
+/** UNBUILD and BUILD have the same rules, except on a built security node where the unbuild invalidates the children. */
 export function useIsBuildBlocked(nodeId: UUID | null | undefined, nodeData: NodeBuildData | undefined): boolean {
-    const willUnbuildChildren = isSecurityNode(nodeData) && isStatusBuilt(nodeData?.localBuildStatus);
-    return !!useBlockingActivity(
+    const unbuildsChildren = isSecurityNode(nodeData) && isStatusBuilt(nodeData?.localBuildStatus);
+    return !!useConflictingActivity(
         nodeId,
-        willUnbuildChildren ? REQUESTED_ACTIVITY.UNBUILD_CHILDREN : REQUESTED_ACTIVITY.BUILD
+        unbuildsChildren ? REQUESTED_ACTIVITY.UNBUILD_CHILDREN : REQUESTED_ACTIVITY.BUILD
     );
 }
 
 export function useIsComputationBlocked(nodeId: UUID | null | undefined): boolean {
-    return !!useBlockingActivity(nodeId, REQUESTED_ACTIVITY.COMPUTE);
+    return !!useConflictingActivity(nodeId, REQUESTED_ACTIVITY.COMPUTE);
 }
 
 /** A loadflow on a security node writes solved values onto its variant, so its children are invalidated. */
 export function useIsLoadFlowBlocked(nodeId: UUID | null | undefined, nodeData: NodeBuildData | undefined): boolean {
-    return !!useBlockingActivity(
+    return !!useConflictingActivity(
         nodeId,
         isSecurityNode(nodeData) ? REQUESTED_ACTIVITY.COMPUTE_AND_UNBUILD_CHILDREN : REQUESTED_ACTIVITY.COMPUTE
     );
@@ -86,7 +91,7 @@ export function useIsLoadFlowBlocked(nodeId: UUID | null | undefined, nodeData: 
 
 export function useIsUnbuildAllBlocked(): boolean {
     const rootNodeId = useSelector(selectRootNodeId);
-    return !!useBlockingActivity(rootNodeId, REQUESTED_ACTIVITY.UNBUILD_ALL);
+    return !!useConflictingActivity(rootNodeId, REQUESTED_ACTIVITY.UNBUILD_ALL);
 }
 
 export function useNodeActivity(nodeId: UUID | null | undefined): NodeActivity | undefined {
