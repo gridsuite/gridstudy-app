@@ -5,18 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    SCAFaultResult,
-    SCAFeederResult,
-    SCAResult,
-    ShortCircuitAnalysisType,
-} from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
+import { SCAResult } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
-import { ComputingType, RunningStatus, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    RunningStatus,
+    SCAFeederResult,
+    SCAFaultResult,
+    useSnackMessage,
+    ShortCircuitAnalysisType,
+} from '@gridsuite/commons-ui';
 import { DisplayedColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisOneBusResultProps {

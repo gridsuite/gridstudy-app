@@ -35,6 +35,7 @@ import { useSelector } from 'react-redux';
 import { PanelType } from '../types/workspace.types';
 import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { selectOpenPanels } from '../../../redux/slices/workspace-selectors';
+import { WorkspaceSwitcher } from './workspace-switcher';
 
 const styles = {
     container: {
@@ -141,6 +142,7 @@ export const WorkspaceToolbar = () => {
                         selected={isTreeOpen}
                         onClick={() => openToolPanel(PanelType.TREE)}
                         sx={styles.toggleButton}
+                        data-testid="TreePanel"
                     >
                         <AccountTree fontSize="small" sx={{ transform: 'scaleY(-1) rotate(-90deg)' }} />
                     </ToggleButton>
@@ -151,6 +153,7 @@ export const WorkspaceToolbar = () => {
                         selected={isNodeEditorOpen}
                         onClick={() => openToolPanel(PanelType.MODIFICATIONS)}
                         sx={styles.toggleButton}
+                        data-testid="ModificationsPanel"
                     >
                         <Tune fontSize="small" />
                     </ToggleButton>
@@ -162,6 +165,7 @@ export const WorkspaceToolbar = () => {
                             selected={isEventScenarioOpen}
                             onClick={() => openToolPanel(PanelType.EVENT_SCENARIO)}
                             sx={styles.toggleButton}
+                            data-testid="DynamicSimulationPanel"
                         >
                             <OfflineBoltOutlined fontSize="small" />
                         </ToggleButton>
@@ -173,6 +177,7 @@ export const WorkspaceToolbar = () => {
                         selected={isSpreadsheetOpen}
                         onClick={() => openToolPanel(PanelType.SPREADSHEET)}
                         sx={styles.toggleButton}
+                        data-testid="SpreadSheetPanel"
                     >
                         <TableChart fontSize="small" />
                     </ToggleButton>
@@ -183,6 +188,7 @@ export const WorkspaceToolbar = () => {
                         selected={isResultsOpen}
                         onClick={() => openToolPanel(PanelType.RESULTS)}
                         sx={styles.toggleButton}
+                        data-testid="ResultsPanel"
                     >
                         <Assessment fontSize="small" />
                     </ToggleButton>
@@ -193,6 +199,7 @@ export const WorkspaceToolbar = () => {
                         selected={isLogsOpen}
                         onClick={() => openToolPanel(PanelType.LOGS)}
                         sx={styles.toggleButton}
+                        data-testid="LogsPanel"
                     >
                         <TextSnippet fontSize="small" />
                     </ToggleButton>
@@ -203,6 +210,7 @@ export const WorkspaceToolbar = () => {
                         selected={isParametersOpen}
                         onClick={() => openToolPanel(PanelType.PARAMETERS)}
                         sx={styles.toggleButton}
+                        data-testid="ParametersPanel"
                     >
                         <Settings fontSize="small" />
                     </ToggleButton>
@@ -218,6 +226,7 @@ export const WorkspaceToolbar = () => {
                         selected={true}
                         onClick={() => setIsLoadSelectorOpen(true)}
                         sx={styles.actionButton}
+                        data-testid="ImportFromGE"
                     >
                         <Upload fontSize="small" />
                     </ToggleButton>
@@ -228,6 +237,7 @@ export const WorkspaceToolbar = () => {
                         selected={true}
                         onClick={() => setIsDialogSearchOpen(true)}
                         sx={styles.actionButton}
+                        data-testid="GlobalSearchEquipment"
                     >
                         <Search fontSize="small" />
                     </ToggleButton>
@@ -238,11 +248,13 @@ export const WorkspaceToolbar = () => {
                         selected={isMapOpen}
                         onClick={() => openToolPanel(PanelType.MAP)}
                         sx={styles.toggleButton}
+                        data-testid="OpenMapView"
                     >
                         <Public fontSize="small" />
                     </ToggleButton>
                 </Tooltip>
             </ToggleButtonGroup>
+            <WorkspaceSwitcher />
             <DirectoryItemSelector
                 open={isLoadSelectorOpen}
                 onClose={selectElement}

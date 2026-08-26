@@ -42,7 +42,7 @@ import { useAllComputingStatusAtOnce } from './use-computing-status-at-once';
 import { useMemo } from 'react';
 
 // status invalidations
-const loadFlowStatusInvalidations = [NotificationType.LOADFLOW_STATUS, NotificationType.LOADFLOW_FAILED];
+export const loadFlowStatusInvalidations = [NotificationType.LOADFLOW_STATUS, NotificationType.LOADFLOW_FAILED];
 const securityAnalysisStatusInvalidations = [
     NotificationType.SECURITY_ANALYSIS_STATUS,
     NotificationType.SECURITY_ANALYSIS_FAILED,
