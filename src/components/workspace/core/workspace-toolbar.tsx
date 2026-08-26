@@ -35,6 +35,7 @@ import { useSelector } from 'react-redux';
 import { PanelType } from '../types/workspace.types';
 import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import { selectOpenPanels } from '../../../redux/slices/workspace-selectors';
+import { WorkspaceSwitcher } from './workspace-switcher';
 
 const styles = {
     container: {
@@ -253,6 +254,7 @@ export const WorkspaceToolbar = () => {
                     </ToggleButton>
                 </Tooltip>
             </ToggleButtonGroup>
+            <WorkspaceSwitcher />
             <DirectoryItemSelector
                 open={isLoadSelectorOpen}
                 onClose={selectElement}

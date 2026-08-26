@@ -9,14 +9,7 @@ import { NodeProps, Position } from '@xyflow/react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import {
-    copyToClipboard,
-    LIGHT_THEME,
-    type MuiStyles,
-    useSnackMessage,
-    BuildStatusChip,
-    BuildStatus,
-} from '@gridsuite/commons-ui';
+import { copyToClipboard, LIGHT_THEME, type MuiStyles, useSnackMessage, BuildStatusChip } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { AppState } from 'redux/reducer.type';
 import { CopyType } from 'components/network-modification.type';
@@ -24,6 +17,8 @@ import { ModificationNode } from '../tree-node.type';
 import NodeHandle from './node-handle';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
+import { BlockingActivitySpinner } from 'components/node-activity/components/blocking-activity-spinner';
+import { useIsBuildBlocked, useNodeActivity } from 'components/node-activity/hooks/use-node-activity';
 
 import { BuildButton } from './build-button';
 import { Tooltip, Typography } from '@mui/material';
@@ -87,6 +82,13 @@ const styles = {
         left: theme.spacing(1),
         zIndex: 2,
     }),
+    blockingSpinner: (theme) => ({
+        position: 'absolute',
+        top: '50%',
+        right: theme.spacing(-4),
+        transform: 'translateY(-50%)',
+        zIndex: 2,
+    }),
     tooltip: {
         maxWidth: '720px',
     },
@@ -100,6 +102,9 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const { snackError, snackInfo } = useSnackMessage();
 
     const intl = useIntl();
+
+    const activity = useNodeActivity(props.id);
+    const isBuildBlocked = useIsBuildBlocked(props.id, props.data);
 
     const onClipboardCopy = useCallback(() => {
         snackInfo({ headerId: 'uuidCopiedToClipboard' });
@@ -192,25 +197,36 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     </Box>
 
                     <Box sx={styles.footerBox}>
-                        {props.data.globalBuildStatus !== BuildStatus.BUILDING && (
-                            <BuildStatusChip buildStatus={props.data.localBuildStatus} />
-                        )}
+                        {!activity && <BuildStatusChip buildStatus={props.data.localBuildStatus} />}
                     </Box>
 
                     <Box sx={styles.buildBox}>
-                        {props.data.localBuildStatus !== BuildStatus.BUILDING && (
+                        {!activity && (
                             <BuildButton
                                 buildStatus={props.data.localBuildStatus}
                                 studyUuid={studyUuid}
                                 currentRootNetworkUuid={currentRootNetworkUuid}
                                 nodeUuid={props.id}
+                                disabled={isBuildBlocked}
                             />
                         )}
                     </Box>
 
-                    {props.data.localBuildStatus === BuildStatus.BUILDING && <NodeOverlaySpinner />}
+                    {activity && <NodeOverlaySpinner activity={activity} />}
                 </ForwardRefBox>
             </Tooltip>
+
+            {!activity && (
+                <BlockingActivitySpinner
+                    nodeId={props.id}
+                    size={24}
+                    sx={styles.blockingSpinner}
+                    placement="right"
+                    arrow
+                    enterDelay={TOOLTIP_DELAY}
+                    enterNextDelay={TOOLTIP_DELAY}
+                />
+            )}
         </>
     );
 };
