@@ -10,7 +10,7 @@ import { PlayCircleFilled, StopCircleOutlined } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
 import type { UUID } from 'node:crypto';
-import { type MuiStyles, snackWithFallback, BuildStatus, useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, mergeSx, snackWithFallback, BuildStatus, useSnackMessage } from '@gridsuite/commons-ui';
 
 type BuildButtonProps = {
     buildStatus?: BuildStatus;
@@ -41,6 +41,8 @@ export const BuildButton = ({
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
 
+    const isNotBuilt = !buildStatus || buildStatus === BuildStatus.NOT_BUILT;
+
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
             event.stopPropagation();
@@ -51,7 +53,7 @@ export const BuildButton = ({
 
             setIsLoading(true);
 
-            if (!buildStatus || buildStatus === BuildStatus.NOT_BUILT) {
+            if (isNotBuilt) {
                 buildNode(studyUuid, nodeUuid, currentRootNetworkUuid)
                     .catch((error) => snackWithFallback(snackError, error, { headerId: 'NodeBuildingError' }))
                     .finally(() => {
@@ -67,22 +69,19 @@ export const BuildButton = ({
                     });
             }
         },
-        [onClick, studyUuid, currentRootNetworkUuid, isLoading, buildStatus, nodeUuid, snackError]
+        [onClick, studyUuid, currentRootNetworkUuid, isLoading, isNotBuilt, nodeUuid, snackError]
     );
-
-    const getIcon = () => {
-        return !buildStatus || buildStatus === BuildStatus.NOT_BUILT ? (
-            <PlayCircleFilled sx={styles.playColor} />
-        ) : (
-            <StopCircleOutlined color="primary" />
-        );
-    };
 
     const isButtonDisabled = isLoading || !studyUuid || !currentRootNetworkUuid || disabled;
 
     return (
-        <Button size="small" onClick={handleClick} sx={styles.button} disabled={isButtonDisabled}>
-            {getIcon()}
+        <Button
+            size="small"
+            onClick={handleClick}
+            sx={isNotBuilt ? mergeSx(styles.button, styles.playColor) : styles.button}
+            disabled={isButtonDisabled}
+        >
+            {isNotBuilt ? <PlayCircleFilled /> : <StopCircleOutlined />}
         </Button>
     );
 };
