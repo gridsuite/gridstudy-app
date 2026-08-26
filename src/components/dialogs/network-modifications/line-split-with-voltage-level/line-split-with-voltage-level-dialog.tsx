@@ -188,7 +188,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     exist: false,
                     busbarCount: newVoltageLevel.busbarCount,
                     sectionCount: newVoltageLevel.sectionCount,
-                    switchKinds: newVoltageLevel.switchKinds,
+                    switchKinds: newVoltageLevel.switchKinds ?? [],
                 };
                 setVoltageLevelOptions((prev) => getNewVoltageLevelOptions(formattedVoltageLevel, undefined, prev));
             }
@@ -259,7 +259,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     exist: false,
                     busbarCount: preparedVoltageLevel.busbarCount,
                     sectionCount: preparedVoltageLevel.sectionCount,
-                    switchKinds: preparedVoltageLevel.switchKinds,
+                    switchKinds: preparedVoltageLevel.switchKinds ?? [],
                 };
 
                 // we add the new voltage level (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)

@@ -197,7 +197,7 @@ const LineAttachToVoltageLevelDialog = ({
                     exist: false,
                     busbarCount: newVoltageLevelInfos.busbarCount,
                     sectionCount: newVoltageLevelInfos.sectionCount,
-                    switchKinds: newVoltageLevelInfos.switchKinds,
+                    switchKinds: newVoltageLevelInfos.switchKinds ?? [],
                 };
                 setVoltageLevelOptions((prev) => getNewVoltageLevelOptions(formattedVoltageLevel, undefined, prev));
             }
@@ -325,7 +325,7 @@ const LineAttachToVoltageLevelDialog = ({
                     exist: false,
                     busbarCount: preparedVoltageLevel.busbarCount,
                     sectionCount: preparedVoltageLevel.sectionCount,
-                    switchKinds: preparedVoltageLevel.switchKinds,
+                    switchKinds: preparedVoltageLevel.switchKinds ?? [],
                 };
 
                 // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
