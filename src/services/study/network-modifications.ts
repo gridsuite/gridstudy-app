@@ -41,6 +41,7 @@ import {
     VoltageLevelSectionCreationDto,
     VscHdvLineCreationDto,
     VscHdvLineModificationDto,
+    MoveVoltageLevelFeederBaysDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -54,7 +55,6 @@ import {
     LCCCreationInfo,
     LccModificationInfos,
     LinesAttachToSplitLinesInfo,
-    MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
     TopologyVoltageLevelModificationInfos,
     Variations,
@@ -811,22 +811,9 @@ export function modifySubstation(
 export function createVoltageLevel({
     studyUuid,
     nodeUuid,
-    equipmentId,
-    equipmentName,
-    substationId,
-    substationCreation,
-    nominalV,
-    lowVoltageLimit,
-    highVoltageLimit,
-    ipMin,
-    ipMax,
-    busbarCount,
-    sectionCount,
-    switchKinds,
-    couplingDevices,
     isUpdate,
     modificationUuid,
-    properties,
+    ...dto
 }: VoltageLevelCreationInfo) {
     let createVoltageLevelUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -837,23 +824,7 @@ export function createVoltageLevel({
         console.info('Creating voltage level creation');
     }
 
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
-        equipmentId,
-        equipmentName,
-        substationId: substationId,
-        substationCreation: substationCreation,
-        nominalV: nominalV,
-        lowVoltageLimit: lowVoltageLimit,
-        highVoltageLimit: highVoltageLimit,
-        ipMin: ipMin,
-        ipMax: ipMax,
-        busbarCount: busbarCount,
-        sectionCount: sectionCount,
-        switchKinds: switchKinds,
-        couplingDevices: couplingDevices,
-        properties,
-    });
+    const body = JSON.stringify(dto);
 
     return backendFetchText(createVoltageLevelUrl, {
         method: isUpdate ? 'PUT' : 'POST',
@@ -1575,13 +1546,13 @@ export function createVoltageLevelTopology({
 }
 
 export function moveVoltageLevelFeederBays({
-    moveVoltageLevelFeederBaysInfos,
+    moveVoltageLevelFeederBaysDto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    moveVoltageLevelFeederBaysInfos: MoveVoltageLevelFeederBaysInfos;
+    moveVoltageLevelFeederBaysDto: MoveVoltageLevelFeederBaysDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
@@ -1601,7 +1572,7 @@ export function moveVoltageLevelFeederBays({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(moveVoltageLevelFeederBaysInfos),
+        body: JSON.stringify(moveVoltageLevelFeederBaysDto),
     });
 }
 
