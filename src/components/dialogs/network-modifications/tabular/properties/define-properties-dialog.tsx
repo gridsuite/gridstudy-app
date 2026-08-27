@@ -52,6 +52,7 @@ export default function DefinePropertiesDialog({
     currentProperties,
     predefinedEquipmentProperties,
     onValidate,
+    ...dialogProps
 }: Readonly<DefinePropertiesDialogProps>) {
     const formMethods = useForm<PropertiesFormType>({
         defaultValues: emptyProperties,
@@ -93,6 +94,7 @@ export default function DefinePropertiesDialog({
                 onSave={onValidate}
                 onClear={() => null}
                 slotProps={{ paper: { sx: styles.dialogContent } }}
+                {...dialogProps}
             >
                 <Grid container>
                     <PropertiesForm />
