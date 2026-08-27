@@ -275,9 +275,6 @@ const messages_fr = {
     DynamicSimulationEventCount:
         '{hide, select, false {{count, plural, =0 {aucun évènement} =1 {# évènement} other {# évènements}}} other {...}}',
     DynamicSimulationEventUpdatingList: 'Mise à jour de la liste des évènements en cours ...',
-    DynamicSimulationEventCreating: "Création d'un évènement en cours ...",
-    DynamicSimulationEventUpdating: "Mise à jour d'un évènement en cours ...",
-    DynamicSimulationEventDeleting: "Suppression d'un évènement en cours ...",
 
     DynamicSimulationTabTimeSeries: 'Courbes',
     DynamicSimulationTabTimeline: 'Chronologie',
@@ -808,6 +805,7 @@ const messages_fr = {
     depth: 'Profondeur : ',
 
     root: 'Racine',
+    node: 'Nœud',
     LogOnlySingleNode: 'Log nœud seul',
     ReportFetchError: 'Erreur lors de la récupération des logs',
 
@@ -1344,6 +1342,26 @@ const messages_fr = {
     Enum: 'Énumération',
     nodeType: 'Type',
     nodeStatus: 'Statut',
+    'nodeActivity.UPDATING': 'Mise à jour',
+    'nodeActivity.DELETING': 'Suppression',
+    'nodeActivity.BUILDING': 'Réalisation',
+    'nodeActivity.UNBUILDING': 'Déréalisation',
+    'nodeActivity.COMPUTING': 'Calcul',
+    'study.nodeActivityConflict':
+        '{requestedLabel, select, BUILDING {Réalisation refusée} UNBUILDING {Déréalisation refusée} ' +
+        'COMPUTING {Calcul refusé} UPDATING {Mise à jour refusée} DELETING {Suppression refusée} ' +
+        'other {Action refusée}} sur ' +
+        '{requestedOnRootNode, select, true {le nœud racine} other {le nœud {requestedNodeName}}} : ' +
+        '{label, select, BUILDING {une réalisation} UNBUILDING {une déréalisation} ' +
+        'COMPUTING {un calcul} UPDATING {une mise à jour} DELETING {une suppression} other {une opération}} ' +
+        'est en cours sur {onRootNode, select, true {le nœud racine} other {le nœud {nodeName}}}.',
+    nodeActivityNode: 'Nœud {nodeName}',
+    'nodeActivityInProgress.UPDATING': 'En cours de mise à jour',
+    'nodeActivityInProgress.DELETING': 'En cours de suppression',
+    'nodeActivityInProgress.BUILDING': 'En cours de réalisation',
+    'nodeActivityInProgress.UNBUILDING': 'En cours de déréalisation',
+    'nodeActivityInProgress.COMPUTING': 'En cours de calcul',
+    nodeActivityOnRootNetwork: 'Sur le réseau racine {rootNetwork}',
     CONSTRUCTION: 'Construction',
     SECURITY: 'Sécurité',
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS: 'Déplacer les départs',
