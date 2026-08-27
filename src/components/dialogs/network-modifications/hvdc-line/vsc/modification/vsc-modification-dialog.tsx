@@ -138,6 +138,15 @@ export default function VscModificationDialog({
                                 value.converterStation2?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
                             );
 
+                            setValue(
+                                `${FieldConstants.CONVERTER_STATION_1}.${FieldConstants.CONVERTER_STATION_ID}` as any,
+                                value.converterStation1?.id
+                            );
+                            setValue(
+                                `${FieldConstants.CONVERTER_STATION_2}.${FieldConstants.CONVERTER_STATION_ID}` as any,
+                                value.converterStation2?.id
+                            );
+
                             setVscToModify({
                                 ...value,
                                 converterStation1: {
