@@ -16,8 +16,11 @@ import {
     EquipmentType,
     mergeSx,
     type MuiStyles,
+    RESULTS_LOADING_DELAY,
+    RunningStatus,
     snackWithFallback,
     unscrollableDialogStyles,
+    useOpenLoaderShortWait,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import {
@@ -31,8 +34,6 @@ import VoltageInitModificationDialog, {
 } from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import { FetchStatus } from '../services/utils';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
-import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
-import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 import GlobalFilterSelector from './results/common/global-filter/global-filter-selector.js';
 import {
@@ -43,10 +44,11 @@ import {
     VoltageInitResultType,
 } from './voltage-init-result.type';
 import { AppState } from 'redux/reducer.type';
-import RunningStatus from './utils/running-status';
+import { useIsEditBlocked } from 'components/node-activity/hooks/use-node-activity';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { TableType } from 'types/custom-aggrid-types';
+import { PARAM_COMPUTED_LANGUAGE } from '../utils/config-params';
 
 const styles = {
     container: {
@@ -104,6 +106,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const { snackError } = useSnackMessage();
+    const isEditBlocked = useIsEditBlocked(currentNode?.id);
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
 
     const [disableApplyModifications, setDisableApplyModifications] = useState(false);
     const [applyingModifications, setApplyingModifications] = useState(false);
@@ -294,6 +298,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     computationType={TableType.VoltageInit}
                     computationSubType="Indicators"
                     exportCsvResetKey={exportCsvResetKey}
+                    language={language}
                 />
             </Box>
         );
@@ -335,6 +340,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     computationType={TableType.VoltageInit}
                     computationSubType="ReactiveSlacks"
                     exportCsvResetKey={exportCsvResetKey}
+                    language={language}
                 />
             </Box>
         );
@@ -387,6 +393,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                 computationType={TableType.VoltageInit}
                 computationSubType="BusVoltages"
                 exportCsvResetKey={exportCsvResetKey}
+                language={language}
             />
         );
     }
@@ -437,7 +444,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         <Button
                             variant="outlined"
                             onClick={previewModifications}
-                            disabled={!result?.modificationsGroupUuid || disableApplyModifications}
+                            disabled={!result?.modificationsGroupUuid || disableApplyModifications || isEditBlocked}
                             data-testid="VoltageInitPreviewModificationsButton"
                         >
                             <FormattedMessage id="previewModifications" />

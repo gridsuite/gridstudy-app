@@ -13,33 +13,26 @@ import {
     AddButtonMode,
     VoltageLevelConnectivityForm,
     TextInput,
+    VoltageLevelCreationDto,
     VoltageLevelOption,
+    GridSection,
 } from '@gridsuite/commons-ui';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import { CONNECTIVITY, ID, VOLTAGE_LEVEL } from '../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { GridSection } from '../../commons/grid-section';
 import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
-import { VoltageLevelFormInfos } from '../voltage-level/voltage-level.type';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
-import { VoltageLevelCreationInfo } from '../../../../services/network-modification-types';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
-
-export interface ExtendedVoltageLevelFormInfos extends VoltageLevelFormInfos {
-    sectionCount: number;
-    busbarCount: number;
-    switchKinds?: string[];
-}
 
 interface LineSplitWithVoltageLevelFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
-    voltageLevelToEdit: ExtendedVoltageLevelFormInfos | null;
+    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationDto) => Promise<string>;
+    voltageLevelToEdit: VoltageLevelCreationDto | null;
     onVoltageLevelChange?: () => void;
     allVoltageLevelOptions: VoltageLevelOption[];
     isUpdate: boolean;
@@ -141,7 +134,7 @@ const LineSplitWithVoltageLevelForm = ({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={isVoltageLevelEdit ? (voltageLevelToEdit as any) : null}
+                    editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
                     isUpdate={isUpdate}
                     editDataFetchStatus={editDataFetchStatus}
                 />

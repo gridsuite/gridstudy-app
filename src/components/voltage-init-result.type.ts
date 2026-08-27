@@ -6,8 +6,8 @@
  */
 
 import { Key } from 'react';
-import RunningStatus from './utils/running-status';
 import type { UUID } from 'node:crypto';
+import { RunningStatus } from '@gridsuite/commons-ui';
 
 export interface VoltageInitResultProps {
     result: any;

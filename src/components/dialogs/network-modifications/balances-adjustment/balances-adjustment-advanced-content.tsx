@@ -6,9 +6,8 @@
  */
 import React from 'react';
 import { Box, Grid, Stack } from '@mui/material';
-import { FloatInput, IntegerInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { FloatInput, GridSection, IntegerInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 
-import { GridSection } from '../../commons/grid-section';
 import CountriesAutocomplete from './countries-autocomplete';
 import {
     BALANCES_ADJUSTMENT,
@@ -54,6 +53,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                 <Grid>
                     <SwitchInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`}
+                        dataTestId="LoadFlowControlButton"
                     />
                 </Grid>
             </Grid>
@@ -65,6 +65,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         limitTags={3}
                         label={intl.formatMessage({ id: 'descLfCountriesToBalance' })}
                         disabled={!withLoadFlow}
+                        dataTestId="BalancingCountriesInput"
                     />
                 </Box>
                 <Box sx={{ width: '100%' }}>
@@ -75,6 +76,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         sx={styles.autocomplete}
                         disabled={!withLoadFlow}
                         disableClearable={true}
+                        dataTestId="BalanceTypeInput"
                     />
                 </Box>
             </Stack>
@@ -96,6 +98,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         formProps={{
                             disabled: !withLoadFlow,
                         }}
+                        dataTestId="LoadFlowRatioTapChangersControlButton"
                     />
                 </Grid>
             </Grid>
@@ -108,6 +111,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         formProps={{
                             disabled: !withLoadFlow,
                         }}
+                        dataTestId="MaxNumberOfIterationsInput"
                     />
                 </Box>
                 <Box sx={{ width: '100%' }}>
@@ -117,6 +121,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         formProps={{
                             disabled: !withLoadFlow,
                         }}
+                        dataTestId="NetPositionMismatchThresholdInput"
                     />
                 </Box>
                 <Box sx={{ width: '100%' }}>
@@ -128,6 +133,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                             <SwitchInput
                                 name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING}`}
                                 formProps={{ disabled: !withLoadFlow }}
+                                dataTestId="LoadFlowBalancingControlButton"
                             />
                         </Grid>
                     </Grid>

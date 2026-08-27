@@ -21,14 +21,12 @@ import {
 } from '@gridsuite/commons-ui';
 import {
     CompositeModificationAction,
+    ModificationMoveOrCopyInfos,
     NetworkModificationCopyInfos,
 } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
-export const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';
-
-export const getBaseNetworkModificationUrl = () => `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1`;
 
 export const getStudyUrl = (studyUuid: UUID | null) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}`;
@@ -259,7 +257,7 @@ export function executeCompositeModificationAction(
 export function copyOrMoveModifications(
     studyUuid: UUID,
     targetNodeId: UUID,
-    modificationToCutUuidList: UUID[],
+    modificationsToCopyOrMove: ModificationMoveOrCopyInfos[],
     copyInfos: NetworkModificationCopyInfos
 ) {
     console.info(copyInfos.copyType + ' modifications');
@@ -282,7 +280,7 @@ export function copyOrMoveModifications(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modificationToCutUuidList),
+        body: JSON.stringify(modificationsToCopyOrMove),
     });
 }
 

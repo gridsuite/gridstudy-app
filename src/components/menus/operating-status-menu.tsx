@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Menu from '@mui/material/Menu';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -30,8 +30,7 @@ import {
     useSnackMessage,
     PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
-import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
-import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
+import { useCanModifyEquipment } from './use-can-modify-equipment';
 import { BRANCH_SIDE } from '../network/constants';
 import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 import {
@@ -97,7 +96,6 @@ const withOperatingStatusMenu =
     }: MenuBranchProps) => {
         const intl = useIntl();
         const { snackError } = useSnackMessage();
-        const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const { getNameOrId } = useNameOrId();
         const [equipmentInfos, setEquipmentInfos] = useState<EquipmentInfos | null>(null);
 
@@ -127,20 +125,8 @@ const withOperatingStatusMenu =
             }
         }, [studyUuid, currentNode?.id, currentRootNetworkUuid, equipmentType, equipment?.id]);
 
-        const isNodeEditable = useMemo(
-            function () {
-                if (currentNode) {
-                    return (
-                        equipmentInfos &&
-                        isNodeBuilt(currentNode) &&
-                        !isNodeReadOnly(currentNode) &&
-                        !isAnyNodeBuilding &&
-                        !modificationInProgress
-                    );
-                }
-            },
-            [equipmentInfos, currentNode, isAnyNodeBuilding, modificationInProgress]
-        );
+        const canModifyEquipment = useCanModifyEquipment();
+        const isNodeEditable = !!equipmentInfos && canModifyEquipment && !modificationInProgress;
 
         function handleError(error: Error, translationKey: string) {
             snackWithFallback(snackError, error, { headerId: getTranslationKey(translationKey) });
