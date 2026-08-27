@@ -23,8 +23,8 @@ export interface WithModificationId {
     uuid: UUID;
 }
 
-export interface VoltageLeveInfo {
-    studyUuid: string;
+export type VoltageLevelCreationInfo = VoltageLevelCreationDto & {
+    studyUuid: UUID;
     nodeUuid: UUID;
     isUpdate?: boolean;
     modificationUuid?: UUID;
