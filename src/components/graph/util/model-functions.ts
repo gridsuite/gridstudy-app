@@ -121,8 +121,8 @@ export function isNodeReadOnly(node: CurrentTreeNode | null) {
     return node?.data?.readOnly ? true : false; // ternary operator because of potential undefined
 }
 
-export function isStatusBuilt(status: BuildStatus | undefined) {
-    return status?.startsWith('BUILT');
+export function isStatusBuilt(status: BuildStatus | undefined): boolean {
+    return !!status?.startsWith('BUILT');
 }
 
 export function isNodeBuilt(node: CurrentTreeNode | null) {
@@ -160,13 +160,6 @@ export function isNodeEdited(node1: CurrentTreeNode | null, node2: CurrentTreeNo
     return isDescriptionNodeEdited(node1, node2) || isNodeRenamed(node1, node2);
 }
 
-export function isNodeInNotificationList(node: CurrentTreeNode, notificationIdList: UUID[]) {
-    if (!node || !notificationIdList) {
-        return false;
-    }
-    return notificationIdList.includes(node.id);
-}
-
 export function isSameNodeAndBuilt(node1: CurrentTreeNode | null, node2: CurrentTreeNode | null) {
     return isSameNode(node1, node2) && isNodeBuilt(node1);
 }
@@ -190,3 +183,36 @@ export function getAllChildren(elements: NetworkModificationTreeModel | null, no
 export const getNetworkModificationNode = (treeModel: NetworkModificationTreeModel | null, nodeId: UUID) => {
     return treeModel?.treeNodes.find((n) => n.id === nodeId);
 };
+
+export function isDescendantOf(nodeId: UUID, ancestorId: UUID, ancestorsByNode: Map<UUID, Set<UUID>>): boolean {
+    return !!ancestorsByNode.get(nodeId)?.has(ancestorId);
+}
+
+export function getAncestorsByNode(treeModel: NetworkModificationTreeModel | null): Map<UUID, Set<UUID>> {
+    const ancestorsByNode = new Map<UUID, Set<UUID>>();
+    if (!treeModel) {
+        return ancestorsByNode;
+    }
+    const parentByNode = new Map<UUID, UUID | undefined>(
+        treeModel.treeNodes.map((node) => [node.id, node.parentId as UUID | undefined])
+    );
+
+    function ancestorsOf(nodeId: UUID): Set<UUID> {
+        const known = ancestorsByNode.get(nodeId);
+        if (known) {
+            return known;
+        }
+        const ancestors = new Set<UUID>();
+        // registered before walking up, so each chain is walked once
+        ancestorsByNode.set(nodeId, ancestors);
+        const parentId = parentByNode.get(nodeId);
+        if (parentId) {
+            ancestors.add(parentId);
+            ancestorsOf(parentId).forEach((ancestor) => ancestors.add(ancestor));
+        }
+        return ancestors;
+    }
+
+    treeModel.treeNodes.forEach((node) => ancestorsOf(node.id));
+    return ancestorsByNode;
+}

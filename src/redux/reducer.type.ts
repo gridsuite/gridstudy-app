@@ -9,6 +9,7 @@ import type {
     AuthenticationRouterErrorState,
     BaseVoltage,
     CommonStoreState,
+    ComposedModificationMetadata,
     ComputingType,
     GsLang,
     GsLangUser,
@@ -54,6 +55,7 @@ import type {
 } from '../components/graph/menus/network-modifications/network-modification-menu.type';
 import type { CalculationType } from '../components/spreadsheet-view/types/calculation.type';
 import type { RootNetworkIndexationStatus } from '../types/notification-types';
+import type { NodeActivity } from '../components/node-activity/types/node-activity.type';
 import type { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import type { NodeValidity } from '../components/spreadsheet-view/columns/utils/column-validity';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
@@ -185,7 +187,9 @@ export type NodeSelectionForCopy = {
 };
 
 export type CopiedNetworkModifications = {
-    networkModificationUuids: UUID[];
+    // the raw selection snapshot at copy/cut time; doPasteModifications resolves it into
+    // ModificationMoveOrCopyInfos (per-item source container) right before sending the request
+    networkModifications: ComposedModificationMetadata[];
     copyInfos: NetworkModificationCopyInfos | null;
 };
 
@@ -220,7 +224,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     computationStarting: boolean;
     optionalServices: IOptionalService[];
     oneBusShortCircuitAnalysisContext: OneBusShortCircuitAnalysisContext | null;
-    notificationIdList: UUID[];
     globalFilterOptions: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramDepth: number;
@@ -228,6 +231,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     tableSort: TableSort;
     tables: TablesState;
     nodeAliases: NodeAlias[];
+    nodeActivities: NodeActivity[];
     // the current node is not in there, computingStatus covers it
     aliasedNodesValidity: Record<string, NodeValidity>;
 
@@ -241,7 +245,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nadTextNodeMovements: NadTextMovement[];
     isExplorerDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
-    isModificationsInProgress: boolean;
     isMonoRootStudy: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;
