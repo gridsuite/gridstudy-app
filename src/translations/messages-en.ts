@@ -114,7 +114,6 @@ const messages_en = {
     panelsCount: '{count, plural, =0 {no panel} =1 {# panel} other {# panels}}',
     panels: 'Panels',
     NetworkVisualizations: 'Network visualizations',
-    None: 'None',
     NoneUpcomingOverload: 'None',
     NominalVoltage: 'Nominal voltage',
     'I_(A)': 'I (A)',
@@ -271,9 +270,6 @@ const messages_en = {
     DynamicSimulationEventCount:
         '{hide, select, false {{count, plural, =0 {no event} =1 {{count} event} other {{count} events}}} other {...}}',
     DynamicSimulationEventUpdatingList: 'Updating event list ...',
-    DynamicSimulationEventCreating: 'Creating event ...',
-    DynamicSimulationEventUpdating: 'Updating event ...',
-    DynamicSimulationEventDeleting: 'Deleting event ...',
 
     DynamicSimulationTabTimeSeries: 'Curves',
     DynamicSimulationTabTimeline: 'Chronology',
@@ -615,9 +611,6 @@ const messages_en = {
     Side: 'Side',
     QatNominalV: 'Q at nominal voltage',
     LimitsTab: 'Limits',
-    EstimateTapPositionSection: 'Estimate tap position',
-    RatioTapChangerEstimateTapPosition: 'Ratio tap changer',
-    PhaseTapChangerEstimateTapPosition: 'Phase tap changer',
 
     shuntCompensatorId: 'Shunt compensator ID',
     shuntCompensatorName: 'Shunt compensator name',
@@ -714,12 +707,6 @@ const messages_en = {
     PermanentCurrentLimitText1: 'IST 1',
     PermanentCurrentLimitText2: 'IST 2',
 
-    ModifyTwoWindingsTransformer: 'Modify a 2 windings transformer',
-    TwoWindingsTransformerModificationError: 'Error while modifying a 2 windings transformer',
-    TwoWindingsTransformerCharacteristicsTab: 'Characteristics',
-    TwoWindingsTransformerRatioTapChangerTab: 'Ratio tap changer',
-    TwoWindingsTransformerPhaseTapChangerTab: 'Phase tap changer',
-
     Regulating: 'Regulating',
     [TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'Deadband value must be greater than or equal to 0',
     HighTapPositionError: 'High tap position must be between low tap and 100',
@@ -811,6 +798,7 @@ const messages_en = {
     depth: 'Depth: ',
 
     root: 'Root',
+    node: 'Node',
     LogOnlySingleNode: 'Log single node',
     ReportFetchError: 'An error occurred while fetching the logs',
 
@@ -1335,6 +1323,26 @@ const messages_en = {
     Enum: 'Enumeration',
     nodeType: 'Type',
     nodeStatus: 'Status',
+    'nodeActivity.UPDATING': 'Updating',
+    'nodeActivity.DELETING': 'Deleting',
+    'nodeActivity.BUILDING': 'Building',
+    'nodeActivity.UNBUILDING': 'Unbuilding',
+    'nodeActivity.COMPUTING': 'Computing',
+    'study.nodeActivityConflict':
+        '{requestedLabel, select, BUILDING {Build refused} UNBUILDING {Unbuild refused} ' +
+        'COMPUTING {Computation refused} UPDATING {Update refused} DELETING {Deletion refused} ' +
+        'other {Action refused}} on ' +
+        '{requestedOnRootNode, select, true {the root node} other {node {requestedNodeName}}}: ' +
+        '{label, select, BUILDING {a build} UNBUILDING {an unbuild} COMPUTING {a computation} ' +
+        'UPDATING {an update} DELETING {a deletion} other {an operation}} is running on ' +
+        '{onRootNode, select, true {the root node} other {node {nodeName}}}.',
+    nodeActivityNode: 'Node {nodeName}',
+    'nodeActivityInProgress.UPDATING': 'Updating',
+    'nodeActivityInProgress.DELETING': 'Deleting',
+    'nodeActivityInProgress.BUILDING': 'Building',
+    'nodeActivityInProgress.UNBUILDING': 'Unbuilding',
+    'nodeActivityInProgress.COMPUTING': 'Computing',
+    nodeActivityOnRootNetwork: 'On root network {rootNetwork}',
     CONSTRUCTION: 'Construction',
     SECURITY: 'Security',
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS: 'Move connections',

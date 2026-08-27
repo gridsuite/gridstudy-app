@@ -14,11 +14,12 @@ import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-r
 import { useNodeAliasesUpdateOnNotification } from './spreadsheet-view/hooks/use-node-aliases-update-on-notification';
 import { useSpreadsheetEquipments } from './spreadsheet-view/hooks/use-spreadsheet-equipments';
 import { useNodeAliasesLoadFlowStatus } from './spreadsheet-view/hooks/use-node-aliases-loadflow-status';
-import WaitingLoader from './utils/waiting-loader';
 import { WorkspaceContainer } from './workspace/core/workspace-container';
 import useStudyPath from 'hooks/use-study-path';
 import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 import { CustomAggridReduxProvider } from './custom-aggrid/custom-aggrid-redux-provider';
+import { RunButtonContainer } from './run-button-container';
+import StudyNavigationSyncToggle from './study-navigation-sync-toggle';
 
 const styles = {
     paneContainer: {
@@ -31,9 +32,18 @@ const styles = {
         position: 'relative',
         overflow: 'hidden',
     },
+    studyControls: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+    },
     breadCrumbs: (theme) => ({
         backgroundColor: theme.palette.toolbarBackground,
-        pl: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 1,
+        p: 1,
     }),
     '@global': {
         '@keyframes spin': {
@@ -48,8 +58,9 @@ const styles = {
 };
 
 const StudyPane = () => {
-    const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
     const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
 
@@ -67,9 +78,18 @@ const StudyPane = () => {
     return (
         <CustomAggridReduxProvider>
             <Box sx={styles.paneContainer}>
-                <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
                 <Box sx={styles.breadCrumbs}>
                     <StudyPathBreadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
+                    <Box sx={styles.studyControls}>
+                        <StudyNavigationSyncToggle />
+                        {studyUuid && currentRootNetworkUuid && (
+                            <RunButtonContainer
+                                studyUuid={studyUuid}
+                                currentNode={currentNode}
+                                currentRootNetworkUuid={currentRootNetworkUuid}
+                            />
+                        )}
+                    </Box>
                 </Box>
                 <Box sx={styles.workspaceContainer}>
                     <WorkspaceContainer />

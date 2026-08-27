@@ -21,6 +21,7 @@ import {
 } from '@gridsuite/commons-ui';
 import {
     CompositeModificationAction,
+    ModificationMoveOrCopyInfos,
     NetworkModificationCopyInfos,
 } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
@@ -256,7 +257,7 @@ export function executeCompositeModificationAction(
 export function copyOrMoveModifications(
     studyUuid: UUID,
     targetNodeId: UUID,
-    modificationToCutUuidList: UUID[],
+    modificationsToCopyOrMove: ModificationMoveOrCopyInfos[],
     copyInfos: NetworkModificationCopyInfos
 ) {
     console.info(copyInfos.copyType + ' modifications');
@@ -279,7 +280,7 @@ export function copyOrMoveModifications(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modificationToCutUuidList),
+        body: JSON.stringify(modificationsToCopyOrMove),
     });
 }
 
