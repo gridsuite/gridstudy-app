@@ -54,13 +54,13 @@ export const useGlobalFilterOptions = () => {
     }, [baseVoltages, dispatch]);
 
     useEffect(() => {
-        const run = async () => {
+        const fetchCountries = async () => {
             if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid) return;
 
-            const response = await fetchNetworkExistence(studyUuid, currentRootNetworkUuid);
+            try {
+                const response = await fetchNetworkExistence(studyUuid, currentRootNetworkUuid);
 
-            if (response.status === HttpStatusCode.OK) {
-                try {
+                if (response.status === HttpStatusCode.OK) {
                     const countryCodes = await fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid);
 
                     const newCountriesFilter = countryCodes
@@ -71,12 +71,16 @@ export const useGlobalFilterOptions = () => {
                         .map(addGlobalFilterId);
 
                     dispatch(addToGlobalFilterOptions(newCountriesFilter));
-                } catch (error) {
-                    snackWithFallback(snackError, error, { headerId: 'FetchCountryError' });
                 }
+            } catch (error) {
+                snackWithFallback(snackError, error, { headerId: 'FetchCountryError' });
             }
+        };
 
-            fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
+        const fetchSubstationProperties = async () => {
+            try {
+                const { substationPropertiesGlobalFilters } = await fetchSubstationPropertiesGlobalFilters();
+
                 const propertiesGlobalFilters: GlobalFilterWithoutId[] = [];
                 if (substationPropertiesGlobalFilters) {
                     for (let [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
@@ -91,8 +95,11 @@ export const useGlobalFilterOptions = () => {
                 }
                 // propertiesFilter may be empty or contain several subtypes, depending on the user configuration
                 dispatch(addToGlobalFilterOptions(propertiesGlobalFilters.map(addGlobalFilterId)));
-            });
+            } catch (error) {
+                snackWithFallback(snackError, error, { headerId: 'FetchSubstationPropertiesError' });
+            }
         };
-        run();
+        fetchCountries();
+        fetchSubstationProperties();
     }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id, dispatch]);
 };
