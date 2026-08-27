@@ -36,6 +36,7 @@ export default function RenameTabDialog({
     currentName,
     tabUuid,
     tablesDefinitions,
+    ...dialogProps
 }: Readonly<RenameTabDialogProps>) {
     const intl = useIntl();
 
@@ -83,6 +84,7 @@ export default function RenameTabDialog({
                 onSave={onSubmit}
                 onClear={() => null}
                 slotProps={{ paper: { sx: { width: '30%' } } }}
+                {...dialogProps}
             >
                 <Stack spacing={2} marginTop={2}>
                     <Grid>
