@@ -44,6 +44,7 @@ import {
     VoltageInitResultType,
 } from './voltage-init-result.type';
 import { AppState } from 'redux/reducer.type';
+import { useIsEditBlocked } from 'components/node-activity/hooks/use-node-activity';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { TableType } from 'types/custom-aggrid-types';
@@ -105,6 +106,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const { snackError } = useSnackMessage();
+    const isEditBlocked = useIsEditBlocked(currentNode?.id);
     const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
 
     const [disableApplyModifications, setDisableApplyModifications] = useState(false);
@@ -442,7 +444,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                         <Button
                             variant="outlined"
                             onClick={previewModifications}
-                            disabled={!result?.modificationsGroupUuid || disableApplyModifications}
+                            disabled={!result?.modificationsGroupUuid || disableApplyModifications || isEditBlocked}
                             data-testid="VoltageInitPreviewModificationsButton"
                         >
                             <FormattedMessage id="previewModifications" />

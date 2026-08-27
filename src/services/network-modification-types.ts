@@ -16,6 +16,7 @@ import {
     ModificationType,
     Property,
     ReactiveCapabilityCurvePoints,
+    VoltageLevelCreationDto,
 } from '@gridsuite/commons-ui';
 import { VARIATION_TYPES } from '../components/network/constants';
 
@@ -54,36 +55,12 @@ export interface VscModificationInfo {
     terminalConnected?: boolean | null;
 }
 
-export enum SwitchKind {
-    BREAKER = 'BREAKER',
-    DISCONNECTOR = 'DISCONNECTOR',
-    LOAD_BREAK_SWITCH = 'LOAD_BREAK_SWITCH',
-}
-
-export interface VoltageLeveInfo {
-    studyUuid: string;
+export type VoltageLevelCreationInfo = VoltageLevelCreationDto & {
+    studyUuid: UUID;
     nodeUuid: UUID;
-    equipmentId: string;
-    equipmentName?: string;
-    substationId?: string | null;
-    nominalV?: number | null;
-    lowVoltageLimit?: number | null;
-    highVoltageLimit?: number | null;
-    busbarCount?: number;
-    sectionCount?: number;
-    switchKinds?: SwitchKind[];
-    couplingDevices?: CouplingDeviceInfos[];
     isUpdate?: boolean;
     modificationUuid?: UUID;
-    properties: Property[] | null;
-}
-
-export interface VoltageLevelCreationInfo extends VoltageLeveInfo {
-    substationCreation?: AttachedSubstationCreationInfo | null;
-    ipMin: number | null;
-    ipMax: number | null;
-    topologyKind?: string;
-}
+};
 
 type VariationFilter = {
     id: string;
@@ -191,31 +168,19 @@ export interface TapChangerStepCreationInfos {
     alpha?: number;
 }
 
-export interface AttachedSubstationCreationInfo {
-    type: ModificationType;
-    equipmentId: string | null;
-    equipmentName: string | null;
-    country: string | null;
-    properties: Property[] | null;
-}
-
 export interface DivideLineInfo {
     studyUuid: string;
     nodeUuid: UUID;
     modificationUuid?: UUID;
     lineToSplitId: string;
     percent: number;
-    mayNewVoltageLevelInfos: any;
+    mayNewVoltageLevelInfos: VoltageLevelCreationDto | null;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
     newLine1Id: string;
     newLine1Name: string | null;
     newLine2Id: string;
     newLine2Name: string | null;
-}
-
-export interface ExtendedVoltageLevelCreationInfo extends VoltageLevelCreationInfo {
-    type: ModificationType.VOLTAGE_LEVEL_CREATION;
 }
 
 export interface AttachLineInfo {
@@ -226,8 +191,8 @@ export interface AttachLineInfo {
     percent: number;
     attachmentPointId: string;
     attachmentPointName: string | null;
-    attachmentPointDetailInformation: ExtendedVoltageLevelCreationInfo;
-    mayNewVoltageLevelInfos?: ExtendedVoltageLevelCreationInfo;
+    attachmentPointDetailInformation: VoltageLevelCreationDto;
+    mayNewVoltageLevelInfos?: VoltageLevelCreationDto;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
     attachmentLine: LineCreationDto;
@@ -384,11 +349,6 @@ export interface TopologyVoltageLevelModificationInfos {
     equipmentId: string;
     equipmentAttributeModificationList: EquipmentAttributeModificationInfos[];
 }
-
-export type CouplingDeviceInfos = {
-    busbarSectionId1: string;
-    busbarSectionId2: string;
-};
 
 export interface CreateVoltageLevelTopologyInfos {
     type: ModificationType;
