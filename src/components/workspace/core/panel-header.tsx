@@ -140,6 +140,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
                     sx={styles.iconButton}
                     onClick={() => pinPanel(panelId)}
                     onMouseDown={(e) => e.stopPropagation()}
+                    data-testid={pinned ? 'UnpinPanel' : 'PinPanel'}
                 >
                     {pinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
                 </IconButton>
@@ -165,6 +166,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
                     sx={styles.iconButton}
                     onClick={() => maximizePanel(panelId)}
                     onMouseDown={(e) => e.stopPropagation()}
+                    data-testid={maximized ? 'MinPanel' : 'MaxPanel'}
                 >
                     {maximized ? <FullscreenExit fontSize="small" /> : <Fullscreen fontSize="small" />}
                 </IconButton>
@@ -175,6 +177,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
                     onClick={handleClose}
                     onMouseDown={(e) => e.stopPropagation()}
                     disabled={pinned}
+                    data-testid="ClosePanel"
                 >
                     <Close fontSize="small" />
                 </IconButton>

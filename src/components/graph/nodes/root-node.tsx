@@ -14,8 +14,10 @@ import { Box } from '@mui/material';
 import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { DeviceHub } from '@mui/icons-material';
 import NodeHandle from './node-handle';
+import NodeOverlaySpinner from './node-overlay-spinner';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import { UnbuildAllNodesButton } from '../menus/root-network/unbuild-all-nodes-button';
+import { useNodeActivity } from 'components/node-activity/hooks/use-node-activity';
 
 const styles = {
     // full node container styles
@@ -92,6 +94,8 @@ const RootNode = (props: NodeProps<RootNodeType>) => {
         (rootNetwork) => rootNetwork.rootNetworkUuid === currentRootNetworkUuid
     );
 
+    const activity = useNodeActivity(props.id);
+
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
     };
@@ -113,6 +117,8 @@ const RootNode = (props: NodeProps<RootNodeType>) => {
                 <Box sx={styles.buildBox}>
                     <UnbuildAllNodesButton />
                 </Box>
+
+                {activity && <NodeOverlaySpinner activity={activity} />}
             </Box>
         </>
     );

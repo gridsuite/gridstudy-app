@@ -60,7 +60,12 @@ const GenerationDispatchForm = ({
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const lossCoefficientField = (
-        <FloatInput name={LOSS_COEFFICIENT} label={'LossCoefficient'} adornment={PercentageAdornment} />
+        <FloatInput
+            name={LOSS_COEFFICIENT}
+            label={'LossCoefficient'}
+            adornment={PercentageAdornment}
+            dataTestId="LossCoefficientInput"
+        />
     );
 
     const generatorsWithFixedActivePowerField = (
@@ -71,6 +76,7 @@ const GenerationDispatchForm = ({
             <Grid size={4}>
                 <DirectoryItemsInput
                     name={GENERATORS_WITH_FIXED_ACTIVE_POWER}
+                    dataTestId="GeneratorsWithFixedActivePowerInput"
                     equipmentTypes={[EquipmentType.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
@@ -88,7 +94,12 @@ const GenerationDispatchForm = ({
                 </Typography>
             </Grid>
             <Grid>
-                <FloatInput name={DEFAULT_OUTAGE_RATE} label={'DefaultOutageRate'} adornment={PercentageAdornment} />
+                <FloatInput
+                    name={DEFAULT_OUTAGE_RATE}
+                    label={'DefaultOutageRate'}
+                    adornment={PercentageAdornment}
+                    dataTestId="DefaultOutageRateInput"
+                />
             </Grid>
         </Grid>
     );
@@ -101,6 +112,7 @@ const GenerationDispatchForm = ({
             <Grid size={4}>
                 <DirectoryItemsInput
                     name={GENERATORS_WITHOUT_OUTAGE}
+                    dataTestId="GeneratorsWithoutOutageInput"
                     equipmentTypes={[EquipmentType.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}

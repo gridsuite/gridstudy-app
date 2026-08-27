@@ -205,15 +205,7 @@ export const HIGH_SHORT_CIRCUIT_CURRENT_LIMIT = 'highShortCircuitCurrentLimit';
 export const BUS_BAR_COUNT = 'busbarCount';
 export const SECTION_COUNT = 'sectionCount';
 export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
-export const SWITCHES_BEFORE_SECTIONS = 'switchesBeforeSections';
-export const SWITCHES_AFTER_SECTIONS = 'switchesAfterSections';
-export const NEW_SWITCH_STATES = 'newSwitchStates';
 export const BUSBAR_SECTION_ID = 'busbarSectionId';
-export const IS_AFTER_BUSBAR_SECTION_ID = 'isAfterBusBarSectionId';
-export const BUS_BAR_INDEX = 'busbarIndex';
-export const SWITCH_BEFORE_NOT_REQUIRED = 'switchBeforeNotRequired';
-export const SWITCH_AFTER_NOT_REQUIRED = 'switchAfterNotRequired';
-export const ALL_BUS_BAR_SECTIONS = 'allBusbarSections';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 export const IP_MIN = 'ipMin';
@@ -406,9 +398,6 @@ export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustm
 
 // move connections
 export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
-export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
-export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
-export const CONNECTION_SIDE = 'connectionSide';
 
 export const ACTION = 'action';
 export const SELECTED_MODIFICATIONS = 'selectedModifications';

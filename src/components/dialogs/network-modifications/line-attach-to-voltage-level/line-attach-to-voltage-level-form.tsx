@@ -16,10 +16,9 @@ import {
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
-    SUBSTATION_CREATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import {
     AddButton,
     AddButtonMode,
@@ -27,7 +26,9 @@ import {
     TextInput,
     VoltageLevelOption,
     LineCreationDto,
+    LineCreationDtoWithId,
     GridSection,
+    VoltageLevelCreationDto,
 } from '@gridsuite/commons-ui';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
@@ -36,10 +37,6 @@ import { useWatch } from 'react-hook-form';
 import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import {
-    ExtendedVoltageLevelCreationInfo,
-    VoltageLevelCreationInfo,
-} from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils.type';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 
@@ -48,12 +45,12 @@ interface LineAttachToVoltageLevelFormProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     onLineCreationDo: ({ lineCreationInfos }: { lineCreationInfos: LineCreationDto }) => Promise<string>;
-    lineToEdit?: LineCreationDto;
-    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
-    voltageLevelToEdit?: ExtendedVoltageLevelCreationInfo;
-    onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationInfo) => Promise<string>;
-    attachmentPoint: ExtendedVoltageLevelCreationInfo;
-    setAttachmentPoint: Dispatch<SetStateAction<ExtendedVoltageLevelCreationInfo>>;
+    lineToEdit?: LineCreationDtoWithId;
+    onVoltageLevelCreationDo: (voltageLevel: VoltageLevelCreationDto) => Promise<string>;
+    voltageLevelToEdit?: VoltageLevelCreationDto;
+    onAttachmentPointModificationDo: (voltageLevel: VoltageLevelCreationDto) => Promise<string>;
+    attachmentPoint: VoltageLevelCreationDto;
+    setAttachmentPoint: Dispatch<SetStateAction<VoltageLevelCreationDto>>;
     allVoltageLevelOptions: VoltageLevelOption[];
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;
@@ -135,7 +132,12 @@ const LineAttachToVoltageLevelForm = ({
     );
 
     const attachmentPointIdField = (
-        <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} onChange={onAttachmentPointIdChange} />
+        <TextInput
+            name={ATTACHMENT_POINT_ID}
+            label={'AttachmentPointId'}
+            onChange={onAttachmentPointIdChange}
+            dataTestId="AttachmentPointIDInput"
+        />
     );
 
     const onAttachmentPointNameChange = useCallback(
@@ -148,20 +150,30 @@ const LineAttachToVoltageLevelForm = ({
     );
 
     const attachmentPointNameField = (
-        <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} onChange={onAttachmentPointNameChange} />
+        <TextInput
+            name={ATTACHMENT_POINT_NAME}
+            label={'AttachmentPointName'}
+            onChange={onAttachmentPointNameChange}
+            dataTestId="AttachmentPointNameInput"
+        />
     );
 
     const lineToIdField = (
-        <TextInput name={ATTACHMENT_LINE_ID} label={'AttachedLineId'} formProps={{ disabled: true }} />
+        <TextInput
+            name={ATTACHMENT_LINE_ID}
+            label={'AttachedLineId'}
+            formProps={{ disabled: true }}
+            dataTestId="AttachedLineIDInput"
+        />
     );
 
-    const newLine1IdField = <TextInput name={LINE1_ID} label={'Line1ID'} />;
+    const newLine1IdField = <TextInput name={LINE1_ID} label={'Line1ID'} dataTestId="AttachmentLine1IDInput" />;
 
-    const newLine1NameField = <TextInput name={LINE1_NAME} label={'Line1Name'} />;
+    const newLine1NameField = <TextInput name={LINE1_NAME} label={'Line1Name'} dataTestId="AttachmentLine1NameInput" />;
 
-    const newLine2IdField = <TextInput name={LINE2_ID} label={'Line2ID'} />;
+    const newLine2IdField = <TextInput name={LINE2_ID} label={'Line2ID'} dataTestId="AttachmentLine2IDInput" />;
 
-    const newLine2NameField = <TextInput name={LINE2_NAME} label={'Line2Name'} />;
+    const newLine2NameField = <TextInput name={LINE2_NAME} label={'Line2Name'} dataTestId="AttachmentLine2NameInput" />;
 
     const isVoltageLevelEdit = !!voltageLevelIdWatch && voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
@@ -175,10 +187,7 @@ const LineAttachToVoltageLevelForm = ({
 
     // as equipmentId and equipmentName are synchronized to check if the icon is add or edit
     // other attributes than id and name must be present
-    const hasSubstationCreation = useMemo(
-        () => attachmentPoint != null && Object.keys(attachmentPoint).some((key) => key === SUBSTATION_CREATION),
-        [attachmentPoint]
-    );
+    const hasSubstationCreation = attachmentPoint?.substationCreation != null;
 
     return (
         <>
@@ -193,6 +202,7 @@ const LineAttachToVoltageLevelForm = ({
                         onClick={openAttachmentPointDialog}
                         mode={hasSubstationCreation ? AddButtonMode.EDIT : AddButtonMode.ADD}
                         label="SpecifyAttachmentPoint"
+                        data-testid="AttachmentPointButton"
                     />
                 </GridItem>
             </Grid>
@@ -204,6 +214,7 @@ const LineAttachToVoltageLevelForm = ({
                         onClick={openVoltageLevelDialog}
                         mode={isVoltageLevelEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
                         label="NewVoltageLevel"
+                        data-testid="NewVoltageLevelButton"
                     />
                 </GridItem>
             </Grid>
@@ -215,6 +226,7 @@ const LineAttachToVoltageLevelForm = ({
                         onClick={openLineDialog}
                         mode={lineToEdit ? AddButtonMode.EDIT : AddButtonMode.ADD}
                         label="AttachedLine"
+                        data-testid="AttachedLineButton"
                     />
                 </GridItem>
             </Grid>
@@ -236,7 +248,7 @@ const LineAttachToVoltageLevelForm = ({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onAttachmentPointModificationDo}
-                    editData={attachmentPoint as any}
+                    editData={attachmentPoint}
                     isAttachmentPointModification={true}
                     titleId={'SpecifyAttachmentPoint'}
                     isUpdate={isUpdate}
@@ -251,7 +263,7 @@ const LineAttachToVoltageLevelForm = ({
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={isVoltageLevelEdit && voltageLevelToEdit ? (voltageLevelToEdit as any) : undefined}
+                    editData={isVoltageLevelEdit ? voltageLevelToEdit : undefined}
                     isUpdate={isUpdate}
                     editDataFetchStatus={editDataFetchStatus}
                 />
