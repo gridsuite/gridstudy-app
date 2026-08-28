@@ -23,6 +23,7 @@ import {
     fromStateEstimationParametersParamToFormValues,
     StateEstimationParametersForm as StateEstimationFormType,
     stateEstimationParametersFormSchema,
+    TAB_VALUES,
     TabValue,
 } from './state-estimation-parameters-utils';
 import { StateEstimationParametersForm } from './state-estimation-parameters-form';
@@ -61,7 +62,7 @@ export const StateEstimationParameters = ({
         onError: onValidationError,
     } = useTabs<TabValue>({
         defaultTab: TabValue.GENERAL,
-        tabValues: Object.values(TabValue),
+        tabValues: TAB_VALUES,
         errors: formState.errors,
     });
 
@@ -73,8 +74,7 @@ export const StateEstimationParameters = ({
 
     const clear = useCallback(() => {
         resetStateEstimationParameters();
-        onValidationError({});
-    }, [resetStateEstimationParameters, onValidationError]);
+    }, [resetStateEstimationParameters]);
 
     const onSubmit = useCallback(
         (newParams: StateEstimationFormType) => {
@@ -85,9 +85,8 @@ export const StateEstimationParameters = ({
                 .catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'updateStateEstimationParametersError' });
                 });
-            onValidationError({});
         },
-        [onValidationError, setStateEstimationParams, snackError, studyUuid]
+        [setStateEstimationParams, snackError, studyUuid]
     );
 
     useEffect(() => {
