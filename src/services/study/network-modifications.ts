@@ -39,6 +39,7 @@ import {
     CouplingDeviceCreationDto,
     CreateVoltageLevelTopologyDto,
     VoltageLevelSectionCreationDto,
+    MoveVoltageLevelFeederBaysDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -52,7 +53,6 @@ import {
     LCCCreationInfo,
     LccModificationInfos,
     LinesAttachToSplitLinesInfo,
-    MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
     TopologyVoltageLevelModificationInfos,
     Variations,
@@ -1576,13 +1576,13 @@ export function createVoltageLevelTopology({
 }
 
 export function moveVoltageLevelFeederBays({
-    moveVoltageLevelFeederBaysInfos,
+    moveVoltageLevelFeederBaysDto,
     studyUuid,
     nodeUuid,
     modificationUuid,
     isUpdate,
 }: {
-    moveVoltageLevelFeederBaysInfos: MoveVoltageLevelFeederBaysInfos;
+    moveVoltageLevelFeederBaysDto: MoveVoltageLevelFeederBaysDto;
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string | null;
@@ -1602,7 +1602,7 @@ export function moveVoltageLevelFeederBays({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(moveVoltageLevelFeederBaysInfos),
+        body: JSON.stringify(moveVoltageLevelFeederBaysDto),
     });
 }
 
