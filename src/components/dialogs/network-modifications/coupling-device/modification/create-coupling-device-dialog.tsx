@@ -101,8 +101,12 @@ export default function CreateCouplingDeviceDialog({
 
     const onSubmit = useCallback(
         (formData: CouplingDeviceCreationFormData) => {
+            const couplingDeviceCreationDto = {
+                ...couplingDeviceCreationFormToDto(formData),
+                uuid: editData?.uuid,
+            };
             createCouplingDevice({
-                couplingDeviceCreationDto: couplingDeviceCreationFormToDto(formData),
+                couplingDeviceCreationDto: couplingDeviceCreationDto,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid,
