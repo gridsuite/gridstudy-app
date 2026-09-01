@@ -42,6 +42,8 @@ import {
     VoltageLevelSectionCreationDto,
     MoveVoltageLevelFeederBaysDto,
     TopologyVoltageLevelModificationDto,
+    TabularModificationRow,
+    TabularProperty,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -62,8 +64,6 @@ import {
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
-import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
-import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -662,7 +662,7 @@ export interface CreateTabularModificationProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationType: string;
-    modifications: Modification[];
+    modifications: TabularModificationRow[];
     modificationUuid: UUID;
     tabularType:
         | ModificationType.LIMIT_SETS_TABULAR_MODIFICATION
