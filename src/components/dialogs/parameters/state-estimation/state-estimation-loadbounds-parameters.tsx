@@ -42,8 +42,8 @@ export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
             <CustomVoltageLevelTable
                 formName={`${TabValue.LOADBOUNDS}.${DEFAULT_BOUNDS}`}
                 columnsDefinition={columnsDefinition}
-                tableHeight={460}
-                tableMinWidth={1000}
+                tableHeight={480}
+                tableMinWidth={400}
             />
 
             <Box my={2}>
@@ -54,8 +54,8 @@ export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
             <CustomVoltageLevelTable
                 formName={`${TabValue.LOADBOUNDS}.${DEFAULT_FIXED_BOUNDS}`}
                 columnsDefinition={columnsDefinition}
-                tableHeight={460}
-                tableMinWidth={1000}
+                tableHeight={480}
+                tableMinWidth={400}
             />
         </Grid>
     );
