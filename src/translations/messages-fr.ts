@@ -1245,20 +1245,7 @@ const messages_fr = {
     confirmRootNetworkCreation:
         "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
     VOLTAGE_LEVEL_TOPOLOGY: 'Modifier la topologie',
-    ModifyVoltageLevelTopology: "Modifier la topologie d'un poste",
     TopologyNotRetrieved: "La topologie du poste n'a pas pu être récupérée",
-    VoltageLevelTopologyModificationError: 'Erreur lors de la modification de la topologie de poste',
-    builtNodeTooltipVlTopoModif: 'Liste des organes de coupure tenant compte de toutes les modifications réalisées',
-    notBuiltNodeTooltipVlTopoModif:
-        "Liste des organes de coupure d'après le dernier nœud réalisé de la branche courante",
-    copyPreviousTopologyStatus: 'Compléter avec la topologie précédente',
-    modifiedSwitchesSeparatorTitle: 'OC modifiés',
-    unModifiedSwitchesSeparatorTitle: 'OC non-modifiés',
-    switchId: "ID de l'organe de coupure",
-    previousStatus: 'État précédent',
-    currentStatus: 'État modifié',
-    Open: 'Ouvert',
-    Closed: 'Fermé',
     GridLayoutPanel: 'Grille des images',
     GridLayoutPanelAndTree: 'Grille des images et arbre décisionnel',
 
