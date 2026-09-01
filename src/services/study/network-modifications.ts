@@ -41,6 +41,7 @@ import {
     CreateVoltageLevelTopologyDto,
     VoltageLevelSectionCreationDto,
     MoveVoltageLevelFeederBaysDto,
+    TopologyVoltageLevelModificationDto,
     TabularModificationRow,
     TabularProperty,
 } from '@gridsuite/commons-ui';
@@ -57,7 +58,6 @@ import {
     LccModificationInfos,
     LinesAttachToSplitLinesInfo,
     NetworkModificationRequestInfos,
-    TopologyVoltageLevelModificationInfos,
     Variations,
     VariationType,
     VoltageLevelCreationInfo,
@@ -867,19 +867,12 @@ export function modifyVoltageLevel({
     });
 }
 
-export function modifyVoltageLevelTopology({
-    topologyVoltageLevelModificationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    topologyVoltageLevelModificationInfos: TopologyVoltageLevelModificationInfos;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid: string | null;
-    isUpdate: boolean;
-}) {
+export function modifyVoltageLevelTopology(
+    topologyVoltageLevelModificationDto: TopologyVoltageLevelModificationDto,
+    modificationUuid: string | null | undefined,
+    studyUuid: UUID,
+    nodeUuid?: UUID
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -888,12 +881,12 @@ export function modifyVoltageLevelTopology({
         console.info('Creating voltage level topology modification');
     }
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(topologyVoltageLevelModificationInfos),
+        body: JSON.stringify(topologyVoltageLevelModificationDto),
     });
 }
 
