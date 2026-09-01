@@ -1330,7 +1330,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            disabled={disabledCompositeExport || selectionContainsShared}
+                            disabled={disabledCompositeExport}
                             data-testid="SaveModification"
                         >
                             <SaveIcon />
