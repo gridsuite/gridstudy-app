@@ -809,7 +809,6 @@ const NetworkModificationNodeEditor = () => {
             // expanded composite / reference row (fetchSubModificationsForExpandedRows(..., force));
             // a collapsed reference reloads its content the next time it is expanded.
             if (isSharedElementUpdateNotification(eventData)) {
-                console.log("EVENT ??????????")
                 if (currentNodeIdRef.current !== eventData.headers.parentNode) {
                     return;
                 }

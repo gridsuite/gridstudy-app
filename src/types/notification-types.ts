@@ -280,10 +280,6 @@ interface ModificationsDeleteFinishedEventDataHeaders extends CommonStudyEventDa
     nodes: UUID[];
 }
 
-// Emitted by study-server (ConsumerService.consumeSharedElementUpdate) once per invalidated node
-// when a shared (referenced) composite modification pointed at by that node was edited elsewhere.
-// `parentNode` is the impacted node; `networkModificationUuids` are the reference modifications
-// (across all impacted nodes) that point at the edited shared element.
 interface SharedElementUpdateEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.SHARED_ELEMENT_UPDATE;
     parentNode: UUID;
