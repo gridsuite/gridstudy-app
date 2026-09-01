@@ -1243,7 +1243,6 @@ const messages_fr = {
         "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
     VOLTAGE_LEVEL_TOPOLOGY: 'Modifier la topologie',
     TopologyNotRetrieved: "La topologie du poste n'a pas pu être récupérée",
-    VoltageLevelTopologyModificationError: 'Erreur lors de la modification de la topologie de poste',
     GridLayoutPanel: 'Grille des images',
     GridLayoutPanelAndTree: 'Grille des images et arbre décisionnel',
 

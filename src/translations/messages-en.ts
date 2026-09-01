@@ -1227,7 +1227,6 @@ const messages_en = {
         'The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.',
     VOLTAGE_LEVEL_TOPOLOGY: 'Modify topology',
     TopologyNotRetrieved: 'The voltage level topology could not be retrieved',
-    VoltageLevelTopologyModificationError: 'Voltage level topology modification error',
     GridLayoutPanel: 'Grid layout panel',
     GridLayoutPanelAndTree: 'Grid layout panel and tree',
 
