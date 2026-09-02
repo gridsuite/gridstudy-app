@@ -23,6 +23,9 @@ import {
     VscHvdcLineInfo,
     getVscHvdcLineCharacteristicsFromCopy,
     converterStationCreationFromCopy,
+    useTabs,
+    VscHvdcLineDialogTab,
+    HVDC_LINE_TAB_FIELDS,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -61,6 +64,13 @@ export default function VscCreationDialog({
         resolver: yupResolver<DeepNullable<VscHvdcLineCreationFormData>>(vscHvdcLineCreationFormSchema),
     });
     const { reset } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<VscHvdcLineDialogTab>({
+        defaultTab: VscHvdcLineDialogTab.HVDC_LINE_TAB,
+        errors,
+        tabFields: HVDC_LINE_TAB_FIELDS,
+    });
 
     const fromSearchCopyToFormValues = (hvdcLine: VscHvdcLineInfo) => {
         reset(
@@ -125,6 +135,7 @@ export default function VscCreationDialog({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
+                onValidationError={useTabsReturn.onError}
                 maxWidth={'md'}
                 titleId="CreateVsc"
                 searchCopy={searchCopy}
@@ -143,6 +154,7 @@ export default function VscCreationDialog({
                     voltageLevelOptions={voltageLevelOptions}
                     PositionDiagramPane={PositionDiagramPane}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
+                    useTabsReturn={useTabsReturn}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

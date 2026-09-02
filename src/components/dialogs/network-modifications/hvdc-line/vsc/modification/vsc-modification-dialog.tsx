@@ -25,11 +25,14 @@ import {
     ExtendedEquipmentType,
     FieldConstants,
     getConcatenatedProperties,
+    HVDC_LINE_TAB_FIELDS,
     ReactiveCapabilityCurvePoints,
     REMOVE,
     snackWithFallback,
     useSnackMessage,
+    useTabs,
     VscHdvLineModificationDto,
+    VscHvdcLineDialogTab,
     VscHvdcLineForm,
     VscHvdcLineInfo,
     vscHvdcLineModificationDtoToForm,
@@ -70,6 +73,13 @@ export default function VscModificationDialog({
         resolver: yupResolver<DeepNullable<VscHvdcLineModificationFormData>>(vscHvdcLineModificationFormSchema),
     });
     const { reset, getValues, setValue } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<VscHvdcLineDialogTab>({
+        defaultTab: VscHvdcLineDialogTab.HVDC_LINE_TAB,
+        errors,
+        tabFields: HVDC_LINE_TAB_FIELDS,
+    });
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -257,6 +267,7 @@ export default function VscModificationDialog({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
+                onValidationError={useTabsReturn.onError}
                 maxWidth={'md'}
                 titleId="ModifyVsc"
                 slotProps={{
@@ -289,6 +300,7 @@ export default function VscModificationDialog({
                         updatePreviousReactiveCapabilityCurveTableConverterStation={
                             updatePreviousReactiveCapabilityCurveTableConverterStation
                         }
+                        useTabsReturn={useTabsReturn}
                         hvdcLineToModify={vscToModify}
                         isModification
                     />
