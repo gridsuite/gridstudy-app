@@ -458,10 +458,11 @@ const messages_fr = {
     SubstationList: 'Liste des postes',
     NetworkModificationTree: 'Arbre décisionnel',
     RestoreModifications: 'Restaurer les modifications',
-    CreateCompositeModification: 'Créer une modification composite de réseau',
+    CreateCompositeModification: 'Créer une modification composite',
     SelectCompositeModificationTitle: 'Modification composite de réseau',
-    CreateCompositeModificationLabel: 'Créer une nouvelle modification composite',
-    UpdateCompositeModificationLabel: 'Remplacer une modification composite existante',
+    CreateCompositeModificationLabel: 'Nouvelle',
+    ShareCompositeModificationLabel: 'Nouvelle (partagée)',
+    UpdateCompositeModificationLabel: 'Remplacer une existante',
     'importComposites.title': 'Importer des modifications composites',
     'importComposites.organizationLabel': 'Organisation des modifications : ',
     'importComposites.action.split': 'Identiques',
@@ -924,6 +925,8 @@ const messages_fr = {
         "Création d'une modification composite de {nbModifications} modifications unitaires dans {directory}",
     infoUpdateModificationsMsg:
         'Mise à jour de la modification composite {item} avec {nbModifications} modifications unitaires',
+    errShareModificationMsg: 'Une erreur est survenue lors du partage de la modification composite',
+    infoShareModificationMsg: 'Partage de la modification composite "{item}" dans le dossier "{directory}"',
     'idSelector.idNeeded': 'Veuillez sélectionner un ID',
     SpreadsheetFetchError: 'Une erreur est survenue lors du chargement des ouvrages dans le tableur',
     partialCopyShuntCompensator:
