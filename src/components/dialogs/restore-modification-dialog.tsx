@@ -77,10 +77,12 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
         if (!modif) {
             return '';
         }
+        // the applicabilities are not message values
+        const { applicabilityByRootNetworkTag, ...messageValues } = modif;
         return intl.formatMessage(
             { id: 'network_modifications.' + modif.messageType },
             {
-                ...modif,
+                ...messageValues,
                 ...computeLabel(modif),
             }
         );
