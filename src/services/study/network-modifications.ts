@@ -40,6 +40,9 @@ import {
     CreateVoltageLevelTopologyDto,
     VoltageLevelSectionCreationDto,
     MoveVoltageLevelFeederBaysDto,
+    TopologyVoltageLevelModificationDto,
+    TabularModificationRow,
+    TabularProperty,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -54,15 +57,12 @@ import {
     LccModificationInfos,
     LinesAttachToSplitLinesInfo,
     NetworkModificationRequestInfos,
-    TopologyVoltageLevelModificationInfos,
     Variations,
     VariationType,
     VoltageLevelCreationInfo,
     VscCreationInfos,
     VSCModificationInfo,
 } from '../network-modification-types';
-import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
-import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -661,7 +661,7 @@ export interface CreateTabularModificationProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     modificationType: string;
-    modifications: Modification[];
+    modifications: TabularModificationRow[];
     modificationUuid: UUID;
     tabularType:
         | ModificationType.LIMIT_SETS_TABULAR_MODIFICATION
@@ -866,19 +866,12 @@ export function modifyVoltageLevel({
     });
 }
 
-export function modifyVoltageLevelTopology({
-    topologyVoltageLevelModificationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    topologyVoltageLevelModificationInfos: TopologyVoltageLevelModificationInfos;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid: string | null;
-    isUpdate: boolean;
-}) {
+export function modifyVoltageLevelTopology(
+    topologyVoltageLevelModificationDto: TopologyVoltageLevelModificationDto,
+    modificationUuid: string | null | undefined,
+    studyUuid: UUID,
+    nodeUuid?: UUID
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -887,12 +880,12 @@ export function modifyVoltageLevelTopology({
         console.info('Creating voltage level topology modification');
     }
     return backendFetchText(modificationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(topologyVoltageLevelModificationInfos),
+        body: JSON.stringify(topologyVoltageLevelModificationDto),
     });
 }
 
@@ -1620,6 +1613,25 @@ export function assembleModificationsIntoComposite(
         },
         body: JSON.stringify(modificationUuids),
     });
+}
+
+/**
+ * Moves a composite modification of the node out of the study into a directory of GridExplore,
+ * and replaces it in the node by a reference to the newly shared composite modification.
+ */
+export function shareCompositeModification(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuid: UUID,
+    name: string,
+    description: string,
+    parentDirectoryUuid: UUID
+) {
+    console.info('Sharing composite modification');
+    const url = `${getNetworkModificationUrl(studyUuid, nodeUuid)}/${safeEncodeURIComponent(
+        modificationUuid
+    )}/share?${new URLSearchParams({ name, description, parentDirectoryUuid }).toString()}`;
+    return backendFetch(url, { method: 'POST' });
 }
 
 export function getNetworkModificationsFromComposite(

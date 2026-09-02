@@ -35,6 +35,9 @@ import {
     TwoWindingsTransformerCreationDtoWithId,
     computeHighTapPosition,
     addSelectedFieldToRows,
+    TwoWindingsTransformerDialogTab,
+    TWT_TAB_FIELDS,
+    useTabs,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -92,6 +95,13 @@ const TwoWindingsTransformerCreationDialog = ({
     });
 
     const { reset } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<TwoWindingsTransformerDialogTab>({
+        defaultTab: TwoWindingsTransformerDialogTab.CONNECTIVITY_TAB,
+        errors,
+        tabFields: TWT_TAB_FIELDS,
+    });
 
     const getTapSideForCopy = (twt: TwoWindingsTransformerMapInfos, tap: TapChangerMapInfos | null | undefined) => {
         if (tap?.regulatingTerminalConnectableId !== twt.id) {
@@ -265,6 +275,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         },
                     },
                 }}
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
@@ -274,6 +285,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     PositionDiagramPane={PositionDiagramPane}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                     fetchVoltageLevelEquipments={fetchVoltageLevelEquipmentsCallback}
+                    useTabsReturn={useTabsReturn}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
