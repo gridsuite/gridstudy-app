@@ -28,6 +28,9 @@ import {
     lineModificationEmptyFormData,
     LineModificationFormData,
     lineModificationDtoToForm,
+    LINE_TAB_FIELDS,
+    LineDialogTab,
+    useTabs,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
@@ -100,6 +103,13 @@ const LineModificationDialog = ({
     });
 
     const { reset, setValue, getValues, watch } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<LineDialogTab>({
+        defaultTab: LineDialogTab.CONNECTIVITY_TAB,
+        errors,
+        tabFields: LINE_TAB_FIELDS,
+    });
 
     const editSegmentsValue = watch(FieldConstants.LINE_SEGMENTS) as LineSegmentsFormData;
     const applySegmentsLimits = watch(FieldConstants.APPLY_SEGMENTS_LIMITS) as boolean;
@@ -282,6 +292,7 @@ const LineModificationDialog = ({
                 readOnly={readOnly}
                 maxWidth={'xl'}
                 titleId="ModifyLine"
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 keepMounted={true}
                 isDataFetching={
@@ -312,6 +323,7 @@ const LineModificationDialog = ({
                             PositionDiagramPane={PositionDiagramPane}
                             fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                             isModification
+                            useTabsReturn={useTabsReturn}
                         />
                         <LineTypeSegmentDialog
                             open={isOpenLineTypesCatalogDialog}

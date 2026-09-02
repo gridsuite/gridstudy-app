@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Grid, Stack } from '@mui/material';
 import {
     ESTIM_ALGO_TYPE,
     ESTIM_LOG_LEVEL,
@@ -12,58 +11,42 @@ import {
     UNIQUE_PHASE,
 } from 'components/utils/field-constants';
 import { estimAlgoTypeValues, estimLogLevelValues, TabValue } from './state-estimation-parameters-utils';
-import { FieldLabel, MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
-import { parametersStyles } from '../util/styles';
+import { ParameterField, ParameterType, SpecificParameterInfos } from '@gridsuite/commons-ui';
+import { memo } from 'react';
 
-export const StateEstimationGeneralParameters = () => {
+const basicParams: SpecificParameterInfos[] = [
+    {
+        name: PRINCIPAL_OBSERVABLE_ZONE,
+        type: ParameterType.BOOLEAN,
+        label: 'StateEstimationParametersPrincipalObservableZoneLabel',
+    },
+    {
+        name: UNIQUE_PHASE,
+        type: ParameterType.BOOLEAN,
+        label: 'StateEstimationParametersUniquePhaseLabel',
+    },
+    {
+        name: ESTIM_LOG_LEVEL,
+        type: ParameterType.STRING,
+        label: 'StateEstimationParametersLogLevelLabel',
+        possibleValues: estimLogLevelValues,
+    },
+    {
+        name: ESTIM_ALGO_TYPE,
+        type: ParameterType.STRING,
+        label: 'StateEstimationParametersAlgoTypeLabel',
+        possibleValues: estimAlgoTypeValues,
+    },
+];
+
+function StateEstimationGeneralParameters() {
     return (
-        <Grid container>
-            <Grid size={8}>
-                <Stack>
-                    <Grid container alignItems="center" spacing={2}>
-                        <Grid size={10} sx={parametersStyles.parameterName}>
-                            <FieldLabel label={'StateEstimationParametersPrincipalObservableZoneLabel'} />
-                        </Grid>
-                        <Grid size={2}>
-                            <SwitchInput name={`${TabValue.GENERAL}.${PRINCIPAL_OBSERVABLE_ZONE}`} />
-                        </Grid>
-                    </Grid>
-
-                    <Grid container alignItems="center" spacing={2}>
-                        <Grid size={10} sx={parametersStyles.parameterName}>
-                            <FieldLabel label={'StateEstimationParametersUniquePhaseLabel'} />
-                        </Grid>
-                        <Grid size={2}>
-                            <SwitchInput name={`${TabValue.GENERAL}.${UNIQUE_PHASE}`} />
-                        </Grid>
-                    </Grid>
-
-                    <Grid container spacing={1} paddingTop={3}>
-                        <Grid size={8} sx={parametersStyles.parameterName}>
-                            <FieldLabel label={'StateEstimationParametersLogLevelLabel'} />
-                        </Grid>
-                        <Grid size={4}>
-                            <MuiSelectInput
-                                name={`${TabValue.GENERAL}.${ESTIM_LOG_LEVEL}`}
-                                options={estimLogLevelValues}
-                                fullWidth
-                            />
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={1} paddingTop={3}>
-                        <Grid size={8} sx={parametersStyles.parameterName}>
-                            <FieldLabel label={'StateEstimationParametersAlgoTypeLabel'} />
-                        </Grid>
-                        <Grid size={4}>
-                            <MuiSelectInput
-                                name={`${TabValue.GENERAL}.${ESTIM_ALGO_TYPE}`}
-                                options={estimAlgoTypeValues}
-                                fullWidth
-                            />
-                        </Grid>
-                    </Grid>
-                </Stack>
-            </Grid>
-        </Grid>
+        <>
+            {basicParams.map((item) => (
+                <ParameterField id={TabValue.GENERAL} {...item} key={item.name} />
+            ))}
+        </>
     );
-};
+}
+
+export default memo(StateEstimationGeneralParameters);
