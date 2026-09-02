@@ -28,7 +28,7 @@ const createValueGetter =
         try {
             // Skip formula processing for pinned rows and use raw value
             if (isCalculationRow(params.node?.data?.rowType)) {
-                return params.data[colDef.id];
+                return params.data[colDef.id] ?? null;
             }
             const scope = { ...params.data };
             const colDependencies = colDef.dependencies ?? [];
@@ -37,7 +37,7 @@ const createValueGetter =
             colDependencies.forEach((dep) => {
                 scope[dep] = params.getValue(dep) ?? undefined;
             });
-            const result = limitedEvaluate(colDef.formula, scope);
+            const result = limitedEvaluate(colDef.formula, scope, params.context?.compiledFormulaCache);
             return result != null ? validateFormulaResult(result, colDef.type) : null;
         } catch (e) {
             if (e instanceof MathJsValidationError) {

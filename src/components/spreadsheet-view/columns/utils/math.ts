@@ -34,31 +34,28 @@ export const parseFormula = (expr: string) => parse(normalizeFormula(expr));
 // Compile once per distinct formula string. AG Grid runs the value getter for every row of the
 // table on each filter/sort pass, and mathjs re-parses the expression on every evaluate() call
 type CompiledFormula = { compiled: EvalFunction } | { error: unknown };
-const compiledFormulaCache = new Map<string, CompiledFormula>();
+export type CompiledFormulaCache = Map<string, CompiledFormula>;
+export const createCompiledFormulaCache = (): CompiledFormulaCache => new Map();
 
-const getCompiledFormula = (expr: string) => {
-    let entry = compiledFormulaCache.get(expr);
+const getCompiledFormula = (expr: string, cache?: CompiledFormulaCache): CompiledFormula => {
+    let entry = cache?.get(expr);
     if (!entry) {
         try {
-            const ast = originalParse(normalizeFormula(expr));
-            entry = { compiled: ast.compile() };
+            entry = { compiled: originalParse(normalizeFormula(expr)).compile() };
         } catch (error) {
-            // Cache parse failures too: a syntactically broken formula would otherwise
-            // pay the full parse cost again on every cell of every pass
             entry = { error };
         }
-        compiledFormulaCache.set(expr, entry);
-    }
-    if ('error' in entry) {
-        throw entry.error;
+        cache?.set(expr, entry);
     }
     return entry;
 };
 
-export const limitedEvaluate = (expr: string, scope?: object) => {
-    let result;
-    const entry = getCompiledFormula(expr);
-    result = entry.compiled.evaluate(scope);
+export const limitedEvaluate = (expr: string, scope?: object, cache?: CompiledFormulaCache) => {
+    const entry = getCompiledFormula(expr, cache);
+    if ('error' in entry) {
+        throw entry.error;
+    }
+    const result = entry.compiled.evaluate(scope);
     if (typeof result === 'function') {
         throw new MathJsValidationError('spreadsheet/formula/function-reference/disabled');
     }
