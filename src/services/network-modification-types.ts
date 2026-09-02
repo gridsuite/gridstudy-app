@@ -241,14 +241,6 @@ export interface LccModificationInfos {
     properties?: Property[] | null;
 }
 
-export type EquipmentAttributeModificationInfos = {
-    type: string;
-    equipmentId: string;
-    equipmentAttributeName: string;
-    equipmentAttributeValue: boolean;
-    equipmentType: string;
-};
-
 type GenerationDispatchInfos = {
     lossCoefficient: number | null;
     defaultOutageRate: number | null;
@@ -272,13 +264,6 @@ export type GenerationDispatchModificationInfos = GenerationDispatchInfos & {
     nodeUuid: UUID;
     uuid?: UUID;
 };
-
-export interface TopologyVoltageLevelModificationInfos {
-    type: ModificationType;
-    uuid: string | null;
-    equipmentId: string;
-    equipmentAttributeModificationList: EquipmentAttributeModificationInfos[];
-}
 
 export interface CreateVoltageLevelTopologyInfos {
     type: ModificationType;
