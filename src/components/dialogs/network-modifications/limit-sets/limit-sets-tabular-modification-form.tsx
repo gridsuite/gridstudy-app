@@ -22,6 +22,9 @@ import {
     hasNonEmptyRows,
     InputWithPopupConfirmation,
     IntegerInput,
+    isFieldTypeOk,
+    setFieldTypeError,
+    type TabularField,
     transformIfFrenchNumber,
 } from '@gridsuite/commons-ui';
 import {
@@ -38,11 +41,10 @@ import { ColDef } from 'ag-grid-community';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
-import { isFieldTypeOk, setFieldTypeError, TabularField } from '../tabular/tabular-common';
 import {
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
-} from '../tabular/tabular-modification-utils';
+} from './limit-sets-tabular-modification-utils';
 import { BOOLEAN } from '../../../network/constants';
 
 export interface TabularModificationFormProps {

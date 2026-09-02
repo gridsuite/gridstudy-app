@@ -19,6 +19,7 @@ import {
     getAllLimitsFormData,
     getConnectivityFormData,
     getLineCharacteristicsFormData,
+    LINE_TAB_FIELDS,
     LineCreationDto,
     lineCreationDtoToForm,
     LineCreationDtoWithId,
@@ -26,11 +27,13 @@ import {
     LineCreationFormData,
     lineCreationFormSchema,
     lineCreationFormToDto,
+    LineDialogTab,
     LineForm,
     LineFormInfos,
     LineSegmentsFormData,
     snackWithFallback,
     useSnackMessage,
+    useTabs,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -96,6 +99,13 @@ const LineCreationDialog = ({
     });
 
     const { reset, setValue, watch } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<LineDialogTab>({
+        defaultTab: displayConnectivity ? LineDialogTab.CONNECTIVITY_TAB : LineDialogTab.CHARACTERISTICS_TAB,
+        errors,
+        tabFields: LINE_TAB_FIELDS,
+    });
 
     const watchSegments = watch(FieldConstants.LINE_SEGMENTS) as LineSegmentsFormData;
 
@@ -255,6 +265,7 @@ const LineCreationDialog = ({
                         },
                     },
                 }}
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
@@ -264,6 +275,7 @@ const LineCreationDialog = ({
                     PositionDiagramPane={PositionDiagramPane}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                     withConnectivity={displayConnectivity}
+                    useTabsReturn={useTabsReturn}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

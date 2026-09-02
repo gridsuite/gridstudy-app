@@ -17,15 +17,18 @@ import {
     getStandbyAutomatonFormData,
     REGULATION_TYPES,
     snackWithFallback,
+    STATIC_VAR_COMPENSATOR_TAB_FIELDS,
     staticVarCompensatorCreationEmptyFormData,
     StaticVarCompensatorCreationForm,
     StaticVarCompensatorCreationFormData,
     staticVarCompensatorCreationFormSchema,
     staticVarCompensatorCreationFormToDto,
+    StaticVarCompensatorDialogTab,
     StaticVarCompensatorDto,
     staticVarCompensatorDtoToForm,
     StaticVarCompensatorFormInfo,
     useSnackMessage,
+    useTabs,
     VOLTAGE_REGULATION_MODES,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -98,6 +101,14 @@ export default function StaticVarCompensatorCreationDialog({
     });
 
     const { reset } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<StaticVarCompensatorDialogTab>({
+        defaultTab: StaticVarCompensatorDialogTab.CONNECTIVITY_TAB,
+        errors,
+        tabFields: STATIC_VAR_COMPENSATOR_TAB_FIELDS,
+    });
+
     const fromSearchCopyToFormValues = useCallback(
         (staticCompensator: StaticVarCompensatorFormInfo) => {
             reset(
@@ -192,6 +203,7 @@ export default function StaticVarCompensatorCreationDialog({
                 onClear={clear}
                 onSave={onSubmit}
                 titleId="CreateStaticVarCompensator"
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 searchCopy={searchCopy}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
@@ -209,6 +221,7 @@ export default function StaticVarCompensatorCreationDialog({
                     voltageLevelOptions={voltageLevelOptions}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                     PositionDiagramPane={PositionDiagramPane}
+                    useTabsReturn={useTabsReturn}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
