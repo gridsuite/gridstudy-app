@@ -904,7 +904,6 @@ const messages_en = {
     diagramConfigSave: 'Create a new network area diagram',
     diagramConfigUpdate: 'Replace an existing network area diagram',
     EditNad: 'Edit',
-    apply: 'Apply',
     applied: 'Applied',
     notApplied: 'Not applied',
     ModificationsSelection: 'Modification selection',
