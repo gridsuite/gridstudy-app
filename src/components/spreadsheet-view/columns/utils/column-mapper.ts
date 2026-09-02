@@ -28,7 +28,7 @@ const createValueGetter =
         try {
             // Skip formula processing for pinned rows and use raw value
             if (isCalculationRow(params.node?.data?.rowType)) {
-                return params.data[colDef.id];
+                return params.data[colDef.id] ?? null;
             }
             const scope = { ...params.data };
             const colDependencies = colDef.dependencies ?? [];
