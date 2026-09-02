@@ -11,19 +11,21 @@ import {
     EquipmentType,
     getCsvDelimiter,
     Identifiable,
+    isFieldTypeOk,
+    type PredefinedEquipmentProperties,
     snackWithFallback,
+    TABULAR_MODIFICATION_FIELDS,
+    TabularFieldConstants,
+    type TabularField,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
-import { EQUIPMENT_ID } from 'components/utils/field-constants';
-import { isFieldTypeOk, PredefinedEquipmentProperties, TabularField } from '../tabular-common';
 import { getNetworkElementsInfosByGlobalFilter } from 'services/study/filter';
 import { fetchNetworkElementsInfos } from 'services/study/network';
 import type { UUID } from 'node:crypto';
 import { getPrefilledColumnGroups } from './prefillable-columns-config';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { mapPrefilledEquipments, PrefilledModelGenerationParams } from './utils';
-import { TABULAR_MODIFICATION_FIELDS } from '../tabular-modification-utils';
 
 export interface UsePrefilledModelGeneratorProps {
     equipmentType: EquipmentType;
@@ -166,7 +168,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
                 .forEach((equipment) => {
                     const row = csvColumns.map((column) => {
                         // ID is always filled
-                        if (column === EQUIPMENT_ID) {
+                        if (column === TabularFieldConstants.EQUIPMENT_ID) {
                             return equipment.id ?? '';
                         }
 
