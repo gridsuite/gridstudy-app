@@ -13,12 +13,9 @@ export const ADD_SUBSTATION_CREATION = 'addSubstationCreationId';
 export const SUBSTATION_CREATION = 'substationCreation';
 export const LOAD_TYPE = 'loadType';
 export const CONNECTIVITY = 'connectivity';
-export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
-export const PREDEFINED = 'predefined';
-export const TABULAR_PROPERTIES = 'properties';
 export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
@@ -31,19 +28,10 @@ export const NOMINAL_VOLTAGE = 'nominalVoltage';
 export const NOMINAL_V = 'nominalV';
 export const TOPOLOGY_KIND = 'topologyKind';
 export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
-export const BUS_OR_BUSBAR_SECTION_ID = 'busOrBusbarSectionId';
 export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'terminalConnected';
-export const CONNECTION_DIRECTION1 = 'connectionDirection1';
-export const CONNECTION_NAME1 = 'connectionName1';
-export const CONNECTION_POSITION1 = 'connectionPosition1';
-export const CONNECTED1 = 'terminal1Connected';
-export const CONNECTED2 = 'terminal2Connected';
-export const CONNECTION_DIRECTION2 = 'connectionDirection2';
-export const CONNECTION_NAME2 = 'connectionName2';
-export const CONNECTION_POSITION2 = 'connectionPosition2';
 export const IS_REMOVED = 'isRemoved';
 export const IS_SEPARATOR = 'isSeparator';
 export const FILE_NAME = 'fileName';
@@ -69,10 +57,7 @@ export const R = 'r';
 export const X = 'x';
 export const G = 'g';
 export const B = 'b';
-export const RATED_S = 'ratedS';
 
-export const RATED_U1 = 'ratedU1';
-export const RATED_U2 = 'ratedU2';
 export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
 export const LIMITS_PROPERTIES = 'limitsProperties';
@@ -84,28 +69,13 @@ export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
 export const LINE_SEGMENTS = 'lineSegments';
 
-export const ENERGY_SOURCE = 'energySource';
 export const MAX_P = 'maxP';
-export const MIN_P = 'minP';
 export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
 export const TARGET_P = 'targetP';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
 export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
-export const TARGET_Q = 'targetQ';
-export const PARTICIPATE = 'participate';
-export const REACTIVE_CAPABILITY_CURVE = 'reactiveCapabilityCurve';
 
 /* Tabylar creations reactive capability curve table values for csv */
-export const REACTIVE_CAPABILITY_CURVE_POINTS = 'reactiveCapabilityCurvePoints';
-export const REACTIVE_CAPABILITY_CURVE_P_MIN = 'reactiveCapabilityCurvePmin';
-export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN = 'reactiveCapabilityCurveQminPmin';
-export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN = 'reactiveCapabilityCurveQmaxPmin';
-export const REACTIVE_CAPABILITY_CURVE_P_0 = 'reactiveCapabilityCurveP0';
-export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0 = 'reactiveCapabilityCurveQminP0';
-export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0 = 'reactiveCapabilityCurveQmaxP0';
-export const REACTIVE_CAPABILITY_CURVE_P_MAX = 'reactiveCapabilityCurvePmax';
-export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX = 'reactiveCapabilityCurveQminPmax';
-export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX = 'reactiveCapabilityCurveQmaxPmax';
 
 export const V = 'v';
 export const ANGLE = 'angle';
@@ -118,10 +88,6 @@ export const LOW_TAP_POSITION = 'lowTapPosition';
 export const HIGH_TAP_POSITION = 'highTapPosition';
 export const TAP_POSITION = 'tapPosition';
 export const REGULATION_SIDE = 'regulationSide';
-
-// Tabular modifications twt ratio tap changer values
-export const RATIO_TAP_CHANGER_LOAD_TAP_CHANGING_CAPABILITIES = 'ratioTapChangerLoadTapChangingCapabilities';
-export const RATIO_TAP_CHANGER_REGULATION_SIDE = 'ratioTapChangerRegulationSide';
 
 //tap-changer-pane-taps
 export const STEPS = 'steps';
@@ -148,18 +114,12 @@ export const REGULATING_TERMINAL_CONNECTABLE_ID = 'regulatingTerminalConnectable
 export const REGULATING_TERMINAL_CONNECTABLE_TYPE = 'regulatingTerminalConnectableType';
 
 //ShuntCompensator
-export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
-export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
 export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
 export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
 export const SHUNT_COMPENSATOR_ID = 'shuntCompensatorId';
 export const SHUNT_COMPENSATOR_NAME = 'shuntCompensatorName';
 //line
-export const G1 = 'g1';
-export const B1 = 'b1';
-export const G2 = 'g2';
-export const B2 = 'b2';
 export const LIMITS = 'limits';
 export const TAB_HEADER = 'tabHeader';
 export const LIMIT_SET_NAME = 'limitSetName';
@@ -199,17 +159,12 @@ export const BUS_BAR_SECTION_ID2 = 'busbarSectionId2';
 export const SWITCH_KIND = 'switchKind';
 export const IDENTIFIABLE_SHORT_CIRCUIT = 'identifiableShortCircuit';
 export const HIGH_VOLTAGE_LIMIT = 'highVoltageLimit';
-export const LOW_VOLTAGE_LIMIT = 'lowVoltageLimit';
-export const LOW_SHORT_CIRCUIT_CURRENT_LIMIT = 'lowShortCircuitCurrentLimit';
-export const HIGH_SHORT_CIRCUIT_CURRENT_LIMIT = 'highShortCircuitCurrentLimit';
 export const BUS_BAR_COUNT = 'busbarCount';
 export const SECTION_COUNT = 'sectionCount';
 export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
 export const BUSBAR_SECTION_ID = 'busbarSectionId';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
-export const IP_MIN = 'ipMin';
-export const IP_MAX = 'ipMax';
 export const IS_ATTACHMENT_POINT_CREATION = 'isAttachmentPointCreation';
 
 // dnd table
@@ -218,10 +173,6 @@ export const ACTIVATED = 'activated';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
-export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerX';
-export const REGULATING_TERMINAL_ID = 'regulatingTerminalId';
-export const REGULATING_TERMINAL_VOLTAGE_LEVEL_ID = 'regulatingTerminalVlId';
-export const REGULATING_TERMINAL_TYPE = 'regulatingTerminalType';
 
 export const GENERATOR = 'generator';
 //line-attach-to-voltage-level
@@ -374,11 +325,6 @@ export const TO_BE_ESTIMATED = 'toBeEstimated';
 export const RATIO_TAP_CHANGER_STATUS = 'ratioTapChangerStatus';
 export const PHASE_TAP_CHANGER_STATUS = 'phaseTapChangerStatus';
 
-export const SWITCH_ID = 'switchId';
-export const PREV_CONNECTION_STATUS = 'prevConnectionStatus';
-export const CURRENT_CONNECTION_STATUS = 'currentConnectionStatus';
-export const TOPOLOGY_MODIFICATION_TABLE = 'topologyModificationTable';
-
 // BALANCES ADJUSTMENT
 export const BALANCES_ADJUSTMENT = 'balancesAdjustment';
 export const BALANCES_ADJUSTMENT_ZONES = 'balancesAdjustmentZones';
@@ -398,9 +344,6 @@ export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustm
 
 // move connections
 export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
-export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
-export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
-export const CONNECTION_SIDE = 'connectionSide';
 
 export const ACTION = 'action';
 export const SELECTED_MODIFICATIONS = 'selectedModifications';

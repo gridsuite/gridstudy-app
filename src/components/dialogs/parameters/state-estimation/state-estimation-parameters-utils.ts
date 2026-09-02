@@ -65,6 +65,8 @@ export enum TabValue {
     LOADBOUNDS = 'loadBounds',
 }
 
+export const TAB_VALUES = Object.values(TabValue);
+
 enum estimAlgoType {
     GAUSS_NEWTON_L2 = 'GAUSS_NEWTON_L2',
     LEVENBERG_MARQUARDT_L2 = 'LEVENBERG_MARQUARDT_L2',
