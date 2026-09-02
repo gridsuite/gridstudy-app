@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { all, create, parse } from 'mathjs';
+import { all, create, EvalFunction, parse } from 'mathjs';
 import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 
 const instance = create(all);
@@ -24,16 +24,41 @@ function transformExpression(expr: string): string {
     return expr.replaceAll(regex, `$1.steps[string($2)]`);
 }
 
-const originalEvaluate = instance.evaluate;
+const originalParse = instance.parse;
 
 const normalizeFormula = (expr: string): string => transformExpression(expr.replaceAll('\\', '\\\\'));
 
 // runs nothing ; the instance below is what formulas are evaluated against
 export const parseFormula = (expr: string) => parse(normalizeFormula(expr));
 
-export const limitedEvaluate = (expr: string | string[], scope?: object) => {
-    const transformedExpression: string | string[] = typeof expr === 'string' ? normalizeFormula(expr) : expr;
-    const result = originalEvaluate(transformedExpression, scope);
+// Compile once per distinct formula string. AG Grid runs the value getter for every row of the
+// table on each filter/sort pass, and mathjs re-parses the expression on every evaluate() call
+type CompiledFormula = { compiled: EvalFunction } | { error: unknown };
+const compiledFormulaCache = new Map<string, CompiledFormula>();
+
+const getCompiledFormula = (expr: string) => {
+    let entry = compiledFormulaCache.get(expr);
+    if (!entry) {
+        try {
+            const ast = originalParse(normalizeFormula(expr));
+            entry = { compiled: ast.compile() };
+        } catch (error) {
+            // Cache parse failures too: a syntactically broken formula would otherwise
+            // pay the full parse cost again on every cell of every pass
+            entry = { error };
+        }
+        compiledFormulaCache.set(expr, entry);
+    }
+    if ('error' in entry) {
+        throw entry.error;
+    }
+    return entry;
+};
+
+export const limitedEvaluate = (expr: string, scope?: object) => {
+    let result;
+    const entry = getCompiledFormula(expr);
+    result = entry.compiled.evaluate(scope);
     if (typeof result === 'function') {
         throw new MathJsValidationError('spreadsheet/formula/function-reference/disabled');
     }
