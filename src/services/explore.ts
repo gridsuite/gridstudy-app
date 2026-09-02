@@ -63,11 +63,16 @@ export function elementExists(directoryUuid: UUID, elementName: string, type: El
     });
 }
 
+export interface CompositeModificationContent {
+    modificationUuid: UUID;
+    description?: string;
+}
+
 export function createCompositeModifications(
     name: string,
     description: string,
     parentDirectoryUuid: UUID,
-    selectedModificationsUuid: UUID[]
+    contents: CompositeModificationContent[]
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
@@ -78,7 +83,7 @@ export function createCompositeModifications(
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(selectedModificationsUuid),
+            body: JSON.stringify(contents),
         }
     );
 }
@@ -87,7 +92,7 @@ export function updateCompositeModifications(
     id: UUID,
     name: string,
     description: string,
-    selectedModificationsUuid: UUID[]
+    contents: CompositeModificationContent[]
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
@@ -97,7 +102,7 @@ export function updateCompositeModifications(
         {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(selectedModificationsUuid),
+            body: JSON.stringify(contents),
         }
     );
 }
