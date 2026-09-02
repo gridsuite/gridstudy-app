@@ -26,6 +26,7 @@ import {
     removeNullFields,
     setModificationMetadata,
     snackWithFallback,
+    TabularModificationType,
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
@@ -62,7 +63,6 @@ import ShuntCompensatorCreationDialog from 'components/dialogs/network-modificat
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import { TabularModificationType } from 'components/dialogs/network-modifications/tabular/tabular-common';
 import { TabularDialog } from 'components/dialogs/network-modifications/tabular/tabular-dialog';
 import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
