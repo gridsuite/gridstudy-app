@@ -106,8 +106,8 @@ export const useSldDiagram = ({
                             centerLabel: networkVisuParams?.singleLineDiagramParameters.centerLabel,
                             diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
                             componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
-                            useStateEstimationVisualisation:
-                                networkVisuParams?.singleLineDiagramParameters.stateEstimation,
+                            measurements: networkVisuParams?.singleLineDiagramParameters.measurements,
+                            observability: networkVisuParams?.singleLineDiagramParameters.observability,
                             sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
                             topologicalColoring: true,
                             language,
@@ -130,8 +130,8 @@ export const useSldDiagram = ({
                             diagonalLabel: networkVisuParams?.singleLineDiagramParameters.diagonalLabel,
                             substationLayout: networkVisuParams?.singleLineDiagramParameters.substationLayout,
                             componentLibrary: networkVisuParams?.singleLineDiagramParameters.componentLibrary,
-                            useStateEstimationVisualisation:
-                                networkVisuParams?.singleLineDiagramParameters.stateEstimation,
+                            measurements: networkVisuParams?.singleLineDiagramParameters.measurements,
+                            observability: networkVisuParams?.singleLineDiagramParameters.observability,
                             topologicalColoring: true,
                             language,
                         }),
