@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { ListItemIcon, ListItemText, Menu, MenuItem, useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -21,6 +21,7 @@ import { isCalculationRow } from '../../utils/calculation-utils';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { refreshSpreadsheetAfterFilterChanged } from './hooks/use-spreadsheet-gs-filter';
 import { useEquipmentContextMenu } from './hooks/useEquipmentContextMenu';
+import { createCompiledFormulaCache } from '../../columns/utils/math';
 
 const DEFAULT_ROW_HEIGHT = 28;
 
@@ -134,7 +135,13 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode?.type, theme, isDataEditable]
     );
 
-    const gridContext = useMemo(() => ({ theme, currentNode, studyUuid }), [currentNode, studyUuid, theme]);
+    // The Map lives in a ref, NOT in the memo below: gridContext is rebuilt on every currentNode
+    // change, and creating the cache there would silently flush all compiled formulas per rebuild.
+    const compiledFormulaCache = useRef(createCompiledFormulaCache()).current;
+    const gridContext = useMemo(
+        () => ({ theme, currentNode, studyUuid, compiledFormulaCache }),
+        [currentNode, studyUuid, theme, compiledFormulaCache]
+    );
 
     return (
         <>
