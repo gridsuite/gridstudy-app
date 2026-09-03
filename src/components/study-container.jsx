@@ -512,9 +512,9 @@ export function StudyContainer() {
 
                 if (currentComputationQuota != null) {
                     if (currentComputationQuota.current >= currentComputationQuota.max) {
-                        console.info('TODO: Quota reached', quotaType, currentComputationQuota);
+                        console.debug('Quota reached', quotaType, currentComputationQuota);
                     } else {
-                        console.info('TODO: Quota available', quotaType, currentComputationQuota);
+                        console.debug('Quota available', quotaType, currentComputationQuota);
                     }
                 }
             });

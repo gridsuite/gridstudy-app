@@ -28,19 +28,6 @@ export type SubstationDiagramParams = DiagramBaseParams & {
     type: DiagramType.SUBSTATION;
     substationId: string;
 };
-export type NetworkAreaDiagramParams = DiagramBaseParams & {
-    type: DiagramType.NETWORK_AREA_DIAGRAM;
-    nadConfigUuid: UUID | undefined;
-    filterUuid: UUID | undefined;
-    currentFilterUuid?: UUID;
-    voltageLevelIds: string[];
-    voltageLevelToExpandIds: string[];
-    voltageLevelToOmitIds: string[];
-    positions: DiagramConfigPosition[];
-};
-
-export type DiagramParams = VoltageLevelDiagramParams | SubstationDiagramParams | NetworkAreaDiagramParams;
-
 // diagrams model
 export type DiagramBase = {
     type: DiagramType;
@@ -57,12 +44,12 @@ export type SubstationDiagram = DiagramBase & {
 };
 export type NetworkAreaDiagram = DiagramBase & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
+    svg: DiagramSvg | null;
     title?: string;
     nadConfigUuid: UUID | undefined;
     filterUuid: UUID | undefined;
     currentFilterUuid: UUID | undefined;
     currentNadConfigUuid?: UUID;
-    initialVoltageLevelIds: string[];
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
     voltageLevelToOmitIds: string[];
@@ -87,7 +74,7 @@ export interface SldSvg {
 }
 
 export interface VoltageLevel {
-    id?: string;
+    id: string;
     substationId: UUID;
     country?: string;
     name?: string;

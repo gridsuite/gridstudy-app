@@ -23,6 +23,9 @@ import {
     batteryModificationFormToDto,
     batteryModificationFormSchema,
     BatteryModificationForm,
+    useTabs,
+    BatteryDialogTab,
+    BATTERY_TAB_FIELDS,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -83,6 +86,13 @@ export default function BatteryModificationDialog({
     });
 
     const { reset, getValues } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<BatteryDialogTab>({
+        defaultTab: BatteryDialogTab.CONNECTIVITY_TAB,
+        errors,
+        tabFields: BATTERY_TAB_FIELDS,
+    });
 
     const fromEditDataToFormValues = useCallback(
         (editData: BatteryModificationDto) => {
@@ -243,6 +253,7 @@ export default function BatteryModificationDialog({
                 maxWidth={'md'}
                 slotProps={{ paper: { sx: { height: '75vh' } } }}
                 titleId="ModifyBattery"
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 keepMounted={true}
                 isDataFetching={
@@ -267,6 +278,7 @@ export default function BatteryModificationDialog({
                         fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                         PositionDiagramPane={PositionDiagramPane}
                         fetchVoltageLevelEquipments={getVoltageLevelEquipments}
+                        useTabsReturn={useTabsReturn}
                     />
                 )}
             </ModificationDialog>

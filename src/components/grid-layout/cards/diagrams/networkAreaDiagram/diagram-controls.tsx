@@ -24,11 +24,10 @@ import {
 } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import UploadIcon from '@mui/icons-material/Upload';
-import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
-import { Tooltip } from '@mui/material';
+import { FormControlLabel, Switch, type Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer.type';
 import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
@@ -38,13 +37,16 @@ import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import VoltageLevelSearchMenu from './voltage-level-search-menu';
 
+const getControlsBackgroundColor = (theme: Theme) =>
+    theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.background.default;
+
 const styles = {
     actionIcon: (theme) => ({
         width: theme.spacing(3),
         height: theme.spacing(3),
     }),
     panel: (theme) => ({
-        backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.background.default,
+        backgroundColor: getControlsBackgroundColor(theme),
         borderRadius: theme.spacing(1),
         padding: theme.spacing(0.5),
         display: 'block',
@@ -52,20 +54,23 @@ const styles = {
         top: theme.spacing(1),
         left: theme.spacing(1),
     }),
-    buttonPanel: (theme) => ({
-        borderRadius: theme.spacing(1),
-        padding: theme.spacing(0.5),
-        display: 'block',
-        position: 'absolute',
-        top: '5px',
-        right: '5px',
-    }),
     icon: {
         fontSize: 'medium',
     },
-    button: {
-        minWidth: 'auto',
-    },
+
+    editModeSwitch: (theme) => ({
+        position: 'absolute',
+        top: theme.spacing(1),
+        right: theme.spacing(1),
+        height: theme.spacing(4),
+        margin: 0,
+        paddingLeft: theme.spacing(1),
+        borderRadius: theme.spacing(1),
+        backgroundColor: getControlsBackgroundColor(theme),
+        '& .MuiFormControlLabel-label': {
+            fontSize: theme.typography.body2.fontSize,
+        },
+    }),
     divider: (theme) => ({
         borderColor: theme.palette.grey[600],
         margin: '2px 4px',
@@ -321,11 +326,12 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                     )}
                 </Box>
             </Box>
-            <Box sx={styles.buttonPanel}>
-                <Button size="small" sx={styles.button} onClick={handleToggleEditMode}>
-                    <FormattedMessage id={isEditNadMode ? 'apply' : 'EditNad'} />
-                </Button>
-            </Box>
+            <FormControlLabel
+                sx={styles.editModeSwitch}
+                labelPlacement="start"
+                label={<FormattedMessage id="EditNad" />}
+                control={<Switch size="small" checked={isEditNadMode} onChange={handleToggleEditMode} />}
+            />
             {studyUuid && (
                 <>
                     {isSaveDialogOpen && (

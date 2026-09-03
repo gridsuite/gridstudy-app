@@ -25,6 +25,9 @@ import {
     substationCreationEmptyFormData,
     copyEquipmentPropertiesForCreation,
     VoltageLevelDto,
+    useTabs,
+    VoltageLevelTab,
+    VOLTAGE_LEVEL_TAB_FIELDS,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -138,6 +141,13 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     });
 
     const { reset, getValues, trigger, subscribe } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<VoltageLevelTab>({
+        defaultTab: VoltageLevelTab.SUBSTATION_TAB,
+        errors,
+        tabFields: VOLTAGE_LEVEL_TAB_FIELDS,
+    });
 
     const intl = useIntl();
 
@@ -300,6 +310,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 maxWidth={'md'}
                 titleId={titleId}
                 searchCopy={searchCopy}
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 slotProps={{
@@ -314,6 +325,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 <VoltageLevelCreationForm
                     substationOptions={substations}
                     showDeleteSubstationButton={!isAttachmentPointModification}
+                    useTabsReturn={useTabsReturn}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
