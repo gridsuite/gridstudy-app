@@ -16,7 +16,6 @@ import {
     MODIFICATION_TYPES,
     ModificationType,
     safeEncodeURIComponent,
-    toModificationOperation,
     SubstationCreationDto,
     SubstationModificationDto,
     NetworkModificationMetadata,
@@ -40,6 +39,8 @@ import {
     CouplingDeviceCreationDto,
     CreateVoltageLevelTopologyDto,
     VoltageLevelSectionCreationDto,
+    VscHdvLineCreationDto,
+    VscHdvLineModificationDto,
     MoveVoltageLevelFeederBaysDto,
     TopologyVoltageLevelModificationDto,
     TabularModificationRow,
@@ -61,8 +62,6 @@ import {
     Variations,
     VariationType,
     VoltageLevelCreationInfo,
-    VscCreationInfos,
-    VSCModificationInfo,
 } from '../network-modification-types';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
@@ -1351,91 +1350,49 @@ export function modifyLcc({
     });
 }
 
-export function createVsc({
-    vscCreationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    vscCreationInfos: VscCreationInfos;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: string | null;
-    isUpdate: boolean;
-}) {
+export function createVscHvdcLine(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: VscHdvLineCreationDto
+) {
     let createVscUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         createVscUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating vsc creation');
+        console.info('Updating vsc hvdc line creation');
     } else {
-        console.info('Creating vsc creation');
+        console.info('Creating vsc hvdc line creation');
     }
     return backendFetchText(createVscUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(vscCreationInfos),
-    });
-}
-
-export function modifyVsc({
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    nominalV,
-    r,
-    maxP,
-    operatorActivePowerLimitSide1,
-    operatorActivePowerLimitSide2,
-    convertersMode,
-    activePowerSetpoint,
-    angleDroopActivePowerControl,
-    p0,
-    droop,
-    converterStation1,
-    converterStation2,
-    properties,
-    modificationUuid,
-}: VSCModificationInfo) {
-    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (modificationUuid) {
-        modificationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating Vsc modification');
-    } else {
-        console.info('Creating Vsc modification');
-    }
-
-    const vscModification = {
-        type: MODIFICATION_TYPES.VSC_MODIFICATION.type,
-        equipmentId: id,
-        equipmentName: toModificationOperation(name),
-        nominalV: toModificationOperation(nominalV),
-        r: toModificationOperation(r),
-        maxP: toModificationOperation(maxP),
-        operatorActivePowerLimitFromSide1ToSide2: toModificationOperation(operatorActivePowerLimitSide1),
-        operatorActivePowerLimitFromSide2ToSide1: toModificationOperation(operatorActivePowerLimitSide2),
-        convertersMode: toModificationOperation(convertersMode),
-        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
-        angleDroopActivePowerControl: toModificationOperation(angleDroopActivePowerControl),
-        p0: toModificationOperation(p0),
-        droop: toModificationOperation(droop),
-        converterStation1: converterStation1,
-        converterStation2: converterStation2,
-        properties: properties,
-    }; //add missing informations
-
-    return backendFetchText(modificationUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(vscModification),
+        body: JSON.stringify(dto),
+    });
+}
+
+export function modifyVscHvdcLine(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: VscHdvLineModificationDto
+) {
+    let updateVscUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        updateVscUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating vsc hvdc line modification');
+    } else {
+        console.info('Creating vsc hvdc line modification');
+    }
+    return backendFetchText(updateVscUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dto),
     });
 }
 

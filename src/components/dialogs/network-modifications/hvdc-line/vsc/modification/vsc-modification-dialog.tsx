@@ -10,144 +10,101 @@ import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {
-    ACTIVE_POWER_SETPOINT,
-    ANGLE_DROOP_ACTIVE_POWER_CONTROL,
-    CONVERTER_STATION_1,
-    CONVERTER_STATION_2,
-    CONVERTERS_MODE,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    HVDC_LINE_TAB,
-    MAX_P,
-    NOMINAL_V,
-    OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
-    OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
-    P0,
-    R,
-} from '../../../../../utils/field-constants';
 import { FetchStatus } from '../../../../../../services/utils';
-import {
-    getVscHvdcLineModificationPaneSchema,
-    getVscHvdcLineModificationTabFormData,
-    getVscHvdcLinePaneEmptyFormData,
-} from '../hvdc-line-pane/vsc-hvdc-line-pane-utils';
-import {
-    getConverterStationModificationData,
-    getConverterStationModificationFormEditData,
-    getVscConverterStationEmptyFormData,
-    getVscConverterStationModificationSchema,
-} from '../converter-station/converter-station-utils';
-import { VscModificationForm } from './vsc-modification-from';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { modifyVsc } from 'services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
-import { VscModificationInfo } from 'services/network-modification-types';
+import { modifyVscHvdcLine } from 'services/study/network-modifications';
+import {
+    fetchBusesOrBusbarSectionsForVoltageLevel,
+    fetchNetworkElementInfos,
+} from '../../../../../../services/study/network';
+
 import {
     CustomFormProvider,
-    emptyProperties,
+    DeepNullable,
     ExtendedEquipmentType,
     FieldConstants,
     getConcatenatedProperties,
-    getPropertiesFromModification,
-    modificationPropertiesSchema,
+    HVDC_LINE_TAB_FIELDS,
     ReactiveCapabilityCurvePoints,
     REMOVE,
-    sanitizeString,
-    setCurrentReactiveCapabilityCurveTable,
-    setSelectedReactiveLimits,
     snackWithFallback,
-    toModificationProperties,
     useSnackMessage,
+    useTabs,
+    VscHdvLineModificationDto,
+    VscHvdcLineDialogTab,
+    VscHvdcLineForm,
+    VscHvdcLineInfo,
+    vscHvdcLineModificationDtoToForm,
+    vscHvdcLineModificationEmptyFormData,
+    VscHvdcLineModificationFormData,
+    vscHvdcLineModificationFormSchema,
+    vscHvdcLineModificationFormToDto,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import { VSC_TABS } from '../vsc-utils';
+import { EquipmentModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
+import PositionDiagramPane from '../../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().nullable(),
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        ...getVscHvdcLineModificationPaneSchema(HVDC_LINE_TAB),
-        ...getVscConverterStationModificationSchema(CONVERTER_STATION_1),
-        ...getVscConverterStationModificationSchema(CONVERTER_STATION_2),
-    })
-    .concat(modificationPropertiesSchema)
-    .required();
-const emptyFormData = {
-    [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
-    [HVDC_LINE_TAB]: getVscHvdcLinePaneEmptyFormData(true),
-    [CONVERTER_STATION_1]: getVscConverterStationEmptyFormData(true),
-    [CONVERTER_STATION_2]: getVscConverterStationEmptyFormData(true),
-    ...emptyProperties,
+type VscModificationDialogProps = EquipmentModificationDialogProps & {
+    editData?: VscHdvLineModificationDto;
 };
 
-const VscModificationDialog: React.FC<any> = ({
+export default function VscModificationDialog({
     editData,
-    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map or spreadsheet
+    defaultIdValue,
     currentNode,
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
-    const [tabIndex, setTabIndex] = useState(VSC_TABS.HVDC_LINE_TAB);
-
+}: Readonly<VscModificationDialogProps>) {
+    const currentNodeUuid = currentNode.id;
     const [equipmentId, setEquipmentId] = useState<string | null>(defaultIdValue ?? null);
-    const [vscToModify, setVscToModify] = useState<VscModificationInfo | null>(null);
+    const [vscToModify, setVscToModify] = useState<VscHvdcLineInfo | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-    const formMethods = useFormWithDirtyTracking({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
-    });
     const { snackError } = useSnackMessage();
-    const { reset, getValues, setValue, handleSubmit } = formMethods;
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
+
+    const formMethods = useFormWithDirtyTracking<DeepNullable<VscHvdcLineModificationFormData>>({
+        defaultValues: vscHvdcLineModificationEmptyFormData,
+        resolver: yupResolver<DeepNullable<VscHvdcLineModificationFormData>>(vscHvdcLineModificationFormSchema),
+    });
+    const { reset, getValues, setValue } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<VscHvdcLineDialogTab>({
+        defaultTab: VscHvdcLineDialogTab.HVDC_LINE_TAB,
+        errors,
+        tabFields: HVDC_LINE_TAB_FIELDS,
+    });
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
-    const fromEditDataToFormValues = useCallback(
-        (editData: any) => {
-            if (editData?.equipmentId) {
-                setEquipmentId(editData.equipmentId);
-            }
-            reset({
-                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                ...getVscHvdcLineModificationTabFormData(HVDC_LINE_TAB, editData),
-                ...getConverterStationModificationFormEditData(CONVERTER_STATION_1, editData.converterStation1),
-                ...getConverterStationModificationFormEditData(CONVERTER_STATION_2, editData.converterStation2),
-                ...getPropertiesFromModification(editData.properties),
-            });
-        },
-        [reset]
-    );
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            if (editData?.equipmentId) {
+                setEquipmentId(editData.equipmentId);
+            }
+            reset(vscHvdcLineModificationDtoToForm(editData));
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [reset, editData]);
 
-    //this method empties the form, and let us pass custom data that we want to set
-    const setValuesAndEmptyOthers = useCallback(
-        (customData = {}, keepDefaultValues = false) => {
-            reset({ ...emptyFormData, ...customData }, { keepDefaultValues: keepDefaultValues });
-        },
-        [reset]
-    );
+    const clear = useCallback(() => {
+        reset(vscHvdcLineModificationEmptyFormData);
+    }, [reset]);
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: string | null) => {
             if (!equipmentId) {
-                setValuesAndEmptyOthers();
                 setVscToModify(null);
+                reset(vscHvdcLineModificationEmptyFormData, { keepDefaultValues: true });
             } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
@@ -167,33 +124,39 @@ const VscModificationDialog: React.FC<any> = ({
                             const previousReactiveCapabilityCurveTable1 =
                                 value.converterStation1?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable1) {
-                                setCurrentReactiveCapabilityCurveTable(
-                                    previousReactiveCapabilityCurveTable1,
-                                    `${CONVERTER_STATION_1}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    setValue
+                                setValue(
+                                    `${FieldConstants.CONVERTER_STATION_1}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE}` as any,
+                                    previousReactiveCapabilityCurveTable1
                                 );
                             }
 
                             const previousReactiveCapabilityCurveTable2 =
                                 value.converterStation2?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable2) {
-                                setCurrentReactiveCapabilityCurveTable(
-                                    previousReactiveCapabilityCurveTable2,
-                                    `${CONVERTER_STATION_2}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    setValue
+                                setValue(
+                                    `${FieldConstants.CONVERTER_STATION_2}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_TABLE}` as any,
+                                    previousReactiveCapabilityCurveTable2
                                 );
                             }
-                            setSelectedReactiveLimits(
-                                `${CONVERTER_STATION_1}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE}`,
-                                value.converterStation1?.minMaxReactiveLimits,
-                                setValue
+
+                            setValue(
+                                `${FieldConstants.CONVERTER_STATION_1}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE}` as any,
+                                value.converterStation1?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
+                            );
+                            setValue(
+                                `${FieldConstants.CONVERTER_STATION_2}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE}` as any,
+                                value.converterStation2?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
                             );
 
-                            setSelectedReactiveLimits(
-                                `${CONVERTER_STATION_2}.${FieldConstants.REACTIVE_LIMITS}.${FieldConstants.REACTIVE_CAPABILITY_CURVE_CHOICE}`,
-                                value.converterStation2?.minMaxReactiveLimits,
-                                setValue
+                            setValue(
+                                `${FieldConstants.CONVERTER_STATION_1}.${FieldConstants.CONVERTER_STATION_ID}` as any,
+                                value.converterStation1?.id
                             );
+                            setValue(
+                                `${FieldConstants.CONVERTER_STATION_2}.${FieldConstants.CONVERTER_STATION_ID}` as any,
+                                value.converterStation2?.id
+                            );
+
                             setVscToModify({
                                 ...value,
                                 converterStation1: {
@@ -208,6 +171,7 @@ const VscModificationDialog: React.FC<any> = ({
                             reset(
                                 (formValues) => ({
                                     ...formValues,
+                                    [FieldConstants.EQUIPMENT_ID]: equipmentId,
                                     [FieldConstants.ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
                                 {
@@ -219,22 +183,16 @@ const VscModificationDialog: React.FC<any> = ({
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset((formValues) => ({ ...formValues, [FieldConstants.EQUIPMENT_ID]: equipmentId }), {
+                            keepDirty: true,
+                        });
                         if (editData?.equipmentId !== equipmentId) {
                             setVscToModify(null);
                         }
                     });
             }
         },
-        [
-            setValuesAndEmptyOthers,
-            currentRootNetworkUuid,
-            studyUuid,
-            currentNode,
-            setValue,
-            reset,
-            getValues,
-            editData?.equipmentId,
-        ]
+        [currentRootNetworkUuid, studyUuid, currentNode, setValue, reset, getValues, editData?.equipmentId]
     );
 
     useEffect(() => {
@@ -243,47 +201,21 @@ const VscModificationDialog: React.FC<any> = ({
         }
     }, [equipmentId, onEquipmentIdChange]);
 
-    const onSubmit = (hvdcLine: any) => {
-        const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
-        const converterStation1 = getConverterStationModificationData(
-            hvdcLine[CONVERTER_STATION_1],
-            vscToModify?.converterStation1
-        );
-        const converterStation2 = getConverterStationModificationData(
-            hvdcLine[CONVERTER_STATION_2],
-            vscToModify?.converterStation2
-        );
-
-        modifyVsc({
-            studyUuid: studyUuid,
-            nodeUuid: currentNode.id,
-            id: equipmentId,
-            name: sanitizeString(hvdcLine[EQUIPMENT_NAME]),
-            nominalV: hvdcLineTab[NOMINAL_V],
-            r: hvdcLineTab[R],
-            maxP: hvdcLineTab[MAX_P],
-            operatorActivePowerLimitSide1: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
-            operatorActivePowerLimitSide2: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
-            convertersMode: hvdcLineTab[CONVERTERS_MODE],
-            activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
-            angleDroopActivePowerControl: hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
-            p0: hvdcLineTab[P0],
-            droop: hvdcLineTab[FieldConstants.DROOP],
-            converterStation1: converterStation1,
-            converterStation2: converterStation2,
-            properties: toModificationProperties(hvdcLine),
-            isUpdate: !!editData,
-            modificationUuid: editData?.uuid ?? null,
-        }).catch((error) => {
-            snackWithFallback(snackError, error, { headerId: 'VscModificationError' });
-        });
-    };
+    const onSubmit = useCallback(
+        (lineForm: VscHvdcLineModificationFormData) => {
+            const dto = vscHvdcLineModificationFormToDto(lineForm);
+            modifyVscHvdcLine(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: Error) => {
+                snackWithFallback(snackError, error, { headerId: 'HvdcModificationError' });
+            });
+        },
+        [editData?.uuid, studyUuid, currentNodeUuid, snackError]
+    );
 
     const updateConverterStationCapabilityCurveTable = (
         newRccValues: ReactiveCapabilityCurvePoints[] | undefined,
         action: string,
         index: number,
-        previousValue: VscModificationInfo | null
+        previousValue: VscHvdcLineInfo | null
     ): any => {
         if (!newRccValues) {
             return previousValue;
@@ -304,17 +236,28 @@ const VscModificationDialog: React.FC<any> = ({
     const updatePreviousReactiveCapabilityCurveTableConverterStation = (
         action: string,
         index: number,
-        converterStationName: 'converterStation1' | 'converterStation2'
+        converterStationName: FieldConstants.CONVERTER_STATION_1 | FieldConstants.CONVERTER_STATION_2
     ) => {
-        setVscToModify((previousValue: VscModificationInfo | null) => {
-            const newRccValues = previousValue?.[converterStationName]?.reactiveCapabilityCurveTable;
+        setVscToModify((previousValue: VscHvdcLineInfo | null) => {
+            const newRccValues = previousValue?.[converterStationName]?.reactiveCapabilityCurvePoints;
             return updateConverterStationCapabilityCurveTable(newRccValues, action, index, previousValue);
         });
     };
 
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+    );
+
     return (
         <CustomFormProvider
-            validationSchema={formSchema}
+            validationSchema={vscHvdcLineModificationFormSchema}
             removeOptional={true}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
@@ -322,8 +265,9 @@ const VscModificationDialog: React.FC<any> = ({
         >
             <ModificationDialog
                 fullWidth
-                onClear={setValuesAndEmptyOthers}
-                onSave={handleSubmit(onSubmit)}
+                onClear={clear}
+                onSave={onSubmit}
+                onValidationError={useTabsReturn.onError}
                 maxWidth={'md'}
                 titleId="ModifyVsc"
                 slotProps={{
@@ -349,23 +293,19 @@ const VscModificationDialog: React.FC<any> = ({
                     />
                 )}
                 {equipmentId !== null && (
-                    <VscModificationForm
-                        tabIndex={tabIndex}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        equipmentId={equipmentId}
-                        setTabIndex={setTabIndex}
-                        vscToModify={vscToModify}
-                        tabIndexesWithError={[]}
+                    <VscHvdcLineForm
+                        voltageLevelOptions={voltageLevelOptions}
+                        PositionDiagramPane={PositionDiagramPane}
+                        fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                         updatePreviousReactiveCapabilityCurveTableConverterStation={
                             updatePreviousReactiveCapabilityCurveTableConverterStation
                         }
-                    ></VscModificationForm>
+                        useTabsReturn={useTabsReturn}
+                        hvdcLineToModify={vscToModify}
+                        isModification
+                    />
                 )}
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-export default VscModificationDialog;
+}
