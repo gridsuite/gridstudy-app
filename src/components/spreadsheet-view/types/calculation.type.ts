@@ -9,6 +9,9 @@ export enum CalculationRowType {
     CALCULATION = 'calculation',
     CALCULATION_BUTTON = 'calculationButton',
 }
+export function isCalculationRowType(rowType: string | undefined): rowType is CalculationRowType {
+    return rowType === CalculationRowType.CALCULATION || rowType === CalculationRowType.CALCULATION_BUTTON;
+}
 
 export enum CalculationType {
     SUM = 'sum',
