@@ -567,7 +567,7 @@ export interface WorkspacePanelsDeletedEventData extends CommonStudyEventData {
 
 export interface WorkspaceNadConfigUpdatedEventData extends CommonStudyEventData {
     headers: WorkspaceNadConfigUpdatedEventDataHeaders;
-    payload: string; // config UUID
+    payload: string;
 }
 
 export function isComputationResultColumnFilterUpdatedNotification(
