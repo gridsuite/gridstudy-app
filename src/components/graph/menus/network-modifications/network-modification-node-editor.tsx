@@ -183,6 +183,11 @@ const NetworkModificationNodeEditor = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
 
+    // Whether the current selection reaches inside a shared modification the user can't write into: acting
+    // on such a content is denied, acting on the reference modification as a whole isn't. The permissions
+    // themselves are resolved by the table, which knows the unfolded tree and not just the node's list.
+    const [selectionContainsLockedModification, setSelectionContainsLockedModification] = useState(false);
+
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
     const [editDataFetchStatus, setEditDataFetchStatus] = useState<FetchStatus>(FetchStatus.IDLE);
@@ -1073,9 +1078,14 @@ const NetworkModificationNodeEditor = () => {
         setIsUpdate(false);
     };
     const handleRowSelected = useCallback(
-        (selectedRows: ComposedModificationMetadata[], isAssemblyDepthExceeded: boolean) => {
+        (
+            selectedRows: ComposedModificationMetadata[],
+            isAssemblyDepthExceeded: boolean,
+            containsLockedModification: boolean
+        ) => {
             setSelectedNetworkModifications(selectedRows);
             setIsAssemblyDepthExceeded(isAssemblyDepthExceeded);
+            setSelectionContainsLockedModification(containsLockedModification);
         },
         [setSelectedNetworkModifications, setIsAssemblyDepthExceeded]
     );
@@ -1233,7 +1243,10 @@ const NetworkModificationNodeEditor = () => {
             isRootNode ||
             isAssemblyDepthExceeded ||
             isEditBlocked ||
-            selectionContainsShared
+            selectionContainsShared ||
+            // assembling is also denied as soon as the selection covers part of a reference modification
+            // content, but stays allowed on reference modifications taken as a whole
+            selectionContainsLockedModification
         );
     }, [
         selectedNetworkModifications?.length,
@@ -1242,6 +1255,7 @@ const NetworkModificationNodeEditor = () => {
         isAssemblyDepthExceeded,
         isEditBlocked,
         selectionContainsShared,
+        selectionContainsLockedModification,
     ]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
@@ -1347,7 +1361,8 @@ const NetworkModificationNodeEditor = () => {
                                 isEditBlocked ||
                                 mapDataLoading ||
                                 !currentNode ||
-                                isRootNode
+                                isRootNode ||
+                                selectionContainsLockedModification
                             }
                             data-testid="CutModification"
                         >
@@ -1387,7 +1402,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            disabled={isPasteButtonDisabled || isRootNode}
+                            disabled={isPasteButtonDisabled || isRootNode || selectionContainsLockedModification}
                             data-testid="PasteModification"
                         >
                             <ContentPasteIcon />
@@ -1404,7 +1419,8 @@ const NetworkModificationNodeEditor = () => {
                                 isEditBlocked ||
                                 mapDataLoading ||
                                 !currentNode ||
-                                isRootNode
+                                isRootNode ||
+                                selectionContainsLockedModification
                             }
                             data-testid="DeleteModification"
                         >
