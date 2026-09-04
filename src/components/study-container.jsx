@@ -46,7 +46,11 @@ import { useAllComputingStatus } from './computing-status/use-all-computing-stat
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { useTreeModelSync } from '../hooks/use-tree-model-sync';
 import { useNodeActivitySync } from 'components/node-activity/hooks/use-node-activity-sync';
-import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
+import {
+    fetchNetworkExistence,
+    fetchRootNetworkIndexationStatus,
+    RootNetworkLoadStatus,
+} from '../services/study/network';
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
 import { HttpStatusCode } from 'utils/http-status-code';
@@ -163,7 +167,7 @@ export function StudyContainer() {
 
     useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
-    const { snackError, snackWarning, snackInfo } = useSnackMessage();
+    const { snackError, snackWarning, snackInfo, snackSuccess } = useSnackMessage();
 
     useExportNotification();
     useTreeModelSync(studyUuid);
@@ -400,51 +404,57 @@ export function StudyContainer() {
     }, [studyUuid, currentRootNetworkUuid, dispatch, snackError]);
 
     const checkNetworkExistenceAndRecreateIfNotFound = useCallback(
-        (successCallback) => {
-            fetchNetworkExistence(studyUuid, currentRootNetworkUuid)
-                .then((response) => {
-                    if (response.status === HttpStatusCode.OK) {
-                        successCallback && successCallback();
-                        checkRootNetworkIndexation().then(loadTree);
-                    } else {
-                        // response.state === NO_CONTENT
-                        // if network is not found, we try to recreate study network from existing case
-                        recreateStudyNetwork(studyUuid, currentRootNetworkUuid)
-                            .then(() => {
-                                snackWarning({
-                                    headerId: 'recreatingNetworkStudy',
-                                    persist: true,
-                                });
-                            })
-                            .catch((error) => {
-                                if (error.status === HttpStatusCode.FAILED_DEPENDENCY) {
-                                    // when trying to recreate study network, if case can't be found (424 error), we display an error
-                                    setErrorMessage(
-                                        intlRef.current.formatMessage({
-                                            id: 'invalidStudyError',
-                                        })
-                                    );
-                                } else {
-                                    // unknown error when trying to recreate network from study case
-                                    setErrorMessage(
-                                        intlRef.current.formatMessage({
-                                            id: 'networkRecreationError',
-                                        })
-                                    );
-                                }
+        async (successCallback) => {
+            try {
+                const existence = await fetchNetworkExistence(studyUuid, currentRootNetworkUuid);
+                if (existence?.exists) {
+                    successCallback?.();
+                    const status = await checkRootNetworkIndexation();
+                    loadTree(status);
+                } else {
+                    // response.state === NO_CONTENT
+                    // if network is not found, we try to recreate study network from existing case
+                    try {
+                        await recreateStudyNetwork(studyUuid, currentRootNetworkUuid);
+                        if (existence?.rootNetworkLoadStatus === RootNetworkLoadStatus.UNLOADED) {
+                            snackInfo({
+                                headerId: 'networkStudyUnloadedInactivity',
+                                persist: true,
                             });
+                        } else {
+                            snackWarning({
+                                headerId: 'recreatingNetworkStudy',
+                                persist: true,
+                            });
+                        }
+                    } catch (error) {
+                        if (error.status === HttpStatusCode.FAILED_DEPENDENCY) {
+                            // when trying to recreate study network, if case can't be found (424 error), we display an error
+                            setErrorMessage(
+                                intlRef.current.formatMessage({
+                                    id: 'invalidStudyError',
+                                })
+                            );
+                        } else {
+                            // unknown error when trying to recreate network from study case
+                            setErrorMessage(
+                                intlRef.current.formatMessage({
+                                    id: 'networkRecreationError',
+                                })
+                            );
+                        }
                     }
-                })
-                .catch(() => {
-                    // unknown error when checking network existence
-                    setErrorMessage(
-                        intlRef.current.formatMessage({
-                            id: 'checkNetworkExistenceError',
-                        })
-                    );
-                });
+                }
+            } catch {
+                // unknown error when checking network existence
+                setErrorMessage(
+                    intlRef.current.formatMessage({
+                        id: 'checkNetworkExistenceError',
+                    })
+                );
+            }
         },
-        [studyUuid, currentRootNetworkUuid, checkRootNetworkIndexation, loadTree, snackWarning, intlRef]
+        [studyUuid, currentRootNetworkUuid, checkRootNetworkIndexation, loadTree, snackInfo, snackWarning, intlRef]
     );
 
     useEffect(() => {
@@ -467,11 +477,6 @@ export function StudyContainer() {
                     return;
                 }
                 dispatch(setRootNetworkIndexationStatus(eventData.headers.indexation_status));
-                if (eventData.headers.indexation_status === RootNetworkIndexationStatus.INDEXED) {
-                    snackInfo({
-                        headerId: 'rootNetworkIndexationDone',
-                    });
-                }
                 // notification that the study is not indexed anymore then ask to refresh
                 if (eventData.headers.indexation_status === RootNetworkIndexationStatus.NOT_INDEXED) {
                     snackWarning({
@@ -481,7 +486,7 @@ export function StudyContainer() {
             }
             if (isStudyNetworkRecreationNotification(eventData)) {
                 const successCallback = () =>
-                    snackInfo({
+                    snackSuccess({
                         headerId: 'studyNetworkRecovered',
                     });
 
@@ -494,7 +499,7 @@ export function StudyContainer() {
                 }
             }
         },
-        [checkNetworkExistenceAndRecreateIfNotFound, snackInfo, snackWarning, dispatch]
+        [dispatch, snackWarning, checkNetworkExistenceAndRecreateIfNotFound, snackSuccess]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
