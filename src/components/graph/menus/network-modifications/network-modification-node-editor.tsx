@@ -22,7 +22,6 @@ import {
     NetworkModificationMetadata,
     NetworkModificationsTable,
     NotificationsUrlKeys,
-    ReferenceModificationInfos,
     removeNullFields,
     setModificationMetadata,
     snackWithFallback,
@@ -88,11 +87,7 @@ import ImportModificationDialog from '../../../dialogs/import-composite/import-m
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
-import {
-    CompositeModificationContent,
-    createCompositeModifications,
-    updateCompositeModifications,
-} from '../../../../services/explore';
+import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
     assembleModificationsIntoComposite,
@@ -887,31 +882,6 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [currentNode?.id, dispatch, selectedNetworkModifications, snackError, studyUuid]);
 
-    const resolveCompositeModificationContents = useCallback(
-        (): Promise<CompositeModificationContent[]> =>
-            Promise.all(
-                selectedNetworkModifications.map((item) =>
-                    item.type === MODIFICATION_TYPES.MODIFICATION_REFERENCE.type
-                        ? fetchNetworkModification(item.uuid as UUID)
-                              .then((res) => res.json())
-                              .then((detail: ReferenceModificationInfos): CompositeModificationContent => {
-                                  if (detail.referenceId == null) {
-                                      throw new Error(`Missing referenceId for modification reference ${item.uuid}`);
-                                  }
-                                  return {
-                                      modificationUuid: detail.referenceId,
-                                      description: detail.description || item.description || undefined,
-                                  };
-                              })
-                        : Promise.resolve<CompositeModificationContent>({
-                              modificationUuid: item.uuid,
-                              description: item.description || undefined,
-                          })
-                )
-            ),
-        [selectedNetworkModifications]
-    );
-
     const doCreateCompositeModificationsElements = ({
         name,
         description,
@@ -926,13 +896,9 @@ const NetworkModificationNodeEditor = () => {
             (singleModification.type === MODIFICATION_TYPES.MODIFICATION_REFERENCE.type ||
                 singleModification.type === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type);
 
-        resolveCompositeModificationContents()
-            .then((contents) => {
-                const inheritedDescription = isSingleCompositeOrShared
-                    ? contents[0].description || singleModification.description
-                    : '';
-                return createCompositeModifications(name, description || inheritedDescription, folderId, contents);
-            })
+        const inheritedDescription = isSingleCompositeOrShared ? singleModification.description : '';
+        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
+        createCompositeModifications(name, description || inheritedDescription, folderId, selectedModificationsUuid)
             .then(() => {
                 snackInfo({
                     headerId: 'infoCreateModificationsMsg',
@@ -987,9 +953,10 @@ const NetworkModificationNodeEditor = () => {
         description,
         elementFullPath,
     }: IElementUpdateDialog) => {
+        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
+
         setSaveInProgress(true);
-        resolveCompositeModificationContents()
-            .then((contents) => updateCompositeModifications(id, name, description, contents))
+        updateCompositeModifications(id, name, description, selectedModificationsUuid)
             .then(() => {
                 snackInfo({
                     headerId: 'infoUpdateModificationsMsg',
