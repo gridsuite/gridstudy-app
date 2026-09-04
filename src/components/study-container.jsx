@@ -499,7 +499,7 @@ export function StudyContainer() {
                 }
             }
         },
-        [checkNetworkExistenceAndRecreateIfNotFound, snackInfo, snackWarning, dispatch]
+        [dispatch, snackWarning, checkNetworkExistenceAndRecreateIfNotFound, snackSuccess]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
