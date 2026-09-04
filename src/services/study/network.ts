@@ -396,7 +396,7 @@ export interface RootNetworkExistence {
     rootNetworkLoadStatus: RootNetworkLoadStatus;
 }
 
-export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID) => {
+export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID): Promise<RootNetworkExistence> => {
     const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/network`;
 
     return backendFetchJson(fetchNetworkExistenceUrl, { method: 'GET' });
