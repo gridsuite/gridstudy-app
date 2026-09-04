@@ -22,7 +22,6 @@ import {
     NetworkModificationMetadata,
     NetworkModificationsTable,
     NotificationsUrlKeys,
-    ReferenceModificationInfos,
     removeNullFields,
     setModificationMetadata,
     snackWithFallback,
@@ -890,24 +889,16 @@ const NetworkModificationNodeEditor = () => {
         folderId,
     }: IElementCreationDialog) => {
         setSaveInProgress(true);
+        const isSingleSelection = selectedNetworkModifications.length === 1;
+        const singleModification = selectedNetworkModifications[0];
+        const isSingleCompositeOrShared =
+            isSingleSelection &&
+            (singleModification.type === MODIFICATION_TYPES.MODIFICATION_REFERENCE.type ||
+                singleModification.type === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type);
 
-        Promise.all(
-            selectedNetworkModifications.map((item) =>
-                item.type === MODIFICATION_TYPES.MODIFICATION_REFERENCE.type
-                    ? fetchNetworkModification(item.uuid as UUID)
-                          .then((res) => res.json())
-                          .then((detail: ReferenceModificationInfos) => {
-                              if (detail.referenceId == null) {
-                                  throw new Error(`Missing referenceId for modification reference ${item.uuid}`);
-                              }
-                              return detail.referenceId;
-                          })
-                    : Promise.resolve(item.uuid)
-            )
-        )
-            .then((selectedModificationsUuid) =>
-                createCompositeModifications(name, description, folderId, selectedModificationsUuid)
-            )
+        const inheritedDescription = isSingleCompositeOrShared ? singleModification.description : '';
+        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
+        createCompositeModifications(name, description || inheritedDescription, folderId, selectedModificationsUuid)
             .then(() => {
                 snackInfo({
                     headerId: 'infoCreateModificationsMsg',
