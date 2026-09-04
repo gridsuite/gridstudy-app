@@ -385,10 +385,21 @@ export function fetchVoltageLevelsMapInfos(
     );
 }
 
+export enum RootNetworkLoadStatus {
+    LOADED = 'LOADED',
+    UNLOADED = 'UNLOADED',
+    UNLOADING = 'UNLOADING',
+}
+
+export interface RootNetworkExistence {
+    exists: boolean;
+    rootNetworkLoadStatus: RootNetworkLoadStatus;
+}
+
 export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID) => {
     const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/network`;
 
-    return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
+    return backendFetchJson(fetchNetworkExistenceUrl, { method: 'GET' });
 };
 
 export const fetchRootNetworkIndexationStatus = (studyUuid: UUID, rootNetworkUuid: UUID) => {

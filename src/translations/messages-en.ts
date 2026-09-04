@@ -937,6 +937,7 @@ const messages_en = {
     GeneratorAvailability: 'Generator availability',
     chooseElement: 'Choose element',
     studyNetworkRecovered: 'Study network has been recreated successfully',
+    networkStudyUnloadedInactivity: 'Due to a period of inactivity, this study has been unloaded',
     recreatingNetworkStudy:
         'Impossible to get the study network. Reconstruction of the network from the initial situation...',
     invalidStudyError: 'Invalid study : Root situation can not be found',
@@ -987,7 +988,6 @@ const messages_en = {
     ShortcircuitInProgress: 'Shortcircuit computation in progress...',
 
     tableChangingError: 'An error occurred when modifying the data',
-    rootNetworkIndexationDone: 'Root Network indexation done. Search functionality is now available',
     rootNetworkIndexationNotIndexed:
         "Serverside warning: Something went wrong, Study equipments aren't indexed anymore. Please refresh the page (F5)",
     rootNetworkIndexationError: 'Root Network indexation process has failed.',
