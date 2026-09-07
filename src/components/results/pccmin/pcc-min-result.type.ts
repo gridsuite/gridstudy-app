@@ -7,8 +7,8 @@
 
 import type { UUID } from 'node:crypto';
 import { Page, Selector } from '../common/utils';
-import { ColumnContext, numericFilterParams, TableType, textFilterParams } from 'types/custom-aggrid-types';
-import { CustomAggridComparatorFilter, GlobalFilters } from '@gridsuite/commons-ui';
+import { ColumnContext, numericFilterParams, textFilterParams } from 'types/custom-aggrid-types';
+import {CustomAggridComparatorFilter, GlobalFilters, TableType} from '@gridsuite/commons-ui';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';

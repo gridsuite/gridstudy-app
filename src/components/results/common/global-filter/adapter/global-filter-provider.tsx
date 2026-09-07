@@ -18,7 +18,7 @@ import {
     GlobalFilterType,
     isCriteriaFilter,
     GlobalFilter,
-    RecentGlobalFilter,
+    RecentGlobalFilter, TableType,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../../utils/compute-title';
 import {
@@ -32,7 +32,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../../redux/store';
 import { HttpStatusCode } from '../../../../../utils/http-status-code';
-import { TableType } from '../../../../../types/custom-aggrid-types';
 import { AppState } from '../../../../../redux/reducer.type';
 import type { UUID } from 'node:crypto';
 

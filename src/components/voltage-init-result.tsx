@@ -18,7 +18,7 @@ import {
     type MuiStyles,
     RESULTS_LOADING_DELAY,
     RunningStatus,
-    snackWithFallback,
+    snackWithFallback, TableType,
     unscrollableDialogStyles,
     useOpenLoaderShortWait,
     useSnackMessage,
@@ -47,7 +47,6 @@ import { AppState } from 'redux/reducer.type';
 import { useIsEditBlocked } from 'components/node-activity/hooks/use-node-activity';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { TableType } from 'types/custom-aggrid-types';
 import { PARAM_COMPUTED_LANGUAGE } from '../utils/config-params';
 
 const styles = {

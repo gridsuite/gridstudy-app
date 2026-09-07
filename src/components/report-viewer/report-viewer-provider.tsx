@@ -17,9 +17,8 @@ import {
     FilterConfig,
     ReportFetcherContextValue,
     ReportFilterContextValue,
-    PaginationConfig,
+    PaginationConfig, TableType,
 } from '@gridsuite/commons-ui';
-import { TableType } from '../../types/custom-aggrid-types';
 import { ComputingAndNetworkModificationType } from '../../utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 

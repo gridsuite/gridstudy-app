@@ -21,7 +21,7 @@ import {
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
     RunningStatus,
-    RESULTS_LOADING_DELAY,
+    RESULTS_LOADING_DELAY, TableType,
 } from '@gridsuite/commons-ui';
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
@@ -30,7 +30,6 @@ import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
-import { TableType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 

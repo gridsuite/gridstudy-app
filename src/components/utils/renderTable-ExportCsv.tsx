@@ -8,11 +8,10 @@
 import { FunctionComponent, useEffect } from 'react';
 import {
     RenderTableAndExportCsv as RenderTableAndExportCsvBase,
-    RenderTableAndExportCsvProps as BaseProps,
+    RenderTableAndExportCsvProps as BaseProps, TableType,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer.type';
-import { TableType } from '../../types/custom-aggrid-types';
 import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
 import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 

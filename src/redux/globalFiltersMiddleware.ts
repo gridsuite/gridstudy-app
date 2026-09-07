@@ -14,10 +14,9 @@ import {
     REMOVE_GLOBAL_FILTERS,
 } from './actions';
 import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
-import { TableType } from '../types/custom-aggrid-types';
 import { UUID } from 'node:crypto';
 import type { AppState } from './reducer.type';
-import { GlobalFilter, notUndefined, syncGlobalFilters } from '@gridsuite/commons-ui';
+import {GlobalFilter, notUndefined, syncGlobalFilters, TableType} from '@gridsuite/commons-ui';
 
 /**
  * Redux middleware that synchronizes global filter changes with the backend.

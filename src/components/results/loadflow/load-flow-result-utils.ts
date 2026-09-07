@@ -16,7 +16,7 @@ import {
 import { IntlShape } from 'react-intl';
 import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
-import { makeAgGridCustomHeaderColumn, RunningStatus } from '@gridsuite/commons-ui';
+import { makeAgGridCustomHeaderColumn, RunningStatus, TableType } from '@gridsuite/commons-ui';
 import { JSX, useEffect, useState } from 'react';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
@@ -39,7 +39,6 @@ import {
     FilterEnumsType,
     numericFilterParams,
     SortParams,
-    TableType,
     textFilterParams,
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';

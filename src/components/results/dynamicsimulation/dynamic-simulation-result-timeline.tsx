@@ -8,7 +8,12 @@ import type { UUID } from 'node:crypto';
 import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
-import { getNoRowsMessage, makeAgGridCustomHeaderColumn, useIntlResultStatusMessages } from '@gridsuite/commons-ui';
+import {
+    getNoRowsMessage,
+    makeAgGridCustomHeaderColumn,
+    TableType,
+    useIntlResultStatusMessages
+} from '@gridsuite/commons-ui';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
@@ -22,7 +27,6 @@ import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    TableType,
 } from '../../../types/custom-aggrid-types';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';

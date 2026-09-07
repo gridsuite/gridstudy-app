@@ -6,9 +6,8 @@
  */
 
 import GlobalFilterProvider from './adapter/global-filter-provider';
-import { TableType } from '../../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
-import { EquipmentType, GlobalFilterPanel, GlobalFilterType } from '@gridsuite/commons-ui';
+import {EquipmentType, GlobalFilterPanel, GlobalFilterType, TableType} from '@gridsuite/commons-ui';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 
 import { useEffect, useState } from 'react';

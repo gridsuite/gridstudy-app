@@ -32,6 +32,7 @@ import {
     isCriteriaFilterType,
     buildValidGlobalFilters,
     RESULTS_LOADING_DELAY,
+    TableType,
 } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -43,7 +44,7 @@ import {
     NMK_SUBTABS,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
-import { PaginationType, SecurityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
+import { PaginationType, SecurityAnalysisTab, SortWay } from '../../../types/custom-aggrid-types';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
@@ -165,7 +166,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
 
         if (sortConfig?.length) {
             const columnToFieldMapping = mappingColumnToField(resultType);
-            params['sort'] = sortConfig.map((sort) => ({
+            params['sort'] = sortConfig.map((sort: { colId: string | number; }) => ({
                 ...sort,
                 colId: columnToFieldMapping[sort.colId],
             }));

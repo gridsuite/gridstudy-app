@@ -35,7 +35,7 @@ import {
     mergeSx,
     PARAM_DEVELOPER_MODE,
     RunningStatus,
-    snackWithFallback,
+    snackWithFallback, TableType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
@@ -51,7 +51,6 @@ import {
     setOneBusShortcircuitAnalysisContext,
     updateColumnFiltersAction,
 } from '../../../../../redux/actions';
-import { TableType } from '../../../../../types/custom-aggrid-types';
 import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';

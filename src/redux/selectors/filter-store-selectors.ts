@@ -6,8 +6,9 @@
  */
 
 import { store } from '../store';
-import { FilterConfig, TableType } from '../../types/custom-aggrid-types';
+import { FilterConfig } from '../../types/custom-aggrid-types';
 import { getColumnFiltersFromState } from './filter-selectors';
+import {TableType} from "@gridsuite/commons-ui";
 
 /**
  * Get column filters directly from Redux store without using hooks.

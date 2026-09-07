@@ -17,7 +17,7 @@ import {
     snackWithFallback,
     useSnackMessage,
     buildValidGlobalFilters,
-    RESULT_PAGE_OPTIONS,
+    RESULT_PAGE_OPTIONS, TableType,
 } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
@@ -28,7 +28,7 @@ import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { Box } from '@mui/material';
 import PccMinResultTable from './pcc-min-result-table';
-import { PaginationType, TableType } from 'types/custom-aggrid-types';
+import { PaginationType } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
