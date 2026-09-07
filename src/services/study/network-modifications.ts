@@ -23,7 +23,6 @@ import {
     VoltageLevelModificationDto,
     ByFilterDeletionDto,
     EquipmentType,
-    ExcludedNetworkModifications,
     ModificationByAssignmentDto,
     GeneratorCreationDto,
     GeneratorModificationDto,
@@ -1236,18 +1235,6 @@ export function fetchNetworkModifications(
 export function fetchNetworkModificationsToExport(studyUuid: UUID | null, nodeUuid: string) {
     console.info('Fetching network modifications to export for nodeUuid : ', nodeUuid);
     const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '/export';
-    console.debug(modificationsGetUrl);
-    return backendFetchJson(modificationsGetUrl);
-}
-
-export function fetchExcludedNetworkModifications(
-    studyUuid: UUID | null,
-    nodeUuid: string
-): Promise<ExcludedNetworkModifications[]> {
-    console.info('Fetching excluded network modifications by root networks for nodeUuid : ', nodeUuid);
-    const urlSearchParams = new URLSearchParams();
-    const modificationsGetUrl = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/excluded-network-modifications?';
-    urlSearchParams.toString();
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
