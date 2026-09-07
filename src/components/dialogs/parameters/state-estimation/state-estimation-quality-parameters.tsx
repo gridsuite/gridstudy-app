@@ -20,18 +20,70 @@ import {
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
 import { useMemo } from 'react';
-import { Box, Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import { useIntl } from 'react-intl';
 import {
     CustomVoltageLevelTable,
-    FieldLabel,
     GridSection,
     LimitReductionIColumnsDef,
-    ParameterFloat,
-    SwitchInput,
+    ParameterField,
+    ParameterType,
+    SpecificParameterInfos,
 } from '@gridsuite/commons-ui';
-import { parametersStyles } from '../util/styles';
+
+const basicParams: SpecificParameterInfos[] = [
+    {
+        name: QUALITY_PER_REGION,
+        type: ParameterType.BOOLEAN,
+        label: 'qualityPerRegion',
+    },
+    {
+        name: THRESHOLD_OBSERVABILITY_RATE,
+        type: ParameterType.DOUBLE,
+        label: 'thresholdObservabilityRate',
+    },
+    {
+        name: THRESHOLD_ACT_REDUNDANCY,
+        type: ParameterType.DOUBLE,
+        label: 'thresholdActRedundancy',
+    },
+    {
+        name: THRESHOLD_REA_REDUNDANCY,
+        type: ParameterType.DOUBLE,
+        label: 'thresholdReaRedundancy',
+    },
+    {
+        name: THRESHOLD_NB_LOST_INJECTIONS,
+        type: ParameterType.DOUBLE,
+        label: 'thresholdNbLostInjections',
+    },
+    {
+        name: THRESHOLD_NB_INVALID_MEASURE,
+        type: ParameterType.DOUBLE,
+        label: 'thresholdNbInvalidMeasure',
+    },
+    {
+        name: THRESHOLD_NB_CRITICAL_MEASURE,
+        type: ParameterType.DOUBLE,
+        label: 'thresholdNbCriticalMeasure',
+    },
+    {
+        name: THRESHOLD_NB_OUT_BOUNDS_GAP,
+        type: ParameterType.DOUBLE,
+        label: 'thresholdNbOutBoundsGap',
+    },
+    {
+        name: THRESHOLD_NB_ITER,
+        type: ParameterType.DOUBLE,
+        label: 'thresholdNbIter',
+    },
+    {
+        name: THRESHOLD_NB_LOST_TRANSITS,
+        type: ParameterType.DOUBLE,
+        label: 'thresholdNbLostTransits',
+    },
+];
 
 export const StateEstimationQualityParameters = () => {
     const intl = useIntl();
@@ -58,87 +110,18 @@ export const StateEstimationQualityParameters = () => {
 
     return (
         <>
-            <Grid container size={8}>
-                <GridSection title="StateEstimationParametersQualitySection" heading={4} />
-                <Grid container alignItems="center" spacing={2} direction={'row'} size={12}>
-                    <Grid size={10} sx={parametersStyles.parameterName}>
-                        <FieldLabel label={'qualityPerRegion'} />
-                    </Grid>
-                    <Grid size={2}>
-                        <SwitchInput name={`${TabValue.QUALITY}.${QUALITY_PER_REGION}`} />
-                    </Grid>
-                </Grid>
-                <ParameterFloat
-                    name={`${TabValue.QUALITY}.${THRESHOLD_OBSERVABILITY_RATE}`}
-                    style={parametersStyles.parameterName}
-                    label={'thresholdObservabilityRate'}
-                    labelSize={8}
-                    inputSize={4}
-                />
-                <ParameterFloat
-                    name={`${TabValue.QUALITY}.${THRESHOLD_ACT_REDUNDANCY}`}
-                    style={parametersStyles.parameterName}
-                    label={'thresholdActRedundancy'}
-                    labelSize={8}
-                    inputSize={4}
-                />
-                <ParameterFloat
-                    name={`${TabValue.QUALITY}.${THRESHOLD_REA_REDUNDANCY}`}
-                    style={parametersStyles.parameterName}
-                    label={'thresholdReaRedundancy'}
-                    labelSize={8}
-                    inputSize={4}
-                />
-                <ParameterFloat
-                    name={`${TabValue.QUALITY}.${THRESHOLD_NB_LOST_INJECTIONS}`}
-                    style={parametersStyles.parameterName}
-                    label={'thresholdNbLostInjections'}
-                    labelSize={8}
-                    inputSize={4}
-                />
-                <ParameterFloat
-                    name={`${TabValue.QUALITY}.${THRESHOLD_NB_INVALID_MEASURE}`}
-                    style={parametersStyles.parameterName}
-                    label={'thresholdNbInvalidMeasure'}
-                    labelSize={8}
-                    inputSize={4}
-                />
-                <ParameterFloat
-                    name={`${TabValue.QUALITY}.${THRESHOLD_NB_CRITICAL_MEASURE}`}
-                    style={parametersStyles.parameterName}
-                    label={'thresholdNbCriticalMeasure'}
-                    labelSize={8}
-                    inputSize={4}
-                />
-                <ParameterFloat
-                    name={`${TabValue.QUALITY}.${THRESHOLD_NB_OUT_BOUNDS_GAP}`}
-                    style={parametersStyles.parameterName}
-                    label={'thresholdNbOutBoundsGap'}
-                    labelSize={8}
-                    inputSize={4}
-                />
-                <ParameterFloat
-                    name={`${TabValue.QUALITY}.${THRESHOLD_NB_ITER}`}
-                    style={parametersStyles.parameterName}
-                    label={'thresholdNbIter'}
-                    labelSize={8}
-                    inputSize={4}
-                />
-                <ParameterFloat
-                    name={`${TabValue.QUALITY}.${THRESHOLD_NB_LOST_TRANSITS}`}
-                    style={parametersStyles.parameterName}
-                    label={'thresholdNbLostTransits'}
-                    labelSize={8}
-                    inputSize={4}
-                />
-            </Grid>
+            <GridSection title="StateEstimationParametersQualitySection" heading={4} />
+            {basicParams.map((item) => (
+                <ParameterField id={TabValue.QUALITY} {...item} key={item.name} />
+            ))}
             <Box my={2}>
                 <LineSeparator />
             </Box>
             <CustomVoltageLevelTable
                 formName={`${TabValue.QUALITY}.${THRESHOLD_PER_VOLTAGE_LEVEL}`}
                 columnsDefinition={columnsDefinition}
-                tableHeight={450}
+                tableHeight={550}
+                tableMinWidth={1000}
             />
         </>
     );

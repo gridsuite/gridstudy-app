@@ -8,67 +8,34 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     CustomFormProvider,
-    FieldConstants,
-    ModificationType,
+    getEmptyTabularFormData,
     snackWithFallback,
+    TABULAR_CREATION_FIELDS,
+    TABULAR_MODIFICATION_FIELDS,
+    TabularForm,
+    type TabularFormActionsContext,
+    tabularCreationDtoToForm,
+    tabularCreationFormToDto,
+    tabularFormSchema,
+    type TabularFormType,
+    type TabularModificationDto,
+    tabularModificationDtoToForm,
+    tabularModificationFormToDto,
+    TabularModificationType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { v4 as uuid4 } from 'uuid';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
 import { FORM_LOADING_DELAY } from 'components/network/constants.js';
-import { CSV_FILENAME, MODIFICATIONS_TABLE, TABULAR_PROPERTIES, TYPE } from 'components/utils/field-constants.js';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { createTabularModification } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.type';
-import {
-    convertGeneratorOrBatteryModificationFromBackToFront,
-    convertInputValues,
-    getEquipmentTypeFromModificationType,
-    getFieldType,
-    TABULAR_MODIFICATION_FIELDS,
-    TABULAR_MODIFICATION_TYPES,
-    transformModificationsTable,
-} from './tabular-modification-utils.js';
-import {
-    addPropertiesFromBack,
-    convertReactiveCapabilityCurvePointsFromFrontToBack,
-    formatModification,
-    getEmptyTabularFormData,
-    Modification,
-    tabularFormSchema,
-    TabularFormType,
-    TabularModificationEditDataType,
-    TabularModificationType,
-    transformProperties,
-} from './tabular-common.js';
-import TabularForm from './tabular-form.js';
-import {
-    convertCreationFieldFromBackToFront,
-    convertCreationFieldFromFrontToBack,
-    getEquipmentTypeFromCreationType,
-    TABULAR_CREATION_FIELDS,
-    TABULAR_CREATION_TYPES,
-} from './tabular-creation-utils';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
-
-function convertCreations(creations: Modification[]): Modification[] {
-    return creations.map((creat: Modification) => {
-        let creation: Modification = {};
-        for (const key of Object.keys(formatModification(creat))) {
-            const entry = convertCreationFieldFromBackToFront(key, creat[key]);
-            for (const item of Array.isArray(entry) ? entry : [entry]) {
-                creation[item.key] = item.value;
-            }
-        }
-        creation = addPropertiesFromBack(creation, creat?.[TABULAR_PROPERTIES]);
-        return creation;
-    });
-}
+import { TabularStudyActions } from './tabular-study-actions';
 
 type TabularDialogProps = NetworkModificationDialogProps & {
-    editData: TabularModificationEditDataType;
+    editData: TabularModificationDto;
     dialogMode: TabularModificationType;
 };
 
@@ -83,12 +50,13 @@ export function TabularDialog({
 }: Readonly<TabularDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const isCreation = dialogMode === TabularModificationType.CREATION;
 
     const defaultEquipmentType = useMemo(() => {
-        return dialogMode === TabularModificationType.CREATION
+        return isCreation
             ? (Object.keys(TABULAR_CREATION_FIELDS).at(0) ?? '')
             : (Object.keys(TABULAR_MODIFICATION_FIELDS).at(0) ?? '');
-    }, [dialogMode]);
+    }, [isCreation]);
 
     const formMethods = useForm<TabularFormType>({
         defaultValues: getEmptyTabularFormData(defaultEquipmentType),
@@ -102,67 +70,17 @@ export function TabularDialog({
 
     const disableSave = Object.keys(errors).length > 0;
 
-    const initTabularModificationData = useCallback(
-        (editData: TabularModificationEditDataType) => {
-            const modificationType = editData.modificationType;
-            const modifications = editData.modifications.map((modif: Modification) => {
-                let modification = formatModification(modif);
-                if (
-                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
-                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
-                ) {
-                    modification = convertGeneratorOrBatteryModificationFromBackToFront(modification);
-                } else {
-                    for (const key of Object.keys(modification)) {
-                        modification[key] = convertInputValues(getFieldType(modificationType, key), modif[key]);
-                    }
-                }
-                modification = addPropertiesFromBack(modification, modif?.[TABULAR_PROPERTIES]);
-                return { [FieldConstants.AG_GRID_ROW_UUID]: uuid4(), ...modification };
-            });
-            reset({
-                [TYPE]: getEquipmentTypeFromModificationType(modificationType),
-                [MODIFICATIONS_TABLE]: modifications,
-                [TABULAR_PROPERTIES]: editData.properties,
-                [CSV_FILENAME]: editData.csvFilename,
-            });
-        },
-        [reset]
-    );
-
-    const initTabularCreationData = useCallback(
-        (editData: TabularModificationEditDataType) => {
-            const equipmentType = getEquipmentTypeFromCreationType(editData?.modificationType);
-            const creations = convertCreations(editData?.modifications).map((creation) => ({
-                [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
-                ...creation,
-            }));
-            reset({
-                [TYPE]: equipmentType,
-                [MODIFICATIONS_TABLE]: creations,
-                [TABULAR_PROPERTIES]: editData.properties,
-                [CSV_FILENAME]: editData.csvFilename,
-            });
-        },
-        [reset]
-    );
-
     useEffect(() => {
         if (editData) {
-            if (dialogMode === TabularModificationType.CREATION) {
-                initTabularCreationData(editData);
-            } else {
-                initTabularModificationData(editData);
-            }
+            reset(isCreation ? tabularCreationDtoToForm(editData) : tabularModificationDtoToForm(editData));
         }
-    }, [editData, dialogMode, initTabularCreationData, initTabularModificationData]);
+    }, [editData, isCreation, reset]);
 
     const submitTabularModification = useCallback(
         (formData: TabularFormType) => {
-            const modificationType = TABULAR_MODIFICATION_TYPES[formData[TYPE]];
-            const modificationsTable = formData[MODIFICATIONS_TABLE];
-            // Convert modifications to the back-end format based on the type
-            const modifications = transformModificationsTable(modificationType, modificationsTable);
+            const { type, modificationType, modifications, csvFilename, properties } = isCreation
+                ? tabularCreationFormToDto(formData)
+                : tabularModificationFormToDto(formData);
 
             createTabularModification({
                 studyUuid,
@@ -170,58 +88,16 @@ export function TabularDialog({
                 modificationType,
                 modifications,
                 modificationUuid: editData?.uuid,
-                tabularType: ModificationType.TABULAR_MODIFICATION,
-                csvFilename: formData[CSV_FILENAME],
-                properties: formData[TABULAR_PROPERTIES],
+                tabularType: type,
+                csvFilename,
+                properties,
             }).catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'TabularModificationError' });
+                snackWithFallback(snackError, error, {
+                    headerId: isCreation ? 'TabularCreationError' : 'TabularModificationError',
+                });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
-    );
-
-    const submitTabularCreation = useCallback(
-        (formData: TabularFormType) => {
-            const modificationType = TABULAR_CREATION_TYPES[formData[TYPE]];
-            const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
-                const creation: Modification = {
-                    type: modificationType,
-                };
-                // first transform and clean "property_*" fields
-                const propertiesModifications = transformProperties(row);
-
-                // then transform all other fields
-                for (const key of Object.keys(row)) {
-                    const entry = convertCreationFieldFromFrontToBack(key, row[key]);
-                    creation[entry.key] = entry.value;
-                }
-                // For now, we do not manage reactive limits by diagram
-                if (
-                    modificationType === ModificationType.GENERATOR_CREATION ||
-                    modificationType === ModificationType.BATTERY_CREATION
-                ) {
-                    convertReactiveCapabilityCurvePointsFromFrontToBack(creation);
-                }
-
-                if (propertiesModifications.length > 0) {
-                    creation[TABULAR_PROPERTIES] = propertiesModifications;
-                }
-                return creation;
-            });
-            createTabularModification({
-                studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationType,
-                modifications,
-                modificationUuid: editData?.uuid,
-                tabularType: ModificationType.TABULAR_CREATION,
-                csvFilename: formData[CSV_FILENAME],
-                properties: formData[TABULAR_PROPERTIES],
-            }).catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'TabularCreationError' });
-            });
-        },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, isCreation, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {
@@ -238,23 +114,31 @@ export function TabularDialog({
         return isUpdate && editDataFetchStatus === FetchStatus.RUNNING;
     }, [editDataFetchStatus, isUpdate]);
 
+    const renderStudyActions = useCallback(
+        (context: TabularFormActionsContext) => <TabularStudyActions {...context} />,
+        []
+    );
+
     return (
         <CustomFormProvider validationSchema={tabularFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}
                 onClear={clear}
-                onSave={
-                    dialogMode === TabularModificationType.CREATION ? submitTabularCreation : submitTabularModification
-                }
+                onSave={submitTabularModification}
                 disabledSave={disableSave}
-                titleId={dialogMode === TabularModificationType.CREATION ? 'TabularCreation' : 'TabularModification'}
+                titleId={isCreation ? 'TabularCreation' : 'TabularModification'}
                 open={open}
                 isDataFetching={dataFetching}
                 slotProps={{ paper: { sx: { height: '95vh' } } }}
                 {...dialogProps}
             >
-                <TabularForm dataFetching={dataFetching} dialogMode={dialogMode} />
+                <TabularForm
+                    dataFetching={dataFetching}
+                    dialogMode={dialogMode}
+                    renderActions={renderStudyActions}
+                    showCsvFileName
+                />
             </ModificationDialog>
         </CustomFormProvider>
     );

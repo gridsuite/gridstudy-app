@@ -21,6 +21,9 @@ import {
     getConnectivityFormData,
     LoadFormInfos,
     loadCreationFormToDto,
+    LoadDialogTab,
+    LOAD_TAB_FIELDS,
+    useTabs,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -80,6 +83,13 @@ export function LoadCreationDialog({
     });
 
     const { reset } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<LoadDialogTab>({
+        defaultTab: LoadDialogTab.CONNECTIVITY_TAB,
+        errors,
+        tabFields: LOAD_TAB_FIELDS,
+    });
 
     const fromSearchCopyToFormValues = (load: LoadFormInfos) => ({
         equipmentID: load.id + '(1)',
@@ -152,6 +162,7 @@ export function LoadCreationDialog({
                 maxWidth={'md'}
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
@@ -160,6 +171,7 @@ export function LoadCreationDialog({
                     voltageLevelOptions={voltageLevelOptions}
                     PositionDiagramPane={PositionDiagramPane}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
+                    useTabsReturn={useTabsReturn}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

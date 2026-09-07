@@ -18,6 +18,7 @@ import {
     sanitizeString,
     snackWithFallback,
     useSnackMessage,
+    VoltageLevelCreationDto,
     VoltageLevelOption,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -55,11 +56,7 @@ import { getNewVoltageLevelOptions, mergeVoltageLevelOptions } from '../../../ut
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
-import {
-    AttachLineInfo,
-    ExtendedVoltageLevelCreationInfo,
-    VoltageLevelCreationInfo,
-} from '../../../../services/network-modification-types';
+import { AttachLineInfo } from '../../../../services/network-modification-types';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -94,6 +91,24 @@ const formSchema = yup
 
 export type LineAttachToVoltageLevelFormInfos = yup.InferType<typeof formSchema>;
 
+const emptyAttachmentPoint: VoltageLevelCreationDto = {
+    type: ModificationType.VOLTAGE_LEVEL_CREATION,
+    equipmentId: '',
+    equipmentName: null,
+    substationId: null,
+    substationCreation: null,
+    nominalV: null,
+    lowVoltageLimit: null,
+    highVoltageLimit: null,
+    ipMin: null,
+    ipMax: null,
+    busbarCount: 1,
+    sectionCount: 1,
+    switchKinds: [],
+    couplingDevices: [],
+    properties: null,
+};
+
 interface LineAttachToVoltageLevelDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
@@ -126,16 +141,8 @@ const LineAttachToVoltageLevelDialog = ({
     const currentNodeUuid = currentNode?.id;
 
     const [attachmentLine, setAttachmentLine] = useState<LineCreationDtoWithId>();
-    const [newVoltageLevel, setNewVoltageLevel] = useState<ExtendedVoltageLevelCreationInfo>();
-    const [attachmentPoint, setAttachmentPoint] = useState<ExtendedVoltageLevelCreationInfo>({
-        type: ModificationType.VOLTAGE_LEVEL_CREATION,
-        studyUuid: studyUuid,
-        nodeUuid: currentNodeUuid,
-        equipmentId: '',
-        properties: null,
-        ipMax: null,
-        ipMin: null,
-    });
+    const [newVoltageLevel, setNewVoltageLevel] = useState<VoltageLevelCreationDto>();
+    const [attachmentPoint, setAttachmentPoint] = useState<VoltageLevelCreationDto>(emptyAttachmentPoint);
 
     const { snackError } = useSnackMessage();
 
@@ -146,7 +153,7 @@ const LineAttachToVoltageLevelDialog = ({
         resolver: yupResolver<DeepNullable<LineAttachToVoltageLevelFormInfos>>(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
+    const { reset, setValue, getValues, trigger } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (lineAttach: AttachLineInfo) => {
@@ -186,7 +193,7 @@ const LineAttachToVoltageLevelDialog = ({
                 setNewVoltageLevel(newVoltageLevelInfos);
                 const formattedVoltageLevel = {
                     id: newVoltageLevelInfos.equipmentId,
-                    name: newVoltageLevelInfos.equipmentName,
+                    name: newVoltageLevelInfos.equipmentName ?? '',
                     exist: false,
                     busbarCount: newVoltageLevelInfos.busbarCount,
                     sectionCount: newVoltageLevelInfos.sectionCount,
@@ -307,55 +314,18 @@ const LineAttachToVoltageLevelDialog = ({
     );
 
     const onVoltageLevelCreationDo = useCallback(
-        ({
-            equipmentId,
-            equipmentName,
-            substationId,
-            substationCreation,
-            nominalV,
-            lowVoltageLimit,
-            highVoltageLimit,
-            ipMin,
-            ipMax,
-            busbarCount,
-            sectionCount,
-            switchKinds,
-            couplingDevices,
-            topologyKind,
-            properties,
-        }: VoltageLevelCreationInfo) => {
+        (preparedVoltageLevel: VoltageLevelCreationDto) => {
             return new Promise<string>(() => {
-                const preparedVoltageLevel: ExtendedVoltageLevelCreationInfo = {
-                    type: ModificationType.VOLTAGE_LEVEL_CREATION,
-                    nodeUuid: currentNodeUuid,
-                    studyUuid: studyUuid,
-                    equipmentId,
-                    equipmentName,
-                    substationId: substationId,
-                    substationCreation: substationCreation,
-                    nominalV: nominalV,
-                    lowVoltageLimit: lowVoltageLimit,
-                    highVoltageLimit: highVoltageLimit,
-                    ipMin: ipMin,
-                    ipMax: ipMax,
-                    busbarCount: busbarCount,
-                    sectionCount: sectionCount,
-                    switchKinds: switchKinds,
-                    couplingDevices: couplingDevices,
-                    topologyKind: topologyKind,
-                    properties: properties,
-                };
-
                 // we keep the old voltage level id, so it can be removed for from voltage level options
                 const oldVoltageLevelId = newVoltageLevel?.equipmentId;
 
                 const formattedVoltageLevel = {
                     id: preparedVoltageLevel.equipmentId,
-                    name: preparedVoltageLevel.equipmentName ?? undefined,
+                    name: preparedVoltageLevel.equipmentName ?? '',
                     exist: false,
-                    busbarCount: busbarCount!,
-                    sectionCount: sectionCount!,
-                    switchKinds: switchKinds ?? [],
+                    busbarCount: preparedVoltageLevel.busbarCount,
+                    sectionCount: preparedVoltageLevel.sectionCount,
+                    switchKinds: preparedVoltageLevel.switchKinds ?? [],
                 };
 
                 // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
@@ -368,55 +338,30 @@ const LineAttachToVoltageLevelDialog = ({
                 setVoltageLevelOptions(newVoltageLevelOptions);
 
                 setNewVoltageLevel(preparedVoltageLevel);
+                // The connectivity sub-fields cannot be addressed individually: commons-ui builds their schema with
+                // FieldConstants enum keys, which react-hook-form's path types resolve to never. Set the whole
+                // connectivity instead, then validate the voltage level alone so that emptying the busbar section
+                // does not immediately raise its own "required" error.
                 setValue(
-                    `${CONNECTIVITY}.${VOLTAGE_LEVEL}` as any,
+                    CONNECTIVITY,
                     {
-                        [ID]: preparedVoltageLevel.equipmentId,
+                        ...getValues(CONNECTIVITY),
+                        [VOLTAGE_LEVEL]: { [ID]: preparedVoltageLevel.equipmentId },
+                        [BUS_OR_BUSBAR_SECTION]: null,
                     },
                     {
-                        shouldValidate: true,
                         shouldDirty: true,
                     }
                 );
-                setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}` as any, null);
+                trigger(`${CONNECTIVITY}.${VOLTAGE_LEVEL}`);
             });
         },
-        [currentNodeUuid, studyUuid, newVoltageLevel?.equipmentId, voltageLevelOptions, setValue]
+        [newVoltageLevel?.equipmentId, voltageLevelOptions, setValue, getValues, trigger]
     );
 
     const onAttachmentPointModificationDo = useCallback(
-        ({
-            equipmentId,
-            equipmentName,
-            nominalV,
-            substationCreation,
-            lowVoltageLimit,
-            highVoltageLimit,
-            busbarCount,
-            sectionCount,
-            ipMin,
-            ipMax,
-            topologyKind,
-            properties,
-        }: VoltageLevelCreationInfo) => {
+        (attachmentPointData: VoltageLevelCreationDto) => {
             return new Promise<string>(() => {
-                const attachmentPointData: ExtendedVoltageLevelCreationInfo = {
-                    type: ModificationType.VOLTAGE_LEVEL_CREATION,
-                    nodeUuid: currentNodeUuid,
-                    studyUuid: studyUuid,
-                    equipmentId,
-                    equipmentName,
-                    nominalV: nominalV,
-                    substationCreation: substationCreation,
-                    lowVoltageLimit: lowVoltageLimit,
-                    highVoltageLimit: highVoltageLimit,
-                    busbarCount: busbarCount,
-                    sectionCount: sectionCount,
-                    ipMin: ipMin,
-                    ipMax: ipMax,
-                    topologyKind: topologyKind,
-                    properties: properties,
-                };
                 setAttachmentPoint(attachmentPointData);
                 setValue(`${ATTACHMENT_POINT_ID}`, attachmentPointData.equipmentId, {
                     shouldValidate: true,
@@ -432,7 +377,7 @@ const LineAttachToVoltageLevelDialog = ({
                 });
             });
         },
-        [currentNodeUuid, setValue, studyUuid]
+        [setValue]
     );
 
     const open = useOpenShortWaitFetching({

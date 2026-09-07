@@ -11,6 +11,8 @@ import {
     EquipmentType,
     FieldConstants,
     getConcatenatedProperties,
+    LOAD_TAB_FIELDS,
+    LoadDialogTab,
     LoadForm,
     LoadFormInfos,
     LoadModificationDto,
@@ -21,6 +23,7 @@ import {
     loadModificationFormToDto,
     snackWithFallback,
     useSnackMessage,
+    useTabs,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -71,6 +74,13 @@ export default function LoadModificationDialog({
     });
 
     const { reset, getValues } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<LoadDialogTab>({
+        defaultTab: LoadDialogTab.CONNECTIVITY_TAB,
+        errors,
+        tabFields: LOAD_TAB_FIELDS,
+    });
 
     const fetchBusesOrBusbarSections = useCallback(
         (voltageLevelId: string) =>
@@ -178,6 +188,7 @@ export default function LoadModificationDialog({
                 onSave={onSubmit}
                 maxWidth={'md'}
                 titleId="ModifyLoad"
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 keepMounted={true}
                 isDataFetching={
@@ -200,6 +211,7 @@ export default function LoadModificationDialog({
                         voltageLevelOptions={voltageLevelOptions}
                         PositionDiagramPane={PositionDiagramPane}
                         fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
+                        useTabsReturn={useTabsReturn}
                     />
                 )}
             </ModificationDialog>

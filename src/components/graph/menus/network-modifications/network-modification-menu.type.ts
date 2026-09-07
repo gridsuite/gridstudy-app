@@ -9,6 +9,7 @@ import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 import { JSX } from 'react';
+import { ModificationContainer } from '@gridsuite/commons-ui';
 
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
@@ -47,6 +48,11 @@ export interface NetworkModificationCopyInfos {
     copyType: NetworkModificationCopyType;
     originStudyUuid?: UUID;
     originNodeUuid?: UUID;
+}
+
+export interface ModificationMoveOrCopyInfos {
+    modificationUuid: UUID;
+    source?: ModificationContainer;
 }
 
 export interface MenuDefinitionSubItem {

@@ -55,7 +55,9 @@ import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
-import { selectActiveWorkspaceId } from 'redux/slices/workspace-selectors';
+import { selectActiveWorkspaceId, selectPanelEditMode } from 'redux/slices/workspace-selectors';
+import type { RootState } from 'redux/store';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { getLocalStoragePanelState, saveLocalStoragePanelState } from 'redux/session-storage/workspace-local-storage';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { DiagramAdditionalMetadata } from '../diagram.type';
@@ -86,7 +88,6 @@ type NetworkAreaDiagramContentProps = {
     readonly onMoveNode: (voltageLevelId: string, x: number, y: number) => void;
     readonly onMoveTextNode: (voltageLevelId: string, shiftX: number, shiftY: number) => void;
     readonly onReplaceNad: (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => void;
-    readonly onSaveNad?: () => void;
 };
 
 const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
@@ -112,7 +113,6 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         loadingState,
         isNadCreationFromFilter,
         showInSpreadsheet,
-        onSaveNad,
     } = props;
     const svgRef = useRef(null);
     const { snackError, snackInfo } = useSnackMessage();
@@ -128,7 +128,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
+    const isEditNadMode = useSelector((state: RootState) => selectPanelEditMode(state, nadPanelId));
+    const { setPanelEditMode } = useWorkspacePanelActions();
     const workspaceId = useSelector(selectActiveWorkspaceId);
 
     // Workaround for https://github.com/react/react/issues/35187 and https://github.com/react/react/issues/35034:
@@ -163,15 +164,9 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         diagramViewerRef.current.enableDragInteraction = isEditNadMode;
     }
 
-    // save nad when exiting edit mode
-    const handleSetIsEditNadMode = useCallback(
-        (newMode: boolean) => {
-            if (isEditNadMode && !newMode) {
-                onSaveNad?.();
-            }
-            setIsEditNadMode(newMode);
-        },
-        [isEditNadMode, onSaveNad]
+    const handleToggleEditNadMode = useCallback(
+        (editMode: boolean) => setPanelEditMode({ panelId: nadPanelId, editMode }),
+        [nadPanelId, setPanelEditMode]
     );
 
     const handleToggleHover: OnToggleNadHoverCallbackType = useEffectEvent(
@@ -600,7 +595,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 onUpdate={handleUpdateNadConfig}
                 onLoad={handleReplaceNadConfig}
                 isEditNadMode={isEditNadMode}
-                onToggleEditNadMode={handleSetIsEditNadMode}
+                onToggleEditNadMode={handleToggleEditNadMode}
                 onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                 onAddVoltageLevel={handleAddVoltageLevel}
                 onAddVoltageLevelsFromFilter={handleAddVoltageLevelsFromFilter}

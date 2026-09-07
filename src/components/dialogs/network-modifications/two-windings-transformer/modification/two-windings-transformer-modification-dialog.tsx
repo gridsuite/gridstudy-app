@@ -21,6 +21,7 @@ import {
     snackWithFallback,
     TapChangerStep,
     toTapChangerStepList,
+    TwoWindingsTransformerDialogTab,
     TwoWindingsTransformerForm,
     TwoWindingsTransformerMapInfos,
     twoWindingsTransformerModificationDtoToForm,
@@ -29,7 +30,9 @@ import {
     TwoWindingsTransformerModificationFormData,
     twoWindingsTransformerModificationFormSchema,
     twoWindingsTransformerModificationFormToDto,
+    TWT_TAB_FIELDS,
     useSnackMessage,
+    useTabs,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -122,6 +125,14 @@ const TwoWindingsTransformerModificationDialog = ({
         ),
     });
     const { reset, getValues } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<TwoWindingsTransformerDialogTab>({
+        defaultTab: TwoWindingsTransformerDialogTab.CONNECTIVITY_TAB,
+        errors,
+        tabFields: TWT_TAB_FIELDS,
+    });
+
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const fetchBusesOrBusbarSections = useCallback(
@@ -370,6 +381,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 titleId="ModifyTwoWindingsTransformer"
                 onClear={clear}
                 onSave={onSubmit}
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
@@ -399,6 +411,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         isModification
                         twtToModify={twtToModify}
                         editData={editData}
+                        useTabsReturn={useTabsReturn}
                     />
                 )}
             </ModificationDialog>

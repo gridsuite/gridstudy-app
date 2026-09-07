@@ -9,7 +9,6 @@ import {
     CustomFormProvider,
     EquipmentType,
     snackWithFallback,
-    toModificationProperties,
     useSnackMessage,
     DeepNullable,
     FieldConstants,
@@ -26,6 +25,9 @@ import {
     substationCreationEmptyFormData,
     copyEquipmentPropertiesForCreation,
     VoltageLevelDto,
+    useTabs,
+    VoltageLevelTab,
+    VOLTAGE_LEVEL_TAB_FIELDS,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -40,14 +42,10 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import { UUID } from 'node:crypto';
-import {
-    AttachedSubstationCreationInfo,
-    VoltageLevelCreationInfo,
-} from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { fetchEquipmentsIds } from 'services/study/network-map';
 
-const voltageLevelDtoToForm = (formInfos: VoltageLevelDto, intl?: IntlShape) => ({
+const voltageLevelDtoToForm = (formInfos: VoltageLevelDto, intl?: IntlShape): VoltageLevelCreationFormData => ({
     [FieldConstants.EQUIPMENT_ID]: formInfos?.id,
     [FieldConstants.EQUIPMENT_NAME]: formInfos?.name ?? '',
     [FieldConstants.TOPOLOGY_KIND]: formInfos?.topologyKind ?? null,
@@ -85,13 +83,13 @@ interface VoltageLevelCreationEditData extends VoltageLevelCreationDto {
     uuid?: UUID;
 }
 interface VoltageLevelCreationDialogProps {
-    editData?: VoltageLevelCreationEditData;
+    editData?: VoltageLevelCreationEditData | null;
     currentNode: CurrentTreeNode;
-    studyUuid: string;
+    studyUuid: UUID;
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
     editDataFetchStatus?: string;
-    onCreateVoltageLevel?: (data: VoltageLevelCreationInfo) => Promise<string>;
+    onCreateVoltageLevel?: (voltageLevel: VoltageLevelCreationDto) => Promise<string>;
     isAttachmentPointModification?: boolean;
     titleId?: string;
     open?: boolean;
@@ -116,7 +114,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
-    onCreateVoltageLevel = createVoltageLevel,
+    onCreateVoltageLevel,
     isAttachmentPointModification = false,
     titleId = 'CreateVoltageLevel',
     ...dialogProps
@@ -144,25 +142,38 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
     const { reset, getValues, trigger, subscribe } = formMethods;
 
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<VoltageLevelTab>({
+        defaultTab: VoltageLevelTab.SUBSTATION_TAB,
+        errors,
+        tabFields: VOLTAGE_LEVEL_TAB_FIELDS,
+    });
+
     const intl = useIntl();
 
     const applyAttachmentPointOverrides = useCallback(
-        (formData: Record<string, any>) => {
-            if (isAttachmentPointModification) {
-                formData[FieldConstants.HIDE_NOMINAL_VOLTAGE] = true;
-                formData[FieldConstants.HIDE_BUS_BAR_SECTION] = true;
-                formData[FieldConstants.ADD_SUBSTATION_CREATION] = true;
-            }
-        },
+        (formData: VoltageLevelCreationFormData): VoltageLevelCreationFormData =>
+            isAttachmentPointModification
+                ? {
+                      ...formData,
+                      [FieldConstants.HIDE_NOMINAL_VOLTAGE]: true,
+                      [FieldConstants.HIDE_BUS_BAR_SECTION]: true,
+                      [FieldConstants.ADD_SUBSTATION_CREATION]: true,
+                  }
+                : formData,
         [isAttachmentPointModification]
     );
 
     const fromSearchCopyToFormValues = useCallback(
         (voltageLevel: VoltageLevelDto) => {
             const formData = voltageLevelDtoToForm(voltageLevel, intl);
-            formData[FieldConstants.EQUIPMENT_ID] += '(1)';
-            applyAttachmentPointOverrides(formData);
-            reset(formData, { keepDefaultValues: true });
+            reset(
+                applyAttachmentPointOverrides({
+                    ...formData,
+                    [FieldConstants.EQUIPMENT_ID]: `${formData[FieldConstants.EQUIPMENT_ID]}(1)`,
+                }),
+                { keepDefaultValues: true }
+            );
 
             if (!voltageLevel.isSymmetrical) {
                 snackWarning({
@@ -175,9 +186,9 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
 
     const fromEditDataToFormValues = useCallback(
         (editDto: VoltageLevelCreationDto) => {
-            const formData = voltageLevelCreationDtoToForm(editDto, intl, true);
-            applyAttachmentPointOverrides(formData);
-            reset(formData, { keepDefaultValues: true });
+            reset(applyAttachmentPointOverrides(voltageLevelCreationDtoToForm(editDto, intl, true)), {
+                keepDefaultValues: true,
+            });
         },
         [applyAttachmentPointOverrides, intl, reset]
     );
@@ -185,7 +196,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
             fetchEquipmentsIds(
-                studyUuid as UUID,
+                studyUuid,
                 currentNodeUuid,
                 currentRootNetworkUuid,
                 undefined,
@@ -256,33 +267,28 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
+    // Without a caller-provided handler the dialog saves the modification itself, and only then the context is needed
+    const saveVoltageLevel = useCallback(
+        (voltageLevel: VoltageLevelCreationDto) =>
+            onCreateVoltageLevel
+                ? onCreateVoltageLevel(voltageLevel)
+                : createVoltageLevel({
+                      ...voltageLevel,
+                      studyUuid: studyUuid,
+                      nodeUuid: currentNodeUuid,
+                      isUpdate: !!editData,
+                      modificationUuid: editData?.uuid,
+                  }),
+        [onCreateVoltageLevel, studyUuid, currentNodeUuid, editData]
+    );
+
     const onSubmit = useCallback(
         (voltageLevel: VoltageLevelCreationFormData) => {
-            const dto = voltageLevelCreationFormToDto(voltageLevel);
-            onCreateVoltageLevel({
-                studyUuid: studyUuid as UUID,
-                nodeUuid: currentNodeUuid,
-                equipmentId: dto.equipmentId,
-                equipmentName: dto.equipmentName ?? undefined,
-                substationId: dto.substationId,
-                substationCreation: dto.substationCreation as AttachedSubstationCreationInfo | null,
-                nominalV: dto.nominalV,
-                lowVoltageLimit: dto.lowVoltageLimit,
-                highVoltageLimit: dto.highVoltageLimit,
-                ipMin: dto.ipMin,
-                ipMax: dto.ipMax,
-                busbarCount: dto.busbarCount,
-                sectionCount: dto.sectionCount,
-                switchKinds: dto.switchKinds,
-                couplingDevices: dto.couplingDevices,
-                isUpdate: !!editData,
-                modificationUuid: editData?.uuid,
-                properties: toModificationProperties(voltageLevel),
-            }).catch((error: Error) => {
+            saveVoltageLevel(voltageLevelCreationFormToDto(voltageLevel)).catch((error: Error) => {
                 snackWithFallback(snackError, error, { headerId: 'VoltageLevelCreationError' });
             });
         },
-        [onCreateVoltageLevel, studyUuid, currentNodeUuid, editData, snackError]
+        [saveVoltageLevel, snackError]
     );
 
     const clear = useCallback(() => {
@@ -304,6 +310,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 maxWidth={'md'}
                 titleId={titleId}
                 searchCopy={searchCopy}
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 slotProps={{
@@ -318,6 +325,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
                 <VoltageLevelCreationForm
                     substationOptions={substations}
                     showDeleteSubstationButton={!isAttachmentPointModification}
+                    useTabsReturn={useTabsReturn}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

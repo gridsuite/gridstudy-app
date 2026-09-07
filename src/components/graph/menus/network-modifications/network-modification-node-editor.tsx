@@ -12,7 +12,6 @@ import {
     ElementType,
     EquipmentType,
     ErrorMessage,
-    ExcludedNetworkModifications,
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
@@ -22,9 +21,11 @@ import {
     NetworkModificationMetadata,
     NetworkModificationsTable,
     NotificationsUrlKeys,
+    ReferenceModificationInfos,
     removeNullFields,
     setModificationMetadata,
     snackWithFallback,
+    TabularModificationType,
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
@@ -61,7 +62,6 @@ import ShuntCompensatorCreationDialog from 'components/dialogs/network-modificat
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import { TabularModificationType } from 'components/dialogs/network-modifications/tabular/tabular-common';
 import { TabularDialog } from 'components/dialogs/network-modifications/tabular/tabular-dialog';
 import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
@@ -91,14 +91,15 @@ import { createCompositeModifications, updateCompositeModifications } from '../.
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
     assembleModificationsIntoComposite,
-    fetchExcludedNetworkModifications,
     fetchNetworkModifications,
+    shareCompositeModification,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
     MenuSection,
+    ModificationMoveOrCopyInfos,
     NetworkModificationCopyInfos,
     NetworkModificationCopyType,
     NetworkModificationData,
@@ -114,6 +115,7 @@ import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
     isNodeDeletedNotification,
+    isRootNetworksUpdatedNotification,
     parseEventData,
 } from 'types/notification-types';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
@@ -155,7 +157,6 @@ const NetworkModificationNodeEditor = () => {
     const createdRootNetworksPreviousLength = usePrevious(createdRootNetworks.length);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
-    const [modificationsToExclude, setModificationsToExclude] = useState<ExcludedNetworkModifications[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -169,7 +170,7 @@ const NetworkModificationNodeEditor = () => {
         []
     );
 
-    // TODO : this is temporary, until copy/paste/save is done for the shared modifications in GRD-4785 :
+    // TODO : this is temporary, until merge/delete is done for the shared modification
     const selectionContainsShared: boolean = useMemo(() => {
         return selectedNetworkModifications.some(
             (modification: ComposedModificationMetadata) =>
@@ -218,7 +219,7 @@ const NetworkModificationNodeEditor = () => {
     // a modification on a public study which is in the clipboard.
     // We don't have precision on notifications to do this for now.
     const handleValidatedDialog = () => {
-        if (editData?.uuid && networkModificationsToCopy.includes(editData?.uuid)) {
+        if (editData?.uuid && networkModificationsToCopy.some((m) => m.uuid === editData?.uuid)) {
             cleanClipboard();
         }
     };
@@ -706,28 +707,6 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError]);
 
-    const dofetchExcludedNetworkModifications = useCallback(() => {
-        // Do not fetch modifications status on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
-            return;
-        }
-        setIsFetchingModifications(true);
-        fetchExcludedNetworkModifications(studyUuid, currentNode.id)
-            .then((res: ExcludedNetworkModifications[]) => {
-                // Check if during asynchronous request currentNode has already changed
-                // otherwise accept fetch results
-                if (currentNode.id === currentNodeIdRef.current) {
-                    setModificationsToExclude(res);
-                }
-            })
-            .catch((error: Error) => {
-                snackWithFallback(snackError, error);
-            })
-            .finally(() => {
-                setIsFetchingModifications(false);
-            });
-    }, [currentNode?.type, currentNode?.id, studyUuid, snackError]);
-
     useEffect(() => {
         if (!currentNode) {
             return;
@@ -735,7 +714,7 @@ const NetworkModificationNodeEditor = () => {
         // first time with currentNode initialized then fetch modifications
         // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
         // OR next time if currentNodeId changed then fetch modifications
-        // OR when number of root networks has changed to fetch new applicabilities
+        // OR when number of root networks has changed
         const hasNodeChanged = !currentNodeIdRef.current || currentNodeIdRef.current !== currentNode.id;
         if (
             hasNodeChanged ||
@@ -744,10 +723,8 @@ const NetworkModificationNodeEditor = () => {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
             setModifications([]);
-            setModificationsToExclude([]);
             setModificationsToRestore([]);
             dofetchNetworkModifications();
-            dofetchExcludedNetworkModifications();
         }
     }, [
         createdRootNetworksLength,
@@ -755,9 +732,7 @@ const NetworkModificationNodeEditor = () => {
         currentNode,
         dispatch,
         dofetchNetworkModifications,
-        dofetchExcludedNetworkModifications,
         modifications,
-        modificationsToExclude,
     ]);
 
     const handleNameChange = useCallback(
@@ -791,7 +766,6 @@ const NetworkModificationNodeEditor = () => {
                     return;
                 }
                 dofetchNetworkModifications();
-                dofetchExcludedNetworkModifications();
             }
             if (isModificationsDeleteFinishedNotification(eventData)) {
                 if (currentNodeIdRef.current !== eventData.headers.parentNode) {
@@ -799,8 +773,12 @@ const NetworkModificationNodeEditor = () => {
                 }
                 dofetchNetworkModifications();
             }
+            // to get potentially updated network tags
+            if (isRootNetworksUpdatedNotification(eventData)) {
+                dofetchNetworkModifications();
+            }
         },
-        [dofetchNetworkModifications, cleanClipboard, dofetchExcludedNetworkModifications]
+        [dofetchNetworkModifications, cleanClipboard]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
@@ -845,7 +823,7 @@ const NetworkModificationNodeEditor = () => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
                 if (
                     networkModificationsToCopy.some((aCopiedModification) =>
-                        selectedModificationsUuid.includes(aCopiedModification)
+                        selectedModificationsUuid.includes(aCopiedModification.uuid)
                     )
                 ) {
                     cleanClipboard();
@@ -886,10 +864,25 @@ const NetworkModificationNodeEditor = () => {
         folderName,
         folderId,
     }: IElementCreationDialog) => {
-        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
-
         setSaveInProgress(true);
-        createCompositeModifications(name, description, folderId, selectedModificationsUuid)
+
+        Promise.all(
+            selectedNetworkModifications.map((item) =>
+                item.type === MODIFICATION_TYPES.MODIFICATION_REFERENCE.type
+                    ? fetchNetworkModification(item.uuid as UUID)
+                          .then((res) => res.json())
+                          .then((detail: ReferenceModificationInfos) => {
+                              if (detail.referenceId == null) {
+                                  throw new Error(`Missing referenceId for modification reference ${item.uuid}`);
+                              }
+                              return detail.referenceId;
+                          })
+                    : Promise.resolve(item.uuid)
+            )
+        )
+            .then((selectedModificationsUuid) =>
+                createCompositeModifications(name, description, folderId, selectedModificationsUuid)
+            )
             .then(() => {
                 snackInfo({
                     headerId: 'infoCreateModificationsMsg',
@@ -901,6 +894,37 @@ const NetworkModificationNodeEditor = () => {
             })
             .catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'errCreateModificationsMsg' });
+            })
+            .finally(() => {
+                setSaveInProgress(false);
+            });
+    };
+
+    const doShareCompositeModificationElement = ({
+        name,
+        description,
+        folderName,
+        folderId,
+    }: IElementCreationDialog) => {
+        const compositeToShare = selectedNetworkModifications[0];
+        // the selection may have been emptied by a refresh while the dialog was open
+        if (!compositeToShare) {
+            return;
+        }
+
+        setSaveInProgress(true);
+        shareCompositeModification(studyUuid, currentNode?.id, compositeToShare.uuid, name, description, folderId)
+            .then(() => {
+                snackInfo({
+                    headerId: 'infoShareModificationMsg',
+                    headerValues: {
+                        item: name,
+                        directory: folderName,
+                    },
+                });
+            })
+            .catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'errShareModificationMsg' });
             })
             .finally(() => {
                 setSaveInProgress(false);
@@ -939,39 +963,43 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
-    const selectedModificationsIds = useMemo(
-        () => selectedNetworkModifications.map((m) => m.uuid),
-        [selectedNetworkModifications]
-    );
-
     const doCutModifications = useCallback(() => {
         cutNetworkModifications({
-            networkModificationUuids: selectedModificationsIds,
+            networkModifications: selectedNetworkModifications,
             copyInfos: {
                 copyType: NetworkModificationCopyType.MOVE,
                 originStudyUuid: studyUuid ?? undefined,
                 originNodeUuid: currentNode?.id,
             },
         });
-    }, [cutNetworkModifications, currentNode?.id, selectedModificationsIds, studyUuid]);
+    }, [cutNetworkModifications, currentNode?.id, selectedNetworkModifications, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
         copyNetworkModifications({
-            networkModificationUuids: selectedModificationsIds,
+            networkModifications: selectedNetworkModifications,
             copyInfos: {
                 copyType: NetworkModificationCopyType.COPY,
                 originStudyUuid: studyUuid ?? undefined,
                 originNodeUuid: currentNode?.id,
             },
         });
-    }, [copyNetworkModifications, currentNode?.id, selectedModificationsIds, studyUuid]);
+    }, [copyNetworkModifications, currentNode?.id, selectedNetworkModifications, studyUuid]);
 
     const doPasteModifications = useCallback(() => {
         if (!copyInfos || !studyUuid || !currentNode?.id) {
             return;
         }
+        // no source hint: study-server now looks up each modification's real container itself
+        // (network-modification-server owns that data), instead of this having to guess it from
+        // whatever the table's selection happens to expose
+        const modificationsToMoveOrCopy: ModificationMoveOrCopyInfos[] = networkModificationsToCopy.map(
+            (modification) => ({
+                modificationUuid: modification.uuid,
+            })
+        );
+
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
-            copyOrMoveModifications(studyUuid, currentNode.id, networkModificationsToCopy, copyInfos)
+            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos)
                 .then(() => {
                     cleanClipboard(false);
                 })
@@ -981,7 +1009,7 @@ const NetworkModificationNodeEditor = () => {
                     });
                 });
         } else {
-            copyOrMoveModifications(studyUuid, currentNode.id, networkModificationsToCopy, copyInfos).catch((error) => {
+            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos).catch((error) => {
                 snackWithFallback(snackError, error, {
                     headerId: 'errDuplicateModificationMsg',
                 });
@@ -1061,6 +1089,14 @@ const NetworkModificationNodeEditor = () => {
             ? (JSON.parse(selectedNetworkModifications[0]?.messageValues)?.name ?? null)
             : null;
 
+    // Sharing moves the selected composite itself into gridexplore : it needs exactly one composite, and an
+    // already shared one (a reference) cannot be shared again. Only a composite of the node itself can be shared,
+    // not one nested in another composite, so the third condition: the modifications list holds the modifications of the node only
+    const isSharingAvailable =
+        selectedNetworkModifications.length === 1 &&
+        selectedNetworkModifications[0].type === ModificationType.COMPOSITE_MODIFICATION &&
+        modifications.some((modification) => modification.uuid === selectedNetworkModifications[0].uuid);
+
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
             return (
@@ -1092,8 +1128,6 @@ const NetworkModificationNodeEditor = () => {
                 currentNodeId={currentNode?.id}
                 currentRootNetworkUuid={currentRootNetworkUuid ?? undefined}
                 rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
-                modificationsToExclude={modificationsToExclude}
-                setModificationsToExclude={setModificationsToExclude}
                 isDisabled={isEditBlocked || mapDataLoading}
             />
         );
@@ -1116,6 +1150,8 @@ const NetworkModificationNodeEditor = () => {
                 <ElementSaveDialog
                     open={createCompositeModificationDialogOpen}
                     onSave={doCreateCompositeModificationsElements}
+                    onSaveShared={doShareCompositeModificationElement}
+                    createSharedDisabled={!isSharingAvailable}
                     OnUpdate={doUpdateCompositeModificationsElements}
                     onClose={() => setCreateCompositeModificationDialogOpen(false)}
                     type={ElementType.MODIFICATION}
@@ -1125,6 +1161,7 @@ const NetworkModificationNodeEditor = () => {
                     studyUuid={studyUuid}
                     selectorTitleId="SelectCompositeModificationTitle"
                     createLabelId="CreateCompositeModificationLabel"
+                    createSharedLabelId="ShareCompositeModificationLabel"
                     updateLabelId="UpdateCompositeModificationLabel"
                 />
             )
@@ -1168,9 +1205,17 @@ const NetworkModificationNodeEditor = () => {
             saveInProgress ||
             isRootNode ||
             isAssemblyDepthExceeded ||
-            isEditBlocked
+            isEditBlocked ||
+            selectionContainsShared
         );
-    }, [selectedNetworkModifications, saveInProgress, isRootNode, isAssemblyDepthExceeded, isEditBlocked]);
+    }, [
+        selectedNetworkModifications?.length,
+        saveInProgress,
+        isRootNode,
+        isAssemblyDepthExceeded,
+        isEditBlocked,
+        selectionContainsShared,
+    ]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
         return (
@@ -1258,7 +1303,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            disabled={disabledCompositeExport || selectionContainsShared}
+                            disabled={disabledCompositeExport}
                             data-testid="SaveModification"
                         >
                             <SaveIcon />
@@ -1275,8 +1320,7 @@ const NetworkModificationNodeEditor = () => {
                                 isEditBlocked ||
                                 mapDataLoading ||
                                 !currentNode ||
-                                isRootNode ||
-                                selectionContainsShared
+                                isRootNode
                             }
                             data-testid="CutModification"
                         >
@@ -1293,8 +1337,7 @@ const NetworkModificationNodeEditor = () => {
                                 selectedNetworkModifications.length === 0 ||
                                 isEditBlocked ||
                                 mapDataLoading ||
-                                isRootNode ||
-                                selectionContainsShared
+                                isRootNode
                             }
                             data-testid="CopyModification"
                         >
@@ -1317,7 +1360,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            disabled={isPasteButtonDisabled || isRootNode || selectionContainsShared}
+                            disabled={isPasteButtonDisabled || isRootNode}
                             data-testid="PasteModification"
                         >
                             <ContentPasteIcon />

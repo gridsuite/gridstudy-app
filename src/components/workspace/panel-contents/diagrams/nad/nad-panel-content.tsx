@@ -7,7 +7,6 @@
 
 import { memo, useCallback } from 'react';
 import { Box } from '@mui/material';
-import type { DiagramAdditionalMetadata } from '../../../../grid-layout/cards/diagrams/diagram.type';
 import NetworkAreaDiagramContent from '../../../../grid-layout/cards/diagrams/networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 import type { UUID } from 'node:crypto';
@@ -35,13 +34,12 @@ export const NadPanelContent = memo(function NadPanelContent({
 }: NadPanelContentProps) {
     const { addToNadNavigationHistory, associateVoltageLevelWithNad } = useWorkspacePanelActions();
 
-    const { diagram, loading, globalError, updateDiagram, handleSaveNad, replaceNadConfig, moveNode, moveTextNode } =
-        useNadDiagram({
-            panelId,
-            studyUuid,
-            currentNodeId,
-            currentRootNetworkUuid,
-        });
+    const { diagram, loading, globalError, editDiagram, replaceNadConfig, moveNode, moveTextNode } = useNadDiagram({
+        panelId,
+        studyUuid,
+        currentNodeId,
+        currentRootNetworkUuid,
+    });
 
     const { handleShowInSpreadsheet } = useDiagramNavigation();
 
@@ -64,25 +62,11 @@ export const NadPanelContent = memo(function NadPanelContent({
         [panelId, addToNadNavigationHistory, associateVoltageLevelWithNad]
     );
 
-    const handleUpdateVoltageLevels = useCallback(
-        (params: { voltageLevelIds: string[]; voltageLevelToExpandIds: string[]; voltageLevelToOmitIds: string[] }) => {
-            updateDiagram(params, true);
-        },
-        [updateDiagram]
-    );
-
     const handleUpdateVoltageLevelsFromFilter = useCallback(
         (filterUuid?: UUID) => {
-            updateDiagram({ currentFilterUuid: filterUuid }, true);
+            editDiagram({ currentFilterUuid: filterUuid });
         },
-        [updateDiagram]
-    );
-
-    const handleReplaceNad = useCallback(
-        (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => {
-            replaceNadConfig(name, nadConfigUuid, filterUuid);
-        },
-        [replaceNadConfig]
+        [editDiagram]
     );
 
     return (
@@ -96,13 +80,13 @@ export const NadPanelContent = memo(function NadPanelContent({
             >
                 <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
                     <NetworkAreaDiagramContent
-                        voltageLevelIds={diagram.voltageLevelIds || []}
-                        voltageLevelToExpandIds={diagram.voltageLevelToExpandIds || []}
-                        voltageLevelToOmitIds={diagram.voltageLevelToOmitIds || []}
+                        voltageLevelIds={diagram.voltageLevelIds}
+                        voltageLevelToExpandIds={diagram.voltageLevelToExpandIds}
+                        voltageLevelToOmitIds={diagram.voltageLevelToOmitIds}
                         showInSpreadsheet={handleShowInSpreadsheet}
                         svg={diagram.svg?.svg ?? undefined}
-                        svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
-                        additionalMetadata={diagram.svg?.additionalMetadata as DiagramAdditionalMetadata | undefined}
+                        svgMetadata={diagram.svg?.metadata ?? undefined}
+                        additionalMetadata={diagram.svg?.additionalMetadata ?? undefined}
                         svgVoltageLevels={diagram.voltageLevelIds}
                         hiddenVoltageBands={unselectedVlNames}
                         hiddenInfoSelectors={hiddenInfoSelectors}
@@ -111,12 +95,11 @@ export const NadPanelContent = memo(function NadPanelContent({
                         isNadCreationFromFilter={!!diagram.filterUuid}
                         visible
                         onVoltageLevelClick={handleVoltageLevelClick}
-                        onUpdateVoltageLevels={handleUpdateVoltageLevels}
+                        onUpdateVoltageLevels={editDiagram}
                         onUpdateVoltageLevelsFromFilter={handleUpdateVoltageLevelsFromFilter}
                         onMoveNode={moveNode}
                         onMoveTextNode={moveTextNode}
-                        onReplaceNad={handleReplaceNad}
-                        onSaveNad={handleSaveNad}
+                        onReplaceNad={replaceNadConfig}
                         nadPanelId={panelId}
                     />
                 </DiagramWrapper>

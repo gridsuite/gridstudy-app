@@ -38,7 +38,12 @@ const toCustomColumnNodesDialogFormValues = (nodeAliases: NodeAlias[]) => {
     return { [NODES_ALIASES]: nodeAliases };
 };
 
-export default function NodesConfigDialog({ open, nodeAliases, updateNodeAliases }: Readonly<NodesConfigDialogProps>) {
+export default function NodesConfigDialog({
+    open,
+    nodeAliases,
+    updateNodeAliases,
+    ...dialogProps
+}: Readonly<NodesConfigDialogProps>) {
     const formMethods = useForm<NodesForm>({
         defaultValues: initialNodesForm,
         resolver: yupResolver(nodesFormSchema),
@@ -91,6 +96,7 @@ export default function NodesConfigDialog({ open, nodeAliases, updateNodeAliases
                 onSave={onValidate}
                 onClear={() => null}
                 slotProps={{ paper: { sx: styles.dialogContent } }}
+                {...dialogProps}
             >
                 <Grid container>
                     <NodeConfigTable />
