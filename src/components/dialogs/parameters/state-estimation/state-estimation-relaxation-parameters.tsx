@@ -10,7 +10,7 @@ import { useIntl } from 'react-intl';
 import { IconButton, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { DndColumn, DndColumnType, DndTable, ElementType, EquipmentType } from '@gridsuite/commons-ui';
-import { FILTER, INVALIDATE, INVALIDATION_TYPE, SITE_RELAXATIONS } from '../../../utils/field-constants';
+import { FILTER, INVALIDATE, INVALIDATION_TYPE, AREA_INVALIDATIONS } from '../../../utils/field-constants';
 import { InvalidationType, TabValue } from './state-estimation-parameters-utils';
 
 const invalidationTypeLabelIds: Record<InvalidationType, string> = {
@@ -21,7 +21,7 @@ const invalidationTypeLabelIds: Record<InvalidationType, string> = {
 
 export const StateEstimationRelaxationParameters: FunctionComponent = () => {
     const intl = useIntl();
-    const formName = `${TabValue.RELAXATION}.${SITE_RELAXATIONS}`;
+    const formName = `${TabValue.AREA_INVALIDATION}.${AREA_INVALIDATIONS}`;
 
     const columnsDefinition = useMemo<DndColumn[]>(() => {
         const filtersHeaderTooltip = (
