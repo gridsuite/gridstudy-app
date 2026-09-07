@@ -24,7 +24,7 @@ function transformExpression(expr: string): string {
     return expr.replaceAll(regex, `$1.steps[string($2)]`);
 }
 
-const originalParse = instance.parse;
+const originalCompile = instance.compile;
 
 const normalizeFormula = (expr: string): string => transformExpression(expr.replaceAll('\\', '\\\\'));
 
@@ -41,7 +41,7 @@ const getCompiledFormula = (expr: string, cache?: CompiledFormulaCache): Compile
     let entry = cache?.get(expr);
     if (!entry) {
         try {
-            entry = { compiled: originalParse(normalizeFormula(expr)).compile() };
+            entry = { compiled: originalCompile(normalizeFormula(expr)) };
         } catch (error) {
             entry = { error };
         }

@@ -135,9 +135,9 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode?.type, theme, isDataEditable]
     );
 
-    // The Map lives in a ref, NOT in the memo below: gridContext is rebuilt on every currentNode
+    // The Map lives in a distinct memo, NOT in the memo below: gridContext is rebuilt on every currentNode
     // change, and creating the cache there would silently flush all compiled formulas per rebuild.
-    const compiledFormulaCache = useRef(createCompiledFormulaCache()).current;
+    const compiledFormulaCache = useMemo(() => createCompiledFormulaCache(), []);
     const gridContext = useMemo(
         () => ({ theme, currentNode, studyUuid, compiledFormulaCache }),
         [currentNode, studyUuid, theme, compiledFormulaCache]
