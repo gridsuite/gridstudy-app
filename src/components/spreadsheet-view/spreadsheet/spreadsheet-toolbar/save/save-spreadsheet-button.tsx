@@ -22,11 +22,12 @@ import {
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 import { type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import type { AgGridReact } from 'ag-grid-react';
-import type { ColDef } from 'ag-grid-community';
+import type { ColDef, CsvExportParams, ShouldRowBeSkippedParams } from 'ag-grid-community';
 import { spreadsheetStyles } from '../../../spreadsheet.style';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../../redux/reducer.type';
 import SaveNamingFilterDialog from './save-naming-filter-dialog';
+import { isCalculationRowType } from '../../../types/calculation.type';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
@@ -78,11 +79,22 @@ export default function SaveSpreadsheetButton({
 
     const getCsvProps = useCallback(
         (csvCase: SpreadsheetSaveOptionId.COPY_CSV | SpreadsheetSaveOptionId.EXPORT_CSV) => {
-            const gridCsvFunction =
-                csvCase === SpreadsheetSaveOptionId.COPY_CSV
-                    ? gridRef.current?.api.getDataAsCsv
-                    : gridRef.current?.api.exportDataAsCsv;
-            if (!gridCsvFunction) {
+            const isCopy = csvCase === SpreadsheetSaveOptionId.COPY_CSV;
+            const gridCsvFunction = (params?: CsvExportParams) => {
+                const exportParams = {
+                    ...params,
+                    shouldRowBeSkipped: (rowParams: ShouldRowBeSkippedParams): boolean => {
+                        const rowData: { rowType?: string } = rowParams.node?.data;
+                        // remove lines used to calculate
+                        return isCalculationRowType(rowData?.rowType);
+                    },
+                };
+
+                return isCopy
+                    ? gridRef.current?.api.getDataAsCsv(exportParams)
+                    : gridRef.current?.api.exportDataAsCsv(exportParams);
+            };
+            if (!gridRef.current?.api) {
                 console.error('Csv API is not available.');
                 return;
             }

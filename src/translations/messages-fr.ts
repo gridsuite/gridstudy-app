@@ -916,7 +916,6 @@ const messages_fr = {
     diagramConfigSave: 'Créer une image nodale de zone',
     diagramConfigUpdate: 'Remplacer une image nodale de zone',
     EditNad: 'Éditer',
-    apply: 'Appliquer',
     applied: 'Appliqué',
     notApplied: 'Non appliqué',
     ModificationsSelection: 'Sélection des modifications',
