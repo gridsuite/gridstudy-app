@@ -45,6 +45,7 @@ interface BasePanel {
     maximized: boolean;
     pinned: boolean;
     zIndex?: number; // Client-only, not persisted to backend
+    // WHY in BasePanel and not in NADPanel ? Does it exist in other panels ?
     editMode?: boolean; // Client-only, not persisted to backend
     restorePosition?: PanelPosition;
     restoreSize?: PanelSize;

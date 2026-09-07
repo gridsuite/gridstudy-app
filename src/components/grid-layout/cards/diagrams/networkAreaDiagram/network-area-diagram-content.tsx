@@ -129,7 +129,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const isEditNadMode = useSelector((state: RootState) => selectPanelEditMode(state, nadPanelId));
-    const { setPanelEditMode } = useWorkspacePanelActions();
+    const { togglePanelEditMode } = useWorkspacePanelActions();
     const workspaceId = useSelector(selectActiveWorkspaceId);
 
     // Workaround for https://github.com/react/react/issues/35187 and https://github.com/react/react/issues/35034:
@@ -165,8 +165,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     }
 
     const handleToggleEditNadMode = useCallback(
-        (editMode: boolean) => setPanelEditMode({ panelId: nadPanelId, editMode }),
-        [nadPanelId, setPanelEditMode]
+        () => togglePanelEditMode({ panelId: nadPanelId }),
+        [nadPanelId, togglePanelEditMode]
     );
 
     const handleToggleHover: OnToggleNadHoverCallbackType = useEffectEvent(

@@ -26,6 +26,7 @@ import { getWorkspacesMetadata, getWorkspace } from '../services/study/workspace
 import {
     getLocalStorageActiveWorkspaceId,
     getLocalStoragePanelStates,
+    normalizeWorkspacePanels,
 } from '../redux/session-storage/workspace-local-storage';
 
 import WaitingLoader from './utils/waiting-loader';
@@ -524,6 +525,7 @@ export function StudyContainer() {
                 .then((workspace) => {
                     if (workspace) {
                         const savedPanels = getLocalStoragePanelStates(studyUuid, workspace.id);
+                        workspace.panels = normalizeWorkspacePanels(workspace.panels);
                         workspace.panels.forEach((panel, index) => {
                             panel.zIndex = savedPanels[panel.id]?.zIndex ?? index + 1;
                         });

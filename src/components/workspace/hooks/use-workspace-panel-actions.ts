@@ -338,12 +338,12 @@ export const useWorkspacePanelActions = () => {
         [savePanels]
     );
 
-    const setPanelEditMode = useCallback(
-        ({ panelId, editMode }: { panelId: UUID; editMode: boolean }) => {
+    const togglePanelEditMode = useCallback(
+        ({ panelId }: { panelId: UUID }) => {
             const panel = selectPanel(store.getState(), panelId);
-            if (!panel || !!panel.editMode === editMode) return;
+            if (panel?.editMode === undefined) return;
             // Transient UI state - don't sync to backend
-            savePanels([{ ...panel, editMode }], false);
+            savePanels([{ ...panel, editMode: !panel.editMode }], false);
         },
         [savePanels]
     );
@@ -476,7 +476,7 @@ export const useWorkspacePanelActions = () => {
         associateSldToNad,
         dissociateSldFromNad,
         updateNADFields,
-        setPanelEditMode,
+        togglePanelEditMode,
         addToNadNavigationHistory,
         createNadAndAssociateSld,
         openToolPanel,

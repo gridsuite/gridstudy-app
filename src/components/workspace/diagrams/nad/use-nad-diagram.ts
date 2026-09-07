@@ -79,6 +79,8 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
     const abortControllerRef = useRef<AbortController | undefined>(undefined);
 
+    // latest diagram snapshot source of truth used for async work
+    // it doesn't copy the svg from the state, it's a shallow object copy
     const diagramRef = useRef(diagram);
 
     const updateDiagram = useCallback((updates: Partial<NetworkAreaDiagram>) => {

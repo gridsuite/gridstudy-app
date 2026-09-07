@@ -105,6 +105,7 @@ export const createNADPanel = ({
         title: title || config.title,
         initialVoltageLevelIds,
         navigationHistory: navigationHistory || [],
+        editMode: false,
         ...(nadConfigUuid && { nadConfigUuid }),
         ...(filterUuid && { filterUuid }),
         ...(currentFilterUuid && { currentFilterUuid }),

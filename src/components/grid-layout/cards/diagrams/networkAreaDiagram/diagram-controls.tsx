@@ -82,7 +82,7 @@ interface DiagramControlsProps {
     onUpdate?: (data: IElementUpdateDialog) => void;
     onLoad?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     isEditNadMode: boolean;
-    onToggleEditNadMode?: (isEditMode: boolean) => void;
+    onToggleEditNadMode?: () => void;
     onExpandAllVoltageLevels?: () => void;
     onAddVoltageLevel: (vlId: string) => void;
     onAddVoltageLevelsFromFilter: (elementUuid: UUID) => void;
@@ -190,7 +190,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     };
 
     const handleToggleEditMode = () => {
-        onToggleEditNadMode?.(!isEditNadMode);
+        onToggleEditNadMode?.();
     };
 
     const handleVoltageLevelSelect = useCallback(

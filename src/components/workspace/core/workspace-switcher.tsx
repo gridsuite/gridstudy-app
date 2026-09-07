@@ -66,6 +66,7 @@ import { AppState } from 'redux/reducer.type';
 import {
     getLocalStoragePanelStates,
     clearLocalStorageWorkspaceState,
+    normalizeWorkspacePanels,
     saveLocalStorageActiveWorkspaceId,
 } from '../../../redux/session-storage/workspace-local-storage';
 
@@ -148,6 +149,7 @@ export const WorkspaceSwitcher = memo(() => {
             if (!studyUuid) return;
             const workspace = await getWorkspace(studyUuid, workspaceId);
             const savedPanels = getLocalStoragePanelStates(studyUuid, workspaceId);
+            workspace.panels = normalizeWorkspacePanels(workspace.panels);
             workspace.panels.forEach((panel, index) => {
                 panel.zIndex = savedPanels[panel.id]?.zIndex ?? index + 1;
             });

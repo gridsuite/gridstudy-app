@@ -7,7 +7,7 @@
 
 import type { UUID } from 'node:crypto';
 import { LOCAL_STORAGE_KEY_PREFIX } from '../../utils/config-params';
-import { PanelType } from '../../components/workspace/types/workspace.types';
+import { PanelType, type PanelState } from '../../components/workspace/types/workspace.types';
 import { Viewport } from '@xyflow/react';
 import { ViewBoxLike } from '@svgdotjs/svg.js';
 
@@ -32,6 +32,20 @@ export type OtherPanelLocalState = BasePanelLocalState & {
 };
 
 export type PanelLocalState = TreePanelLocalState | NADPanelLocalState | OtherPanelLocalState;
+
+export function normalizeWorkspacePanelState(panel: PanelState): PanelState {
+    if (panel.type === PanelType.NAD) {
+        return {
+            ...panel,
+            editMode: panel.editMode ?? false,
+        };
+    }
+    return panel;
+}
+
+export function normalizeWorkspacePanels(panels: PanelState[]): PanelState[] {
+    return panels.map((panel) => normalizeWorkspacePanelState(panel));
+}
 
 interface WorkspacesLocalState {
     activeWorkspaceId?: UUID;
