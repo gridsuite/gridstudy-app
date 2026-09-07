@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import { ListItemIcon, ListItemText, Menu, MenuItem, useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
