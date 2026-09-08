@@ -91,6 +91,7 @@ import { copyOrMoveModifications } from '../../../../services/study';
 import {
     assembleModificationsIntoComposite,
     fetchNetworkModifications,
+    hasReferences,
     shareCompositeModification,
     stashModifications,
 } from '../../../../services/study/network-modifications';
@@ -168,6 +169,9 @@ const NetworkModificationNodeEditor = () => {
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
         []
     );
+    // nested references are lazily loaded by the table, so the selection alone can't tell : ask the backend
+    // for each selected composite, but only once the save dialog is open
+    const [selectionHasSharedContent, setSelectionHasSharedContent] = useState(false);
 
     // TODO : this is temporary, until merge/delete is done for the shared modification
     const selectionContainsShared: boolean = useMemo(() => {
@@ -212,6 +216,35 @@ const NetworkModificationNodeEditor = () => {
             cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
         });
     }, [cleanOtherTabsClipboard]);
+
+    useEffect(() => {
+        if (!createCompositeModificationDialogOpen) {
+            return;
+        }
+        if (selectionContainsShared) {
+            setSelectionHasSharedContent(true);
+            return;
+        }
+        const compositeUuids = selectedNetworkModifications
+            .filter((m) => m.type === ModificationType.COMPOSITE_MODIFICATION)
+            .map((m) => m.uuid);
+        if (compositeUuids.length === 0) {
+            setSelectionHasSharedContent(false);
+            return;
+        }
+        hasReferences(compositeUuids)
+            .then((result) => {
+                setSelectionHasSharedContent(result);
+            })
+            .catch((error) => snackWithFallback(snackError, error));
+    }, [
+        createCompositeModificationDialogOpen,
+        selectionContainsShared,
+        selectedNetworkModifications,
+        studyUuid,
+        currentNode?.id,
+        snackError,
+    ]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -1154,6 +1187,7 @@ const NetworkModificationNodeEditor = () => {
                     createLabelId="CreateCompositeModificationLabel"
                     createSharedLabelId="ShareCompositeModificationLabel"
                     updateLabelId="UpdateCompositeModificationLabel"
+                    alertMessageId={selectionHasSharedContent ? 'SharedModificationsSavedAsCopy' : undefined}
                 />
             )
         );

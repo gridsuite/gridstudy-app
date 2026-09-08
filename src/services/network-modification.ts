@@ -7,6 +7,7 @@
 
 import { backendFetchJson, LineTypeInfo } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES } from './study';
+import type { UUID } from 'node:crypto';
 
 const PREFIX_NETWORK_MODIFICATION_QUERIES = PREFIX_STUDY_QUERIES + '/v1';
 
