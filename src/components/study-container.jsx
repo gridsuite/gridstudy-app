@@ -418,7 +418,7 @@ export function StudyContainer() {
                         await recreateStudyNetwork(studyUuid, currentRootNetworkUuid);
                         if (existence?.rootNetworkLoadStatus === RootNetworkLoadStatus.UNLOADED) {
                             snackInfo({
-                                headerId: 'networkStudyUnloadedInactivity',
+                                headerId: 'rootNetworkStudyUnloaded',
                                 persist: true,
                             });
                         } else {

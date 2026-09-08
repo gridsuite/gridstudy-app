@@ -950,7 +950,7 @@ const messages_fr = {
     GeneratorAvailability: 'Indisponibilité groupes',
     chooseElement: 'Choisir un element',
     studyNetworkRecovered: "Le réseau de l'étude a été réimporté avec succès",
-    networkStudyUnloadedInactivity: "En raison d'une période d'inactivité, cette étude a été déchargée",
+    rootNetworkStudyUnloaded: "En raison d'une période d'inactivité, cette étude a été déchargée",
     recreatingNetworkStudy:
         "Impossible de récupérer le réseau de l'étude. Reconstruction du réseau à partir de la situation initiale...",
     invalidStudyError: 'Étude invalide : la situation racine est introuvable',
