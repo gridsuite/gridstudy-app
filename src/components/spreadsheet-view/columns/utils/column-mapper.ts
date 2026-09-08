@@ -33,7 +33,10 @@ const createValueGetter =
             const scope = { ...params.data };
             const colDependencies = colDef.dependencies ?? [];
 
-            //Empty values are assumed to be equal to "undefined" by users
+            // Empty values are assumed to be equal to "undefined" by users, it is then imperative
+            // to keep the nullish coalescing operator leading to undefined otherwise this
+            // type of formula, widespreadly used, which checks for empty value would break :
+            // typeOf(field1) == 'undefined' ? field2 : typeOf(field2) == 'undefined' ? field1 : max(field1, field2)
             colDependencies.forEach((dep) => {
                 scope[dep] = params.getValue(dep) ?? undefined;
             });
