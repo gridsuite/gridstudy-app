@@ -389,14 +389,15 @@ export enum RootNetworkLoadStatus {
     LOADED = 'LOADED',
     UNLOADED = 'UNLOADED',
     UNLOADING = 'UNLOADING',
+    LOADING = 'LOADING',
 }
 
-export interface RootNetworkExistence {
+export interface RootNetworkStatusInfos {
     exists: boolean;
     rootNetworkLoadStatus: RootNetworkLoadStatus;
 }
 
-export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID): Promise<RootNetworkExistence> => {
+export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID): Promise<RootNetworkStatusInfos> => {
     const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/network`;
 
     return backendFetchJson(fetchNetworkExistenceUrl, { method: 'GET' });
