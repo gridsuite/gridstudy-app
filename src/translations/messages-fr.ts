@@ -1172,7 +1172,7 @@ const messages_fr = {
     previousConnection: 'Connexion préc.',
 
     confirmRootNetworkCreation:
-        "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nAjouter un réseau racine déréalisera tous les nœuds de l'étude.\n\nLe changement d'interface est irréversible.",
+        "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nCela déréalisera tous les nœuds de l'étude.\n\nLe changement d'interface est irréversible.",
     VOLTAGE_LEVEL_TOPOLOGY: 'Modifier la topologie',
     TopologyNotRetrieved: "La topologie du poste n'a pas pu être récupérée",
     GridLayoutPanel: 'Grille des images',

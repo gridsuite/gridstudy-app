@@ -1158,7 +1158,7 @@ const messages_en = {
     previousConnection: 'Prev. connection',
 
     confirmRootNetworkCreation:
-        'The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\nAdding a root network will unbuild all nodes in the study.\n\nThis interface change is irreversible.',
+        'The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\nThis will unbuild all nodes in the study.\n\nThis interface change is irreversible.',
     VOLTAGE_LEVEL_TOPOLOGY: 'Modify topology',
     TopologyNotRetrieved: 'The voltage level topology could not be retrieved',
     GridLayoutPanel: 'Grid layout panel',
