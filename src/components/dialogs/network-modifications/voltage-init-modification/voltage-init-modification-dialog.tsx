@@ -76,14 +76,21 @@ function check(x: number | undefined) {
 
 const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
-    TRANSFORMER_TAB: 1,
-    STATIC_VAR_COMPENSATOR_TAB: 2,
-    VSC_CONVERTER_STATION_TAB: 3,
-    SHUNT_COMPENSATOR_TAB: 4,
-    BUS_TAB: 5,
+    BATTERY_TAB: 1,
+    TRANSFORMER_TAB: 2,
+    STATIC_VAR_COMPENSATOR_TAB: 3,
+    VSC_CONVERTER_STATION_TAB: 4,
+    SHUNT_COMPENSATOR_TAB: 5,
+    BUS_TAB: 6,
 };
 
 interface GeneratorRowData {
+    ID: string;
+    [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
+    [REACTIVE_POWER_SET_POINT]: number | undefined;
+}
+
+interface BatteryRowData {
     ID: string;
     [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
     [REACTIVE_POWER_SET_POINT]: number | undefined;
@@ -127,6 +134,12 @@ interface GeneratorData {
     targetQ: number | undefined;
 }
 
+interface BatteryData {
+    batteryId: string;
+    targetV: number | undefined;
+    targetQ: number | undefined;
+}
+
 interface TransformerData {
     transformerId: string;
     ratioTapChangerPosition: number | undefined;
@@ -161,6 +174,7 @@ interface BusData {
 
 export interface EditData {
     generators: GeneratorData[];
+    batteries: BatteryData[];
     transformers: TransformerData[];
     staticVarCompensators: StaticVarCompensatorData[];
     vscConverterStations: VscConverterStationData[];
@@ -217,6 +231,31 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             {
                 headerName: intl.formatMessage({
                     id: 'ReactivePowerSetpointMVAR',
+                }),
+                field: REACTIVE_POWER_SET_POINT,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+        ],
+        [intl]
+    );
+
+    const batteriesColumnDefs = useMemo<ColDef[]>(
+        () => [
+            {
+                headerName: intl.formatMessage({ id: 'ID' }),
+                field: 'ID',
+                pinned: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }), // TODO : ?
+                field: FieldConstants.VOLTAGE_SET_POINT,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'ReactivePowerSetpointMVAR', // TODO : ?
                 }),
                 field: REACTIVE_POWER_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
@@ -428,6 +467,23 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                         editData.generators.forEach((m: GeneratorData) => {
                             let row: GeneratorRowData = {
                                 ID: m.generatorId,
+                                [FieldConstants.VOLTAGE_SET_POINT]: undefined,
+                                [REACTIVE_POWER_SET_POINT]: undefined,
+                            };
+                            if (check(m.targetV)) {
+                                row[FieldConstants.VOLTAGE_SET_POINT] = m.targetV;
+                            }
+                            if (check(m.targetQ)) {
+                                row[REACTIVE_POWER_SET_POINT] = m.targetQ;
+                            }
+                            rowData.push(row);
+                        });
+                    } else if (currentTab === EquipmentTypeTabs.BATTERY_TAB) {
+                        columnDefs = batteriesColumnDefs;
+                        tableName = 'Batteries';
+                        editData.batteries.forEach((m: BatteryData) => {
+                            let row: BatteryRowData = {
+                                ID: m.batteryId,
                                 [FieldConstants.VOLTAGE_SET_POINT]: undefined,
                                 [REACTIVE_POWER_SET_POINT]: undefined,
                             };
