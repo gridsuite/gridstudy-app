@@ -1649,7 +1649,7 @@ export function getNetworkModificationsFromComposite(
     return backendFetchJson(url);
 }
 
-export function hasReferences(containerUuids: UUID[]): Promise<boolean> {
+export function hasModificationReferences(containerUuids: UUID[]): Promise<boolean> {
     const params = new URLSearchParams();
     containerUuids.forEach((uuid) => params.append('uuids', uuid));
     const url = `${PREFIX_STUDY_QUERIES}/v1/containers/references/exists?${params.toString()}`;

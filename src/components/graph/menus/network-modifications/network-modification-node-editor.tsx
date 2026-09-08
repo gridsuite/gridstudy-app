@@ -91,7 +91,7 @@ import { copyOrMoveModifications } from '../../../../services/study';
 import {
     assembleModificationsIntoComposite,
     fetchNetworkModifications,
-    hasReferences,
+    hasModificationReferences,
     shareCompositeModification,
     stashModifications,
 } from '../../../../services/study/network-modifications';
@@ -232,7 +232,7 @@ const NetworkModificationNodeEditor = () => {
             setSelectionHasSharedContent(false);
             return;
         }
-        hasReferences(compositeUuids)
+        hasModificationReferences(compositeUuids)
             .then((result) => {
                 setSelectionHasSharedContent(result);
             })
