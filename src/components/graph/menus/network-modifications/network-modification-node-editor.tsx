@@ -181,9 +181,7 @@ const NetworkModificationNodeEditor = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
 
-    // Whether the current selection reaches inside a shared modification the user can't write into: acting
-    // on such a content is denied, acting on the reference modification as a whole isn't. The permissions
-    // themselves are resolved by the table, which knows the unfolded tree and not just the node's list.
+    // Whether the current selection reaches inside a shared modification the user can't write into.
     const [selectionContainsLockedModification, setSelectionContainsLockedModification] = useState(false);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
@@ -1217,8 +1215,6 @@ const NetworkModificationNodeEditor = () => {
             isAssemblyDepthExceeded ||
             isEditBlocked ||
             selectionContainsShared ||
-            // assembling is also denied as soon as the selection covers part of a reference modification
-            // content, but stays allowed on reference modifications taken as a whole
             selectionContainsLockedModification
         );
     }, [
