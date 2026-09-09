@@ -627,6 +627,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             editData,
             editDataFetchStatus,
             generatorsColumnDefs,
+            batteriesColumnDefs,
             transformersColumnDefs,
             staticVarCompensatorsColumnDefs,
             vscConverterStationsColumnDefs,
