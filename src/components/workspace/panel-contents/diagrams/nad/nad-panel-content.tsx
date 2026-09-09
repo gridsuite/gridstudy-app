@@ -90,7 +90,7 @@ export const NadPanelContent = memo(function NadPanelContent({
                         svgVoltageLevels={diagram.voltageLevelIds}
                         hiddenVoltageBands={unselectedVlNames}
                         hiddenInfoSelectors={hiddenInfoSelectors}
-                        areVoltageLevelNamesHidden={!selectedInfos.voltageLevelName}
+                        areVoltageLevelNamesHidden={!selectedInfos.voltageLevelInfo}
                         loadingState={loading}
                         isNadCreationFromFilter={!!diagram.filterUuid}
                         visible
