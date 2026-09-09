@@ -577,7 +577,6 @@ const messages_en = {
     'withoutunit.directTransX': 'Transient reactance',
     'withoutunit.stepUpTransformerX': 'Transformer reactance',
     'withoutunit.plannedActivePowerSetPoint': 'Planning P',
-    CreateVsc: 'Create HVDC (VSC)',
     CreateLcc: 'Create HVDC (LCC)',
     Filters: 'Filters',
     Side: 'Side',
@@ -593,10 +592,7 @@ const messages_en = {
     shuntCompensatorType: 'Type',
     Information: 'Information',
     FillAllFields: 'Please fill all fields',
-    ModifySubstation: 'Modify substation',
-    ModifyVsc: 'Modify HVDC (VSC)',
     ModifyLcc: 'Modify HVDC (LCC)',
-    SubstationModificationError: 'Error while modifying substation',
 
     CreateVoltageLevel: 'Create a voltage level',
     Substation: 'Substation',
@@ -937,6 +933,7 @@ const messages_en = {
     GeneratorAvailability: 'Generator availability',
     chooseElement: 'Choose element',
     studyNetworkRecovered: 'Study network has been recreated successfully',
+    rootNetworkStudyUnloaded: 'Due to a period of inactivity, this study has been unloaded',
     recreatingNetworkStudy:
         'Impossible to get the study network. Reconstruction of the network from the initial situation...',
     invalidStudyError: 'Invalid study : Root situation can not be found',
@@ -973,11 +970,6 @@ const messages_en = {
     converterModeLabel: 'Converters mode',
     lossFactorLabel: 'Loss Factor',
     powerFactorLabel: 'Power Factor',
-    angleDroopActivePowerControlLabel: 'Angle droop active power control',
-    p0Label: 'P0',
-    droopLabel: 'k',
-    side1RectifierSide2Inverter: 'Flow (Side1->Side2)',
-    side1InverterSide2Rectifier: 'Flow (Side2->Side1)',
 
     'withoutunit.g': 'Magnetizing conductance',
     'withoutunit.b': 'Magnetizing susceptance',
@@ -987,7 +979,6 @@ const messages_en = {
     ShortcircuitInProgress: 'Shortcircuit computation in progress...',
 
     tableChangingError: 'An error occurred when modifying the data',
-    rootNetworkIndexationDone: 'Root Network indexation done. Search functionality is now available',
     rootNetworkIndexationNotIndexed:
         "Serverside warning: Something went wrong, Study equipments aren't indexed anymore. Please refresh the page (F5)",
     rootNetworkIndexationError: 'Root Network indexation process has failed.',
@@ -1168,7 +1159,7 @@ const messages_en = {
     previousConnection: 'Prev. connection',
 
     confirmRootNetworkCreation:
-        'The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.',
+        'The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\nThis will unbuild all nodes in the study.\n\nThis interface change is irreversible.',
     VOLTAGE_LEVEL_TOPOLOGY: 'Modify topology',
     TopologyNotRetrieved: 'The voltage level topology could not be retrieved',
     GridLayoutPanel: 'Grid layout panel',
