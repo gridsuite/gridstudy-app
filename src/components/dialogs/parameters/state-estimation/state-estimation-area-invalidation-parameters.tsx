@@ -23,7 +23,7 @@ export const StateEstimationAreaInvalidationParameters: FunctionComponent = () =
     const intl = useIntl();
     const formName = `${TabValue.AREA_INVALIDATION}.${AREA_INVALIDATIONS}`;
 
-    const columnsDefinition = useMemo<DndColumn[]>(() => {
+    const columnsDefinition = useMemo(() => {
         const filtersHeaderTooltip = (
             <Tooltip
                 title={intl.formatMessage({ id: 'StateEstimationParametersAreaInvalidationTooltip' })}
