@@ -444,6 +444,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             <Grid container>
                 <Tabs value={tabIndex} variant="scrollable" onChange={(event, newValue) => handleTabChange(newValue)}>
                     <Tab label={<FormattedMessage id="Generators" />} />
+                    <Tab label={<FormattedMessage id="Batteries" />} />
                     <Tab label={<FormattedMessage id="Transformers" />} />
                     <Tab label={<FormattedMessage id="StaticVarCompensators" />} />
                     <Tab label={<FormattedMessage id="VscConverterStations" />} />
