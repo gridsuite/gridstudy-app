@@ -72,7 +72,7 @@ export const LINE_SEGMENTS = 'lineSegments';
 export const MAX_P = 'maxP';
 export const TARGET_P = 'targetP';
 
-/* Tabylar creations reactive capability curve table values for csv */
+/* Tabular creations reactive capability curve table values for csv */
 
 export const V = 'v';
 export const ANGLE = 'angle';

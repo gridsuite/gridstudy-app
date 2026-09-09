@@ -247,14 +247,14 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 pinned: true,
             },
             {
-                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }), // TODO : ?
+                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
                 field: FieldConstants.VOLTAGE_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'ReactivePowerSetpointMVAR', // TODO : ?
+                    id: 'ReactivePowerSetpointMVAR',
                 }),
                 field: FieldConstants.REACTIVE_POWER_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
