@@ -70,10 +70,7 @@ export const CONNECTIVITY_2 = 'connectivity2';
 export const LINE_SEGMENTS = 'lineSegments';
 
 export const MAX_P = 'maxP';
-export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
 export const TARGET_P = 'targetP';
-export const VOLTAGE_REGULATION = 'voltageRegulation';
-export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
 
 /* Tabylar creations reactive capability curve table values for csv */
 

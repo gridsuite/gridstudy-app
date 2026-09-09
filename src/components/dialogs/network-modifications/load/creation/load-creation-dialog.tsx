@@ -24,14 +24,10 @@ import {
     LoadDialogTab,
     LOAD_TAB_FIELDS,
     useTabs,
+    FieldConstants,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    ACTIVE_POWER_SETPOINT,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    REACTIVE_POWER_SET_POINT,
-} from 'components/utils/field-constants';
+import { ACTIVE_POWER_SETPOINT, EQUIPMENT_NAME, LOAD_TYPE } from 'components/utils/field-constants';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -96,7 +92,7 @@ export function LoadCreationDialog({
         [EQUIPMENT_NAME]: load.name ?? '',
         [LOAD_TYPE]: load.type,
         [ACTIVE_POWER_SETPOINT]: load.p0,
-        [REACTIVE_POWER_SET_POINT]: load.q0,
+        [FieldConstants.REACTIVE_POWER_SET_POINT]: load.q0,
         ...getConnectivityFormData({
             voltageLevelId: load.voltageLevelId,
             busbarSectionId: load.busOrBusbarSectionId,

@@ -25,7 +25,6 @@ import {
     LEG_SIDE,
     RATIO_TAP_CHANGER_POSITION,
     RATIO_TAP_CHANGER_TARGET_V,
-    REACTIVE_POWER_SET_POINT,
     SECTION_COUNT,
     TARGET_V,
     V,
@@ -87,13 +86,13 @@ const EquipmentTypeTabs = {
 interface GeneratorRowData {
     ID: string;
     [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
-    [REACTIVE_POWER_SET_POINT]: number | undefined;
+    [FieldConstants.REACTIVE_POWER_SET_POINT]: number | undefined;
 }
 
 interface BatteryRowData {
     ID: string;
     [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
-    [REACTIVE_POWER_SET_POINT]: number | undefined;
+    [FieldConstants.REACTIVE_POWER_SET_POINT]: number | undefined;
 }
 
 interface TransformerRowData {
@@ -106,13 +105,13 @@ interface TransformerRowData {
 interface StaticVarCompensatorRowData {
     ID: string;
     [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
-    [REACTIVE_POWER_SET_POINT]: number | undefined;
+    [FieldConstants.REACTIVE_POWER_SET_POINT]: number | undefined;
 }
 
 interface VscConverterStationRowData {
     ID: string;
     [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
-    [REACTIVE_POWER_SET_POINT]: number | undefined;
+    [FieldConstants.REACTIVE_POWER_SET_POINT]: number | undefined;
 }
 
 interface ShuntCompensatorRowData {
@@ -232,7 +231,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 headerName: intl.formatMessage({
                     id: 'ReactivePowerSetpointMVAR',
                 }),
-                field: REACTIVE_POWER_SET_POINT,
+                field: FieldConstants.REACTIVE_POWER_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
@@ -257,7 +256,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 headerName: intl.formatMessage({
                     id: 'ReactivePowerSetpointMVAR', // TODO : ?
                 }),
-                field: REACTIVE_POWER_SET_POINT,
+                field: FieldConstants.REACTIVE_POWER_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
@@ -315,7 +314,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 headerName: intl.formatMessage({
                     id: 'ReactivePowerSetpointMVAR',
                 }),
-                field: REACTIVE_POWER_SET_POINT,
+                field: FieldConstants.REACTIVE_POWER_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
@@ -340,7 +339,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 headerName: intl.formatMessage({
                     id: 'ReactivePowerSetpointMVAR',
                 }),
-                field: REACTIVE_POWER_SET_POINT,
+                field: FieldConstants.REACTIVE_POWER_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
@@ -469,13 +468,13 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             let row: GeneratorRowData = {
                                 ID: m.generatorId,
                                 [FieldConstants.VOLTAGE_SET_POINT]: undefined,
-                                [REACTIVE_POWER_SET_POINT]: undefined,
+                                [FieldConstants.REACTIVE_POWER_SET_POINT]: undefined,
                             };
                             if (check(m.targetV)) {
                                 row[FieldConstants.VOLTAGE_SET_POINT] = m.targetV;
                             }
                             if (check(m.targetQ)) {
-                                row[REACTIVE_POWER_SET_POINT] = m.targetQ;
+                                row[FieldConstants.REACTIVE_POWER_SET_POINT] = m.targetQ;
                             }
                             rowData.push(row);
                         });
@@ -486,13 +485,13 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             let row: BatteryRowData = {
                                 ID: m.batteryId,
                                 [FieldConstants.VOLTAGE_SET_POINT]: undefined,
-                                [REACTIVE_POWER_SET_POINT]: undefined,
+                                [FieldConstants.REACTIVE_POWER_SET_POINT]: undefined,
                             };
                             if (check(m.targetV)) {
                                 row[FieldConstants.VOLTAGE_SET_POINT] = m.targetV;
                             }
                             if (check(m.targetQ)) {
-                                row[REACTIVE_POWER_SET_POINT] = m.targetQ;
+                                row[FieldConstants.REACTIVE_POWER_SET_POINT] = m.targetQ;
                             }
                             rowData.push(row);
                         });
@@ -524,13 +523,13 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             let row: StaticVarCompensatorRowData = {
                                 ID: m.staticVarCompensatorId,
                                 [FieldConstants.VOLTAGE_SET_POINT]: undefined,
-                                [REACTIVE_POWER_SET_POINT]: undefined,
+                                [FieldConstants.REACTIVE_POWER_SET_POINT]: undefined,
                             };
                             if (check(m.voltageSetpoint)) {
                                 row[FieldConstants.VOLTAGE_SET_POINT] = m.voltageSetpoint;
                             }
                             if (check(m.reactivePowerSetpoint)) {
-                                row[REACTIVE_POWER_SET_POINT] = m.reactivePowerSetpoint;
+                                row[FieldConstants.REACTIVE_POWER_SET_POINT] = m.reactivePowerSetpoint;
                             }
                             rowData.push(row);
                         });
@@ -541,13 +540,13 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             let row: VscConverterStationRowData = {
                                 ID: m.vscConverterStationId,
                                 [FieldConstants.VOLTAGE_SET_POINT]: undefined,
-                                [REACTIVE_POWER_SET_POINT]: undefined,
+                                [FieldConstants.REACTIVE_POWER_SET_POINT]: undefined,
                             };
                             if (check(m.voltageSetpoint)) {
                                 row[FieldConstants.VOLTAGE_SET_POINT] = m.voltageSetpoint;
                             }
                             if (check(m.reactivePowerSetpoint)) {
-                                row[REACTIVE_POWER_SET_POINT] = m.reactivePowerSetpoint;
+                                row[FieldConstants.REACTIVE_POWER_SET_POINT] = m.reactivePowerSetpoint;
                             }
                             rowData.push(row);
                         });
