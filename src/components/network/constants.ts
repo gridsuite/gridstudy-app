@@ -65,32 +65,6 @@ export const VARIATION_TYPES = {
     TARGET_P: { id: 'TARGET_P', label: 'TargetPText' },
 } as const;
 
-export const SWITCH_TYPE = {
-    BREAKER: { id: 'BREAKER', label: 'Breaker' },
-    DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
-} as const;
-
-export enum VscConverterMode {
-    SIDE_1_RECTIFIER_SIDE_2_INVERTER = 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
-    SIDE_1_INVERTER_SIDE_2_RECTIFIER = 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
-}
-
-export interface VscConverterModeValue {
-    id: string;
-    label: string;
-}
-
-export const VSC_CONVERTER_MODE: Record<VscConverterMode, VscConverterModeValue> = {
-    [VscConverterMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER]: {
-        id: 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
-        label: 'side1RectifierSide2Inverter',
-    },
-    [VscConverterMode.SIDE_1_INVERTER_SIDE_2_RECTIFIER]: {
-        id: 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
-        label: 'side1InverterSide2Rectifier',
-    },
-};
-
 export const REGULATING_TERMINAL_TYPES = [
     'LINE',
     'TWO_WINDINGS_TRANSFORMER',
