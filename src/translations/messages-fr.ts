@@ -583,7 +583,6 @@ const messages_fr = {
     'withoutunit.directTransX': 'Réactance transitoire',
     'withoutunit.stepUpTransformerX': 'Réactance du transformateur',
     'withoutunit.plannedActivePowerSetPoint': 'P imposée',
-    CreateVsc: "Création d'une HVDC (VSC)",
     CreateLcc: "Création d'une HVDC (LCC)",
     Filters: 'Filtres',
     Side: 'Côté',
@@ -596,10 +595,7 @@ const messages_fr = {
     shuntCompensatorType: 'Type',
     Information: 'Information',
     FillAllFields: 'Veuillez remplir tous les champs',
-    ModifySubstation: 'Modifier un site',
-    ModifyVsc: 'Modifier une HVDC (VSC)',
     ModifyLcc: 'Modifier une HVDC (LCC)',
-    SubstationModificationError: "Erreur lors de la modification d'un site",
 
     CreateVoltageLevel: 'Créer un poste',
     Substation: 'Site',
@@ -950,6 +946,7 @@ const messages_fr = {
     GeneratorAvailability: 'Indisponibilité groupes',
     chooseElement: 'Choisir un element',
     studyNetworkRecovered: "Le réseau de l'étude a été réimporté avec succès",
+    rootNetworkStudyUnloaded: "En raison d'une période d'inactivité, cette étude a été déchargée",
     recreatingNetworkStudy:
         "Impossible de récupérer le réseau de l'étude. Reconstruction du réseau à partir de la situation initiale...",
     invalidStudyError: 'Étude invalide : la situation racine est introuvable',
@@ -984,11 +981,6 @@ const messages_fr = {
     converterModeLabel: 'Mode de fonctionnement des stations',
     lossFactorLabel: 'Coefficient de pertes',
     powerFactorLabel: 'Coefficient Q/P',
-    angleDroopActivePowerControlLabel: 'Emulation AC',
-    p0Label: 'P0',
-    droopLabel: 'Gain',
-    side1RectifierSide2Inverter: 'Flux (1->2)',
-    side1InverterSide2Rectifier: 'Flux (2->1)',
     shuntCompensatorId: 'ID du MCS',
     shuntCompensatorName: 'Nom du MCS',
     connectedToHvdc: 'Connecté à HVDC',
@@ -1000,8 +992,6 @@ const messages_fr = {
     ShortcircuitInProgress: 'Calcul de court-circuit en cours...',
 
     tableChangingError: 'Une erreur est survenue lors de la modification des données',
-    rootNetworkIndexationDone:
-        "L'indexation de réseau racine est terminée. La fonctionnalité de recherche est disponible",
     rootNetworkIndexationNotIndexed:
         "Alerte côté serveur :Un incident s'est produit, les équipements de l'étude ne sont plus indexés. Merci de rafraîchir la page (F5)",
     rootNetworkIndexationError: "L'indexation de réseau racine a échoué.",
