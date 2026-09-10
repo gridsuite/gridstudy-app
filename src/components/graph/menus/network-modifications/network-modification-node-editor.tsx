@@ -216,36 +216,6 @@ const NetworkModificationNodeEditor = () => {
             cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
         });
     }, [cleanOtherTabsClipboard]);
-
-    useEffect(() => {
-        if (!createCompositeModificationDialogOpen) {
-            return;
-        }
-        if (selectionContainsShared) {
-            setSelectionHasSharedContent(true);
-            return;
-        }
-        const compositeUuids = selectedNetworkModifications
-            .filter((m) => m.type === ModificationType.COMPOSITE_MODIFICATION)
-            .map((m) => m.uuid);
-        if (compositeUuids.length === 0) {
-            setSelectionHasSharedContent(false);
-            return;
-        }
-        hasModificationReferences(compositeUuids)
-            .then((result) => {
-                setSelectionHasSharedContent(result);
-            })
-            .catch((error) => snackWithFallback(snackError, error));
-    }, [
-        createCompositeModificationDialogOpen,
-        selectionContainsShared,
-        selectedNetworkModifications,
-        studyUuid,
-        currentNode?.id,
-        snackError,
-    ]);
-
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
     // a modification on a public study which is in the clipboard.
@@ -845,8 +815,18 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const openCreateCompositeModificationDialog = useCallback(() => {
+        setSelectionHasSharedContent(false);
         setCreateCompositeModificationDialogOpen(true);
-    }, []);
+        // nested references are lazily loaded by the table, so the selection alone can't tell: ask the backend
+        const compositeUuids = selectedNetworkModifications
+            .filter((m) => m.type === ModificationType.COMPOSITE_MODIFICATION)
+            .map((m) => m.uuid);
+        if (compositeUuids.length > 0) {
+            hasModificationReferences(compositeUuids)
+                .then(setSelectionHasSharedContent)
+                .catch((error) => snackWithFallback(snackError, error));
+        }
+    }, [selectedNetworkModifications, snackError]);
 
     const doStashModification = useCallback(() => {
         const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
