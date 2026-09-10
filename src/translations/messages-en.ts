@@ -1301,7 +1301,6 @@ const messages_en = {
     nadInfoPermanentLimitPercentage: '% PATL',
     nadInfoActivePowerArrow: 'P arrows',
     nadInfoReactivePowerArrow: 'Q arrows',
-    nadInfoVoltageLevelInfo: 'Voltage level info',
     nadInfoVoltageLevelVoltage: 'Voltage level voltages',
 
     gridExplore: 'GridExplore',

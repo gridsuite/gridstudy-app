@@ -14,7 +14,6 @@ export type NadSelectedInfoKey =
     | 'permanentLimitPercentage'
     | 'activePowerArrow'
     | 'reactivePowerArrow'
-    | 'voltageLevelInfo'
     | 'voltageLevelVoltage';
 
 export type NadSelectedInfos = Record<NadSelectedInfoKey, boolean>;
@@ -29,7 +28,6 @@ const INFO_SELECTORS: Record<NadSelectedInfoKey, string[]> = {
     permanentLimitPercentage: ['text.nad-permanent-limit-percentage'],
     activePowerArrow: ['path.nad-arrow-in:not(.nad-reactive)', 'path.nad-arrow-out:not(.nad-reactive)'],
     reactivePowerArrow: ['path.nad-reactive.nad-arrow-in', 'path.nad-reactive.nad-arrow-out'],
-    voltageLevelInfo: ['.nad-text-nodes'],
     voltageLevelVoltage: ['.nad-bus-descr'],
 };
 
@@ -39,7 +37,6 @@ const ALL_SHOWN: NadSelectedInfos = {
     permanentLimitPercentage: true,
     activePowerArrow: true,
     reactivePowerArrow: true,
-    voltageLevelInfo: true,
     voltageLevelVoltage: true,
 };
 
