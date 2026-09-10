@@ -5,95 +5,45 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
     CustomFormProvider,
-    emptyProperties,
     ExtendedEquipmentType,
-    getPropertiesFromModification,
-    MODIFICATION_TYPES,
     snackWithFallback,
-    TextInput,
-    toModificationProperties,
     useSnackMessage,
     DeepNullable,
-    filledTextField,
-    sanitizeString,
-    FieldConstants,
+    VscHvdcLineForm,
+    VscHdvLineCreationDto,
+    vscHvdcLineCreationEmptyFormData,
+    vscHvdcLineCreationFormSchema,
+    VscHvdcLineCreationFormData,
+    vscHvdcLineCreationFormToDto,
+    vscHvdcLineCreationDtoToForm,
+    VscHvdcLineInfo,
+    getVscHvdcLineCharacteristicsFromCopy,
+    converterStationCreationFromCopy,
+    useTabs,
+    VscHvdcLineDialogTab,
+    HVDC_LINE_TAB_FIELDS,
 } from '@gridsuite/commons-ui';
-import { FieldErrors, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    ACTIVE_POWER_SETPOINT,
-    ANGLE_DROOP_ACTIVE_POWER_CONTROL,
-    CONVERTER_STATION_1,
-    CONVERTER_STATION_2,
-    CONVERTERS_MODE,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    HVDC_LINE_TAB,
-    MAX_P,
-    NOMINAL_V,
-    OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
-    OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
-    P0,
-    R,
-} from '../../../../../utils/field-constants';
-import { Box, Grid } from '@mui/material';
-import VscTabs from '../vsc-tabs';
-import * as yup from 'yup';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { FetchStatus } from '../../../../../../services/utils';
-import VscCreationForm from './vsc-creation-form';
-import { createVsc } from '../../../../../../services/study/network-modifications';
+import { createVscHvdcLine } from '../../../../../../services/study/network-modifications';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
-import { GridItem } from '../../../../commons/grid-item';
-import { VSC_TABS } from '../vsc-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { VscCreationInfos } from '../../../../../../services/network-modification-types';
-import { VscCreationDialogSchemaForm, VscFormInfos } from '../vsc-dialog.type';
-import {
-    getVscHvdcLinePaneEmptyFormData,
-    getVscHvdcLinePaneSchema,
-    getVscHvdcLineTabFormData,
-    getVscHvdcLineTabFormEditData,
-} from '../hvdc-line-pane/vsc-hvdc-line-pane-utils';
-import {
-    getConverterStationCreationData,
-    getConverterStationFormEditData,
-    getConverterStationFromSearchCopy,
-    getVscConverterStationEmptyFormData,
-    getVscConverterStationSchema,
-} from '../converter-station/converter-station-utils';
+import PositionDiagramPane from '../../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../../services/study/network';
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [HVDC_LINE_TAB]: getVscHvdcLinePaneSchema(),
-        [CONVERTER_STATION_1]: getVscConverterStationSchema(),
-        [CONVERTER_STATION_2]: getVscConverterStationSchema(),
-    })
-    .concat(creationPropertiesSchema)
-    .required();
-const emptyFormData = {
-    [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
-    [HVDC_LINE_TAB]: getVscHvdcLinePaneEmptyFormData(false),
-    [CONVERTER_STATION_1]: getVscConverterStationEmptyFormData(false),
-    [CONVERTER_STATION_2]: getVscConverterStationEmptyFormData(false),
-    ...emptyProperties,
-};
-
-export type VscCreationDialogProps = NetworkModificationDialogProps & {
-    editData: VscCreationInfos;
+type VscCreationDialogProps = NetworkModificationDialogProps & {
+    editData?: VscHdvLineCreationDto;
 };
 
 export default function VscCreationDialog({
@@ -107,22 +57,29 @@ export default function VscCreationDialog({
 }: Readonly<VscCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const [tabIndex, setTabIndex] = useState(VSC_TABS.HVDC_LINE_TAB);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
-    const formMethods = useForm<DeepNullable<VscCreationDialogSchemaForm>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<VscCreationDialogSchemaForm>>(formSchema),
+    const formMethods = useForm<DeepNullable<VscHvdcLineCreationFormData>>({
+        defaultValues: vscHvdcLineCreationEmptyFormData,
+        resolver: yupResolver<DeepNullable<VscHvdcLineCreationFormData>>(vscHvdcLineCreationFormSchema),
+    });
+    const { reset } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<VscHvdcLineDialogTab>({
+        defaultTab: VscHvdcLineDialogTab.HVDC_LINE_TAB,
+        errors,
+        tabFields: HVDC_LINE_TAB_FIELDS,
     });
 
-    const fromSearchCopyToFormValues = (hvdcLine: VscFormInfos) => {
+    const fromSearchCopyToFormValues = (hvdcLine: VscHvdcLineInfo) => {
         reset(
             {
-                [EQUIPMENT_ID]: hvdcLine.id + '(1)',
-                [EQUIPMENT_NAME]: hvdcLine.name ?? '',
-                [HVDC_LINE_TAB]: getVscHvdcLineTabFormData(hvdcLine),
-                [CONVERTER_STATION_1]: getConverterStationFromSearchCopy(hvdcLine.converterStation1),
-                [CONVERTER_STATION_2]: getConverterStationFromSearchCopy(hvdcLine.converterStation2),
+                equipmentID: hvdcLine.id + '(1)',
+                equipmentName: hvdcLine.name ?? '',
+                hvdcLine: getVscHvdcLineCharacteristicsFromCopy(hvdcLine),
+                converterStation1: converterStationCreationFromCopy(hvdcLine.converterStation1),
+                converterStation2: converterStationCreationFromCopy(hvdcLine.converterStation2),
                 ...copyEquipmentPropertiesForCreation(hvdcLine),
             },
             { keepDefaultValues: true }
@@ -137,116 +94,50 @@ export default function VscCreationDialog({
 
     const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, ExtendedEquipmentType.HVDC_LINE_VSC);
 
-    const generatorIdField = (
-        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
-    );
-
-    const generatorNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
-
-    const headersAndTabs = (
-        <Box
-            sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '15px',
-            }}
-        >
-            <Grid container spacing={2} sx={{ width: '100%' }}>
-                <GridItem size={4}>{generatorIdField}</GridItem>
-                <GridItem size={4}>{generatorNameField}</GridItem>
-            </Grid>
-            <VscTabs
-                tabIndex={tabIndex}
-                tabIndexesWithError={tabIndexesWithError}
-                setTabIndex={setTabIndex}
-                isModification={false}
-            />
-        </Box>
-    );
-
-    const { reset } = formMethods;
-
     useEffect(() => {
         if (editData) {
-            reset({
-                [EQUIPMENT_ID]: editData.equipmentId,
-                [EQUIPMENT_NAME]: editData?.equipmentName ?? '',
-                ...getVscHvdcLineTabFormEditData(HVDC_LINE_TAB, editData),
-                ...getConverterStationFormEditData(CONVERTER_STATION_1, editData.converterStation1),
-                ...getConverterStationFormEditData(CONVERTER_STATION_2, editData.converterStation2),
-                ...getPropertiesFromModification(editData.properties),
-            });
+            reset(vscHvdcLineCreationDtoToForm(editData));
         }
-    }, [editData, reset]);
+    }, [reset, editData]);
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(vscHvdcLineCreationEmptyFormData);
     }, [reset]);
 
-    const onValidationError = (errors: FieldErrors) => {
-        let tabsInError = [];
-        if (errors?.[HVDC_LINE_TAB] !== undefined) {
-            tabsInError.push(VSC_TABS.HVDC_LINE_TAB);
-        }
-        if (errors?.[CONVERTER_STATION_1] !== undefined) {
-            tabsInError.push(VSC_TABS.CONVERTER_STATION_1);
-        }
-
-        if (errors?.[CONVERTER_STATION_2] !== undefined) {
-            tabsInError.push(VSC_TABS.CONVERTER_STATION_2);
-        }
-
-        if (tabsInError.length > 0) {
-            setTabIndex(tabsInError[0]);
-        }
-
-        setTabIndexesWithError(tabsInError);
-    };
-
     const onSubmit = useCallback(
-        (hvdcLine: VscCreationDialogSchemaForm) => {
-            const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
-            const vscCreationInfos = {
-                type: MODIFICATION_TYPES.VSC_CREATION.type,
-                equipmentId: hvdcLine[EQUIPMENT_ID],
-                equipmentName: sanitizeString(hvdcLine[EQUIPMENT_NAME]) ?? null,
-                nominalV: hvdcLineTab[NOMINAL_V],
-                r: hvdcLineTab[R],
-                maxP: hvdcLineTab[MAX_P],
-                operatorActivePowerLimitFromSide1ToSide2: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1] ?? null,
-                operatorActivePowerLimitFromSide2ToSide1: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2] ?? null,
-                convertersMode: hvdcLineTab[CONVERTERS_MODE],
-                activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
-                angleDroopActivePowerControl: hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL] ?? null,
-                p0: hvdcLineTab[P0] ?? null,
-                droop: hvdcLineTab[FieldConstants.DROOP] ?? null,
-                converterStation1: getConverterStationCreationData(hvdcLine[CONVERTER_STATION_1]),
-                converterStation2: getConverterStationCreationData(hvdcLine[CONVERTER_STATION_2]),
-                properties: toModificationProperties(hvdcLine),
-            } satisfies VscCreationInfos;
-            createVsc({
-                vscCreationInfos: vscCreationInfos,
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
-                isUpdate: !!editData,
-            }).catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'VscCreationError' });
+        (lineForm: VscHvdcLineCreationFormData) => {
+            const dto = vscHvdcLineCreationFormToDto(lineForm);
+            createVscHvdcLine(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: Error) => {
+                snackWithFallback(snackError, error, { headerId: 'HvdcCreationError' });
             });
         },
-        [studyUuid, currentNodeUuid, editData, snackError]
+        [editData?.uuid, studyUuid, currentNodeUuid, snackError]
+    );
+
+    const fetchBusesOrBusbarSections = useCallback(
+        (voltageLevelId: string) =>
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                voltageLevelId
+            ),
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
 
     return (
-        <CustomFormProvider {...formMethods} validationSchema={formSchema} isNodeBuilt={isNodeBuilt(currentNode)}>
+        <CustomFormProvider
+            {...formMethods}
+            validationSchema={vscHvdcLineCreationFormSchema}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
-                onValidationError={onValidationError}
                 onSave={onSubmit}
+                onValidationError={useTabsReturn.onError}
                 maxWidth={'md'}
                 titleId="CreateVsc"
-                subtitle={headersAndTabs}
                 searchCopy={searchCopy}
                 slotProps={{
                     paper: {
@@ -259,11 +150,11 @@ export default function VscCreationDialog({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <VscCreationForm
-                    tabIndex={tabIndex}
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
+                <VscHvdcLineForm
+                    voltageLevelOptions={voltageLevelOptions}
+                    PositionDiagramPane={PositionDiagramPane}
+                    fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
+                    useTabsReturn={useTabsReturn}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

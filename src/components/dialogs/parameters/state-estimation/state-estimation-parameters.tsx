@@ -41,10 +41,7 @@ export const StateEstimationParameters = ({
     const [stateEstimationParams, setStateEstimationParams] = useStateEstimationParameters;
 
     const initialFormValues = useMemo(
-        () =>
-            stateEstimationParams
-                ? fromStateEstimationParametersParamToFormValues(stateEstimationParams?.estimParameters)
-                : {},
+        () => (stateEstimationParams ? fromStateEstimationParametersParamToFormValues(stateEstimationParams) : {}),
         [stateEstimationParams]
     );
 
@@ -91,7 +88,7 @@ export const StateEstimationParameters = ({
 
     useEffect(() => {
         if (stateEstimationParams) {
-            reset(fromStateEstimationParametersParamToFormValues(stateEstimationParams.estimParameters));
+            reset(fromStateEstimationParametersParamToFormValues(stateEstimationParams));
         }
     }, [reset, stateEstimationParams]);
 
