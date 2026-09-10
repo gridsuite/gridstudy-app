@@ -817,6 +817,10 @@ const NetworkModificationNodeEditor = () => {
     const openCreateCompositeModificationDialog = useCallback(() => {
         setSelectionHasSharedContent(false);
         setCreateCompositeModificationDialogOpen(true);
+        if (selectionContainsShared) {
+            setSelectionHasSharedContent(true);
+            return;
+        }
         // nested references are lazily loaded by the table, so the selection alone can't tell: ask the backend
         const compositeUuids = selectedNetworkModifications
             .filter((m) => m.type === ModificationType.COMPOSITE_MODIFICATION)
@@ -826,7 +830,7 @@ const NetworkModificationNodeEditor = () => {
                 .then(setSelectionHasSharedContent)
                 .catch((error) => snackWithFallback(snackError, error));
         }
-    }, [selectedNetworkModifications, snackError]);
+    }, [selectedNetworkModifications, selectionContainsShared, snackError]);
 
     const doStashModification = useCallback(() => {
         const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
