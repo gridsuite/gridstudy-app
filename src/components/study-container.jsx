@@ -39,6 +39,7 @@ import {
     useNotificationsListener,
     useSnackMessage,
     BuildStatus,
+    fetchUserQuotaState,
 } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType } from './graph/util/model-functions';
@@ -504,6 +505,30 @@ export function StudyContainer() {
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: handleEvent,
+    });
+
+    const handleQuotaEvent = useCallback(
+        (event) => {
+            const eventData = parseEventData(event);
+            const quotaType = eventData.headers.quotaType;
+
+            fetchUserQuotaState(userName).then((response) => {
+                const currentComputationQuota = response[quotaType];
+
+                if (currentComputationQuota != null) {
+                    if (currentComputationQuota.current >= currentComputationQuota.max) {
+                        console.debug('Quota reached', quotaType, currentComputationQuota);
+                    } else {
+                        console.debug('Quota available', quotaType, currentComputationQuota);
+                    }
+                }
+            });
+        },
+        [userName]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.QUOTA, {
+        listenerCallbackMessage: handleQuotaEvent,
     });
 
     useEffect(() => {
