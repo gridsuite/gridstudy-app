@@ -9,7 +9,13 @@ import { getComputationRunningStatus } from 'components/utils/running-status';
 import type { UUID } from 'node:crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { ComputingType, NotificationsUrlKeys, RunningStatus, useNotificationsListener } from '@gridsuite/commons-ui';
+import {
+    BuildStatus,
+    ComputingType,
+    NotificationsUrlKeys,
+    RunningStatus,
+    useNotificationsListener,
+} from '@gridsuite/commons-ui';
 import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
 import { parseEventData, StudyUpdatedEventData } from '../../types/notification-types';
@@ -20,6 +26,7 @@ interface UseComputingStatusProps {
         studyUuid: UUID,
         nodeUuid: UUID,
         currentRootNetworkUuid: UUID,
+        currentNodeBuildStatus: BuildStatus,
         computingStatusFetcher: (
             studyUuid: UUID,
             nodeUuid: UUID,
@@ -37,10 +44,15 @@ function isWorthUpdate(
     nodeUuidRef: RefObject<UUID | undefined>,
     rootNetworkUuidRef: RefObject<UUID | undefined>,
     nodeUuid: UUID,
-    currentRootNetworkUuid: UUID
+    currentRootNetworkUuid: UUID,
+    notificationNode: UUID | undefined
 ): boolean {
     if (rootNetworkUuidRef.current !== currentRootNetworkUuid) {
         return true;
+    }
+    // if notification is about a node that is not current node, no need to update current node computation status
+    if (notificationNode && notificationNode !== nodeUuid) {
+        return false;
     }
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
@@ -55,6 +67,7 @@ function isWorthUpdate(
  *  this hook loads all <computingType> state into redux at once, then updates it according to notifications for all computation
  * @param studyUuid current study uuid
  * @param nodeUuid current node uuid
+ * @param currentNodeBuildStatus
  * @param allComputingStatusFetcher method fetching all <computingType> state
  * @param currentRootNetworkUuid
  * @param computingStatusParametersFetcherMap
@@ -63,6 +76,7 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
+    currentNodeBuildStatus,
     allComputingStatusFetcher,
     computingStatusParametersFetcherMap
 ) => {
@@ -170,18 +184,28 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
             const eventData = parseEventData<StudyUpdatedEventData>(event ?? null);
             const headers = eventData?.headers;
             const updateType = headers?.updateType;
+            const notificationNode = headers?.node;
+            // no need to request the back if node is not built
+            if (currentNodeBuildStatus === BuildStatus.NOT_BUILT) {
+                Object.values(ComputingType).forEach((computingType: ComputingType) => {
+                    dispatch(setComputingStatus(computingType, RunningStatus.IDLE));
+                });
+                nodeUuidRef.current = nodeUuid;
+                return;
+            }
             const isUpdateForUs = isWorthUpdate(
                 updateType,
                 nodeUuidRef,
                 rootNetworkUuidRef,
                 nodeUuid,
-                currentRootNetworkUuid
+                currentRootNetworkUuid,
+                notificationNode
             );
             if (isUpdateForUs) {
                 updateAll(updateType);
             }
         },
-        [currentRootNetworkUuid, nodeUuid, studyUuid, updateAll]
+        [currentNodeBuildStatus, currentRootNetworkUuid, dispatch, nodeUuid, studyUuid, updateAll]
     );
 
     // evaluate at each notification
