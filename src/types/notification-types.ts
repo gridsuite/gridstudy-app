@@ -41,6 +41,7 @@ export enum NotificationType {
     // Modifications
     MODIFICATIONS_UPDATE_FINISHED = 'UPDATE_FINISHED',
     MODIFICATIONS_DELETE_FINISHED = 'DELETE_FINISHED',
+    SHARED_ELEMENT_UPDATE = 'sharedElementUpdate',
     // Events
     EVENT_CRUD_FINISHED = 'EVENT_CRUD_FINISHED',
 
@@ -279,6 +280,12 @@ interface ModificationsDeleteFinishedEventDataHeaders extends CommonStudyEventDa
     nodes: UUID[];
 }
 
+interface SharedElementUpdateEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.SHARED_ELEMENT_UPDATE;
+    parentNode: UUID;
+    networkModificationUuids?: UUID[];
+}
+
 interface EventCrudFinishedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.EVENT_CRUD_FINISHED;
     parentNode: UUID;
@@ -484,6 +491,11 @@ export interface ModificationsUpdateFinishedEventData extends CommonStudyEventDa
     payload: undefined;
 }
 
+export interface SharedElementUpdateEventData extends CommonStudyEventData {
+    headers: SharedElementUpdateEventDataHeaders;
+    payload: undefined;
+}
+
 export interface ModificationsDeleteFinishedEventData extends CommonStudyEventData {
     headers: ModificationsDeleteFinishedEventDataHeaders;
     payload: undefined;
@@ -672,6 +684,10 @@ export function isModificationsDeleteFinishedNotification(
     notif: CommonStudyEventData
 ): notif is ModificationsDeleteFinishedEventData {
     return notif.headers?.updateType === NotificationType.MODIFICATIONS_DELETE_FINISHED;
+}
+
+export function isSharedElementUpdateNotification(notif: CommonStudyEventData): notif is SharedElementUpdateEventData {
+    return notif.headers?.updateType === NotificationType.SHARED_ELEMENT_UPDATE;
 }
 
 export function isIndexationStatusNotification(notif: CommonStudyEventData): notif is IndexationStatusEventData {

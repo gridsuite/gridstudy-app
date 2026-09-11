@@ -114,6 +114,7 @@ import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
     isNodeDeletedNotification,
+    isSharedElementUpdateNotification,
     isRootNetworksUpdatedNotification,
     parseEventData,
 } from 'types/notification-types';
@@ -767,6 +768,18 @@ const NetworkModificationNodeEditor = () => {
                 dofetchNetworkModifications();
             }
             if (isModificationsDeleteFinishedNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
+                dofetchNetworkModifications();
+            }
+
+            // a shared (referenced) composite modification pointed at by this node was edited
+            // elsewhere. Re-fetching the group hands NetworkModificationsTable a fresh
+            // `modifications` identity, which makes it force-refresh the resolved content of every
+            // expanded composite / reference row (fetchSubModificationsForExpandedRows(..., force));
+            // a collapsed reference reloads its content the next time it is expanded.
+            if (isSharedElementUpdateNotification(eventData)) {
                 if (currentNodeIdRef.current !== eventData.headers.parentNode) {
                     return;
                 }
