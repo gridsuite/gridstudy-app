@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
+import { PropsWithChildren, useCallback } from 'react';
 import { FieldErrors, FieldValues, useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
 import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
@@ -16,6 +16,13 @@ import { ModificationDialogContent, ModificationDialogContentProps } from './mod
  * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
  * @param {CallbackEvent} onSave callback when saving the modification
  * @param {Boolean} disabledSave to control disabled prop of the validate button
+ * @param {Boolean} readOnly when true, forces the validate button to be disabled.
+ * Actual form-input disabling is intentionally NOT done here: wrapping all of
+ * `children` (which can include tab navigation, action buttons, etc.) in a
+ * disabled fieldset at this generic level would also disable that navigation.
+ * Each dialog's content should instead read `readOnly` from
+ * useCustomFormContext() and scope its own fieldset around just the actual
+ * form fields (see LineForm for an example).
  * @param {CallbackEvent} onValidated callback when validation is successful
  * @param {CallbackEvent} onValidationError callback when validation failed
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
@@ -26,6 +33,7 @@ export type ModificationDialogProps<TFieldValues extends FieldValues> = Omit<
     'closeAndClear' | 'submitButton'
 > & {
     disabledSave?: boolean;
+    readOnly?: boolean;
     onClear: () => void;
     onClose?: () => void;
     onSave: (modificationData: TFieldValues) => void;
@@ -35,13 +43,15 @@ export type ModificationDialogProps<TFieldValues extends FieldValues> = Omit<
 
 export function ModificationDialog<TFieldValues extends FieldValues>({
     disabledSave = false,
+    readOnly = false,
     onClear,
     onClose,
     onSave,
     onValidated,
     onValidationError,
+    children,
     ...dialogProps
-}: Readonly<ModificationDialogProps<TFieldValues>>) {
+}: Readonly<PropsWithChildren<ModificationDialogProps<TFieldValues>>>) {
     const { handleSubmit } = useFormContext<TFieldValues>();
 
     const closeAndClear = () => {
@@ -84,8 +94,13 @@ export function ModificationDialog<TFieldValues extends FieldValues>({
             data-testid="ValidateButton"
             onClick={handleSubmit(handleValidate, handleValidationError)}
             variant="outlined"
-            disabled={disabledSave}
+            disabled={disabledSave || readOnly}
         />
     );
-    return <ModificationDialogContent closeAndClear={closeAndClear} submitButton={submitButton} {...dialogProps} />;
+
+    return (
+        <ModificationDialogContent closeAndClear={closeAndClear} submitButton={submitButton} {...dialogProps}>
+            {children}
+        </ModificationDialogContent>
+    );
 }
