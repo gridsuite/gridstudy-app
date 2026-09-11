@@ -5,16 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { QualityCriterionResult, StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
-import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
+import { computeLogicalControls, fetchStateEstimationResult } from '../../../services/study/state-estimation';
 import { AppState } from 'redux/reducer.type';
-import { ComputingType, RunningStatus, type MuiStyles } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    RunningStatus,
+    type MuiStyles,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { StateEstimationQualityResult } from './state-estimation-quality-result';
 import { LogicalControlsResult } from './logical-controls-result';
@@ -43,6 +50,11 @@ const styles = {
     emptySpace: {
         flexGrow: 1,
     },
+    computeLogicalControlsButton: (theme) => ({
+        display: 'flex',
+        alignItems: 'center',
+        paddingLeft: theme.spacing(2),
+    }),
 } as const satisfies MuiStyles;
 
 export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps> = ({
@@ -56,6 +68,9 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
+    const { snackError } = useSnackMessage();
+
+    const [isRunningLogicalControls, setIsRunningLogicalControls] = useState(false);
 
     const { result: stateEstimationResult, isLoading: isLoadingResult } = useNodeData({
         studyUuid,
@@ -113,6 +128,22 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         );
     };
 
+    const runLogicalControls = useCallback(() => {
+        if (studyUuid && nodeUuid && currentRootNetworkUuid) {
+            setIsRunningLogicalControls(true);
+            computeLogicalControls(studyUuid, nodeUuid, currentRootNetworkUuid)
+                .then((results) => {
+                    console.log('DBG DBR', results);
+                })
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'LogicalControlsComputationErrorMsg' });
+                })
+                .finally(() => {
+                    setIsRunningLogicalControls(false);
+                });
+        }
+    }, [nodeUuid, currentRootNetworkUuid, snackError, studyUuid]);
+
     return (
         <>
             <Box sx={styles.flexWrapper}>
@@ -123,6 +154,13 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     <Tab label={<FormattedMessage id={'StateEstimationLogicalControlsResults'} />} />
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
+                {tabIndex === 3 && (
+                    <Box sx={styles.computeLogicalControlsButton}>
+                    <Button variant="outlined" onClick={runLogicalControls} disabled={isRunningLogicalControls}>
+                        <FormattedMessage id="StateEstimationRunLogicalControls" />
+                    </Button>
+                    </Box>
+                )}
                 <Box sx={styles.emptySpace}></Box>
             </Box>
 

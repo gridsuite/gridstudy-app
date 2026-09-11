@@ -92,3 +92,16 @@ export function getStateEstimationStudyParameters(studyUuid: UUID) {
     console.debug(getStateEstimParams);
     return backendFetchJson(getStateEstimParams);
 }
+
+export function computeLogicalControls(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+): Promise<Response> {
+    console.info(
+        `compute logical controls on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/state-estimation/logical-controls`;
+    console.debug(url);
+    return backendFetch(url, { method: 'post' });
+}
