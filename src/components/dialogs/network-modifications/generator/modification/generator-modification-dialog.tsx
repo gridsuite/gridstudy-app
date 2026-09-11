@@ -24,6 +24,9 @@ import {
     generatorModificationDtoToForm,
     generatorModificationFormToDto,
     GeneratorModificationForm,
+    GENERATOR_TAB_FIELDS,
+    GeneratorDialogTab,
+    useTabs,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -89,6 +92,13 @@ export default function GeneratorModificationDialog({
     });
 
     const { reset, getValues } = formMethods;
+
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<GeneratorDialogTab>({
+        defaultTab: GeneratorDialogTab.CONNECTIVITY_TAB,
+        errors,
+        tabFields: GENERATOR_TAB_FIELDS,
+    });
 
     const fromEditDataToFormValues = useCallback(
         (editData: GeneratorModificationDto) => {
@@ -232,8 +242,9 @@ export default function GeneratorModificationDialog({
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
                 maxWidth={'md'}
-                PaperProps={{ sx: { height: '75vh' } }}
+                slotProps={{ paper: { sx: { height: '75vh' } } }}
                 titleId="ModifyGenerator"
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 keepMounted={true}
                 isDataFetching={
@@ -258,6 +269,7 @@ export default function GeneratorModificationDialog({
                         PositionDiagramPane={PositionDiagramPane}
                         fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                         fetchVoltageLevelEquipments={getVoltageLevelEquipments}
+                        useTabsReturn={useTabsReturn}
                     />
                 )}
             </ModificationDialog>

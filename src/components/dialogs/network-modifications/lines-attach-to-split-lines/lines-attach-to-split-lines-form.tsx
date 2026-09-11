@@ -5,8 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid2 as Grid } from '@mui/material';
-import { AutocompleteInput, EquipmentType, TextInput, VoltageLevelConnectivityForm } from '@gridsuite/commons-ui';
+import { Box, Grid } from '@mui/material';
+import {
+    AutocompleteInput,
+    EquipmentType,
+    GridSection,
+    TextInput,
+    VoltageLevelConnectivityForm,
+} from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -19,7 +25,6 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useVoltageLevelsListInfos from '../../../../hooks/use-voltage-levels-list-infos';
-import { GridSection } from '../../commons/grid-section';
 import { GridItem } from '../../commons/grid-item';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';

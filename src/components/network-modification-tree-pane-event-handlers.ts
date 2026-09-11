@@ -21,7 +21,6 @@ import {
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     reorderNetworkModificationTreeNodes,
-    removeNotificationByNode,
     resetLogsFilter,
     resetLogsPagination,
 } from '../redux/actions';
@@ -133,7 +132,6 @@ export const handleTreeModelUpdate = (
             if (eventData.headers.rootNetworkUuid !== rootNetworkUuid) break;
             fetchAndDispatchUpdatedNodes(dispatch, studyUuid, rootNetworkUuid, eventData.headers.nodes);
             if (currentNodeId && eventData.headers.nodes.includes(currentNodeId)) {
-                dispatch(removeNotificationByNode([currentNodeId]));
                 dispatch(resetLogsFilter());
                 dispatch(resetLogsPagination());
             }
@@ -163,9 +161,6 @@ export const handleTreeModelUpdate = (
             break;
         case NotificationType.NODES_UPDATED:
             fetchAndDispatchUpdatedNodes(dispatch, studyUuid, rootNetworkUuid, eventData.headers.nodes);
-            if (currentNodeId && eventData.headers.nodes.includes(currentNodeId)) {
-                dispatch(removeNotificationByNode([currentNodeId]));
-            }
             break;
         case NotificationType.NODE_EDITED:
             fetchAndDispatchUpdatedNodes(dispatch, studyUuid, rootNetworkUuid, [eventData.headers.node]);

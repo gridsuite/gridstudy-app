@@ -63,7 +63,9 @@ export default function SubstationsAutocomplete({
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     inputRef={ref}
-                    inputProps={{ ...inputProps }}
+                    slotProps={{
+                        htmlInput: { ...inputProps },
+                    }}
                     label={label}
                     {...genHelperError(error?.message)}
                     {...rest}
@@ -71,6 +73,7 @@ export default function SubstationsAutocomplete({
             )}
             autoHighlight={true}
             disableCloseOnSelect={true}
+            data-testid="SubstationsInput"
             {...props}
         />
     );

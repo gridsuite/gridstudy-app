@@ -18,6 +18,7 @@ import {
 } from 'components/utils/field-constants';
 import { REACTIVE_VARIATION_MODES } from 'components/network/constants';
 import { YUP_REQUIRED } from '@gridsuite/commons-ui';
+import { VARIATION_LIST_EMPTY } from '../../../../../utils/translationKeys';
 
 export const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 
@@ -45,7 +46,7 @@ export const getVariationSchema = () =>
         });
 
 export const getVariationsSchema = (id: string) => ({
-    [id]: yup.array().nullable().min(1, 'EmptyList.variations').of(getVariationSchema()),
+    [id]: yup.array().nullable().min(1, VARIATION_LIST_EMPTY).of(getVariationSchema()),
 });
 
 export const getVariationEmptyForm = (variationMode: string) => {

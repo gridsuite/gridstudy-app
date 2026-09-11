@@ -26,15 +26,24 @@ import {
     type UserAction,
     type UserValidationErrorAction,
     EquipmentType,
+    RunningStatus,
+    addGlobalFilterId,
+    getGlobalFilterId,
+    GlobalFilter,
+    RecentGlobalFilter,
+    addSelectedGlobalFiltersToTableState,
+    clearSelectedGlobalFiltersFromTableState,
+    markNotFoundGlobalFiltersAsDeletedInState,
+    MAX_RECENT_GLOBAL_FILTERS,
+    removeSelectedGlobalFiltersFromTableState,
 } from '@gridsuite/commons-ui';
+
 import {
     ADD_GLOBAL_FILTERS,
-    ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_SPREADSHEET_LOADED_NODES_IDS,
     ADD_TO_GLOBAL_FILTER_OPTIONS,
     AddGlobalFiltersAction,
-    type AddNotificationAction,
     type AddSortForNewSpreadsheetAction,
     AddSpreadsheetLoadedNodesIdsAction,
     type AddToGlobalFilterOptionsAction,
@@ -105,7 +114,6 @@ import {
     REMOVE_FROM_GLOBAL_FILTER_OPTIONS,
     REMOVE_GLOBAL_FILTERS,
     REMOVE_NODE_DATA,
-    REMOVE_NOTIFICATION_BY_NODE,
     REMOVE_SPREADSHEET_LOADED_NODES_IDS,
     REMOVE_TABLE_DEFINITION,
     type RemoveColumnDefinitionAction,
@@ -113,7 +121,6 @@ import {
     type RemoveFromGlobalFilterOptionsAction,
     RemoveGlobalFiltersAction,
     type RemoveNodeDataAction,
-    type RemoveNotificationByNodeAction,
     RemoveSpreadsheetLoadedNodesIdsAction,
     type RemoveTableDefinitionAction,
     RENAME_TABLE_DEFINITION,
@@ -162,7 +169,6 @@ import {
     SET_COMPUTING_STATUS_INFOS,
     SET_DIRTY_COMPUTATION_PARAMETERS,
     SET_LAST_COMPLETED_COMPUTATION,
-    SET_MODIFICATIONS_IN_PROGRESS,
     SET_MONO_ROOT_STUDY,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT,
     SET_OPTIONAL_SERVICES,
@@ -181,7 +187,6 @@ import {
     type SetComputingStatusParametersAction,
     type SetDirtyComputationParametersAction,
     type SetLastCompletedComputationAction,
-    type SetModificationsInProgressAction,
     type SetMonoRootStudyAction,
     type SetOneBusShortcircuitAnalysisContextAction,
     type SetOptionalServicesAction,
@@ -198,6 +203,8 @@ import {
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+    SET_NODE_ACTIVITIES,
+    SetNodeActivitiesAction,
     UPDATE_NODE_ALIASES,
     UPDATE_SPREADSHEET_PARTIAL_DATA,
     UPDATE_TABLE_COLUMNS,
@@ -207,6 +214,8 @@ import {
     type UpdateEquipmentsAction,
     type UpdateNetworkVisualizationParametersAction,
     UpdateNodeAliasesAction,
+    UPDATE_ALIASED_NODES_VALIDITY,
+    UpdateAliasedNodesValidityAction,
     type UpdateSpreadsheetPartialDataAction,
     type UpdateTableColumnsAction,
     type UpdateTableDefinitionAction,
@@ -221,10 +230,10 @@ import {
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
 import { getLocalStorageSyncEnabled } from './session-storage/navigation-local-storage';
+import { saveLastTreeNodeUuid } from './session-storage/last-tree-node-local-storage';
 import { PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
-import { RunningStatus } from 'components/utils/running-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import {
     ALL_BUSES,
@@ -290,9 +299,6 @@ import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { saveStudyNavigationSync } from 'redux/session-storage/navigation-local-storage';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
-import { isCriteriaFilter } from '../components/results/common/utils';
-import { addGlobalFilterId, getGlobalFilterId } from '../components/results/common/global-filter/global-filter-utils';
-import type { GlobalFilter, RecentGlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 
 // Types are defined in reducer.type.ts — import them directly from there
 import {
@@ -347,13 +353,28 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): Spread
     }
 }
 
-const MAX_RECENT_GLOBAL_FILTERS = 10;
-
 function buildSortedRecents(filters: GlobalFilter[]): RecentGlobalFilter[] {
     return filters
         .map((f) => ({ id: getGlobalFilterId(f), unselectedDate: f.unselectedDate! }))
         .sort((a, b) => b.unselectedDate - a.unselectedDate)
         .slice(0, MAX_RECENT_GLOBAL_FILTERS);
+}
+
+/**
+ * Stores the full filter objects in globalFilterOptions, so that the ids kept in
+ * tableFilters.globalFilters can be resolved right away — without waiting for the asynchronous
+ * option fetches of useGlobalFilterOptions (countries, substation properties, base voltages).
+ * Existing options are left untouched: the ones fetched from the network are the source of truth, and
+ * ADD_TO_GLOBAL_FILTER_OPTIONS overwrites by id anything registered here from a stale collection.
+ */
+function registerGlobalFilterOptions(globalFilterOptions: GlobalFilter[], filters: GlobalFilter[]) {
+    filters.forEach((filter) => {
+        const id = getGlobalFilterId(filter);
+        const alreadyExists = globalFilterOptions.some((opt) => opt.id === id);
+        if (!alreadyExists) {
+            globalFilterOptions.push(addGlobalFilterId(filter));
+        }
+    });
 }
 
 export const DEFAULT_PAGINATION: PaginationConfig = {
@@ -462,11 +483,13 @@ const initialState: AppState = {
         allChildren: null,
     },
     copiedNetworkModifications: {
-        networkModificationUuids: [],
+        networkModifications: [],
         copyInfos: null,
     },
     tables: initialTablesState,
     nodeAliases: [],
+    nodeActivities: [],
+    aliasedNodesValidity: {},
     calculationSelections: {},
     mapEquipments: undefined,
     geoData: null,
@@ -481,8 +504,6 @@ const initialState: AppState = {
     mapDataLoading: false,
     isExplorerDrawerOpen: true,
     centerOnSubstation: undefined,
-    notificationIdList: [],
-    isModificationsInProgress: false,
     isMonoRootStudy: true,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
@@ -508,6 +529,9 @@ const initialState: AppState = {
         },
         [SpreadsheetEquipmentType.BUS]: {
             networkComponents: false,
+        },
+        [SpreadsheetEquipmentType.BATTERY]: {
+            regulatingTerminal: false,
         },
     },
     networkVisualizationsParameters: null,
@@ -683,6 +707,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.studyUuid = null;
         state.geoData = null;
         state.networkModificationTreeModel = null;
+        state.nodeActivities = [];
     });
 
     builder.addCase(MAP_EQUIPMENTS_CREATED, (state, action: MapEquipmentsCreatedAction) => {
@@ -814,13 +839,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 selected: selectedFilters.map(getGlobalFilterId),
                 recents: buildSortedRecents(recentFilters),
             };
-            // Store full objects in globalFilterOptions only if not already present
-            filters.filter(isCriteriaFilter).forEach((filter) => {
-                const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
-                if (!alreadyExists) {
-                    state.globalFilterOptions.push(addGlobalFilterId(filter));
-                }
-            });
+            registerGlobalFilterOptions(state.globalFilterOptions, filters);
         });
     });
 
@@ -858,7 +877,6 @@ export const reducer = createReducer(initialState, (builder) => {
         LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
         (state, action: LoadNetworkModificationTreeSuccessAction) => {
             state.networkModificationTreeModel = action.networkModificationTreeModel;
-            state.networkModificationTreeModel.setBuildingStatus();
             state.isNetworkModificationTreeModelUpToDate = true;
             state.reloadMapNeeded = true;
         }
@@ -972,7 +990,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 let newModel = state.networkModificationTreeModel.newSharedForUpdate();
                 newModel.updateNodes(action.networkModificationTreeNodes);
                 state.networkModificationTreeModel = newModel;
-                state.networkModificationTreeModel?.setBuildingStatus();
                 // check if current node is in the nodes updated list
                 if (action.networkModificationTreeNodes.find((node) => node.id === state.currentTreeNode?.id)) {
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
@@ -1055,6 +1072,10 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
         state.reloadMapNeeded = true;
+        // keep track of the selected node to restore it when the study is opened again (page reload for example)
+        if (state.studyUuid && action.currentTreeNode?.id) {
+            saveLastTreeNodeUuid(state.studyUuid, action.currentTreeNode.id);
+        }
     });
 
     builder.addCase(HIGHLIGHT_MODIFICATION, (state, action: HighlightModificationAction) => {
@@ -1101,20 +1122,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CENTER_ON_SUBSTATION, (state, action: CenterOnSubstationAction) => {
         state.centerOnSubstation = action.centerOnSubstation;
-    });
-
-    builder.addCase(ADD_NOTIFICATION, (state, action: AddNotificationAction) => {
-        state.notificationIdList = [...state.notificationIdList, ...action.notificationIds];
-    });
-
-    builder.addCase(REMOVE_NOTIFICATION_BY_NODE, (state, action: RemoveNotificationByNodeAction) => {
-        state.notificationIdList = [
-            ...state.notificationIdList.filter((nodeId) => !action.notificationIds.includes(nodeId)),
-        ];
-    });
-
-    builder.addCase(SET_MODIFICATIONS_IN_PROGRESS, (state, action: SetModificationsInProgressAction) => {
-        state.isModificationsInProgress = action.isModificationsInProgress;
     });
 
     builder.addCase(SET_MONO_ROOT_STUDY, (state, action: SetMonoRootStudyAction) => {
@@ -1592,13 +1599,7 @@ export const reducer = createReducer(initialState, (builder) => {
             }
         }
 
-        // Store full objects in globalFilterOptions only if not already present (same as above and also preserve the recent status)
-        action.filters.filter(isCriteriaFilter).forEach((filter) => {
-            const alreadyExists = state.globalFilterOptions.some((opt) => opt.uuid === filter.uuid);
-            if (!alreadyExists) {
-                state.globalFilterOptions.push(addGlobalFilterId(filter));
-            }
-        });
+        registerGlobalFilterOptions(state.globalFilterOptions, action.filters);
     });
 
     builder.addCase(SET_CALCULATION_SELECTIONS, (state, action: SetCalculationSelectionsAction) => {
@@ -1614,6 +1615,12 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_NODE_ALIASES, (state, action: UpdateNodeAliasesAction) => {
         state.nodeAliases = action.nodeAliases;
+    });
+    builder.addCase(SET_NODE_ACTIVITIES, (state, action: SetNodeActivitiesAction) => {
+        state.nodeActivities = action.nodeActivities;
+    });
+    builder.addCase(UPDATE_ALIASED_NODES_VALIDITY, (state, action: UpdateAliasedNodesValidityAction) => {
+        state.aliasedNodesValidity = action.aliasedNodesValidity;
     });
     builder.addCase(UPDATE_COLUMN_FILTERS, (state, action: UpdateColumnFiltersAction) => {
         const { filterType, filterSubType, filters } = action;
@@ -1640,60 +1647,42 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ADD_GLOBAL_FILTERS, (state, action: AddGlobalFiltersAction) => {
         const { tableId, filterIds } = action;
 
-        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
-        const tableState = state.tableFilters.globalFilters[tableId];
-
-        filterIds.forEach((id) => {
-            if (!tableState.selected.includes(id)) {
-                tableState.selected.push(id);
-            }
-            tableState.recents = tableState.recents.filter((r) => r.id !== id);
-        });
+        state.tableFilters.globalFilters[tableId] = addSelectedGlobalFiltersToTableState(
+            state.tableFilters.globalFilters[tableId],
+            filterIds
+        );
     });
 
     builder.addCase(REMOVE_GLOBAL_FILTERS, (state, action: RemoveGlobalFiltersAction) => {
         const { tableId, filterIds } = action;
 
-        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
-        const tableState = state.tableFilters.globalFilters[tableId];
-
-        tableState.selected = tableState.selected.filter((id) => !filterIds.includes(id));
-
-        const now = Date.now();
-        filterIds.forEach((filterId) => {
-            const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
-            if (!filterOption?.deleted) {
-                tableState.recents.unshift({ id: filterId, unselectedDate: now });
-            }
-        });
-        tableState.recents = tableState.recents.slice(0, MAX_RECENT_GLOBAL_FILTERS);
+        state.tableFilters.globalFilters[tableId] = removeSelectedGlobalFiltersFromTableState(
+            state.tableFilters.globalFilters[tableId],
+            filterIds,
+            state.globalFilterOptions
+        );
     });
 
     builder.addCase(CLEAR_GLOBAL_FILTERS, (state, action: ClearGlobalFiltersAction) => {
         const { tableId } = action;
-        state.tableFilters.globalFilters[tableId] ??= { selected: [], recents: [] };
-        const tableState = state.tableFilters.globalFilters[tableId];
-        const now = Date.now();
-        const newRecents = tableState.selected
-            .filter((filterId) => {
-                const filterOption = state.globalFilterOptions.find((opt) => opt.id === filterId);
-                return !filterOption?.deleted;
-            })
-            .map((filterId) => ({ id: filterId, unselectedDate: now }));
-        tableState.recents = [...newRecents, ...tableState.recents].slice(0, MAX_RECENT_GLOBAL_FILTERS);
-        tableState.selected = [];
+        state.tableFilters.globalFilters[tableId] = clearSelectedGlobalFiltersFromTableState(
+            state.tableFilters.globalFilters[tableId],
+            state.globalFilterOptions
+        );
     });
     builder.addCase(
         MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
         (state, action: MarkNotFoundGlobalFiltersAsDeletedAction) => {
             const { globalFilters, tableId } = action;
-            const ids = new Set(globalFilters.map((f) => f.id));
-            state.globalFilterOptions.forEach((globalFilter) => {
-                if (ids.has(globalFilter.id)) globalFilter.deleted = true;
-            });
-            const tableState = state.tableFilters.globalFilters[tableId];
-            if (tableState?.recents?.length) {
-                tableState.recents = tableState.recents.filter((r) => !ids.has(r.id));
+            const result = markNotFoundGlobalFiltersAsDeletedInState(
+                state.globalFilterOptions,
+                state.tableFilters.globalFilters[tableId],
+                globalFilters
+            );
+
+            state.globalFilterOptions = result.globalFilterOptions;
+            if (result.tableState) {
+                state.tableFilters.globalFilters[tableId] = result.tableState;
             }
         }
     );
@@ -1773,8 +1762,12 @@ function synchCurrentTreeNode(state: Draft<AppState>, nextCurrentNodeUuid?: UUID
          * we need to sync the current tree node uuid to localStorage
          * to avoid having deleted node selected in other tabs for example.
          */
-        if (state.syncEnabled && state.studyUuid) {
-            saveStudyNavigationSync(state.studyUuid, { treeNodeUuid: nextCurrentNode.id });
+        if (state.studyUuid) {
+            saveLastTreeNodeUuid(state.studyUuid, nextCurrentNode.id);
+
+            if (state.syncEnabled) {
+                saveStudyNavigationSync(state.studyUuid, { treeNodeUuid: nextCurrentNode.id });
+            }
         }
     }
 }

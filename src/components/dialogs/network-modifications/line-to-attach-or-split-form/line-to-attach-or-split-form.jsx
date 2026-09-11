@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid2 as Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { areIdsEqual, AutocompleteInput, EquipmentType, getObjectId, snackWithFallback } from '@gridsuite/commons-ui';
 import { useEffect, useState } from 'react';
 import { PercentageArea } from '../../percentage-area/percentage-area';
@@ -54,6 +54,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode, current
             getOptionLabel={getObjectId}
             outputTransform={getObjectId}
             size={'small'}
+            dataTestId="ExistingLineInput"
         />
     );
     const percentageArea = <PercentageArea upperLeftText={'Line1'} upperRightText={'Line2'} />;

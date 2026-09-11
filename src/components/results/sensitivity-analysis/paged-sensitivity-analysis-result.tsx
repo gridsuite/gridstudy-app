@@ -12,7 +12,6 @@ import {
     DATA_KEY_TO_SORT_KEY,
     FUNCTION_TYPES,
     mappingTabs,
-    PAGE_OPTIONS,
     SensitivityResultTabs,
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
@@ -20,16 +19,18 @@ import { useIntl } from 'react-intl';
 import {
     ComputingType,
     CustomTablePagination,
+    RunningStatus,
     snackWithFallback,
     useDebounce,
     useSnackMessage,
+    buildValidGlobalFilters,
+    RESULT_PAGE_OPTIONS,
 } from '@gridsuite/commons-ui';
 import {
     fetchSensitivityAnalysisFilterOptions,
     fetchSensitivityAnalysisResult,
 } from '../../../services/study/sensitivity-analysis';
 import { useSelector } from 'react-redux';
-import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { PaginationType, SensitivityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
@@ -37,8 +38,7 @@ import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.ty
 import { AppState } from '../../../redux/reducer.type';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { useSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
+import { useSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 export type PagedSensitivityAnalysisResultProps = {
@@ -226,7 +226,7 @@ function PagedSensitivityAnalysisResult({
                 computationSubType={mappingTabs(sensiKind, nOrNkIndex)}
             />
             <CustomTablePagination
-                rowsPerPageOptions={PAGE_OPTIONS}
+                rowsPerPageOptions={RESULT_PAGE_OPTIONS}
                 count={count}
                 rowsPerPage={typeof rowsPerPage === 'number' ? rowsPerPage : rowsPerPage.value}
                 page={page}

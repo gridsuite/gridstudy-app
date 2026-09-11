@@ -67,14 +67,6 @@ export const styles = {
         marginRight: theme.spacing(2),
         color: theme.palette.primary.main,
     }),
-    toolbarCircularProgress: (theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: theme.spacing(1.25),
-        marginRight: theme.spacing(2),
-        color: theme.palette.secondary.main,
-    }),
     notification: (theme) => ({
         flex: 1,
         alignContent: 'center',

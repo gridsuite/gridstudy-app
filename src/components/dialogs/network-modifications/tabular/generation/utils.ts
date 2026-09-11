@@ -6,28 +6,16 @@
  */
 import {
     EquipmentType,
+    FieldConstants,
     Identifiable,
     type MuiStyles,
     ReactiveCapabilityCurvePoints,
     SHUNT_COMPENSATOR_TYPES,
+    TabularFieldConstants,
     type UseStateBooleanReturn,
     YUP_REQUIRED,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
-import {
-    MAX_Q_AT_NOMINAL_V,
-    REACTIVE_CAPABILITY_CURVE,
-    REACTIVE_CAPABILITY_CURVE_P_0,
-    REACTIVE_CAPABILITY_CURVE_P_MAX,
-    REACTIVE_CAPABILITY_CURVE_P_MIN,
-    REACTIVE_CAPABILITY_CURVE_POINTS,
-    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0,
-    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX,
-    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN,
-    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0,
-    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
-    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
-} from 'components/utils/field-constants';
 import { mapTwtDataForTable } from 'utils/spreadsheet-equipments-mapper';
 
 export const styles = {
@@ -125,20 +113,22 @@ export interface PrefilledModelGenerationParams {
  */
 export const mapReactiveCapabilityCurvePointsToFormFields = (equipment: Record<string, any>) => {
     let formattedEquipment = { ...equipment };
-    if (!(REACTIVE_CAPABILITY_CURVE_POINTS in formattedEquipment)) {
-        formattedEquipment[REACTIVE_CAPABILITY_CURVE] = false;
+    if (!(TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_POINTS in formattedEquipment)) {
+        formattedEquipment[TabularFieldConstants.REACTIVE_CAPABILITY_CURVE] = false;
         return formattedEquipment;
     }
-    const pointsFromBack = formattedEquipment[REACTIVE_CAPABILITY_CURVE_POINTS] as ReactiveCapabilityCurvePoints[];
+    const pointsFromBack = formattedEquipment[
+        TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_POINTS
+    ] as ReactiveCapabilityCurvePoints[];
     const curvePoint1 = pointsFromBack[0];
 
     if (curvePoint1) {
         formattedEquipment = {
             ...formattedEquipment,
-            [REACTIVE_CAPABILITY_CURVE]: true,
-            [REACTIVE_CAPABILITY_CURVE_P_MIN]: curvePoint1.p,
-            [REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN]: curvePoint1.maxQ,
-            [REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN]: curvePoint1.minQ,
+            [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE]: true,
+            [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_P_MIN]: curvePoint1.p,
+            [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN]: curvePoint1.maxQ,
+            [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN]: curvePoint1.minQ,
         };
     }
     const curvePoint2 = pointsFromBack[1];
@@ -147,25 +137,25 @@ export const mapReactiveCapabilityCurvePointsToFormFields = (equipment: Record<s
         if (!curvePoint3) {
             formattedEquipment = {
                 ...formattedEquipment,
-                [REACTIVE_CAPABILITY_CURVE_P_MAX]: curvePoint2.p,
-                [REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX]: curvePoint2.maxQ,
-                [REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX]: curvePoint2.minQ,
+                [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_P_MAX]: curvePoint2.p,
+                [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX]: curvePoint2.maxQ,
+                [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX]: curvePoint2.minQ,
             };
             return formattedEquipment;
         }
         formattedEquipment = {
             ...formattedEquipment,
-            [REACTIVE_CAPABILITY_CURVE_P_0]: curvePoint2.p,
-            [REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0]: curvePoint2.maxQ,
-            [REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0]: curvePoint2.minQ,
+            [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_P_0]: curvePoint2.p,
+            [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0]: curvePoint2.maxQ,
+            [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0]: curvePoint2.minQ,
         };
     }
     if (curvePoint3) {
         formattedEquipment = {
             ...formattedEquipment,
-            [REACTIVE_CAPABILITY_CURVE_P_MAX]: curvePoint3.p,
-            [REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX]: curvePoint3.maxQ,
-            [REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX]: curvePoint3.minQ,
+            [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_P_MAX]: curvePoint3.p,
+            [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX]: curvePoint3.maxQ,
+            [TabularFieldConstants.REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX]: curvePoint3.minQ,
         };
     }
 
@@ -184,7 +174,7 @@ export const mapShuntCompensatorToFormFields = (shuntCompensator: Record<string,
 
     return {
         ...formattedCompensator,
-        [MAX_Q_AT_NOMINAL_V]:
+        [FieldConstants.MAX_Q_AT_NOMINAL_V]:
             Number(formattedCompensator.qAtNominalV) * Number(formattedCompensator.maximumSectionCount),
     };
 };

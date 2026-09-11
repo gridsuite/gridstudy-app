@@ -14,8 +14,7 @@ import {
 import { IntlShape, useIntl } from 'react-intl';
 import { translateLimitNameBackToFront } from '../common/utils';
 import { MAX_INT32 } from 'services/utils';
-import { SecurityAnalysisTable } from '@gridsuite/commons-ui';
-import { getNoRowsMessage } from '../../utils/aggrid-rows-handler';
+import { getNoRowsMessage, SecurityAnalysisTable } from '@gridsuite/commons-ui';
 
 export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNProps> = ({
     result,

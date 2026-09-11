@@ -52,7 +52,9 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
             makeAggridColumnDef('solvedTapPosition', 'loadflowModificationsTapOut'),
             {
                 ...makeAggridColumnDef('type', 'Type'),
-                valueFormatter: (params: ValueFormatterParams) => intl.formatMessage({ id: params.value }),
+                valueFormatter: (params: ValueFormatterParams) => {
+                    return params.value ? intl.formatMessage({ id: params.value }) : '';
+                },
             },
         ];
     }, [intl, makeAggridColumnDef]);
@@ -88,14 +90,16 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
 
     return (
         <Dialog
-            PaperProps={{
-                sx: {
-                    height: '90vh',
-                },
-            }}
             fullWidth
             maxWidth="md"
             open={true}
+            slotProps={{
+                paper: {
+                    sx: {
+                        height: '90vh',
+                    },
+                },
+            }}
         >
             <DialogTitle>
                 {intl.formatMessage({
@@ -123,7 +127,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                         onRowDataUpdated={onRowDataUpdated}
                     />
                 </Box>
-                <Button onClick={onClose}>Fermer</Button>
+                <Button onClick={onClose}>{intl.formatMessage({ id: 'close' })}</Button>
             </DialogContent>
         </Dialog>
     );

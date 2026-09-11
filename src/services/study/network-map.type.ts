@@ -4,8 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { BusBarSections } from '../../components/dialogs/network-modifications/voltage-level/section/voltage-level-section.type';
-import { ConnectablePositionInfos } from '@gridsuite/commons-ui';
+import { BusBarSections, ConnectablePositionInfos } from '@gridsuite/commons-ui';
 
 export type SwitchInfos = {
     id: string;

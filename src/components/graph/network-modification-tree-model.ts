@@ -6,7 +6,6 @@
  */
 
 import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } from './util/model-functions';
-import { BuildStatus } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { Edge } from '@xyflow/react';
 import { AbstractNode, CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from './tree-node.type';
@@ -27,8 +26,6 @@ export const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
 export default class NetworkModificationTreeModel {
     treeNodes: CurrentTreeNode[] = [];
     treeEdges: Edge[] = [];
-
-    isAnyNodeBuilding = false;
 
     // Will sort if columnPosition is defined, and not move the nodes if undefined
     childrenNodeSorter(a: AbstractNode, b: AbstractNode) {
@@ -272,16 +269,10 @@ export default class NetworkModificationTreeModel {
         elements.children.forEach((child) => {
             this.addChild(child, elements.id);
         });
-        this.setBuildingStatus();
     }
 
     newSharedForUpdate() {
         /* shallow clone of the network https://stackoverflow.com/a/44782052 */
         return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
-    }
-
-    setBuildingStatus() {
-        this.isAnyNodeBuilding =
-            this.treeNodes.find((node) => node?.data?.globalBuildStatus === BuildStatus.BUILDING) !== undefined;
     }
 }

@@ -11,7 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
-import { DialogProps } from '@mui/material/Dialog/Dialog';
+import { DialogProps } from '@mui/material/Dialog';
 import { DynamicSimulationEventForm } from './dynamic-simulation-event-form';
 import { Event, EventProperty, EventPropertyName, PrimitiveTypes } from './types/event.type';
 import * as yup from 'yup';

@@ -14,7 +14,7 @@ import {
     HVDC_LINE_TAB,
 } from '../../../../../utils/field-constants';
 import { LccDialogTab, LccFormInfos } from '../common/lcc-type';
-import { Box, Grid2 as Grid, TextField } from '@mui/material';
+import { Box, Grid, TextField } from '@mui/material';
 import LccHvdcLine from '../common/lcc-hvdc-line';
 import LccConverterStation from '../common/lcc-converter-station';
 import LccTabs from '../common/lcc-tabs';
@@ -42,8 +42,10 @@ function LccModificationDialogHeader({ lccToModify }: Readonly<LccModificationHe
             fullWidth
             label={'ID'}
             value={lccToModify?.id ?? ''}
-            InputProps={{
-                readOnly: true,
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
             }}
             disabled
             {...filledTextField}

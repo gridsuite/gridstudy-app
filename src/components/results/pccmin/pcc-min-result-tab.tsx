@@ -12,14 +12,17 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
-import { ComputingType, EquipmentType } from '@gridsuite/commons-ui';
-import { RunningStatus } from '../../utils/running-status';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import {
+    ComputingType,
+    EquipmentType,
+    RESULTS_LOADING_DELAY,
+    RunningStatus,
+    useOpenLoaderShortWait,
+} from '@gridsuite/commons-ui';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { PaginationType, TableType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';

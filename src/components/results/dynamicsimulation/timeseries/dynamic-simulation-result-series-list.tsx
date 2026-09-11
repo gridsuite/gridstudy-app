@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid2 as Grid, List, ListSubheader, Typography } from '@mui/material';
+import { Grid, List, ListSubheader, Typography } from '@mui/material';
 import { Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
 import { type MuiStyles } from '@gridsuite/commons-ui';

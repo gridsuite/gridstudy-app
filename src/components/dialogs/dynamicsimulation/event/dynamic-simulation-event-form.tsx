@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Grid2 as Grid, TextField } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import { Event, EventDefinition, EventPropertyName } from './types/event.type';
 import { makeComponentFor } from './util/event-rhf';
 import { useIntl } from 'react-intl';
@@ -33,8 +33,10 @@ export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFor
             fullWidth
             label={'ID'}
             value={equipmentId}
-            InputProps={{
-                readOnly: true,
+            slotProps={{
+                input: {
+                    readOnly: true,
+                },
             }}
             {...filledTextField}
             disabled

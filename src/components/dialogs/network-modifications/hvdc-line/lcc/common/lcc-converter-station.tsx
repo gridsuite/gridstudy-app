@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ConnectivityForm, FloatInput, PercentageAdornment, TextInput } from '@gridsuite/commons-ui';
+import { ConnectivityForm, FloatInput, GridSection, PercentageAdornment, TextInput } from '@gridsuite/commons-ui';
 import {
     CONNECTIVITY,
     CONVERTER_STATION_ID,
@@ -14,9 +14,8 @@ import {
     POWER_FACTOR,
 } from '../../../../../utils/field-constants';
 import type { UUID } from 'node:crypto';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import { GridSection } from '../../../../commons/grid-section';
 import { GridItem } from '../../../../commons/grid-item';
 
 import FiltersShuntCompensatorTable from '../creation/filters-shunt-compensator-table';

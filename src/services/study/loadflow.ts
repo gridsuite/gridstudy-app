@@ -6,9 +6,8 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson, backendFetchText, ResultsQueryParams } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
 
 export function setLoadFlowParameters(studyUuid: UUID, newParams: any) {
     console.info('set load flow parameters');
@@ -87,7 +86,12 @@ export function stopLoadFlow(
     return backendFetch(stopLoadFlowUrl, { method: 'put' });
 }
 
-export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function fetchLoadFlowStatus(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    init?: RequestInit
+) {
     console.info(
         `Fetching loadFlow status on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
@@ -95,7 +99,7 @@ export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID, curr
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/loadflow/status';
     console.debug(url);
-    return backendFetchText(url);
+    return backendFetchText(url, init);
 }
 
 export function fetchLoadFlowComputationInfos(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {

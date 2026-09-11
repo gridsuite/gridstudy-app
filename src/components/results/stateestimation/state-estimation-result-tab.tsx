@@ -13,9 +13,8 @@ import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { QualityCriterionResult, StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
 import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
-import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer.type';
-import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, RunningStatus, type MuiStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { StateEstimationQualityResult } from './state-estimation-quality-result';
 import GlassPane from '../common/glass-pane';
@@ -133,6 +132,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                         isLoadingResult={isLoadingResult}
                         columnDefs={stateEstimationQualityColumns}
                         tableName="qualityCriterionResults"
+                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                     />
                 </GlassPane>
             )}
@@ -143,6 +143,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                         isLoadingResult={isLoadingResult}
                         columnDefs={stateEstimationQualityColumns}
                         tableName="qualityPerRegionResults"
+                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                     />
                 </GlassPane>
             )}

@@ -6,11 +6,10 @@
  */
 
 import NetworkModificationNodeEditor from './network-modification-node-editor';
-import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, RunningStatus, type MuiStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer.type';
-import RunningStatus from 'components/utils/running-status';
 import { NodeEditorHeader } from './node-editor-header';
 import { isSecurityModificationNode } from '../../tree-node.type';
 import { LoadflowModificationAlert } from './loadflow-modifications/loadflow-modification-alert';

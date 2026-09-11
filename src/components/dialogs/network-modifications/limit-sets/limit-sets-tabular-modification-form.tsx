@@ -11,6 +11,7 @@ import { type FieldValues, useFormContext, type UseFieldArrayReturn, useWatch } 
 import {
     AutocompleteInput,
     BooleanNullableCellRenderer,
+    CsvDownloadButton,
     type CsvProps,
     CsvPicker,
     CustomAgGridTable,
@@ -21,6 +22,10 @@ import {
     hasNonEmptyRows,
     InputWithPopupConfirmation,
     IntegerInput,
+    isFieldTypeOk,
+    setFieldTypeError,
+    type TabularField,
+    transformIfFrenchNumber,
 } from '@gridsuite/commons-ui';
 import {
     AMOUNT_TEMPORARY_LIMITS,
@@ -30,17 +35,16 @@ import {
     TYPE,
 } from 'components/utils/field-constants';
 import { v4 as uuid4 } from 'uuid';
-import { Alert, Grid2 as Grid, Stack } from '@mui/material';
+import { Alert, Grid, Stack } from '@mui/material';
 import type Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
-import { isFieldTypeOk, setFieldTypeError, TabularField, transformIfFrenchNumber } from '../tabular/tabular-common';
 import {
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
-} from '../tabular/tabular-modification-utils';
+} from './limit-sets-tabular-modification-utils';
 import { BOOLEAN } from '../../../network/constants';
 
 export interface TabularModificationFormProps {
@@ -198,12 +202,12 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         return commentData;
     }, [intl, csvTranslatedColumns, language]);
 
-    const handleChangeType = useCallback(() => {
-        clearErrors(MODIFICATIONS_TABLE);
-        tableRef.current?.replace([]);
+    const resetOnTypeChange = useCallback(() => {
         setValue(CSV_FILENAME, undefined);
         setSelectedFile(undefined);
         setFileErrorMessage(undefined);
+        clearErrors(MODIFICATIONS_TABLE);
+        tableRef.current?.replace([]);
     }, [clearErrors, setValue]);
 
     const csvFilename = getValues(CSV_FILENAME);
@@ -230,7 +234,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
             size={'small'}
             formProps={{ variant: 'outlined' }}
             shouldOpenPopup={() => hasNonEmptyRows(getValues(MODIFICATIONS_TABLE))}
-            resetOnConfirmation={handleChangeType}
+            onValueChange={resetOnTypeChange}
             message="changeTypeMessage"
             validateButtonLabel="button.changeType"
         />
@@ -282,55 +286,70 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         () => ({
             fileName: 'limitset_modification_template',
             language,
-            getTemplateData,
             getTableData,
         }),
-        [language, getTemplateData, getTableData]
+        [language, getTableData]
     );
 
     return (
         <Stack spacing={2} paddingTop={1} sx={[{ height: '100%' }]}>
             <Grid sx={{ width: 400, maxWidth: '100%' }}>{equipmentTypeField}</Grid>
-            <Grid container justifyContent="space-between" alignItems="center">
-                <Grid>
-                    <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
-                </Grid>
-                <Grid>
-                    <CsvPicker<Record<string, unknown>>
-                        label="UploadCSV"
-                        requiredColumns={requiredColumns}
-                        disabled={!equipmentType}
-                        language={language}
-                        parseConfig={parseConfig}
-                        selectedFile={selectedFile}
-                        onFileChange={setSelectedFile}
-                        onFileError={setFileErrorMessage}
-                        getTableData={() => getValues(MODIFICATIONS_TABLE)}
-                        onReplace={(results, file) => tableRef.current?.replace(getDataFromCsvFile(results, file))}
-                        onAppend={(results, file) => tableRef.current?.append(getDataFromCsvFile(results, file))}
-                    />
-                </Grid>
-            </Grid>
-            {fileErrorMessage && (
-                <Grid>
-                    <Alert severity="error">{fileErrorMessage}</Alert>
-                </Grid>
-            )}
             {equipmentType && (
-                <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-                    <CustomAgGridTable
-                        ref={tableRef}
-                        name={MODIFICATIONS_TABLE}
-                        columnDefs={columnDefs}
-                        defaultColDef={limitSetModificationsDefaultColDef}
-                        makeDefaultRowData={makeDefaultRowData}
-                        loading={isFetching}
-                        pagination
-                        rowSelection={{ mode: 'multiRow' }}
-                        overrideLocales={AGGRID_LOCALES}
-                        csvProps={csvProps}
-                    />
-                </Grid>
+                <>
+                    <Grid container spacing={2} justifyContent="space-between" alignItems="center">
+                        <Grid container alignItems="center">
+                            <Grid>
+                                <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
+                            </Grid>
+                            <Grid>
+                                <CsvDownloadButton
+                                    data={getTemplateData}
+                                    fileName={csvProps.fileName}
+                                    language={language}
+                                    labelId="GenerateCSV"
+                                    variant="contained"
+                                />
+                            </Grid>
+                        </Grid>
+                        <Grid sx={{ flex: 1, minWidth: 0 }}>
+                            <CsvPicker<Record<string, unknown>>
+                                label="UploadCSV"
+                                requiredColumns={requiredColumns}
+                                language={language}
+                                parseConfig={parseConfig}
+                                selectedFile={selectedFile}
+                                onFileChange={setSelectedFile}
+                                onFileError={setFileErrorMessage}
+                                getTableData={() => getValues(MODIFICATIONS_TABLE)}
+                                onReplace={(results, file) =>
+                                    tableRef.current?.replace(getDataFromCsvFile(results, file))
+                                }
+                                onAppend={(results, file) =>
+                                    tableRef.current?.append(getDataFromCsvFile(results, file))
+                                }
+                            />
+                        </Grid>
+                    </Grid>
+                    {fileErrorMessage && (
+                        <Grid>
+                            <Alert severity="error">{fileErrorMessage}</Alert>
+                        </Grid>
+                    )}
+                    <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                        <CustomAgGridTable
+                            ref={tableRef}
+                            name={MODIFICATIONS_TABLE}
+                            columnDefs={columnDefs}
+                            defaultColDef={limitSetModificationsDefaultColDef}
+                            makeDefaultRowData={makeDefaultRowData}
+                            loading={isFetching}
+                            pagination
+                            rowSelection={{ mode: 'multiRow' }}
+                            overrideLocales={AGGRID_LOCALES}
+                            csvProps={csvProps}
+                        />
+                    </Grid>
+                </>
             )}
         </Stack>
     );

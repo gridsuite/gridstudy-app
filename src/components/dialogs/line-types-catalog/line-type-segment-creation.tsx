@@ -41,6 +41,7 @@ export default function LineTypeSegmentCreation({
             name={`${name}.${index}.${SEGMENT_DISTANCE_VALUE}`}
             label={'SegmentDistance'}
             adornment={KilometerAdornment}
+            dataTestId="SegmentDistanceInput"
         />
     );
 
@@ -57,7 +58,7 @@ export default function LineTypeSegmentCreation({
 
     const segmentTypeField = (
         <ButtonReadOnlyInput name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}>
-            <IconButton onClick={handleEditButtonClick}>
+            <IconButton onClick={handleEditButtonClick} data-testid="SegmentTypeEditButton">
                 <EditIcon />
             </IconButton>
         </ButtonReadOnlyInput>

@@ -20,9 +20,9 @@ import { selectActiveWorkspaceId } from '../../../../redux/slices/workspace-sele
 
 interface UseDiagramNotificationsProps {
     currentRootNetworkUuid: UUID;
-    onNotification: (newConfigUuid?: UUID) => void;
-    currentNadConfigUuid?: UUID;
+    onNotification: () => void;
     panelId?: UUID;
+    onNadConfigUpdate?: () => void;
 }
 
 /**
@@ -33,6 +33,7 @@ export const useDiagramNotifications = ({
     currentRootNetworkUuid,
     onNotification,
     panelId,
+    onNadConfigUpdate,
 }: UseDiagramNotificationsProps) => {
     const workspaceId = useSelector(selectActiveWorkspaceId);
 
@@ -58,11 +59,10 @@ export const useDiagramNotifications = ({
             if (isRootNetworkNotification) {
                 onNotification();
             } else if (isMatchingNadConfigNotification) {
-                const newConfigUuid = eventData.payload as UUID;
-                onNotification(newConfigUuid);
+                onNadConfigUpdate?.();
             }
         },
-        [currentRootNetworkUuid, onNotification, workspaceId, panelId]
+        [currentRootNetworkUuid, onNotification, onNadConfigUpdate, workspaceId, panelId]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleNotification });

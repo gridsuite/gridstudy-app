@@ -16,8 +16,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { TableType } from '../types/custom-aggrid-types';
 
-import RunningStatus from './utils/running-status';
-
 import { PARAM_PROVIDER_DYNAFLOW, PARAM_PROVIDER_DYNAWO } from '../utils/config-params';
 import {
     ComputingType,
@@ -25,8 +23,14 @@ import {
     PARAM_DEVELOPER_MODE,
     snackWithFallback,
     useSnackMessage,
+    RunningStatus,
 } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
+import {
+    LOAD_FLOW_RUNNABLES,
+    LOAD_FLOW_WITH_RATIO_TAP_CHANGERS,
+    LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS,
+} from './run-button.constant';
 import { startSensitivityAnalysis, stopSensitivityAnalysis } from '../services/study/sensitivity-analysis';
 import {
     fetchDynamicSimulationProvider,
@@ -47,6 +51,8 @@ import {
 } from '../services/study/dynamic-security-analysis';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { isSecurityModificationNode } from './graph/tree-node.type';
+import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
+import { useIsComputationBlocked, useIsLoadFlowBlocked } from 'components/node-activity/hooks/use-node-activity';
 import { PaginationType } from 'types/custom-aggrid-types';
 import { usePaginationReset } from 'hooks/use-pagination-selector';
 import { useLogsPaginationResetByType } from './report-viewer/use-logs-pagination';
@@ -65,8 +71,11 @@ const COMPUTATIONS_WITH_PAGINATION = [
     ComputingType.SHORT_CIRCUIT,
 ];
 
-export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
+export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const isNodeRunnable = isNodeBuilt(currentNode) && !isNodeReadOnly(currentNode);
+    const isComputationBlocked = useIsComputationBlocked(currentNode?.id);
+    const isLoadFlowBlocked = useIsLoadFlowBlocked(currentNode?.id, currentNode?.data);
     const loadFlowStatusInfos = useSelector((state) => state.computingStatusParameters[ComputingType.LOAD_FLOW]);
 
     // only one of those type can be different from idle, depending on loadFlowStatusInfos.withRatioTapChangers
@@ -105,8 +114,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const dispatch = useDispatch();
 
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
-    const isModificationsInProgress = useSelector((state) => state.isModificationsInProgress);
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
@@ -222,7 +229,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             () => startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
             () => {},
             null,
-            null
+            'startSecurityAnalysisError'
         );
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid, startComputationAsync]);
 
@@ -255,7 +262,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         }
 
         return {
-            LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS: {
+            [LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS]: {
                 messageId: 'LoadFlow',
                 startComputation() {
                     // with DynaFlow provider, we need to verify that the current node is a security node before starting the computation.
@@ -271,7 +278,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     actionOnRunnables(ComputingType.LOAD_FLOW, () => stopLoadFlow(studyUuid, currentNode?.id, false));
                 },
             },
-            LOAD_FLOW_WITH_RATIO_TAP_CHANGERS: {
+            [LOAD_FLOW_WITH_RATIO_TAP_CHANGERS]: {
                 messageId: 'LoadFlowWithRatioTapChangers',
                 startComputation() {
                     checkForbiddenProvider(studyUuid, ComputingType.LOAD_FLOW, getLoadFlowProvider, [
@@ -524,13 +531,18 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         subscribeDebug,
     ]);
 
+    const canRun = useCallback(
+        (runnableType) => (LOAD_FLOW_RUNNABLES.includes(runnableType) ? !isLoadFlowBlocked : !isComputationBlocked),
+        [isLoadFlowBlocked, isComputationBlocked]
+    );
+
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(
         (runnableType) => {
             switch (runnableType) {
-                case 'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS':
+                case LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS:
                     return loadFlowWithoutRatioTapChangersStatus;
-                case 'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS':
+                case LOAD_FLOW_WITH_RATIO_TAP_CHANGERS:
                     return loadFlowWithRatioTapChangersStatus;
                 case ComputingType.SECURITY_ANALYSIS:
                     return securityAnalysisStatus;
@@ -572,8 +584,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     // list of visible runnable isn't static
     const activeRunnables = useMemo(() => {
         return [
-            'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS',
-            'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS',
+            LOAD_FLOW_WITH_RATIO_TAP_CHANGERS,
+            LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS,
             ...(securityAnalysisAvailability === OptionalServicesStatus.Up ? [ComputingType.SECURITY_ANALYSIS] : []),
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [ComputingType.SENSITIVITY_ANALYSIS]
@@ -608,15 +620,14 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     ]);
 
     return (
-        <>
-            <RunButton
-                runnables={runnables}
-                activeRunnables={activeRunnables}
-                getStatus={getRunningStatus}
-                computationStopped={computationStopped}
-                disabled={isModificationsInProgress || disabled}
-            />
-        </>
+        <RunButton
+            runnables={runnables}
+            activeRunnables={activeRunnables}
+            getStatus={getRunningStatus}
+            computationStopped={computationStopped}
+            disabled={!isNodeRunnable}
+            canRun={canRun}
+        />
     );
 }
 
@@ -624,5 +635,4 @@ RunButtonContainer.propTypes = {
     studyUuid: PropTypes.string.isRequired,
     currentNode: PropTypes.object,
     currentRootNetworkUuid: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
 };

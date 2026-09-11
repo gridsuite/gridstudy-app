@@ -11,14 +11,21 @@ import { Box, Button, LinearProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
-import { ComputingType, CustomAGGrid, DefaultCellRenderer, OverflowableText } from '@gridsuite/commons-ui';
-import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
+import {
+    ComputingType,
+    CustomAGGrid,
+    DefaultCellRenderer,
+    getRows,
+    getNoRowsMessage,
+    OverflowableText,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
+    RunningStatus,
+    RESULTS_LOADING_DELAY,
+} from '@gridsuite/commons-ui';
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
-import { RESULTS_LOADING_DELAY } from 'components/network/constants';
-import RunningStatus from 'components/utils/running-status';
-import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
-import { ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
+import { DisplayedColumnsChangedEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { PanelType } from 'components/workspace/types/workspace.types';
@@ -101,6 +108,15 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         setCsvHeaders(getColumnHeaderDisplayNames(api))
     );
 
+    const handleDisplayedColumnsChanged = useCallback(
+        (event: DisplayedColumnsChangedEvent) => {
+            if (event?.api) {
+                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
+            }
+        },
+        [setCsvHeaders]
+    );
+
     return (
         <Box sx={styles.gridContainer}>
             {showLoader && <LinearProgress sx={{ height: 4 }} />}
@@ -113,6 +129,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
                     columnDefs={columns}
                     onRowDataUpdated={handleRowDataUpdated}
                     onGridReady={onGridReady}
+                    onDisplayedColumnsChanged={handleDisplayedColumnsChanged}
                     overlayNoRowsTemplate={noRowMessage}
                     overrideLocales={AGGRID_LOCALES}
                     onModelUpdated={({ api }) => {

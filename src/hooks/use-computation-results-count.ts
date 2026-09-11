@@ -6,8 +6,7 @@
  */
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer.type';
-import { ComputingType, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
-import RunningStatus from 'components/utils/running-status';
+import { ComputingType, PARAM_DEVELOPER_MODE, RunningStatus } from '@gridsuite/commons-ui';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 /**

@@ -17,6 +17,7 @@ import {
     RootNetworkHeaderRenderer,
     SelectCellRenderer,
     SelectHeaderRenderer,
+    ReferenceCellRenderer,
     SwitchCellRenderer,
 } from '@gridsuite/commons-ui';
 import { ColumnDef } from '@tanstack/react-table';
@@ -61,6 +62,12 @@ export const createBaseColumns = (
             onChange: onNameChange,
         },
         minSize: 160,
+    },
+    {
+        id: BASE_MODIFICATION_TABLE_COLUMNS.SHARED.id,
+        cell: ReferenceCellRenderer,
+        size: 40,
+        minSize: 32,
     },
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.DESCRIPTION.id,

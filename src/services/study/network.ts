@@ -40,7 +40,7 @@ interface SubstationSingleLineDiagram {
     substationId: string;
 }
 
-export const PREFIX_SCHEMAS_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-map';
+export const PREFIX_SCHEMAS_QUERIES = PREFIX_STUDY_QUERIES + '/v1/network-map';
 
 /* voltage-levels */
 export function getVoltageLevelSingleLineDiagramUrl({
@@ -385,10 +385,22 @@ export function fetchVoltageLevelsMapInfos(
     );
 }
 
-export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID) => {
+export enum RootNetworkLoadStatus {
+    LOADED = 'LOADED',
+    UNLOADED = 'UNLOADED',
+    UNLOADING = 'UNLOADING',
+    LOADING = 'LOADING',
+}
+
+export interface RootNetworkStatusInfos {
+    exists: boolean;
+    rootNetworkLoadStatus: RootNetworkLoadStatus;
+}
+
+export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID): Promise<RootNetworkStatusInfos> => {
     const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/network`;
 
-    return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
+    return backendFetchJson(fetchNetworkExistenceUrl, { method: 'GET' });
 };
 
 export const fetchRootNetworkIndexationStatus = (studyUuid: UUID, rootNetworkUuid: UUID) => {
@@ -415,6 +427,8 @@ export function exportNetworkFile(
         exportInfos.selectedFormat;
 
     const urlSearchParams = new URLSearchParams();
+
+    urlSearchParams.append('compression', exportInfos.selectedCompression);
     if (Object.keys(params).length > 0) {
         const paramsJson = JSON.stringify(params);
         urlSearchParams.append('formatParameters', paramsJson);
@@ -445,7 +459,7 @@ export function fetchExportNetworkFile(exportUuid: UUID) {
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {
-    const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/v1/schemas/${type}/${EQUIPMENT_INFOS_TYPES.TAB.type}`;
+    const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/schemas/${type}/${EQUIPMENT_INFOS_TYPES.TAB.type}`;
     return backendFetchJson(fetchEquipmentTypeSchemaUrl, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },

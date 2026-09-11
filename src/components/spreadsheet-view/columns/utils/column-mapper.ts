@@ -14,120 +14,53 @@ import {
     textColumnDefinition,
 } from '../common-column-definitions';
 import { isValidationError, validateFormulaResult } from './formula-validator';
-import { ColumnDefinition, SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
+import { computeInvalidColumnIds, SpreadsheetValidity } from './column-validity';
+import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
 import { ErrorCellRenderer, SnackInputs } from '@gridsuite/commons-ui';
 import { COLUMN_TYPES, CustomAggridValue, CustomColDef } from '../../../../types/custom-aggrid-types';
-import { RunningStatus } from 'components/utils/running-status';
 
 export const SPREADSHEET_INVALID_CELL_CLASS = 'spreadsheet-invalid-cell';
 
-// Equipment fields whose values are only valid when a loadflow has succeeded.
-// - equipmentTypes: undefined means the group applies to all equipment types
-// - securityNodeOnly: true means the group only applies when on a security analysis node
-const LOADFLOW_DEPENDENT_FIELD_GROUPS: {
-    fields: string[];
-    equipmentTypes?: SpreadsheetEquipmentType[];
-    securityNodeOnly?: boolean;
-}[] = [
-    { fields: ['p', 'p1', 'p2', 'p3', 'q', 'q1', 'q2', 'q3'] },
-    { fields: ['v', 'angle'], equipmentTypes: [SpreadsheetEquipmentType.BUS] },
-    {
-        fields: ['ratioTapChanger.tapPosition', 'phaseTapChanger.tapPosition'],
-        equipmentTypes: [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER, SpreadsheetEquipmentType.BRANCH],
-        securityNodeOnly: true,
-    },
-    { fields: ['sectionCount'], equipmentTypes: [SpreadsheetEquipmentType.SHUNT_COMPENSATOR], securityNodeOnly: true },
-];
-
-const getInvalidFields = (equipmentType: SpreadsheetEquipmentType, isSecurityNode: boolean): string[] =>
-    LOADFLOW_DEPENDENT_FIELD_GROUPS.filter(
-        (group) =>
-            (!group.equipmentTypes || group.equipmentTypes.includes(equipmentType)) &&
-            (!group.securityNodeOnly || isSecurityNode)
-    ).flatMap((group) => group.fields);
-
-const formulaReferencesField = (formula: string, field: string): boolean => {
-    const escaped = field.replaceAll('.', String.raw`\.`);
-    return new RegExp(String.raw`(?<![\w.])` + escaped + String.raw`(?![\w.])`, 'u').test(formula);
-};
-
-const computeLoadflowDependentColumnIds = (columns: ColumnDefinition[], fields: string[]): Set<string> => {
-    // For each column, which other columns directly depend on it
-    const dependents = new Map<string, string[]>();
-    for (const col of columns) {
-        for (const dep of col.dependencies ?? []) {
-            const list = dependents.get(dep);
-            if (list) {
-                list.push(col.id);
-            } else {
-                dependents.set(dep, [col.id]);
-            }
-        }
-    }
-
-    // Start from directly-dependent columns (those whose formula references an invalid field),
-    // then propagate transitively to their dependents.
-    // we need to skip fields that are overridden by a same-named dependency column in the formula scope.
-    const result = new Set<string>();
-    const dependentIdsToVisit = columns
-        .filter(
-            (col) =>
-                col.formula &&
-                fields.some(
-                    (field) => formulaReferencesField(col.formula, field) && !(col.dependencies ?? []).includes(field)
-                )
-        )
-        .map((col) => col.id);
-    while (dependentIdsToVisit.length > 0) {
-        const id = dependentIdsToVisit.pop();
-        if (id === undefined || result.has(id)) continue;
-        result.add(id);
-        dependentIdsToVisit.push(...(dependents.get(id) ?? []));
-    }
-
-    return result;
-};
-
 const createValueGetter =
     (colDef: ColumnDefinition) =>
-    (params: ValueGetterParams): CustomAggridValue | undefined => {
+    (params: ValueGetterParams): CustomAggridValue | null => {
         try {
             // Skip formula processing for pinned rows and use raw value
             if (isCalculationRow(params.node?.data?.rowType)) {
-                return params.data[colDef.id];
+                return params.data[colDef.id] ?? null;
             }
             const scope = { ...params.data };
             const colDependencies = colDef.dependencies ?? [];
+
+            // Empty values are assumed to be equal to "undefined" by users, it is then imperative
+            // to keep the nullish coalescing operator leading to undefined otherwise this
+            // type of formula, widespreadly used, which checks for empty value would break :
+            // typeOf(field1) == 'undefined' ? field2 : typeOf(field2) == 'undefined' ? field1 : max(field1, field2)
             colDependencies.forEach((dep) => {
-                scope[dep] = params.getValue(dep);
+                scope[dep] = params.getValue(dep) ?? undefined;
             });
-            const escapedFormula = colDef.formula.replace(/\\/g, '\\\\');
-            const result = limitedEvaluate(escapedFormula, scope);
-            return result == null ? undefined : validateFormulaResult(result, colDef.type);
+            const result = limitedEvaluate(colDef.formula, scope, params.context?.compiledFormulaCache);
+            return result != null ? validateFormulaResult(result, colDef.type) : null;
         } catch (e) {
             if (e instanceof MathJsValidationError) {
                 return { error: e.error };
             }
-            return undefined;
+            return null;
         }
     };
 
 export const mapColumns = (
     tableDefinition: SpreadsheetTabDefinition,
     snackError: (snackInputs: SnackInputs) => void,
-    loadFlowStatus: RunningStatus,
-    isSecurityNode: boolean
+    validity: SpreadsheetValidity
 ) => {
     if (!tableDefinition) {
         return [];
     }
-    const loadflowDependentColumnIds = computeLoadflowDependentColumnIds(
-        tableDefinition.columns,
-        getInvalidFields(tableDefinition.type, isSecurityNode)
-    );
+    const invalidColumnIds = computeInvalidColumnIds(tableDefinition.columns, tableDefinition.type, validity);
     return tableDefinition.columns.map((colDef): CustomColDef => {
-        const isInvalid = loadflowDependentColumnIds.has(colDef.id) && loadFlowStatus !== RunningStatus.SUCCEED;
+        const isInvalid = invalidColumnIds.has(colDef.id);
         let baseDefinition: ColDef;
 
         switch (colDef.type) {

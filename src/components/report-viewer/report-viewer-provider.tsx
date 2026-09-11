@@ -15,9 +15,9 @@ import {
     ReportFetcherContext,
     ReportFilterContext,
     FilterConfig,
-    LogsPaginationConfig,
     ReportFetcherContextValue,
     ReportFilterContextValue,
+    PaginationConfig,
 } from '@gridsuite/commons-ui';
 import { TableType } from '../../types/custom-aggrid-types';
 import { ComputingAndNetworkModificationType } from '../../utils/report/report.type';
@@ -49,8 +49,11 @@ export function ReportViewerProvider({ reportType, children }: ReportViewerProvi
     const { pagination, setPagination } = useLogsPagination(reportType);
 
     const changePagination = useCallback(
-        (config: LogsPaginationConfig) => {
-            setPagination(config);
+        (config: PaginationConfig) => {
+            setPagination({
+                page: config.page,
+                rowsPerPage: typeof config.rowsPerPage === 'number' ? config.rowsPerPage : config.rowsPerPage.value,
+            });
         },
         [setPagination]
     );

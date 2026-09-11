@@ -128,12 +128,14 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 sx={styles.textField}
-                InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon fontSize="small" />
-                        </InputAdornment>
-                    ),
+                slotProps={{
+                    input: {
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon fontSize="small" />
+                            </InputAdornment>
+                        ),
+                    },
                 }}
             />
             {filteredVoltageLevels.length === 0 ? (

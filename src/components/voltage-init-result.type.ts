@@ -5,12 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import RunningStatus from './utils/running-status';
+import { Key } from 'react';
 import type { UUID } from 'node:crypto';
+import { RunningStatus } from '@gridsuite/commons-ui';
 
 export interface VoltageInitResultProps {
     result: any;
     status: RunningStatus;
+    exportCsvResetKey: Key;
 }
 
 export interface ReactiveSlack {

@@ -44,6 +44,7 @@ import {
     type MuiStyles,
     newEquipmentDeletionDto,
     NotificationsUrlKeys,
+    RunningStatus,
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
@@ -58,7 +59,6 @@ import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { deleteEquipment } from '../../services/study/network-modifications';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
-import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import type { UUID } from 'node:crypto';

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MuiStyles } from '@gridsuite/commons-ui';
-import RunningStatus from 'components/utils/running-status';
+import { MuiStyles, RunningStatus } from '@gridsuite/commons-ui';
 
 export const formatValue = (value?: number | string | null, fixed?: number | string | null) => {
     if (value !== undefined && value != null && !Number.isNaN(value)) {

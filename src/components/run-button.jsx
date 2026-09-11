@@ -10,13 +10,13 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import SplitButton from './utils/split-button';
-import RunningStatus from './utils/running-status';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from '../utils/dialogs';
 import { DialogContentText } from '@mui/material';
+import { LOAD_FLOW_RUNNABLES } from './run-button.constant';
 
-const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
+const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled, canRun = () => true }) => {
     const intl = useIntl();
     const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
     const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
@@ -43,22 +43,32 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
         }
     }
 
+    // only one computation can run at a time on a node, so we can take the first running one found
+    const runningRunnable = useMemo(
+        () => activeRunnables.find((runnable) => getStatus(runnable) === RunningStatus.RUNNING),
+        [activeRunnables, getStatus]
+    );
+
     useEffect(() => {
-        if (!activeRunnables.includes(selectedRunnable)) {
+        if (runningRunnable) {
+            // always show the running computation (ex : when switching to a node with a computation already running)
+            setSelectedRunnable(runningRunnable);
+        } else if (!activeRunnables.includes(selectedRunnable)) {
             // a computation may become unavailable when developer mode is disabled, then switch on first one
             setSelectedRunnable(activeRunnables[0]);
         }
-    }, [activeRunnables, selectedRunnable, setSelectedRunnable]);
+    }, [runningRunnable, activeRunnables, selectedRunnable]);
 
     const getRunningStatus = useCallback(() => {
         return getStatus(selectedRunnable);
     }, [selectedRunnable, getStatus]);
 
     function isButtonDisable() {
-        if (
-            selectedRunnable === 'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS' ||
-            selectedRunnable === 'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS'
-        ) {
+        if (!canRun(selectedRunnable)) {
+            return true;
+        }
+
+        if (LOAD_FLOW_RUNNABLES.includes(selectedRunnable)) {
             // We run once loadflow analysis, as it will always return the same result for one hypothesis
             return getRunningStatus() !== RunningStatus.IDLE;
         }
@@ -67,8 +77,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             // Load flow button's status must be "SUCCEED"
             return (
                 getRunningStatus() === RunningStatus.RUNNING ||
-                (getStatus('LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED &&
-                    getStatus('LOAD_FLOW_WITH_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED)
+                !LOAD_FLOW_RUNNABLES.some((runnable) => getStatus(runnable) === RunningStatus.SUCCEED)
             );
         }
 
@@ -84,8 +93,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             // Load flow button's status must be "SUCCEED"
             return (
                 getRunningStatus() === RunningStatus.RUNNING ||
-                (getStatus('LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED &&
-                    getStatus('LOAD_FLOW_WITH_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED)
+                !LOAD_FLOW_RUNNABLES.some((runnable) => getStatus(runnable) === RunningStatus.SUCCEED)
             );
         }
 
@@ -156,6 +164,7 @@ RunButton.propTypes = {
     getStatus: PropTypes.func.isRequired,
     computationStopped: PropTypes.bool.isRequired,
     disabled: PropTypes.bool,
+    canRun: PropTypes.func,
 };
 
 export default RunButton;

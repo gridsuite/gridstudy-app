@@ -25,8 +25,55 @@ import {
 } from '../../../utils/field-constants';
 import * as yup from 'yup';
 import type { UUID } from 'node:crypto';
-import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
-import { APPLICABILITY, AttributeModification, EquipmentType, toModificationOperation } from '@gridsuite/commons-ui';
+import {
+    APPLICABILITY,
+    AttributeModification,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    MODIFICATIONS_REQUIRED_TAB_ERROR,
+    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
+    type TabularField,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
+    toModificationOperation,
+} from '@gridsuite/commons-ui';
+import { BOOLEAN, ENUM, NUMBER } from '../../../network/constants';
+import { AMOUNT_TEMPORARY_LIMITS_ERROR } from '../../../../utils/translationKeys';
+
+export const LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS: { [key: string]: string } = {
+    LINE: MODIFICATION_TYPES.LINE_MODIFICATION.type,
+    TWO_WINDINGS_TRANSFORMER: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+};
+
+export const LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS: TabularField[] = [
+    { id: EQUIPMENT_ID, required: true },
+    {
+        id: SIDE,
+        required: true,
+        type: ENUM,
+        options: Object.values(APPLICABILITY).map((applicability) => applicability.id),
+    },
+    { id: LIMIT_GROUP_NAME, required: true },
+    { id: IS_ACTIVE, required: false, type: BOOLEAN },
+    { id: PERMANENT_LIMIT, required: false, type: NUMBER },
+    {
+        id: MODIFICATION_TYPE,
+        required: true,
+        type: ENUM,
+        options: Object.values(OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE),
+    },
+    {
+        id: TEMPORARY_LIMITS_MODIFICATION_TYPE,
+        required: false,
+        type: ENUM,
+        options: Object.values(TEMPORARY_LIMIT_MODIFICATION_TYPE),
+    },
+];
+
+export const LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS: TabularField[] = [
+    { id: TEMPORARY_LIMIT_NAME, required: false },
+    { id: TEMPORARY_LIMIT_DURATION, required: false, type: NUMBER },
+    { id: TEMPORARY_LIMIT_VALUE, required: false, type: NUMBER },
+];
 
 type TemporaryLimit = {
     name: AttributeModification<string>;
@@ -198,10 +245,10 @@ export const formSchema = yup
         [TYPE]: yup.string().nullable().required(),
         [AMOUNT_TEMPORARY_LIMITS]: yup
             .number()
-            .min(1, 'amountTemporaryLimitsError')
-            .max(50, 'amountTemporaryLimitsError')
+            .min(1, AMOUNT_TEMPORARY_LIMITS_ERROR)
+            .max(50, AMOUNT_TEMPORARY_LIMITS_ERROR)
             .required(),
-        [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
+        [MODIFICATIONS_TABLE]: yup.array().min(1, MODIFICATIONS_REQUIRED_TAB_ERROR).required(),
         [CSV_FILENAME]: yup.string().nullable().required(),
     })
     .required();

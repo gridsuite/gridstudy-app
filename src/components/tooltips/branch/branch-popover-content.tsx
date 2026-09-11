@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, RunningStatus } from '@gridsuite/commons-ui';
 import { Stack } from '@mui/material';
-import { RunningStatus } from '../../utils/running-status';
 import { BranchCharacteristicsTable } from './branch-characteristics-table';
 import { TwtTapChangerCharacteristics } from './twt-tap-changer-characteristics';
 import { BranchEquipmentInfos, TwtEquipmentInfos } from '../equipment-popover-type';

@@ -54,6 +54,8 @@ import {
     filterFr,
     flatParametersEn,
     flatParametersFr,
+    genericValidationEn,
+    genericValidationFr,
     importParamsEn,
     importParamsFr,
     LANG_FRENCH,
@@ -68,11 +70,15 @@ import {
     descriptionFr,
     descriptionEn,
     networkModificationsEn,
+    networkModificationValidationEn,
     networkModificationsFr,
+    networkModificationValidationFr,
     NotificationsProvider,
     PARAM_THEME,
     parametersEn,
     parametersFr,
+    specificParametersEn,
+    specificParametersFr,
     reportViewerEn,
     reportViewerFr,
     SnackbarProvider,
@@ -89,8 +95,8 @@ import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../redux/store';
-import messages_en from '../translations/en.json';
-import messages_fr from '../translations/fr.json';
+import messages_en from '../translations/messages-en.ts';
+import messages_fr from '../translations/messages-fr.ts';
 import messages_plugins from '../plugins/translations/index.ts';
 import { grid_en } from '../translations/grid-en';
 import { grid_fr } from '../translations/grid-fr';
@@ -438,10 +444,13 @@ const messages = {
         ...spreadsheet_locale_en,
         ...base_voltages_en,
         ...parametersEn,
+        ...specificParametersEn,
         ...useUniqueNameValidationEn,
         ...filterEn,
         ...businessErrorsEn,
         ...errorsEn,
+        ...genericValidationEn,
+        ...networkModificationValidationEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -482,10 +491,13 @@ const messages = {
         ...spreadsheet_locale_fr,
         ...base_voltages_fr,
         ...parametersFr,
+        ...specificParametersFr,
         ...useUniqueNameValidationFr,
         ...filterFr,
         ...businessErrorsFr,
         ...errorsFr,
+        ...genericValidationFr,
+        ...networkModificationValidationFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

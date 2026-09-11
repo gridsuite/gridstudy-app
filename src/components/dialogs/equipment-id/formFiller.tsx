@@ -6,7 +6,7 @@
  */
 
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { ReactNode } from 'react';
 

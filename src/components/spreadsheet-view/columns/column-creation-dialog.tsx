@@ -13,7 +13,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Grid2 as Grid,
+    Grid,
     Link,
     Stack,
     Tooltip,
@@ -25,7 +25,6 @@ import {
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
-    mergeSx,
     type MuiStyles,
     MultipleAutocompleteInput,
     snackWithFallback,
@@ -170,7 +169,7 @@ export default function ColumnCreationDialog({
                         }
                         color="primary"
                         placement="left-end"
-                        componentsProps={{
+                        slotProps={{
                             tooltip: {
                                 sx: {
                                     maxWidth: 500,
@@ -342,12 +341,14 @@ export default function ColumnCreationDialog({
                 open={open.value}
                 onClose={onClose}
                 aria-labelledby="custom-column-dialog-edit-title"
-                PaperProps={{ sx: styles.dialogContent }}
+                slotProps={{
+                    paper: { sx: styles.dialogContent },
+                }}
             >
                 <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>
-                    <Stack spacing={2} alignItems="center">
-                        <Grid sx={mergeSx(styles.field, { marginTop: '5px' })}>{columnNameField}</Grid>
+                    <Stack spacing={2} mt="5px" alignItems="center">
+                        <Grid sx={styles.field}>{columnNameField}</Grid>
                         <Grid sx={styles.field}>{columnIdField}</Grid>
                         <Grid sx={styles.field}>{columnType}</Grid>
                         {watchColumnType === COLUMN_TYPES.NUMBER && <Grid sx={styles.field}>{precisionField}</Grid>}

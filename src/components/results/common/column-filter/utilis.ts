@@ -4,26 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ColDef, ICellRendererParams, type IFilterOptionDef } from 'ag-grid-community';
-import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
-import { CustomAggridAutocompleteFilter } from '@gridsuite/commons-ui';
+import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import {
+    makeAgGridCustomHeaderColumn,
+    createMultiEnumFilterParams,
+    CustomAggridAutocompleteFilter,
+} from '@gridsuite/commons-ui';
 import { FILTER_DATA_TYPES } from '../../../../types/custom-aggrid-types';
 import { IntlShape } from 'react-intl';
 import { JSX } from 'react';
-
-export const createMultiEnumFilterParams = (): { filterOptions: IFilterOptionDef[] } => ({
-    filterOptions: [
-        {
-            displayKey: 'customInRange',
-            displayName: 'customInRange',
-            predicate: (filterValues: string[], cellValue: string | number) => {
-                if (!filterValues[0]) return false;
-                const allowedValues = filterValues[0].split(',');
-                return allowedValues.includes(String(cellValue));
-            },
-        },
-    ],
-});
 
 export const createEnumColumn = (
     field: string,

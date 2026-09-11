@@ -12,12 +12,12 @@ import {
     FilterType,
     getCsvDelimiter,
     snackWithFallback,
+    TabularFieldConstants,
+    TabularModificationType,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { evaluateFilters } from 'services/study/filter';
-import { EQUIPMENT_ID } from 'components/utils/field-constants';
-import { TabularModificationType } from './tabular-common';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
@@ -122,7 +122,9 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
 
             // 3. Add data rows
             equipmentIds.forEach((equipmentId) => {
-                const row = csvColumns.map((column) => (column === EQUIPMENT_ID ? equipmentId : ''));
+                const row = csvColumns.map((column) =>
+                    column === TabularFieldConstants.EQUIPMENT_ID ? equipmentId : ''
+                );
                 csvRows.push(row.join(delimiter));
             });
 

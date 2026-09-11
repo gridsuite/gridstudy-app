@@ -5,46 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Page } from '../common/utils';
-
-export interface SCAFault {
-    id: string;
-    elementId: string;
-    voltageLevelId: string;
-    faultType: string;
-}
-
-export interface SCALimitViolation {
-    subjectId: string;
-    limitType: string;
-    limit: number;
-    limitName: string;
-    value: number;
-}
-
-export interface SCAFeederResult {
-    connectableId: string;
-    current: number;
-    positiveMagnitude: number;
-    side: string;
-}
-
-interface SCAShortCircuitLimits {
-    ipMin: number;
-    ipMax: number;
-    deltaCurrentIpMax: number | null;
-    deltaCurrentIpMin: number | null;
-}
-
-export interface SCAFaultResult {
-    fault: SCAFault;
-    current: number;
-    positiveMagnitude: number;
-    shortCircuitPower: number;
-    shortCircuitLimits: SCAShortCircuitLimits;
-    limitViolations?: SCALimitViolation[];
-    feederResults?: SCAFeederResult[];
-}
+import { SCAFaultResult, ShortCircuitAnalysisType } from '@gridsuite/commons-ui';
 
 export type SCAResult = {
     resultUuid: string;
@@ -52,14 +13,7 @@ export type SCAResult = {
     faults: SCAFaultResult[];
 };
 
-export type SCAPagedResults = Page<SCAFaultResult> | Page<SCAFeederResult>;
-
 export enum ShortCircuitAnalysisResultTabs {
-    ALL_BUSES = 0,
-    ONE_BUS = 1,
-}
-
-export enum ShortCircuitAnalysisType {
     ALL_BUSES = 0,
     ONE_BUS = 1,
 }

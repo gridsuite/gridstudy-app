@@ -6,8 +6,10 @@
  */
 
 import {
+    addSelectedFieldToRows,
     CustomFormProvider,
     DeepNullable,
+    NORMALIZED_PERCENTAGE,
     snackWithFallback,
     useSnackMessage,
     YUP_REQUIRED,
@@ -34,7 +36,6 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { ModificationDialog } from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 import { generationDispatch } from '../../../../services/study/network-modifications';
-import { addSelectedFieldToRows } from 'components/utils/utils';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
 import { FetchStatus } from 'services/utils.type';
@@ -83,8 +84,8 @@ const getGeneratorsFrequencyReserveSchema = () => {
             [FREQUENCY_RESERVE]: yup
                 .number()
                 .nullable()
-                .min(0, 'NormalizedPercentage')
-                .max(100, 'NormalizedPercentage')
+                .min(0, NORMALIZED_PERCENTAGE)
+                .max(100, NORMALIZED_PERCENTAGE)
                 .required(),
         })
     );
@@ -104,14 +105,14 @@ const formSchema = yup
         [LOSS_COEFFICIENT]: yup
             .number()
             .nullable()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage')
+            .min(0, NORMALIZED_PERCENTAGE)
+            .max(100, NORMALIZED_PERCENTAGE)
             .required(),
         [DEFAULT_OUTAGE_RATE]: yup
             .number()
             .nullable()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage')
+            .min(0, NORMALIZED_PERCENTAGE)
+            .max(100, NORMALIZED_PERCENTAGE)
             .required(),
         [GENERATORS_WITHOUT_OUTAGE]: getGeneratorsFiltersSchema(),
         [GENERATORS_WITH_FIXED_ACTIVE_POWER]: getGeneratorsFiltersSchema(),

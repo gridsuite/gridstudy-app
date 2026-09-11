@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid2 as Grid, type Grid2Props as GridProps } from '@mui/material';
+import { Grid, type GridProps } from '@mui/material';
 import { Restore as RestoreIcon, Save as SaveIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import NodesConfigButton from '../spreadsheet/spreadsheet-toolbar/nodes-config/nodes-config-button';

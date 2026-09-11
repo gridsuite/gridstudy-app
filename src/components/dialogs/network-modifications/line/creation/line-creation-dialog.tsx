@@ -19,21 +19,25 @@ import {
     getAllLimitsFormData,
     getConnectivityFormData,
     getLineCharacteristicsFormData,
+    LINE_TAB_FIELDS,
     LineCreationDto,
     lineCreationDtoToForm,
+    LineCreationDtoWithId,
     lineCreationEmptyFormData,
     LineCreationFormData,
     lineCreationFormSchema,
     lineCreationFormToDto,
+    LineDialogTab,
     LineForm,
     LineFormInfos,
     LineSegmentsFormData,
     snackWithFallback,
     useSnackMessage,
+    useTabs,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -51,7 +55,7 @@ import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../servic
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 
 type LineCreationDialogProps = NetworkModificationDialogProps & {
-    editData?: LineCreationDto;
+    editData?: LineCreationDtoWithId;
     onCreateLine: typeof createLine;
     displayConnectivity?: boolean;
 };
@@ -96,7 +100,21 @@ const LineCreationDialog = ({
 
     const { reset, setValue, watch } = formMethods;
 
+    const { errors } = formMethods.formState;
+    const useTabsReturn = useTabs<LineDialogTab>({
+        defaultTab: displayConnectivity ? LineDialogTab.CONNECTIVITY_TAB : LineDialogTab.CHARACTERISTICS_TAB,
+        errors,
+        tabFields: LINE_TAB_FIELDS,
+    });
+
     const watchSegments = watch(FieldConstants.LINE_SEGMENTS) as LineSegmentsFormData;
+
+    const editSegmentsData = useMemo(
+        () => ({
+            [FieldConstants.LINE_SEGMENTS]: watchSegments ?? [],
+        }),
+        [watchSegments]
+    );
 
     const fromSearchCopyToFormValues = (line: LineFormInfos) => {
         const formData = {
@@ -247,6 +265,7 @@ const LineCreationDialog = ({
                         },
                     },
                 }}
+                onValidationError={useTabsReturn.onError}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
@@ -256,6 +275,7 @@ const LineCreationDialog = ({
                     PositionDiagramPane={PositionDiagramPane}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                     withConnectivity={displayConnectivity}
+                    useTabsReturn={useTabsReturn}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
@@ -268,8 +288,8 @@ const LineCreationDialog = ({
                 <LineTypeSegmentDialog
                     open={isOpenLineTypesCatalogDialog}
                     onClose={handleCloseLineTypesCatalogDialog}
-                    onSaveCreationCase={handleLineSegmentsBuildSubmit}
-                    editDataCreationCase={watchSegments}
+                    onSave={handleLineSegmentsBuildSubmit}
+                    editData={editSegmentsData}
                 />
             </ModificationDialog>
         </CustomFormProvider>

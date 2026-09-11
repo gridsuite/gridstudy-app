@@ -8,14 +8,15 @@
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { rowIndexColumnDefinition } from '../columns/common-column-definitions';
 import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
-import { isSecurityModificationNode, CurrentTreeNode } from 'components/graph/tree-node.type';
+import { CurrentTreeNode, isSecurityModificationNode } from 'components/graph/tree-node.type';
 import { AgGridReact } from 'ag-grid-react';
 import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { mapColumns } from '../columns/utils/column-mapper';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
+import { useSpreadsheetGlobalFilter } from './spreadsheet-content/hooks/use-spreadsheet-gs-filter';
 import type { UUID } from 'node:crypto';
-import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
 import { CustomColDef } from '../../../types/custom-aggrid-types';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
@@ -31,11 +32,20 @@ interface SpreadsheetProps {
 export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabled, active }: SpreadsheetProps) => {
     const gridRef = useRef<AgGridReact>(null);
     const { snackError } = useSnackMessage();
+    const isEquipmentFetching = useSelector(
+        (state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]?.isFetching ?? false
+    );
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const nodesByAlias = useSelector((state: AppState) => state.aliasedNodesValidity);
+    const isSecurityNode = isSecurityModificationNode(currentNode);
 
     const columnsDefinitions = useMemo(
-        () => mapColumns(tableDefinition, snackError, loadFlowStatus, isSecurityModificationNode(currentNode)),
-        [tableDefinition, snackError, loadFlowStatus, currentNode]
+        () =>
+            mapColumns(tableDefinition, snackError, {
+                currentNode: { loadFlowStatus, isSecurityNode },
+                nodesByAlias,
+            }),
+        [tableDefinition, snackError, loadFlowStatus, isSecurityNode, nodesByAlias]
     );
 
     // Refresh cells to apply styles when column definitions change (e.g. formula edit, load flow status)
@@ -43,10 +53,18 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
         gridRef.current?.api?.refreshCells({ force: true, suppressFlash: true });
     }, [columnsDefinitions]);
 
+    const { isExternalFilterPresent, doesFormulaFilteringPass, isGlobalFilterPending } = useSpreadsheetGlobalFilter(
+        gridRef,
+        tableDefinition?.uuid,
+        tableDefinition?.type
+    );
+
     const rowCounterInfos = useFilteredRowCounterInfo({
         gridRef,
         tableDefinition,
         disabled,
+        // the row counter stays loading until both the equipment fetch and the global filter evaluation are done
+        isDataPending: isEquipmentFetching || isGlobalFilterPending,
     });
 
     const displayedColsDefs = useMemo(() => {
@@ -85,6 +103,9 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
                 disabled={disabled}
                 registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
                 active={active}
+                isExternalFilterPresent={isExternalFilterPresent}
+                doesFormulaFilteringPass={doesFormulaFilteringPass}
+                isGlobalFilterPending={isGlobalFilterPending}
             />
         </>
     );

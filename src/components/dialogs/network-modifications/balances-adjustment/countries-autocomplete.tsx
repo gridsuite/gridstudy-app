@@ -16,9 +16,16 @@ type CountriesAutocompleteProps = Pick<AutocompleteProps<string, true, false, fa
     name: AutocompleteInputProps['name'];
     label?: TextFieldProps['label'];
     disabled?: boolean;
+    dataTestId?: string;
 };
 
-export default function CountriesAutocomplete({ name, label, disabled, ...props }: CountriesAutocompleteProps) {
+export default function CountriesAutocomplete({
+    name,
+    label,
+    disabled,
+    dataTestId,
+    ...props
+}: CountriesAutocompleteProps) {
     const { countryCodes, translate } = useLocalizedCountries();
 
     const {
@@ -32,6 +39,7 @@ export default function CountriesAutocomplete({ name, label, disabled, ...props 
 
     return (
         <Autocomplete
+            data-testid={dataTestId}
             multiple
             disabled={disabled}
             value={value}
@@ -43,7 +51,9 @@ export default function CountriesAutocomplete({ name, label, disabled, ...props 
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     inputRef={ref}
-                    inputProps={{ ...inputProps }}
+                    slotProps={{
+                        htmlInput: { ...inputProps },
+                    }}
                     label={label}
                     {...genHelperError(error?.message)}
                     {...rest}

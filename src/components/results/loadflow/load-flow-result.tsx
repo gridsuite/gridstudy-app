@@ -12,19 +12,23 @@ import { Box, useTheme } from '@mui/material';
 import { RowClassParams } from 'ag-grid-community';
 
 import { LoadflowResultProps } from './load-flow-result.type';
-import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { ComputingType, DefaultCellRenderer } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    DefaultCellRenderer,
+    getNoRowsMessage,
+    getRows,
+    GridSection,
+    RESULTS_LOADING_DELAY,
+    RunningStatus,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
+} from '@gridsuite/commons-ui';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
-
 import LinearProgress from '@mui/material/LinearProgress';
-import { RunningStatus } from '../../utils/running-status';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult, formatCountryAdequaciesResult, formatExchangesResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';
 import { AppState } from 'redux/reducer.type';
-import { GridSection } from '../../dialogs/commons/grid-section';
 import { TableType } from '../../../types/custom-aggrid-types';
 
 const styles = {
@@ -47,6 +51,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     countryAdequaciesColumnDefs,
     exchangesColumnDefs,
     computationSubType,
+    exportCsvResetKey,
+    language,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -124,6 +130,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                         computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
+                        exportCsvResetKey={exportCsvResetKey}
+                        language={language}
                     />
                 </div>
                 <GridSection
@@ -146,6 +154,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                         computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
+                        exportCsvResetKey={exportCsvResetKey}
+                        language={language}
                     />
                 </div>
                 <GridSection
@@ -168,6 +178,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         skipColumnHeaders={false}
                         computationType={TableType.Loadflow}
                         computationSubType={computationSubType}
+                        exportCsvResetKey={exportCsvResetKey}
+                        language={language}
                     />
                 </div>
             </div>

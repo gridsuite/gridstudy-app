@@ -34,6 +34,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<F
                 equipmentTypes: [EquipmentType.GENERATOR],
                 elementType: ElementType.FILTER,
                 titleId: 'FiltersListsSelection',
+                dataTestId: 'GeneratorFilterInput',
             },
             {
                 label: intl
@@ -44,6 +45,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<F
                 initialValue: null,
                 editable: true,
                 type: DndColumnType.NUMERIC,
+                dataTestId: 'FrequencyReserveInput',
             },
         ] satisfies DndColumn[];
     }, [intl]);
@@ -88,6 +90,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }: Readonly<F
             columnsDefinition={completedColumnsDefinition}
             tableHeight={270}
             withAddRowsDialog={false}
+            rowDataTestId="FrequencyReserveLine"
         />
     );
 };

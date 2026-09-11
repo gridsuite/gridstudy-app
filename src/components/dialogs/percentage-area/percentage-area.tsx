@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid2 as Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import { useFormContext } from 'react-hook-form';
 import { formatPercentageValue, isValidPercentage, sanitizePercentageValue } from './percentage-area-utils';
@@ -68,6 +68,7 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
             acceptValue={isValidPercentage}
             outputTransform={handleLeftPercentageValueChange}
             formProps={standardTextField}
+            dataTestId="Line1PercentageInput"
         />
     );
 
@@ -78,6 +79,7 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
             acceptValue={isValidPercentage}
             outputTransform={handleRightPercentageValueChange}
             formProps={standardTextField}
+            dataTestId="Line2PercentageInput"
         />
     );
 

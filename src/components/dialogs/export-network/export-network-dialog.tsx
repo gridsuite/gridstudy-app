@@ -16,6 +16,7 @@ import {
     DirectoryItemSchema,
     ElementType,
     fetchDirectoryElementPath,
+    isDisabledValidationButton,
     PARAM_DEVELOPER_MODE,
     Parameter,
     SelectInput,
@@ -33,6 +34,7 @@ import {
     DESCRIPTION,
     EXPORT_DESTINATION,
     EXPORT_FORMAT,
+    EXPORT_COMPRESSION,
     EXPORT_PARAMETERS,
     FILE_NAME,
 } from 'components/utils/field-constants';
@@ -40,6 +42,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FlatParametersInput } from './flat-parameters-input';
 import {
+    CompressionType,
     emptyData,
     emptyObj,
     ExportDestinationType,
@@ -49,6 +52,14 @@ import {
 } from './export-network-utils';
 import { useIntl } from 'react-intl';
 import { NetworkExportInfos } from '../../../services/study-types';
+
+const compressions = [CompressionType.ZIP, CompressionType.GZIP];
+const onlyZipCompression = [CompressionType.ZIP];
+const CGMES_FORMAT = 'CGMES';
+const XIIDM_FORMAT = 'XIIDM';
+const BIIDM_FORMAT = 'BIIDM';
+const JIIDM_FORMAT = 'JIIDM';
+const defaultGzipFormats = [XIIDM_FORMAT, BIIDM_FORMAT, JIIDM_FORMAT];
 
 /**
  * Dialog to export the network case
@@ -75,6 +86,7 @@ export function ExportNetworkDialog({
 }: Readonly<ExportNetworkDialogProps>) {
     const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
     const [parameters, setParameters] = useState<Parameter[]>();
+    const [availableCompressions, setAvailableCompressions] = useState<CompressionType[]>(compressions);
     const { snackError } = useSnackMessage();
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -95,11 +107,6 @@ export function ExportNetworkDialog({
         formState: { errors },
     } = methods;
     const intl = useIntl();
-
-    // due to the use of UniqueNameInput, we need to disable the validate button while the name is being validated
-    const nameError = errors[FILE_NAME];
-    const isValidating = errors.root?.isValidating;
-    const disabledSave = Boolean(nameError || isValidating);
 
     // fetch study name to build the default file name
     useEffect(() => {
@@ -124,7 +131,6 @@ export function ExportNetworkDialog({
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
-                const XIIDM_FORMAT = 'XIIDM';
                 const availableFormats = isDeveloperMode
                     ? formats
                     : Object.fromEntries(Object.entries(formats).filter(([key]) => key === XIIDM_FORMAT));
@@ -142,6 +148,7 @@ export function ExportNetworkDialog({
             const exportToGridExplore = data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER;
             onClick(nodeUuid, data[EXPORT_PARAMETERS], {
                 selectedFormat: data[EXPORT_FORMAT],
+                selectedCompression: data[EXPORT_COMPRESSION].toUpperCase(),
                 fileName: data[FILE_NAME],
                 exportToGridExplore: exportToGridExplore,
                 parentDirectoryUuid: exportToGridExplore ? data[DIRECTORY_ITEM]?.[DIRECTORY_ITEM_ID] : undefined,
@@ -160,8 +167,16 @@ export function ExportNetworkDialog({
             callback: () => {
                 //When an export format changes, reset export parameters
                 setValue(EXPORT_PARAMETERS, emptyObj);
+                const exportFormat = getValues(EXPORT_FORMAT);
                 // get corresponding parameters of the selected format
-                setParameters(formatsWithParameters[getValues(EXPORT_FORMAT)]?.parameters);
+                setParameters(formatsWithParameters[exportFormat]?.parameters);
+                // update compression
+                setAvailableCompressions(exportFormat === CGMES_FORMAT ? onlyZipCompression : compressions);
+                if (defaultGzipFormats.includes(exportFormat)) {
+                    setValue(EXPORT_COMPRESSION, CompressionType.GZIP);
+                } else {
+                    setValue(EXPORT_COMPRESSION, CompressionType.ZIP);
+                }
             },
         });
         return () => unsubscribe();
@@ -178,7 +193,7 @@ export function ExportNetworkDialog({
                 ...methods,
                 validationSchema: schema,
             }}
-            disabledSave={disabledSave}
+            disabledSave={isDisabledValidationButton(errors, FILE_NAME)}
             onSave={onSubmit}
             titleId="exportNetwork"
             sx={{
@@ -209,7 +224,6 @@ export function ExportNetworkDialog({
                     size="small"
                     label="destination"
                 />
-
                 {exportDestination === ExportDestinationType.GRID_EXPLORE && (
                     <Box>
                         <DescriptionField />
@@ -224,11 +238,19 @@ export function ExportNetworkDialog({
                         />
                     </Box>
                 )}
-
                 <SelectInput
+                    sx={{ marginTop: 1 }}
                     name={EXPORT_FORMAT}
                     label="exportFormat"
                     options={Object.keys(formatsWithParameters)}
+                    size="small"
+                    disableClearable
+                />
+                <SelectInput
+                    sx={{ marginTop: 1 }}
+                    name={EXPORT_COMPRESSION}
+                    label="exportCompression"
+                    options={availableCompressions}
                     size="small"
                     disableClearable
                 />

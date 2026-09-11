@@ -59,6 +59,7 @@ const SubstationsGeneratorsOrderingPane = ({ substations }: Readonly<Substations
             columnsDefinition={columnsDefinition}
             tableHeight={270}
             withAddRowsDialog={false}
+            rowDataTestId="SubstationsHierarchyLine"
         />
     );
 };

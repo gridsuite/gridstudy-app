@@ -8,10 +8,9 @@
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, Popover, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { RunningStatus } from '../utils/running-status';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { EquipmentType, useDebounce } from '@gridsuite/commons-ui';
+import { EquipmentType, RunningStatus, useDebounce } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
 import { UUID } from 'node:crypto';
 import { GenericEquipmentInfos } from './equipment-popover-type';

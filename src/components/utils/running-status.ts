@@ -4,16 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ComputingType } from '@gridsuite/commons-ui';
-
-export enum RunningStatus {
-    SUCCEED = 'SUCCEED',
-    FAILED = 'FAILED',
-    IDLE = 'IDLE',
-    RUNNING = 'RUNNING',
-}
-
-export default RunningStatus;
+import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
 
 export function getLoadFlowRunningStatus(loadFlowStatus: string | null): RunningStatus {
     switch (loadFlowStatus) {

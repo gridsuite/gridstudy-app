@@ -15,7 +15,7 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
-import { Grid2 as Grid, Stack } from '@mui/material';
+import { Grid, Stack } from '@mui/material';
 import { CASE_ID, CASE_NAME, DESCRIPTION, NAME, TAG } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';

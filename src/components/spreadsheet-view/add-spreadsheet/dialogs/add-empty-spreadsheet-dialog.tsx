@@ -31,7 +31,11 @@ import { COLUMN_TYPES } from '../../../../types/custom-aggrid-types';
 export type AddEmptySpreadsheetDialogProps = Pick<DialogComponentProps, 'open'>;
 
 const TABLES_OPTIONS = Object.values(SpreadsheetEquipmentType).map(
-    (elementType) => ({ id: elementType, label: elementType }) as const
+    (elementType) =>
+        ({
+            id: elementType,
+            label: elementType,
+        }) as const
 );
 
 const DEFAULT_ID_COLUMN = {
@@ -97,7 +101,7 @@ export default function AddEmptySpreadsheetDialog({ open }: Readonly<AddEmptySpr
                 onClose={open.setFalse}
                 onSave={onSubmit}
                 onClear={() => {}}
-                PaperProps={{ sx: dialogStyles.dialogContent }}
+                slotProps={{ paper: { sx: dialogStyles.dialogContent } }}
             >
                 <Stack spacing={2} marginTop={2}>
                     <Box>

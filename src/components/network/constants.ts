@@ -7,41 +7,12 @@
 import { LOAD_TYPES, UNDEFINED_LOAD_TYPE } from '@gridsuite/commons-ui';
 
 export const FORM_LOADING_DELAY = 200;
-export const RESULTS_LOADING_DELAY = 500;
 
 // For load tabular creations/modifications, we allow the UNDEFINED value
 export const LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION = [
     ...LOAD_TYPES,
     { id: UNDEFINED_LOAD_TYPE, label: 'Undefined' },
 ] as const;
-
-export const PHASE_REGULATION_MODES = {
-    CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
-    ACTIVE_POWER_CONTROL: {
-        id: 'ACTIVE_POWER_CONTROL',
-        label: 'PhaseActivePowerControl',
-    },
-    OFF: { id: 'OFF', label: 'Off' }, // used for the ui but doesn't exist in powsybl => should not be sent to the back
-} as const;
-
-// only useful for the ui, in order to set isRegulating, should not be sent to the back
-export const RATIO_REGULATION_MODES = {
-    FIXED_RATIO: {
-        // isRegulating false
-        id: 'FIXED_RATIO',
-        label: 'FixedRatio',
-    },
-    VOLTAGE_REGULATION: {
-        // isRegulating true
-        id: 'VOLTAGE_REGULATION',
-        label: 'VoltageRegulation',
-    },
-} as const;
-
-export const SIDE = {
-    SIDE1: { id: 'SIDE1', label: 'RegulatedSide1' },
-    SIDE2: { id: 'SIDE2', label: 'RegulatedSide2' },
-} as const;
 
 const PROPORTIONAL = { id: 'PROPORTIONAL', label: 'Proportional' } as const;
 const REGULAR_DISTRIBUTION = {
@@ -93,37 +64,6 @@ export const VARIATION_TYPES = {
     DELTA_P: { id: 'DELTA_P', label: 'DeltaP' },
     TARGET_P: { id: 'TARGET_P', label: 'TargetPText' },
 } as const;
-
-export const SWITCH_TYPE = {
-    BREAKER: { id: 'BREAKER', label: 'Breaker' },
-    DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
-} as const;
-
-export const POSITION_NEW_SECTION_SIDE = {
-    BEFORE: { id: 'BEFORE', label: 'Before' },
-    AFTER: { id: 'AFTER', label: 'After' },
-} as const;
-
-export enum VscConverterMode {
-    SIDE_1_RECTIFIER_SIDE_2_INVERTER = 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
-    SIDE_1_INVERTER_SIDE_2_RECTIFIER = 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
-}
-
-export interface VscConverterModeValue {
-    id: string;
-    label: string;
-}
-
-export const VSC_CONVERTER_MODE: Record<VscConverterMode, VscConverterModeValue> = {
-    [VscConverterMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER]: {
-        id: 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
-        label: 'side1RectifierSide2Inverter',
-    },
-    [VscConverterMode.SIDE_1_INVERTER_SIDE_2_RECTIFIER]: {
-        id: 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
-        label: 'side1InverterSide2Rectifier',
-    },
-};
 
 export const REGULATING_TERMINAL_TYPES = [
     'LINE',
