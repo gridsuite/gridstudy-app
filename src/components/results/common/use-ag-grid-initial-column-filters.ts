@@ -7,9 +7,9 @@
 import { useCallback } from 'react';
 import { useStore } from 'react-redux';
 import { GridReadyEvent } from 'ag-grid-community';
+import { TableType } from '@gridsuite/commons-ui';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import type { RootState } from '../../../redux/store';
-import {TableType} from "@gridsuite/commons-ui";
 
 /**
  * A hook to handle the initialization of AG Grid with saved filters.

@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { UUID } from 'node:crypto';
+import { TableType } from '@gridsuite/commons-ui';
 import { FilterConfig } from '../../../../types/custom-aggrid-types';
 import { updateComputationResultFiltersColumn } from '../../../../services/study/study-config';
-import {TableType} from "@gridsuite/commons-ui";
 
 export const persistComputationColumnFilter = (
     studyUuid: UUID,

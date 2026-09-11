@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import GlobalFilterProvider from './adapter/global-filter-provider';
 import type { UUID } from 'node:crypto';
-import {EquipmentType, GlobalFilterPanel, GlobalFilterType, TableType} from '@gridsuite/commons-ui';
+import { EquipmentType, GlobalFilterPanel, GlobalFilterType, TableType } from '@gridsuite/commons-ui';
+import GlobalFilterProvider from './adapter/global-filter-provider';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
-
 import { useEffect, useState } from 'react';
 import { fetchSubstationPropertiesGlobalFilters } from './adapter/global-filter-app-data';
 

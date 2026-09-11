@@ -18,7 +18,8 @@ import {
     GlobalFilterType,
     isCriteriaFilter,
     GlobalFilter,
-    RecentGlobalFilter, TableType,
+    RecentGlobalFilter,
+    TableType,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../../utils/compute-title';
 import {

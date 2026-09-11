@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useDispatch, useSelector } from 'react-redux';
+import { TableType } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../../redux/reducer.type';
 import { useEffect } from 'react';
 import { useSelectedGlobalFilters } from './use-selected-global-filters';
 import { updateComputationGlobalFilters } from '../../utils';
-import {TableType} from "@gridsuite/commons-ui";
 
 // Get the global filters for a given table from the server and store them in the Redux store
 export function useFetchComputationGlobalFilters(tableType: TableType) {

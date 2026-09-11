@@ -6,7 +6,7 @@
  */
 import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
 import { IntlShape } from 'react-intl';
-import {type MuiStyles, type GlobalFilter, isEditingGlobalFilter, TableType} from '@gridsuite/commons-ui';
+import { type MuiStyles, type GlobalFilter, isEditingGlobalFilter, TableType } from '@gridsuite/commons-ui';
 import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';
 import { Dispatch } from 'redux';
 import { UUID } from 'node:crypto';
