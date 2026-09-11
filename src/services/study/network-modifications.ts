@@ -1591,6 +1591,14 @@ export function shareCompositeModification(
     return backendFetch(url, { method: 'POST' });
 }
 
+export function containsSharedModification(compositeModificationUuid: UUID): Promise<boolean> {
+    const url = `${PREFIX_STUDY_QUERIES}/v1/network-composite-modifications/${safeEncodeURIComponent(
+        compositeModificationUuid
+    )}/contains-shared-modification`;
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function getNetworkModificationsFromComposite(
     compositeModificationUuids: string[],
     onlyMetadata: boolean = true
