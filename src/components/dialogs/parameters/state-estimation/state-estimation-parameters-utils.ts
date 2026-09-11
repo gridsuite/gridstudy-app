@@ -5,13 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import * as yup from 'yup';
+import { YUP_REQUIRED } from '@gridsuite/commons-ui';
 import {
     DEFAULT_BOUNDS,
     DEFAULT_FIXED_BOUNDS,
     ESTIM_ALGO_TYPE,
     ESTIM_LOG_LEVEL,
+    FILTER,
+    INVALIDATE,
+    INVALIDATION_TYPE,
     P_MAX,
     P_MIN,
+    AREA_INVALIDATIONS,
     PRINCIPAL_OBSERVABLE_ZONE,
     UNIQUE_PHASE,
     Q_MAX,
@@ -63,6 +68,13 @@ export enum TabValue {
     WEIGHTS = 'weights',
     QUALITY = 'quality',
     LOADBOUNDS = 'loadBounds',
+    AREA_INVALIDATION = 'areaInvalidation',
+}
+
+export enum InvalidationType {
+    ERRONEOUS_TOPOLOGY_PV = 'ERRONEOUS_TOPOLOGY_PV',
+    ERRONEOUS_TOPOLOGY_PQ = 'ERRONEOUS_TOPOLOGY_PQ',
+    NOT_FULLY_DESCRIBED = 'NOT_FULLY_DESCRIBED',
 }
 
 export const TAB_VALUES = Object.values(TabValue);
@@ -163,6 +175,15 @@ interface ThresholdsPerVoltageLevel extends ThresholdVoltageLevelCode {
 interface ThresholdsPerVoltageLevelForm
     extends VoltageLevelLabel, Omit<ThresholdsPerVoltageLevel, 'thresholdVoltageLevel'> {}
 
+// one entry per substation filter; applied top to bottom, a later "invalidate" entry overrides an earlier
+// one for the same substation (see the Area invalidation tab tooltip, StateEstimationParametersAreaInvalidationTooltip)
+export interface AreaInvalidationInfos {
+    invalidate: boolean;
+    invalidationType: string;
+    filterUuid: string | null;
+    filterName: string | null;
+}
+
 export interface StateEstimationParameters {
     estimParameters: {
         principalObservableZone: boolean;
@@ -190,6 +211,7 @@ export interface StateEstimationParameters {
             defaultFixedBounds: LoadBoundsDetailsParameters[];
         };
     };
+    areaInvalidations: AreaInvalidationInfos[];
 }
 
 const ESTIM_PARAMETERS = 'estimParameters';
@@ -265,6 +287,12 @@ export const fromStateEstimationParametersFormToParamValues = (
             })),
         },
     },
+    [AREA_INVALIDATIONS]: params.areaInvalidation[AREA_INVALIDATIONS]?.map((areaInvalidation) => ({
+        [INVALIDATE]: areaInvalidation.invalidate,
+        [INVALIDATION_TYPE]: areaInvalidation.invalidationType,
+        filterUuid: areaInvalidation.filter?.[0]?.id ?? null,
+        filterName: areaInvalidation.filter?.[0]?.name ?? null,
+    })),
 });
 
 const mapVoltageLevelData = <T extends VoltageLevelCode | ThresholdVoltageLevelCode, U extends VoltageLevelLabel>(
@@ -279,34 +307,48 @@ const mapVoltageLevelData = <T extends VoltageLevelCode | ThresholdVoltageLevelC
     });
 
 export const fromStateEstimationParametersParamToFormValues = (
-    values: StateEstimationParameters['estimParameters']
-): StateEstimationParametersForm => ({
-    [TabValue.GENERAL]: {
-        [PRINCIPAL_OBSERVABLE_ZONE]: values.principalObservableZone,
-        [UNIQUE_PHASE]: values.uniquePhase,
-        [ESTIM_LOG_LEVEL]: values.estimLogLevel,
-        [ESTIM_ALGO_TYPE]: values.estimAlgoType,
-    },
-    [TabValue.WEIGHTS]: {
-        [WEIGHTS_PARAMETERS]: mapVoltageLevelData<WeightsParameters, WeightParametersForm>(
-            values.weights.weightsParameters
-        ),
-    },
-    [TabValue.QUALITY]: {
-        ...values.quality,
-        [THRESHOLD_PER_VOLTAGE_LEVEL]: mapVoltageLevelData<ThresholdsPerVoltageLevel, ThresholdsPerVoltageLevelForm>(
-            values.quality.thresholdsPerVoltageLevel
-        ),
-    },
-    [TabValue.LOADBOUNDS]: {
-        [DEFAULT_BOUNDS]: mapVoltageLevelData<LoadBoundsDetailsParameters, LoadBoundsDetailsParametersForm>(
-            values.loadBounds.defaultBounds
-        ),
-        [DEFAULT_FIXED_BOUNDS]: mapVoltageLevelData<LoadBoundsDetailsParameters, LoadBoundsDetailsParametersForm>(
-            values.loadBounds.defaultFixedBounds
-        ),
-    },
-});
+    parameters: StateEstimationParameters
+): StateEstimationParametersForm => {
+    const values = parameters.estimParameters;
+    return {
+        [TabValue.GENERAL]: {
+            [PRINCIPAL_OBSERVABLE_ZONE]: values.principalObservableZone,
+            [UNIQUE_PHASE]: values.uniquePhase,
+            [ESTIM_LOG_LEVEL]: values.estimLogLevel,
+            [ESTIM_ALGO_TYPE]: values.estimAlgoType,
+        },
+        [TabValue.WEIGHTS]: {
+            [WEIGHTS_PARAMETERS]: mapVoltageLevelData<WeightsParameters, WeightParametersForm>(
+                values.weights.weightsParameters
+            ),
+        },
+        [TabValue.QUALITY]: {
+            ...values.quality,
+            [THRESHOLD_PER_VOLTAGE_LEVEL]: mapVoltageLevelData<
+                ThresholdsPerVoltageLevel,
+                ThresholdsPerVoltageLevelForm
+            >(values.quality.thresholdsPerVoltageLevel),
+        },
+        [TabValue.LOADBOUNDS]: {
+            [DEFAULT_BOUNDS]: mapVoltageLevelData<LoadBoundsDetailsParameters, LoadBoundsDetailsParametersForm>(
+                values.loadBounds.defaultBounds
+            ),
+            [DEFAULT_FIXED_BOUNDS]: mapVoltageLevelData<LoadBoundsDetailsParameters, LoadBoundsDetailsParametersForm>(
+                values.loadBounds.defaultFixedBounds
+            ),
+        },
+        [TabValue.AREA_INVALIDATION]: {
+            [AREA_INVALIDATIONS]: (parameters.areaInvalidations ?? []).map((areaInvalidation) => ({
+                [INVALIDATE]: areaInvalidation.invalidate,
+                [INVALIDATION_TYPE]: areaInvalidation.invalidationType,
+                [FILTER]:
+                    areaInvalidation.filterUuid != null
+                        ? [{ id: areaInvalidation.filterUuid, name: areaInvalidation.filterName ?? '' }]
+                        : [],
+            })),
+        },
+    };
+};
 
 export const stateEstimationParametersFormSchema = yup.object().shape({
     [TabValue.GENERAL]: yup.object().shape({
@@ -384,6 +426,28 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
                     [P_MAX]: yup.number().required().min(0).label(P_MAX),
                     [Q_MIN]: yup.number().required(),
                     [Q_MAX]: yup.number().required(),
+                })
+            )
+            .required(),
+    }),
+    [TabValue.AREA_INVALIDATION]: yup.object().shape({
+        [AREA_INVALIDATIONS]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [INVALIDATE]: yup.boolean().required(),
+                    [FILTER]: yup
+                        .array()
+                        .of(
+                            yup.object().shape({
+                                id: yup.string().required(),
+                                name: yup.string(),
+                            })
+                        )
+                        .min(1, YUP_REQUIRED)
+                        .max(1)
+                        .required(),
+                    [INVALIDATION_TYPE]: yup.string().required(),
                 })
             )
             .required(),

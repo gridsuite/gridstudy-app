@@ -13,6 +13,7 @@ import StateEstimationGeneralParameters from './state-estimation-general-paramet
 import { StateEstimationWeightsParameters } from './state-estimation-weights-parameters';
 import { StateEstimationQualityParameters } from './state-estimation-quality-parameters';
 import { StateEstimationLoadboundsParameters } from './state-estimation-loadbounds-parameters';
+import { StateEstimationAreaInvalidationParameters } from './state-estimation-area-invalidation-parameters';
 import { getTabStyle } from '../../../utils/tab-utils';
 
 interface StateEstimationParametersFormProps {
@@ -67,6 +68,11 @@ export const StateEstimationParametersForm = ({
                     value={TabValue.LOADBOUNDS}
                     sx={getTabStyle(tabIndexesWithError, TabValue.LOADBOUNDS)}
                 />
+                <Tab
+                    label={<FormattedMessage id="StateEstimationParametersAreaInvalidationTabLabel" />}
+                    value={TabValue.AREA_INVALIDATION}
+                    sx={getTabStyle(tabIndexesWithError, TabValue.AREA_INVALIDATION)}
+                />
             </Tabs>
             <Grid container sx={styles.container}>
                 <Grid sx={styles.maxWidth}>
@@ -81,6 +87,9 @@ export const StateEstimationParametersForm = ({
                     </TabPanel>
                     <TabPanel value={tabValue} index={TabValue.LOADBOUNDS}>
                         <StateEstimationLoadboundsParameters />
+                    </TabPanel>
+                    <TabPanel value={tabValue} index={TabValue.AREA_INVALIDATION}>
+                        <StateEstimationAreaInvalidationParameters />
                     </TabPanel>
                 </Grid>
             </Grid>
