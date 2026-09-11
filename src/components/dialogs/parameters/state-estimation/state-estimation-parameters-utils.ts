@@ -175,13 +175,18 @@ interface ThresholdsPerVoltageLevel extends ThresholdVoltageLevelCode {
 interface ThresholdsPerVoltageLevelForm
     extends VoltageLevelLabel, Omit<ThresholdsPerVoltageLevel, 'thresholdVoltageLevel'> {}
 
-// one entry per substation filter; applied top to bottom, a later "invalidate" entry overrides an earlier
-// one for the same substation (see the Area invalidation tab tooltip, StateEstimationParametersAreaInvalidationTooltip)
+export interface AreaInvalidationFilterInfos {
+    filterUuid: string;
+    filterName: string | null;
+}
+
+// one entry per row; a row can combine several substation filters (their matching substations are all invalidated
+// the same way). Rows are applied top to bottom, a later "invalidate" entry overrides an earlier one for the same
+// substation (see the Area invalidation tab tooltip, StateEstimationParametersAreaInvalidationTooltip)
 export interface AreaInvalidationInfos {
     invalidate: boolean;
     invalidationType: string;
-    filterUuid: string | null;
-    filterName: string | null;
+    filters: AreaInvalidationFilterInfos[];
 }
 
 export interface StateEstimationParameters {
@@ -290,8 +295,10 @@ export const fromStateEstimationParametersFormToParamValues = (
     [AREA_INVALIDATIONS]: params.areaInvalidation[AREA_INVALIDATIONS]?.map((areaInvalidation) => ({
         [INVALIDATE]: areaInvalidation.invalidate,
         [INVALIDATION_TYPE]: areaInvalidation.invalidationType,
-        filterUuid: areaInvalidation.filter?.[0]?.id ?? null,
-        filterName: areaInvalidation.filter?.[0]?.name ?? null,
+        filters: (areaInvalidation.filter ?? []).map((filter) => ({
+            filterUuid: filter.id,
+            filterName: filter.name ?? null,
+        })),
     })),
 });
 
@@ -341,10 +348,10 @@ export const fromStateEstimationParametersParamToFormValues = (
             [AREA_INVALIDATIONS]: (parameters.areaInvalidations ?? []).map((areaInvalidation) => ({
                 [INVALIDATE]: areaInvalidation.invalidate,
                 [INVALIDATION_TYPE]: areaInvalidation.invalidationType,
-                [FILTER]:
-                    areaInvalidation.filterUuid != null
-                        ? [{ id: areaInvalidation.filterUuid, name: areaInvalidation.filterName ?? '' }]
-                        : [],
+                [FILTER]: (areaInvalidation.filters ?? []).map((filter) => ({
+                    id: filter.filterUuid,
+                    name: filter.filterName ?? '',
+                })),
             })),
         },
     };
@@ -445,7 +452,6 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
                             })
                         )
                         .min(1, YUP_REQUIRED)
-                        .max(1)
                         .required(),
                     [INVALIDATION_TYPE]: yup.string().required(),
                 })
