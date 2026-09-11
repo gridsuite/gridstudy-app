@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { FunctionComponent, SyntheticEvent, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -28,9 +29,7 @@ export const LogicalControlsResult: FunctionComponent = () => {
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Tabs value={subTabIndex} onChange={handleSubTabChange}>
                 <Tab label={<FormattedMessage id="LogicalControlsBalances" />} />
-                <Tab
-                    label={<FormattedMessage id="LogicalControlsNonZeroMeasurementsOnDisconnected" />}
-                />
+                <Tab label={<FormattedMessage id="LogicalControlsNonZeroMeasurementsOnDisconnected" />} />
                 <Tab label={<FormattedMessage id="LogicalControlsZeroMeasurementsOnConnected" />} />
                 <Tab label={<FormattedMessage id="LogicalControlsOriginExtremityDeviations" />} />
                 <Tab label={<FormattedMessage id="LogicalControlsOutOfBoundsMeasurements" />} />

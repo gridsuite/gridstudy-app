@@ -24,7 +24,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { StateEstimationQualityResult } from './state-estimation-quality-result';
-import { LogicalControlsResult } from './logical-controls-result';
+import { LogicalControlsResult } from './logicalcontrols/logical-controls-result';
 import GlassPane from '../common/glass-pane';
 import {
     stateEstimationQualityCriterionColumnsDefinition,
@@ -156,9 +156,9 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                 </Tabs>
                 {tabIndex === 3 && (
                     <Box sx={styles.computeLogicalControlsButton}>
-                    <Button variant="outlined" onClick={runLogicalControls} disabled={isRunningLogicalControls}>
-                        <FormattedMessage id="StateEstimationRunLogicalControls" />
-                    </Button>
+                        <Button variant="outlined" onClick={runLogicalControls} disabled={isRunningLogicalControls}>
+                            <FormattedMessage id="StateEstimationRunLogicalControls" />
+                        </Button>
                     </Box>
                 )}
                 <Box sx={styles.emptySpace}></Box>
