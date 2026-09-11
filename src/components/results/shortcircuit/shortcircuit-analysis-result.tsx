@@ -28,6 +28,7 @@ import {
     mappingTabs,
     convertFilterValues,
     SCAPagedResults,
+    TableType,
 } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
@@ -38,7 +39,6 @@ import {
     FilterEnumsType,
     PaginationType,
     ShortcircuitAnalysisTab,
-    TableType,
 } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
@@ -125,7 +125,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         setIsFetching(true);
         updateResult(null);
 
-        const backSortConfig = sortConfig?.map((sort) => ({
+        const backSortConfig = sortConfig?.map((sort: { colId: string | number; }) => ({
             ...sort,
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));

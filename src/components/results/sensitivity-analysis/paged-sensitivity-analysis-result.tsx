@@ -24,7 +24,7 @@ import {
     useDebounce,
     useSnackMessage,
     buildValidGlobalFilters,
-    RESULT_PAGE_OPTIONS,
+    RESULT_PAGE_OPTIONS, TableType,
 } from '@gridsuite/commons-ui';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -32,7 +32,7 @@ import {
 } from '../../../services/study/sensitivity-analysis';
 import { useSelector } from 'react-redux';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { PaginationType, SensitivityAnalysisTab, SortWay, TableType } from '../../../types/custom-aggrid-types';
+import { PaginationType, SensitivityAnalysisTab, SortWay } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer.type';
@@ -143,7 +143,7 @@ function PagedSensitivityAnalysisResult({
         const sortSelector = sortConfig?.length
             ? {
                   sortKeysWithWeightAndDirection: Object.fromEntries(
-                      sortConfig.map((value) => [
+                      sortConfig.map((value: { colId: string; sort: SortWay; }) => [
                           DATA_KEY_TO_SORT_KEY[value.colId as keyof typeof DATA_KEY_TO_SORT_KEY],
                           value.sort === SortWay.DESC ? -1 : 1,
                       ])

@@ -22,7 +22,7 @@ import {
     GlobalFilterType,
     isCriteriaFilterType,
     buildValidGlobalFilters,
-    RESULTS_LOADING_DELAY,
+    RESULTS_LOADING_DELAY, TableType,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 import type { UUID } from 'node:crypto';
@@ -43,7 +43,7 @@ import {
     SensitivityResultTabs,
 } from './sensitivity-analysis-result-utils';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
-import { PaginationType, SortWay, TableType } from '../../../types/custom-aggrid-types';
+import { PaginationType, SortWay } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
@@ -138,7 +138,7 @@ function SensitivityAnalysisResultTab({
         const sortSelector = sortConfig?.length
             ? {
                   sortKeysWithWeightAndDirection: Object.fromEntries(
-                      sortConfig.map((value) => [
+                      sortConfig.map((value: { colId: string; sort: SortWay }) => [
                           DATA_KEY_TO_SORT_KEY[value.colId as keyof typeof DATA_KEY_TO_SORT_KEY],
                           value.sort === SortWay.DESC ? -1 : 1,
                       ])

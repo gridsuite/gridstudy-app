@@ -32,7 +32,7 @@ import {
     FROM_COLUMN_TO_FIELD_ONE_BUS,
     FROM_COLUMN_TO_FIELD,
     convertFilterValues,
-    ShortCircuitAnalysisType,
+    ShortCircuitAnalysisType, TableType,
 } from '@gridsuite/commons-ui';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResultWrapper } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result-wrapper';
@@ -40,7 +40,7 @@ import type { UUID } from 'node:crypto';
 import { ColDef, DisplayedColumnsChangedEvent, GridApi, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
-import { PaginationType, ShortcircuitAnalysisTab, TableType } from '../../../types/custom-aggrid-types';
+import { PaginationType, ShortcircuitAnalysisTab } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { BranchSide } from 'components/utils/constants';
@@ -221,7 +221,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         const oneBusCase = analysisType === ShortCircuitAnalysisType.ONE_BUS;
         const fromFrontColumnToBackKeys = oneBusCase ? FROM_COLUMN_TO_FIELD_ONE_BUS : FROM_COLUMN_TO_FIELD;
 
-        const backSortConfig = sortConfig?.map((sort) => ({
+        const backSortConfig = sortConfig?.map((sort: { colId: string | number; }) => ({
             ...sort,
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));

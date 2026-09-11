@@ -15,7 +15,7 @@ import {
     SpreadsheetTabDefinition,
 } from '../../types/spreadsheet.type';
 import { Dispatch } from 'redux';
-import { snackWithFallback, UseStateBooleanReturn, GlobalFilter } from '@gridsuite/commons-ui';
+import {snackWithFallback, UseStateBooleanReturn, GlobalFilter, TableType} from '@gridsuite/commons-ui';
 import {
     addSortForNewSpreadsheet,
     initOrUpdateGlobalFilters,
@@ -23,7 +23,7 @@ import {
     updateColumnFiltersAction,
     updateTableDefinition,
 } from 'redux/actions';
-import { FilterConfig, SortConfig, SortWay, TableType } from 'types/custom-aggrid-types';
+import { FilterConfig, SortConfig, SortWay } from 'types/custom-aggrid-types';
 import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';

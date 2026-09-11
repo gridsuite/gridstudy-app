@@ -16,14 +16,14 @@ import {
     ComputingType,
     EquipmentType,
     RESULTS_LOADING_DELAY,
-    RunningStatus,
+    RunningStatus, TableType,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
-import { PaginationType, TableType } from '../../../types/custom-aggrid-types';
+import { PaginationType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 

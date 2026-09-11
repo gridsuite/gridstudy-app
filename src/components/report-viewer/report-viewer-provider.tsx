@@ -6,11 +6,6 @@
  */
 import { PropsWithChildren, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer.type';
-import { updateColumnFiltersAction } from '../../redux/actions';
-import { getColumnFiltersFromState } from '../../redux/selectors/filter-selectors';
-import { useLogsPagination } from './use-logs-pagination';
-import { useReportFetcher } from '../../hooks/use-report-fetcher';
 import {
     ReportFetcherContext,
     ReportFilterContext,
@@ -18,8 +13,13 @@ import {
     ReportFetcherContextValue,
     ReportFilterContextValue,
     PaginationConfig,
+    TableType,
 } from '@gridsuite/commons-ui';
-import { TableType } from '../../types/custom-aggrid-types';
+import { AppState } from '../../redux/reducer.type';
+import { updateColumnFiltersAction } from '../../redux/actions';
+import { getColumnFiltersFromState } from '../../redux/selectors/filter-selectors';
+import { useLogsPagination } from './use-logs-pagination';
+import { useReportFetcher } from '../../hooks/use-report-fetcher';
 import { ComputingAndNetworkModificationType } from '../../utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 

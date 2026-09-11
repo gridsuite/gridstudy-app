@@ -17,7 +17,7 @@ import {
     getNoRowsMessage,
     getRows,
     RESULTS_LOADING_DELAY,
-    RunningStatus,
+    RunningStatus, TableType,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';
@@ -28,7 +28,6 @@ import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    TableType,
 } from '../../../types/custom-aggrid-types';
 import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';

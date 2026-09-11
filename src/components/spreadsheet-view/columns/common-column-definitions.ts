@@ -11,6 +11,7 @@ import {
     NumericCellRenderer,
     SnackInputs,
     snackWithFallback,
+    TableType,
 } from '@gridsuite/commons-ui';
 import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
 import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
@@ -25,7 +26,6 @@ import {
     FILTER_TEXT_COMPARATORS,
     SortConfig,
     SPREADSHEET_FILTER_NUMBER_COMPARATORS,
-    TableType,
 } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';

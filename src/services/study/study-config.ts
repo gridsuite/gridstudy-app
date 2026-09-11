@@ -7,13 +7,19 @@
 
 import { getStudyUrl } from './index';
 import type { UUID } from 'node:crypto';
-import { backendFetch, backendFetchJson, NetworkVisualizationParameters, GlobalFilter } from '@gridsuite/commons-ui';
+import {
+    backendFetch,
+    backendFetchJson,
+    NetworkVisualizationParameters,
+    GlobalFilter,
+    TableType
+} from '@gridsuite/commons-ui';
 import {
     ColumnStateDto,
     SpreadsheetCollectionDto,
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
-import { TableType, SortConfig } from '../../types/custom-aggrid-types';
+import { SortConfig } from '../../types/custom-aggrid-types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');

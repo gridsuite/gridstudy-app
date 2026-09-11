@@ -9,7 +9,7 @@ import {
     ElementType,
     IElementCreationDialog,
     IElementUpdateDialog,
-    snackWithFallback,
+    snackWithFallback, TableType,
     useSnackMessage,
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
@@ -20,7 +20,6 @@ import { AppState } from '../../../../../redux/reducer.type';
 import { v4 as uuid4 } from 'uuid';
 import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
-import { TableType } from '../../../../../types/custom-aggrid-types';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 import { SaveSpreadsheetModelDialog } from './save-spreadsheet-model-dialog';
 

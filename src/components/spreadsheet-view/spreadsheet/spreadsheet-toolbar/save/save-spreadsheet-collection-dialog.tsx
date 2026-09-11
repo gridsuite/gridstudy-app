@@ -29,7 +29,7 @@ import {
     snackWithFallback,
     useSnackMessage,
     type UseStateBooleanReturn,
-    GlobalFilter,
+    GlobalFilter, TableType,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../../redux/reducer.type';
 import { SelectOptionsDialog } from '../../../../../utils/dialogs';
@@ -42,7 +42,7 @@ import {
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
-import { SortConfig, TableType } from '../../../../../types/custom-aggrid-types';
+import { SortConfig } from '../../../../../types/custom-aggrid-types';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 
 interface SaveSpreadsheetCollectionDialogProps {
