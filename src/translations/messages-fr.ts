@@ -1070,6 +1070,7 @@ const messages_fr = {
 
     StateEstimationQualityCriterionResults: 'Qualité critères',
     StateEstimationQualityPerRegionResults: 'Qualité régions',
+    StateEstimationLogicalControlsResults: 'Contrôles logiques',
     StateEstimationStatusResults: 'Statut',
     CriterionType: 'Critère',
     Validity: 'Validité',

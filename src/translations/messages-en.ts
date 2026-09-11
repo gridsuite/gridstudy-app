@@ -1056,6 +1056,7 @@ const messages_en = {
 
     StateEstimationQualityCriterionResults: 'Criterion quality',
     StateEstimationQualityPerRegionResults: 'Quality per region',
+    StateEstimationLogicalControlsResults: 'Logical controls',
     StateEstimationStatusResults: 'Status',
     CriterionType: 'Type',
     Validity: 'Validity',

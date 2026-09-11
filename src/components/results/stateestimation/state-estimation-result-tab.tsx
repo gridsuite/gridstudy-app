@@ -17,6 +17,7 @@ import { AppState } from 'redux/reducer.type';
 import { ComputingType, RunningStatus, type MuiStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { StateEstimationQualityResult } from './state-estimation-quality-result';
+import { LogicalControlsResult } from './logical-controls-result';
 import GlassPane from '../common/glass-pane';
 import {
     stateEstimationQualityCriterionColumnsDefinition,
@@ -119,6 +120,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     <Tab label={<FormattedMessage id={'StateEstimationStatusResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityCriterionResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityPerRegionResults'} />} />
+                    <Tab label={<FormattedMessage id={'StateEstimationLogicalControlsResults'} />} />
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
                 <Box sx={styles.emptySpace}></Box>
@@ -147,7 +149,8 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     />
                 </GlassPane>
             )}
-            {tabIndex === 3 && renderReportViewer()}
+            {tabIndex === 3 && <LogicalControlsResult />}
+            {tabIndex === 4 && renderReportViewer()}
         </>
     );
 };
