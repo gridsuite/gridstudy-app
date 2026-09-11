@@ -9,7 +9,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index'
 import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { StateEstimationParameters } from '../../components/dialogs/parameters/state-estimation/state-estimation-parameters-utils';
-import { LogicalControlsResult } from '../../components/results/stateestimation/logicalcontrols/logicalControls.types';
+import { LogicalControlsResultDto } from '../../components/results/stateestimation/logicalcontrols/logicalControls.types';
 
 export function startStateEstimation(
     studyUuid: UUID,
@@ -98,11 +98,11 @@ export function computeLogicalControls(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID
-): Promise<LogicalControlsResult> {
+): Promise<LogicalControlsResultDto> {
     console.info(
         `compute logical controls on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/state-estimation/logical-controls`;
     console.debug(url);
-    return backendFetchJson(url, { method: 'post' });
+    return backendFetchJson(url, { method: 'post', timeoutMs: 300000 });
 }

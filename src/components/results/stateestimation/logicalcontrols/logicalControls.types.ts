@@ -5,6 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ColDef } from 'ag-grid-community';
+import { Key } from 'react';
+
 export enum MeasurementType {
     ACTIVE_TRANSIT = 'ACTIVE_TRANSIT',
     ACTIVE_TRANSIT_ORIGIN = 'ACTIVE_TRANSIT_ORIGIN',
@@ -76,7 +79,7 @@ export interface VoltageDeviation {
 }
 
 // maps the back-end DTO
-export interface LogicalControlsResult {
+export interface LogicalControlsResultDto {
     balances: Record<string, BoucherotBalance>;
     nonZeroMeasurementsOnDisconnected: Record<string, InvalidMeasurement[]>;
     zeroMeasurementsOnConnected: Record<string, InvalidMeasurement[]>;

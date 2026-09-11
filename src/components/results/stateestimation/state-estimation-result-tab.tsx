@@ -14,6 +14,7 @@ import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { QualityCriterionResult, StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
 import { computeLogicalControls, fetchStateEstimationResult } from '../../../services/study/state-estimation';
+import { LogicalControlsResultDto } from './logicalcontrols/logicalControls.types';
 import { AppState } from 'redux/reducer.type';
 import {
     ComputingType,
@@ -24,7 +25,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { StateEstimationQualityResult } from './state-estimation-quality-result';
-import { LogicalControlsResult } from './logicalcontrols/logical-controls-result';
 import GlassPane from '../common/glass-pane';
 import {
     stateEstimationQualityCriterionColumnsDefinition,
@@ -33,6 +33,7 @@ import {
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { stateEstimationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
+import { LogicalControlsResult } from './logicalcontrols/logical-controls-result';
 
 const styles = {
     flexWrapper: {
@@ -71,6 +72,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const { snackError } = useSnackMessage();
 
     const [isRunningLogicalControls, setIsRunningLogicalControls] = useState(false);
+    const [logicalControlsResult, setLogicalControlsResult] = useState<LogicalControlsResultDto>();
 
     const { result: stateEstimationResult, isLoading: isLoadingResult } = useNodeData({
         studyUuid,
@@ -133,7 +135,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             setIsRunningLogicalControls(true);
             computeLogicalControls(studyUuid, nodeUuid, currentRootNetworkUuid)
                 .then((results) => {
-                    console.log('DBG DBR', results);
+                    setLogicalControlsResult(results);
                 })
                 .catch((error) => {
                     snackWithFallback(snackError, error, { headerId: 'LogicalControlsComputationErrorMsg' });
@@ -187,7 +189,13 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     />
                 </GlassPane>
             )}
-            {tabIndex === 3 && <LogicalControlsResult />}
+            {tabIndex === 3 && (
+                <LogicalControlsResult
+                    result={logicalControlsResult}
+                    isLoadingResult={isRunningLogicalControls}
+                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                />
+            )}
             {tabIndex === 4 && renderReportViewer()}
         </>
     );
