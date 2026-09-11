@@ -1322,7 +1322,7 @@ const messages_fr = {
     nadInfoPermanentLimitPercentage: '% IST',
     nadInfoActivePowerArrow: 'Flèches P',
     nadInfoReactivePowerArrow: 'Flèches Q',
-    nadInfoVoltageLevelName: 'Noms postes',
+    nadInfoVoltageLevelVoltage: 'Tensions postes',
 
     gridExplore: 'GridExplore',
     myComputer: 'Mon ordinateur',
