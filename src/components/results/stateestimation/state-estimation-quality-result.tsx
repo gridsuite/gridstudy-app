@@ -48,13 +48,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
 
     //We give each tab its own loader, so we don't have a loader spinning because another tab is still doing some work
     const openLoaderTab = useOpenLoaderShortWait({
-        isLoading:
-            // We want the loader to start when the state estimation begins
-            stateEstimationStatus === RunningStatus.RUNNING ||
-            // We still want the loader to be displayed for the remaining time there is between "the state estimation is over"
-            // and "the data is post processed and can be displayed"
-            stateEstimationStatus === RunningStatus.SUCCEED ||
-            isLoadingResult,
+        isLoading: stateEstimationStatus === RunningStatus.RUNNING || isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -100,7 +94,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
 
         return (
             <>
-                <Box sx={{ height: '4px' }}>{openLoaderTab && <LinearProgress />}</Box>
+                <Box sx={{ height: '4px', position: 'relative', zIndex: 1 }}>{openLoaderTab && <LinearProgress />}</Box>
                 <RenderTableAndExportCsv
                     gridRef={gridRef}
                     columns={columnDefs}
