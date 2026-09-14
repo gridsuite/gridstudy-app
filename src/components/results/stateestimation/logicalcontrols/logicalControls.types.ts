@@ -75,7 +75,9 @@ export interface VoltageDeviation {
     nominalVoltage: number;
 }
 
-// maps the back-end DTO
+// Maps the back-end DTO.
+// The record key is always a busId.
+// There way is a single result for a Bus (like balances) or a result array (like nonZeroMeasurementsOnDisconnected).
 export interface LogicalControlsResultDto {
     balances: Record<string, BoucherotBalance>;
     nonZeroMeasurementsOnDisconnected: Record<string, InvalidMeasurement[]>;
