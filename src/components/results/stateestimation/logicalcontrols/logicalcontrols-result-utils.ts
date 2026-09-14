@@ -14,7 +14,15 @@ export const flattenRecord = <T>(record?: Record<string, T>): T[] => (record ? O
 export const flattenRecordOfArrays = <T>(record?: Record<string, T[]>): T[] =>
     record ? Object.values(record).flat() : [];
 
+export const flattenRecordWithKey = <T extends object>(record?: Record<string, T>): (T & { busId: string })[] =>
+    record ? Object.entries(record).map(([busId, value]) => ({ busId, ...value })) : [];
+
 export const logicalControlsBalancesColumnsDefinition = (intl: IntlShape): ColDef[] => [
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'BusId' }),
+        colId: 'busId',
+        field: 'busId',
+    }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'VoltageLevelName' }),
         colId: 'voltageLevelName',

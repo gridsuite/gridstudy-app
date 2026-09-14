@@ -15,6 +15,7 @@ import { LogicalControlsTable } from './logical-controls-table';
 import {
     flattenRecord,
     flattenRecordOfArrays,
+    flattenRecordWithKey,
     logicalControlsBalancesColumnsDefinition,
     logicalControlsInvalidMeasurementsColumnsDefinition,
     logicalControlsOriginExtremityDeviationsColumnsDefinition,
@@ -65,7 +66,7 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
         }
     }, [intl, subTabIndex]);
 
-    const balances = useMemo(() => flattenRecord(result?.balances), [result]);
+    const balances = useMemo(() => flattenRecordWithKey(result?.balances), [result]);
     const nonZeroMeasurementsOnDisconnected = useMemo(
         () => flattenRecordOfArrays(result?.nonZeroMeasurementsOnDisconnected),
         [result]
