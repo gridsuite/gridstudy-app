@@ -21,6 +21,7 @@ import { isCalculationRow } from '../../utils/calculation-utils';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { refreshSpreadsheetAfterFilterChanged } from './hooks/use-spreadsheet-gs-filter';
 import { useEquipmentContextMenu } from './hooks/useEquipmentContextMenu';
+import { createCompiledFormulaCache } from '../../columns/utils/math';
 
 const DEFAULT_ROW_HEIGHT = 28;
 
@@ -134,7 +135,13 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode?.type, theme, isDataEditable]
     );
 
-    const gridContext = useMemo(() => ({ theme, currentNode, studyUuid }), [currentNode, studyUuid, theme]);
+    // The Map lives in a distinct memo, NOT in the memo below: gridContext is rebuilt on every currentNode
+    // change, and creating the cache there would silently flush all compiled formulas per rebuild.
+    const compiledFormulaCache = useMemo(() => createCompiledFormulaCache(), []);
+    const gridContext = useMemo(
+        () => ({ theme, currentNode, studyUuid, compiledFormulaCache }),
+        [currentNode, studyUuid, theme, compiledFormulaCache]
+    );
 
     return (
         <>
