@@ -133,6 +133,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const runLogicalControls = useCallback(() => {
         if (studyUuid && nodeUuid && currentRootNetworkUuid) {
             setIsRunningLogicalControls(true);
+            setLogicalControlsResult(undefined);
             computeLogicalControls(studyUuid, nodeUuid, currentRootNetworkUuid)
                 .then((results) => {
                     setLogicalControlsResult(results);
