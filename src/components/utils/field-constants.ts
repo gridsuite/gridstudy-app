@@ -309,6 +309,11 @@ export const P_MAX = 'pmax';
 export const Q_MIN = 'qmin';
 export const Q_MAX = 'qmax';
 
+export const AREA_INVALIDATIONS = 'areaInvalidations';
+export const INVALIDATE = 'invalidate';
+export const FILTER = 'filter';
+export const INVALIDATION_TYPE = 'invalidationType';
+
 /* State estimation extensions */
 export const STATE_ESTIMATION = 'stateEstimation';
 // Measurements common to Branch (line/2wt)
