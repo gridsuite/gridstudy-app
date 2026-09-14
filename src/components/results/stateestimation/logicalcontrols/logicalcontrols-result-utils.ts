@@ -6,7 +6,7 @@
  */
 
 import { IntlShape } from 'react-intl';
-import { ColDef, ValueFormatterParams } from 'ag-grid-community';
+import { ColDef, ValueGetterParams } from 'ag-grid-community';
 import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 
 export const flattenRecord = <T extends object>(record?: Record<string, T>): (T & { busId: string })[] =>
@@ -79,15 +79,17 @@ export const logicalControlsInvalidMeasurementsColumnsDefinition = (intl: IntlSh
         headerName: intl.formatMessage({ id: 'MeasurementType' }),
         colId: 'measurementType',
         field: 'measurementType',
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.value ? intl.formatMessage({ id: `MeasurementType.${params.value}` }) : '',
+        valueGetter: (params: ValueGetterParams) =>
+            params.data?.measurementType
+                ? intl.formatMessage({ id: `MeasurementType.${params.data.measurementType}` })
+                : '',
     }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'StatusType' }),
         colId: 'statusType',
         field: 'statusType',
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.value ? intl.formatMessage({ id: `StatusType.${params.value}` }) : '',
+        valueGetter: (params: ValueGetterParams) =>
+            params.data?.statusType ? intl.formatMessage({ id: `StatusType.${params.data.statusType}` }) : '',
     }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Value' }),
@@ -118,8 +120,10 @@ export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: 
         headerName: intl.formatMessage({ id: 'MeasurementType' }),
         colId: 'measurementType',
         field: 'measurementType',
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.value ? intl.formatMessage({ id: `MeasurementType.${params.value}` }) : '',
+        valueGetter: (params: ValueGetterParams) =>
+            params.data?.measurementType
+                ? intl.formatMessage({ id: `MeasurementType.${params.data.measurementType}` })
+                : '',
     }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'OriginMeasurement' }),
@@ -162,8 +166,8 @@ export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: In
         headerName: intl.formatMessage({ id: 'ThresholdType' }),
         colId: 'limitType',
         field: 'limitType',
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.value ? intl.formatMessage({ id: `LimitType.${params.value}` }) : '',
+        valueGetter: (params: ValueGetterParams) =>
+            params.data?.limitType ? intl.formatMessage({ id: `LimitType.${params.data.limitType}` }) : '',
     }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Threshold' }),
