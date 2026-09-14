@@ -13,7 +13,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { LogicalControlsResultDto } from './logicalControls.types';
 import { LogicalControlsTable } from './logical-controls-table';
 import {
-    flattenRecord,
     flattenRecordOfArrays,
     flattenRecordWithKey,
     logicalControlsBalancesColumnsDefinition,
@@ -77,7 +76,7 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
     );
     const originExtremityDeviations = useMemo(() => flattenRecordOfArrays(result?.originExtremityDeviations), [result]);
     const outOfBoundsMeasurements = useMemo(() => flattenRecordOfArrays(result?.outOfBoundsMeasurements), [result]);
-    const voltageDeviations = useMemo(() => flattenRecord(result?.voltageDeviations), [result]);
+    const voltageDeviations = useMemo(() => flattenRecordWithKey(result?.voltageDeviations), [result]);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

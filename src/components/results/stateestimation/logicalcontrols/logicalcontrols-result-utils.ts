@@ -9,8 +9,6 @@ import { IntlShape } from 'react-intl';
 import { ColDef } from 'ag-grid-community';
 import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 
-export const flattenRecord = <T>(record?: Record<string, T>): T[] => (record ? Object.values(record) : []);
-
 export const flattenRecordOfArrays = <T>(record?: Record<string, T[]>): T[] =>
     record ? Object.values(record).flat() : [];
 
@@ -163,6 +161,11 @@ export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: In
 ];
 
 export const logicalControlsVoltageDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => [
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'BusId' }),
+        colId: 'busId',
+        field: 'busId',
+    }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'MinBusbarSection' }),
         colId: 'minBusbarSection',
