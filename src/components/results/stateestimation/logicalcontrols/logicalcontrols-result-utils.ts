@@ -9,11 +9,13 @@ import { IntlShape } from 'react-intl';
 import { ColDef } from 'ag-grid-community';
 import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 
-export const flattenRecordOfArrays = <T>(record?: Record<string, T[]>): T[] =>
-    record ? Object.values(record).flat() : [];
-
-export const flattenRecordWithKey = <T extends object>(record?: Record<string, T>): (T & { busId: string })[] =>
+export const flattenRecord = <T extends object>(record?: Record<string, T>): (T & { busId: string })[] =>
     record ? Object.entries(record).map(([busId, value]) => ({ busId, ...value })) : [];
+
+export const flattenRecordOfArrays = <T extends object>(
+    record?: Record<string, T[]>
+): (T & { busId: string })[] =>
+    record ? Object.entries(record).flatMap(([busId, values]) => values.map((value) => ({ busId, ...value }))) : [];
 
 export const logicalControlsBalancesColumnsDefinition = (intl: IntlShape): ColDef[] => [
     makeAgGridCustomHeaderColumn({
@@ -58,6 +60,11 @@ export const logicalControlsBalancesColumnsDefinition = (intl: IntlShape): ColDe
 
 export const logicalControlsInvalidMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => [
     makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'BusId' }),
+        colId: 'busId',
+        field: 'busId',
+    }),
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'MeasurementType' }),
         colId: 'measurementType',
         field: 'measurementType',
@@ -87,6 +94,11 @@ export const logicalControlsInvalidMeasurementsColumnsDefinition = (intl: IntlSh
 ];
 
 export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => [
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'BusId' }),
+        colId: 'busId',
+        field: 'busId',
+    }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'MeasurementType' }),
         colId: 'measurementType',
@@ -124,6 +136,11 @@ export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: 
 ];
 
 export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => [
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'BusId' }),
+        colId: 'busId',
+        field: 'busId',
+    }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'LimitType' }),
         colId: 'limitType',

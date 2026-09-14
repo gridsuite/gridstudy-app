@@ -14,7 +14,7 @@ import { LogicalControlsResultDto } from './logicalControls.types';
 import { LogicalControlsTable } from './logical-controls-table';
 import {
     flattenRecordOfArrays,
-    flattenRecordWithKey,
+    flattenRecord,
     logicalControlsBalancesColumnsDefinition,
     logicalControlsInvalidMeasurementsColumnsDefinition,
     logicalControlsOriginExtremityDeviationsColumnsDefinition,
@@ -65,7 +65,7 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
         }
     }, [intl, subTabIndex]);
 
-    const balances = useMemo(() => flattenRecordWithKey(result?.balances), [result]);
+    const balances = useMemo(() => flattenRecord(result?.balances), [result]);
     const nonZeroMeasurementsOnDisconnected = useMemo(
         () => flattenRecordOfArrays(result?.nonZeroMeasurementsOnDisconnected),
         [result]
@@ -74,9 +74,15 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
         () => flattenRecordOfArrays(result?.zeroMeasurementsOnConnected),
         [result]
     );
-    const originExtremityDeviations = useMemo(() => flattenRecordOfArrays(result?.originExtremityDeviations), [result]);
-    const outOfBoundsMeasurements = useMemo(() => flattenRecordOfArrays(result?.outOfBoundsMeasurements), [result]);
-    const voltageDeviations = useMemo(() => flattenRecordWithKey(result?.voltageDeviations), [result]);
+    const originExtremityDeviations = useMemo(
+        () => flattenRecordOfArrays(result?.originExtremityDeviations),
+        [result]
+    );
+    const outOfBoundsMeasurements = useMemo(
+        () => flattenRecordOfArrays(result?.outOfBoundsMeasurements),
+        [result]
+    );
+    const voltageDeviations = useMemo(() => flattenRecord(result?.voltageDeviations), [result]);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
