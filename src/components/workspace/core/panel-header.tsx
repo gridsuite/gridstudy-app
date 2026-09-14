@@ -20,34 +20,29 @@ import type { AppState } from '../../../redux/reducer.type';
 import { SldAssociationButton } from './sld-association-button';
 import { setDirtyComputationParameters } from 'redux/actions';
 import { SelectOptionsDialog } from 'utils/dialogs';
+import { getPanelBorder } from './utils/panel-border';
+import { selectPanelEditMode } from '../../../redux/slices/workspace-selectors';
+import type { RootState } from '../../../redux/store';
 
-const getHeaderStyles = (theme: Theme, isFocused: boolean, maximized: boolean) => {
-    let backgroundColor: string;
-    let border: string;
-    if (theme.palette.mode === 'light') {
-        backgroundColor = isFocused ? theme.palette.grey[200] : 'white';
-        border = `1px solid ${theme.palette.grey[500]}`;
-    } else {
-        backgroundColor = '#292e33';
-        border =
-            isFocused && !maximized ? `1px solid ${theme.palette.grey[100]}` : `1px solid ${theme.palette.grey[800]}`;
+const getHeaderBackground = (theme: Theme, isFocused: boolean) => {
+    if (theme.palette.mode !== 'light') {
+        return '#292e33';
     }
-
-    return {
-        paddingLeft: theme.spacing(1),
-        display: 'flex',
-        alignItems: 'center',
-        backgroundColor,
-        border,
-        borderRadius: theme.spacing(2) + ' ' + theme.spacing(2) + ' 0 0',
-        borderBottom: 'none',
-        cursor: 'grab',
-        userSelect: 'none',
-        '&:active': {
-            cursor: 'grabbing',
-        },
-    };
+    return isFocused ? theme.palette.grey[200] : 'white';
 };
+
+const getHeaderStyles = (theme: Theme, isFocused: boolean, maximized: boolean, isEditing: boolean) => ({
+    paddingLeft: theme.spacing(1),
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: getHeaderBackground(theme, isFocused),
+    borderBottom: getPanelBorder(theme, isFocused, maximized, isEditing),
+    cursor: 'grab',
+    userSelect: 'none',
+    '&:active': {
+        cursor: 'grabbing',
+    },
+});
 
 const styles = {
     title: {
@@ -99,6 +94,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
     const { deletePanel, minimizePanel, maximizePanel, pinPanel } = useWorkspacePanelActions();
     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
+    const isEditing = useSelector((state: RootState) => selectPanelEditMode(state, panelId));
     const [isConfirmCloseOpen, setIsConfirmCloseOpen] = useState(false);
 
     const handleClose = () => {
@@ -126,7 +122,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
     }, []);
 
     return (
-        <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused, maximized)}>
+        <Box className="panel-header" sx={(theme) => getHeaderStyles(theme, isFocused, maximized, isEditing)}>
             <Box sx={styles.title}>
                 <Box sx={styles.titleContent}>
                     {getPanelConfig(panelType).icon}

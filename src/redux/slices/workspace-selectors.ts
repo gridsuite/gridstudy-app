@@ -150,3 +150,5 @@ export const selectNadNavigationHistory = createSelector([selectPanel], (panel):
     if (panel?.type !== PanelType.NAD) return undefined;
     return panel.navigationHistory;
 });
+
+export const selectPanelEditMode = createSelector([selectPanel], (panel): boolean => !!panel?.editMode);

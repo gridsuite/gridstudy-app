@@ -113,13 +113,19 @@ export function saveNadConfig(
     studyUuid: UUID,
     workspaceId: UUID,
     panelId: UUID,
-    config: {
-        id?: UUID | null;
-        scalingFactor?: number;
-        voltageLevelIds: string[];
-        positions: DiagramConfigPosition[];
+    request: {
+        title?: string;
+        nadConfig: {
+            scalingFactor?: number;
+            voltageLevelIds: string[];
+            positions: DiagramConfigPosition[];
+        } | null;
+        nadConfigUuid?: UUID;
+        filterUuid?: UUID;
+        currentFilterUuid?: UUID;
+        voltageLevelToOmitIds: string[];
     }
-): Promise<UUID> {
+): Promise<UUID | null> {
     console.info('save NAD config');
     const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels/${panelId}/current-nad-config`;
     console.debug(url);
@@ -129,18 +135,6 @@ export function saveNadConfig(
             'Content-Type': 'application/json',
             clientId: getClientId(),
         },
-        body: JSON.stringify(config),
+        body: JSON.stringify(request),
     });
-}
-
-export function deleteNadConfig(studyUuid: UUID, workspaceId: UUID, panelId: UUID): Promise<void> {
-    console.info('delete NAD config');
-    const url = `${getStudyUrl(studyUuid)}/workspaces/${workspaceId}/panels/${panelId}/current-nad-config`;
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'DELETE',
-        headers: {
-            clientId: getClientId(),
-        },
-    }).then(() => {});
 }

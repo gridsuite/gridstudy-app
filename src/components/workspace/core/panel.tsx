@@ -9,7 +9,7 @@ import { memo, useCallback } from 'react';
 import { Box, Theme } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
 import { useSelector } from 'react-redux';
-import { selectPanel } from '../../../redux/slices/workspace-selectors';
+import { selectPanel, selectPanelEditMode } from '../../../redux/slices/workspace-selectors';
 import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import type { RootState } from '../../../redux/store';
 import { PANEL_CONTENT_REGISTRY } from '../panel-contents/panel-content-registry';
@@ -20,18 +20,9 @@ import type { AppState } from '../../../redux/reducer.type';
 import { getSnapZone, type SnapRect } from './utils/snap-utils';
 import { calculatePanelDimensions, positionToRelative, sizeToRelative } from './utils/coordinate-utils';
 import PanelErrorBoundary from './panel-error-boundary';
+import { getPanelBorder } from './utils/panel-border';
 
 const RESIZE_HANDLE_SIZE = 12;
-
-const getBorder = (theme: Theme, isFocused: boolean, maximized: boolean) => {
-    if (theme.palette.mode === 'light') {
-        return `1px solid ${theme.palette.grey[500]}`;
-    }
-    if (isFocused && !maximized) {
-        return `1px solid ${theme.palette.grey[100]}`;
-    }
-    return `1px solid ${theme.palette.grey[800]}`;
-};
 
 const styles = {
     panel: {
@@ -54,8 +45,6 @@ const styles = {
         overflow: 'hidden',
         position: 'relative',
         backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
-        borderRadius: '0 0 ' + theme.spacing(2) + ' ' + theme.spacing(2),
-        borderTop: 'none',
     }),
     resizeHandles: {
         bottomRight: { width: RESIZE_HANDLE_SIZE, height: RESIZE_HANDLE_SIZE, right: 0, bottom: 0 },
@@ -78,6 +67,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const isEditing = useSelector((state: RootState) => selectPanelEditMode(state, panelId));
 
     const handleDrag = useCallback(
         (e: MouseEvent) => {
@@ -161,7 +151,11 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
         >
             <Box
                 onPointerDown={ensureFocused}
-                sx={(theme) => ({ ...styles.panel, boxShadow: isFocused ? theme.shadows[18] : 'none' })}
+                sx={(theme) => ({
+                    ...styles.panel,
+                    boxShadow: isFocused ? theme.shadows[18] : 'none',
+                    border: getPanelBorder(theme, isFocused, panel.maximized, isEditing),
+                })}
             >
                 <PanelHeader
                     panelId={panelId}
@@ -171,13 +165,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
                     maximized={panel.maximized}
                     isFocused={isFocused}
                 />
-                <Box
-                    className="panel-content"
-                    sx={(theme) => ({
-                        ...styles.content(theme),
-                        border: getBorder(theme, isFocused, panel.maximized),
-                    })}
-                >
+                <Box className="panel-content" sx={styles.content}>
                     {studyUuid && currentRootNetworkUuid && currentNode ? (
                         <PanelErrorBoundary key={`${panelId}-${panel.type}`}>
                             {PANEL_CONTENT_REGISTRY[panel.type]({

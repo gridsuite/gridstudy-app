@@ -24,24 +24,29 @@ export const SPREADSHEET_INVALID_CELL_CLASS = 'spreadsheet-invalid-cell';
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>
-    (params: ValueGetterParams): CustomAggridValue | undefined => {
+    (params: ValueGetterParams): CustomAggridValue | null => {
         try {
             // Skip formula processing for pinned rows and use raw value
             if (isCalculationRow(params.node?.data?.rowType)) {
-                return params.data[colDef.id];
+                return params.data[colDef.id] ?? null;
             }
             const scope = { ...params.data };
             const colDependencies = colDef.dependencies ?? [];
+
+            // Empty values are assumed to be equal to "undefined" by users, it is then imperative
+            // to keep the nullish coalescing operator leading to undefined otherwise this
+            // type of formula, widespreadly used, which checks for empty value would break :
+            // typeOf(field1) == 'undefined' ? field2 : typeOf(field2) == 'undefined' ? field1 : max(field1, field2)
             colDependencies.forEach((dep) => {
-                scope[dep] = params.getValue(dep);
+                scope[dep] = params.getValue(dep) ?? undefined;
             });
-            const result = limitedEvaluate(colDef.formula, scope);
-            return result == null ? undefined : validateFormulaResult(result, colDef.type);
+            const result = limitedEvaluate(colDef.formula, scope, params.context?.compiledFormulaCache);
+            return result != null ? validateFormulaResult(result, colDef.type) : null;
         } catch (e) {
             if (e instanceof MathJsValidationError) {
                 return { error: e.error };
             }
-            return undefined;
+            return null;
         }
     };
 

@@ -51,7 +51,6 @@ export type RootNodeData = AbstractNode & {
 export type NetworkModificationNodeData = AbstractNode & {
     modificationGroupUuid?: UUID;
     variantId?: string;
-    modificationsToExclude?: UUID[];
     loadFlowResultUuid?: UUID;
     shortCircuitAnalysisResultUuid?: UUID;
     oneBusShortCircuitAnalysisResultUuid?: UUID;

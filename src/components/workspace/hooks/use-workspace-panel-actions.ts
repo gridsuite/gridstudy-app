@@ -18,7 +18,7 @@ import {
     selectPanelByType,
     selectPanels,
 } from '../../../redux/slices/workspace-selectors';
-import type { PanelState, PersistentNADFields, SpreadsheetPanel } from '../types/workspace.types';
+import type { PanelState, NadPanelFields, SpreadsheetPanel } from '../types/workspace.types';
 import { PanelType } from '../types/workspace.types';
 import { type AppDispatch, store } from '../../../redux/store';
 import { EquipmentType } from '@gridsuite/commons-ui';
@@ -322,24 +322,28 @@ export const useWorkspacePanelActions = () => {
                 currentFilterUuid: filterUuid,
             });
             saveAndFocusPanel(newPanel);
+            // The panel must exist server side before its diagram saves a config for it
+            panelBackendManager.flush();
         },
         [saveAndFocusPanel]
     );
 
     const updateNADFields = useCallback(
-        ({
-            panelId,
-            fields,
-            syncToBackend = true,
-        }: {
-            panelId: UUID;
-            fields: Partial<PersistentNADFields>;
-            syncToBackend?: boolean;
-        }) => {
+        ({ panelId, fields }: { panelId: UUID; fields: Partial<NadPanelFields> }) => {
             const panel = selectPanel(store.getState(), panelId);
             if (!panel || !isNADPanel(panel)) return;
 
-            savePanels([{ ...panel, ...fields }], syncToBackend);
+            savePanels([{ ...panel, ...fields }], false);
+        },
+        [savePanels]
+    );
+
+    const setPanelEditMode = useCallback(
+        ({ panelId, editMode }: { panelId: UUID; editMode: boolean }) => {
+            const panel = selectPanel(store.getState(), panelId);
+            if (!panel || !!panel.editMode === editMode) return;
+            // Transient UI state - don't sync to backend
+            savePanels([{ ...panel, editMode }], false);
         },
         [savePanels]
     );
@@ -383,6 +387,7 @@ export const useWorkspacePanelActions = () => {
 
             savePanels([updatedSld]);
             saveAndFocusPanel(newNadPanel);
+            panelBackendManager.flush();
         },
         [savePanels, saveAndFocusPanel]
     );
@@ -471,6 +476,7 @@ export const useWorkspacePanelActions = () => {
         associateSldToNad,
         dissociateSldFromNad,
         updateNADFields,
+        setPanelEditMode,
         addToNadNavigationHistory,
         createNadAndAssociateSld,
         openToolPanel,
