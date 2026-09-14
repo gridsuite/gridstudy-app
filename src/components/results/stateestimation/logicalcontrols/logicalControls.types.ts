@@ -5,9 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ColDef } from 'ag-grid-community';
-import { Key } from 'react';
-
 export enum MeasurementType {
     ACTIVE_TRANSIT = 'ACTIVE_TRANSIT',
     ACTIVE_TRANSIT_ORIGIN = 'ACTIVE_TRANSIT_ORIGIN',
@@ -23,7 +20,7 @@ export enum MeasurementType {
 
 export enum StatusType {
     SWITCHING_DEVICE = 'SWITCHING_DEVICE',
-    HVDC_POLES_COUNT = 'HVDC_POLES_COUNT',
+    HVDC_POLES_COUNT = 'HVDC_POLES_COUNT', // does not exist in powsybl
 }
 
 export enum LimitType {

@@ -6,7 +6,7 @@
  */
 
 import { IntlShape } from 'react-intl';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, ValueFormatterParams } from 'ag-grid-community';
 import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 
 export const flattenRecord = <T extends object>(record?: Record<string, T>): (T & { busId: string })[] =>
@@ -65,15 +65,43 @@ export const logicalControlsInvalidMeasurementsColumnsDefinition = (intl: IntlSh
         field: 'busId',
     }),
     makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'VoltageLevelName' }),
+        colId: 'voltageLevelName',
+        field: 'voltageLevelName',
+    }),
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'NominalVoltage' }),
+        colId: 'nominalVoltage',
+        field: 'nominalVoltage',
+        context: { numeric: true, fractionDigits: 0 },
+    }),
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'MeasurementType' }),
         colId: 'measurementType',
         field: 'measurementType',
+        valueFormatter: (params: ValueFormatterParams) =>
+            params.value ? intl.formatMessage({ id: `MeasurementType.${params.value}` }) : '',
+    }),
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'StatusType' }),
+        colId: 'statusType',
+        field: 'statusType',
+        valueFormatter: (params: ValueFormatterParams) =>
+            params.value ? intl.formatMessage({ id: `StatusType.${params.value}` }) : '',
     }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Value' }),
         colId: 'value',
         field: 'value',
         context: { numeric: true, fractionDigits: 2 },
+    }),
+];
+
+export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => [
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'BusId' }),
+        colId: 'busId',
+        field: 'busId',
     }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'VoltageLevelName' }),
@@ -87,22 +115,11 @@ export const logicalControlsInvalidMeasurementsColumnsDefinition = (intl: IntlSh
         context: { numeric: true, fractionDigits: 1 },
     }),
     makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'StatusType' }),
-        colId: 'statusType',
-        field: 'statusType',
-    }),
-];
-
-export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => [
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'BusId' }),
-        colId: 'busId',
-        field: 'busId',
-    }),
-    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'MeasurementType' }),
         colId: 'measurementType',
         field: 'measurementType',
+        valueFormatter: (params: ValueFormatterParams) =>
+            params.value ? intl.formatMessage({ id: `MeasurementType.${params.value}` }) : '',
     }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'OriginMeasurement' }),
@@ -122,6 +139,14 @@ export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: 
         field: 'deviation',
         context: { numeric: true, fractionDigits: 2 },
     }),
+];
+
+export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => [
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'BusId' }),
+        colId: 'busId',
+        field: 'busId',
+    }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'VoltageLevelName' }),
         colId: 'voltageLevelName',
@@ -133,18 +158,12 @@ export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: 
         field: 'nominalVoltage',
         context: { numeric: true, fractionDigits: 1 },
     }),
-];
-
-export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => [
     makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'BusId' }),
-        colId: 'busId',
-        field: 'busId',
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'LimitType' }),
+        headerName: intl.formatMessage({ id: 'ThresholdType' }),
         colId: 'limitType',
         field: 'limitType',
+        valueFormatter: (params: ValueFormatterParams) =>
+            params.value ? intl.formatMessage({ id: `LimitType.${params.value}` }) : '',
     }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Threshold' }),
@@ -164,6 +183,14 @@ export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: In
         field: 'deviation',
         context: { numeric: true, fractionDigits: 2 },
     }),
+];
+
+export const logicalControlsVoltageDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => [
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: 'BusId' }),
+        colId: 'busId',
+        field: 'busId',
+    }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'VoltageLevelName' }),
         colId: 'voltageLevelName',
@@ -174,14 +201,6 @@ export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: In
         colId: 'nominalVoltage',
         field: 'nominalVoltage',
         context: { numeric: true, fractionDigits: 1 },
-    }),
-];
-
-export const logicalControlsVoltageDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => [
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'BusId' }),
-        colId: 'busId',
-        field: 'busId',
     }),
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'MinBusbarSection' }),
@@ -210,16 +229,5 @@ export const logicalControlsVoltageDeviationsColumnsDefinition = (intl: IntlShap
         colId: 'deviation',
         field: 'deviation',
         context: { numeric: true, fractionDigits: 2 },
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'VoltageLevelName' }),
-        colId: 'voltageLevelName',
-        field: 'voltageLevelName',
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'NominalVoltage' }),
-        colId: 'nominalVoltage',
-        field: 'nominalVoltage',
-        context: { numeric: true, fractionDigits: 1 },
     }),
 ];
