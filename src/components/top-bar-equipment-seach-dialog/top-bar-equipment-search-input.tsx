@@ -59,11 +59,11 @@ export const TopBarEquipmentSearchInput = (props: TopBarEquipmentSearchInputProp
                 value={displayedValue}
                 slotProps={{
                     input: {
-                        ...params.InputProps,
+                        ...params.slotProps.input,
                         startAdornment: (
                             <>
                                 {params.disabled ? <SearchOff color="disabled" /> : <Search color="disabled" />}
-                                {params.InputProps.startAdornment}
+                                {params.slotProps.input.startAdornment}
                             </>
                         ),
                         endAdornment: (

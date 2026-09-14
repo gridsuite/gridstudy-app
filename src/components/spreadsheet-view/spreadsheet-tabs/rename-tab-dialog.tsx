@@ -86,7 +86,12 @@ export default function RenameTabDialog({
                 slotProps={{ paper: { sx: { width: '30%' } } }}
                 {...dialogProps}
             >
-                <Stack spacing={2} marginTop={2}>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        marginTop: 2,
+                    }}
+                >
                     <Grid>
                         <TextInput
                             name="name"

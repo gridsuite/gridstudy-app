@@ -44,7 +44,14 @@ export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFor
     );
 
     return (
-        <Grid container rowSpacing={2} spacing={2} paddingTop={2}>
+        <Grid
+            container
+            rowSpacing={2}
+            spacing={2}
+            sx={{
+                paddingTop: 2,
+            }}
+        >
             <Grid container spacing={2} size={12}>
                 <GridItem size={12}>{EquipmentIdField}</GridItem>
             </Grid>
