@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, Key, useMemo, useRef } from 'react';
+import { FunctionComponent, Key, useEffect, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box } from '@mui/material';
@@ -77,6 +77,15 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
         status = RunningStatus.SUCCEED;
     }
     const overlayNoRowsTemplate = getNoRowsMessage(messages, rows, status, !isLoadingResult);
+
+    // The grid only re-evaluates the no-rows overlay on row data changes. Let's force it
+    // to have a correct updated msg on the tab where the computation starts.
+    useEffect(() => {
+        const api = gridRef.current?.api;
+        if (api?.getDisplayedRowCount() === 0) {
+            api.showNoRowsOverlay();
+        }
+    }, [overlayNoRowsTemplate]);
 
     return (
         <>
