@@ -89,9 +89,7 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
 
     return (
         <>
-            <Box sx={{ height: '4px', position: 'relative', zIndex: 1 }}>
-                {openLoaderTab && <LinearProgress />}
-            </Box>
+            <Box sx={{ height: '4px', position: 'relative', zIndex: 1 }}>{openLoaderTab && <LinearProgress />}</Box>
             <RenderTableAndExportCsv
                 gridRef={gridRef}
                 columns={columnDefs}

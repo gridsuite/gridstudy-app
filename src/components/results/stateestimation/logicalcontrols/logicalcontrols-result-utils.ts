@@ -14,9 +14,7 @@ export const flattenRecord = <T extends object>(record?: Record<string, T>): (T 
     record ? Object.entries(record).map(([busId, props]) => ({ busId, ...props })) : [];
 
 // same for array version
-export const flattenRecordOfArrays = <T extends object>(
-    record?: Record<string, T[]>
-): (T & { busId: string })[] =>
+export const flattenRecordOfArrays = <T extends object>(record?: Record<string, T[]>): (T & { busId: string })[] =>
     record ? Object.entries(record).flatMap(([busId, props]) => props.map((value) => ({ busId, ...value }))) : [];
 
 export const logicalControlsBalancesColumnsDefinition = (intl: IntlShape): ColDef[] => [

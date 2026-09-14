@@ -74,14 +74,8 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
         () => flattenRecordOfArrays(result?.zeroMeasurementsOnConnected),
         [result]
     );
-    const originExtremityDeviations = useMemo(
-        () => flattenRecordOfArrays(result?.originExtremityDeviations),
-        [result]
-    );
-    const outOfBoundsMeasurements = useMemo(
-        () => flattenRecordOfArrays(result?.outOfBoundsMeasurements),
-        [result]
-    );
+    const originExtremityDeviations = useMemo(() => flattenRecordOfArrays(result?.originExtremityDeviations), [result]);
+    const outOfBoundsMeasurements = useMemo(() => flattenRecordOfArrays(result?.outOfBoundsMeasurements), [result]);
     const voltageDeviations = useMemo(() => flattenRecord(result?.voltageDeviations), [result]);
 
     return (
