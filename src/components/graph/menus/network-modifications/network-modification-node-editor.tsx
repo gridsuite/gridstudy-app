@@ -211,7 +211,6 @@ const NetworkModificationNodeEditor = () => {
             cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
         });
     }, [cleanOtherTabsClipboard]);
-
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
     // a modification on a public study which is in the clipboard.

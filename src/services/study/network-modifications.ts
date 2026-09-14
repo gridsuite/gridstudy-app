@@ -1591,14 +1591,6 @@ export function shareCompositeModification(
     return backendFetch(url, { method: 'POST' });
 }
 
-export function containsSharedModification(compositeModificationUuid: UUID): Promise<boolean> {
-    const url = `${PREFIX_STUDY_QUERIES}/v1/network-composite-modifications/${safeEncodeURIComponent(
-        compositeModificationUuid
-    )}/contains-shared-modification`;
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
 export function getNetworkModificationsFromComposite(
     compositeModificationUuids: string[],
     onlyMetadata: boolean = true
@@ -1611,5 +1603,12 @@ export function getNetworkModificationsFromComposite(
         '/v1/network-composite-modifications/network-modifications?' +
         urlSearchParams.toString();
     console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function hasModificationReferences(containerUuids: UUID[]): Promise<boolean> {
+    const params = new URLSearchParams();
+    containerUuids.forEach((uuid) => params.append('uuids', uuid));
+    const url = `${PREFIX_STUDY_QUERIES}/v1/containers/references/exists?${params.toString()}`;
     return backendFetchJson(url);
 }

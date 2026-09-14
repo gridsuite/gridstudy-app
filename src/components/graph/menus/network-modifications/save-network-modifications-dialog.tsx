@@ -13,11 +13,13 @@ import {
     type IElementUpdateDialog,
     ModificationType,
     PARAM_DEVELOPER_MODE,
+    snackWithFallback,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { containsSharedModification } from '../../../../services/study/network-modifications';
+import { hasModificationReferences } from '../../../../services/study/network-modifications';
 
 export interface SaveNetworkModificationsDialogProps {
     open: boolean;
@@ -41,46 +43,53 @@ export default function SaveNetworkModificationsDialog({
     onUpdate,
 }: Readonly<SaveNetworkModificationsDialogProps>) {
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [selectedCompositeContainsShared, setSelectedCompositeContainsShared] = useState<boolean>();
+    const { snackError } = useSnackMessage();
+    const [selectionHasSharedContent, setSelectionHasSharedContent] = useState<boolean>();
 
-    // Sharing moves the selected composite itself into gridexplore : it needs exactly one composite, and an already
-    // shared one (a reference) cannot be shared again.
-    const selectedComposite =
-        selectedModifications.length === 1 && selectedModifications[0].type === ModificationType.COMPOSITE_MODIFICATION
-            ? selectedModifications[0]
-            : undefined;
+    const selectionContainsShared = useMemo(
+        () =>
+            selectedModifications.some((modification) => modification.type === ModificationType.MODIFICATION_REFERENCE),
+        [selectedModifications]
+    );
+    const selectedCompositeUuids = useMemo(
+        () =>
+            selectedModifications
+                .filter((modification) => modification.type === ModificationType.COMPOSITE_MODIFICATION)
+                .map((modification) => modification.uuid),
+        [selectedModifications]
+    );
 
-    // A composite nested in another composite of the node can be shared, but not one contained by an already shared
-    // composite.
-    const isSelectedCompositeShareable = selectedComposite !== undefined && !selectedComposite.childFromShared;
+    // Sharing moves the selected composite itself into gridexplore : it needs exactly one composite, and one contained
+    // by an already shared composite cannot be shared.
+    const isSelectedCompositeShareable =
+        selectedModifications.length === 1 &&
+        selectedModifications[0].type === ModificationType.COMPOSITE_MODIFICATION &&
+        !selectedModifications[0].childFromShared;
 
-    // only the server can tell whether the composite contains a shared modification : the table only loads its
-    // content as it is unfolded.
+    // nested references are lazily loaded by the table, so the selection alone can't tell : ask the server
     useEffect(() => {
-        setSelectedCompositeContainsShared(undefined);
-        if (!open || !isDeveloperMode || !isSelectedCompositeShareable) {
+        setSelectionHasSharedContent(undefined);
+        if (!open) {
+            return;
+        }
+        if (selectionContainsShared || selectedCompositeUuids.length === 0) {
+            setSelectionHasSharedContent(selectionContainsShared);
             return;
         }
         let active = true; // to manage race condition
-        containsSharedModification(selectedComposite.uuid)
-            .then((containsShared) => {
+        hasModificationReferences(selectedCompositeUuids)
+            .then((hasReferences) => {
                 if (active) {
-                    setSelectedCompositeContainsShared(containsShared);
+                    setSelectionHasSharedContent(hasReferences);
                 }
             })
-            .catch((error) => {
-                console.error(
-                    `Failed to know whether composite ${selectedComposite.uuid} contains a shared modification`,
-                    error
-                );
-            });
+            .catch((error) => snackWithFallback(snackError, error));
         return () => {
             active = false;
         };
-    }, [open, isDeveloperMode, isSelectedCompositeShareable, selectedComposite]);
+    }, [open, selectionContainsShared, selectedCompositeUuids, snackError]);
 
-    const isSharingAvailable =
-        isDeveloperMode && isSelectedCompositeShareable && selectedCompositeContainsShared === false;
+    const isSharingAvailable = isDeveloperMode && isSelectedCompositeShareable && selectionHasSharedContent === false;
 
     return (
         <ElementSaveDialog
@@ -99,6 +108,7 @@ export default function SaveNetworkModificationsDialog({
             createLabelId="CreateCompositeModificationLabel"
             createSharedLabelId="ShareCompositeModificationLabel"
             updateLabelId="UpdateCompositeModificationLabel"
+            alertMessageId={selectionHasSharedContent ? 'SharedModificationsSavedAsCopy' : undefined}
         />
     );
 }

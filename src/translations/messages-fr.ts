@@ -1322,7 +1322,7 @@ const messages_fr = {
     nadInfoPermanentLimitPercentage: '% IST',
     nadInfoActivePowerArrow: 'Flèches P',
     nadInfoReactivePowerArrow: 'Flèches Q',
-    nadInfoVoltageLevelName: 'Noms postes',
+    nadInfoVoltageLevelVoltage: 'Tensions postes',
 
     gridExplore: 'GridExplore',
     myComputer: 'Mon ordinateur',
@@ -1349,8 +1349,8 @@ const messages_fr = {
     ConsP: 'Pcons (MW)',
     removeAll: 'Tout fermer',
     removeAllAssociatedSldsConfirmation: 'Êtes-vous sûr de vouloir fermer tous les postes associés ?',
-    createNewNAD: 'Créer un nouveau NAD',
-    existingNAD: 'NAD existant',
+    createNewNAD: 'Créer une nouvelle image nodale',
+    existingNAD: 'Image nodale existante',
     unbuildAllNodesTooltip: 'Déréaliser tous les nœuds',
     unbuildAllNodesDialogTitle: 'Confirmation',
     unbuildAllNodesDialogContent:
