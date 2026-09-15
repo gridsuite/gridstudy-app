@@ -20,6 +20,7 @@ import {
     logicalControlsOriginExtremityDeviationsColumnsDefinition,
     logicalControlsOutOfBoundsMeasurementsColumnsDefinition,
     logicalControlsVoltageDeviationsColumnsDefinition,
+    logicalControlsNullMeasurementsColumnsDefinition,
 } from './logicalcontrols-result-utils';
 
 const BALANCES_TAB_INDEX = 0;
@@ -52,8 +53,9 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
             case BALANCES_TAB_INDEX:
                 return logicalControlsBalancesColumnsDefinition(intl);
             case NON_ZERO_MEASUREMENTS_ON_DISCONNECTED_TAB_INDEX:
-            case ZERO_MEASUREMENTS_ON_CONNECTED_TAB_INDEX:
                 return logicalControlsInvalidMeasurementsColumnsDefinition(intl);
+            case ZERO_MEASUREMENTS_ON_CONNECTED_TAB_INDEX:
+                return logicalControlsNullMeasurementsColumnsDefinition(intl);
             case ORIGIN_EXTREMITY_DEVIATIONS_TAB_INDEX:
                 return logicalControlsOriginExtremityDeviationsColumnsDefinition(intl);
             case OUT_OF_BOUNDS_MEASUREMENTS_TAB_INDEX:
@@ -95,7 +97,7 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
                     rows={balances}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
-                    tableName="balances"
+                    tableName="CsvNameBalances"
                     exportCsvResetKey={exportCsvResetKey}
                 />
             )}
@@ -105,7 +107,7 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
                     rows={nonZeroMeasurementsOnDisconnected}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
-                    tableName="nonZeroMeasurementsOnDisconnected"
+                    tableName="CsvNameNonZeroMeasurementsOnDisconnected"
                     exportCsvResetKey={exportCsvResetKey}
                 />
             )}
@@ -115,7 +117,7 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
                     rows={zeroMeasurementsOnConnected}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
-                    tableName="zeroMeasurementsOnConnected"
+                    tableName="CsvNameZeroMeasurementsOnConnected"
                     exportCsvResetKey={exportCsvResetKey}
                 />
             )}
@@ -125,7 +127,7 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
                     rows={originExtremityDeviations}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
-                    tableName="originExtremityDeviations"
+                    tableName="CsvNameOriginExtremityDeviations"
                     exportCsvResetKey={exportCsvResetKey}
                 />
             )}
@@ -135,7 +137,7 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
                     rows={outOfBoundsMeasurements}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
-                    tableName="outOfBoundsMeasurements"
+                    tableName="CsvNameOutOfBoundsMeasurements"
                     exportCsvResetKey={exportCsvResetKey}
                 />
             )}
@@ -145,7 +147,7 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
                     rows={voltageDeviations}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
-                    tableName="voltageDeviations"
+                    tableName="CsvNameVoltageDeviations"
                     exportCsvResetKey={exportCsvResetKey}
                 />
             )}

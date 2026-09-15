@@ -39,11 +39,14 @@ export interface BoucherotBalance {
     nominalVoltage: number;
 }
 
-export interface InvalidMeasurement {
+export interface NullMeasurement {
     measurementType: MeasurementType;
-    value: number;
     voltageLevelName: string;
     nominalVoltage: number;
+}
+
+export interface InvalidMeasurement extends NullMeasurement {
+    value: number;
     statusType: StatusType;
 }
 
@@ -76,12 +79,12 @@ export interface VoltageDeviation {
 }
 
 // Maps the back-end DTO.
-// The record key is always a busId.
-// There way is a single result for a Bus (like balances) or a result array (like nonZeroMeasurementsOnDisconnected).
+// The record key is busId for balances and voltageDeviations ; an equipmentId for the others.
+// There may is a single result for an id (like balances) or a result array (like nonZeroMeasurementsOnDisconnected).
 export interface LogicalControlsResultDto {
     balances: Record<string, BoucherotBalance>;
     nonZeroMeasurementsOnDisconnected: Record<string, InvalidMeasurement[]>;
-    zeroMeasurementsOnConnected: Record<string, InvalidMeasurement[]>;
+    zeroMeasurementsOnConnected: Record<string, NullMeasurement[]>;
     originExtremityDeviations: Record<string, OriginExtremityDeviation[]>;
     outOfBoundsMeasurements: Record<string, OutOfBoundsMeasurement[]>;
     voltageDeviations: Record<string, VoltageDeviation>;
