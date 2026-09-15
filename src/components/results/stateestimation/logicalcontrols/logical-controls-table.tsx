@@ -16,11 +16,11 @@ import {
     getNoRowsMessage,
     RESULTS_LOADING_DELAY,
     RunningStatus,
+    TableType,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';
 import { RenderTableAndExportCsv } from 'components/utils/renderTable-ExportCsv';
-import { TableType } from 'types/custom-aggrid-types';
 import { PARAM_COMPUTED_LANGUAGE } from 'utils/config-params';
 import { AppState } from 'redux/reducer.type';
 import { ColDef } from 'ag-grid-community';
