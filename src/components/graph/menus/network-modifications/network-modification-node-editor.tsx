@@ -1214,17 +1214,9 @@ const NetworkModificationNodeEditor = () => {
             saveInProgress ||
             isRootNode ||
             isAssemblyDepthExceeded ||
-            isEditBlocked ||
-            selectionContainsShared
+            isEditBlocked
         );
-    }, [
-        selectedNetworkModifications?.length,
-        saveInProgress,
-        isRootNode,
-        isAssemblyDepthExceeded,
-        isEditBlocked,
-        selectionContainsShared,
-    ]);
+    }, [selectedNetworkModifications?.length, saveInProgress, isRootNode, isAssemblyDepthExceeded, isEditBlocked]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
         return (
