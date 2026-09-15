@@ -14,7 +14,6 @@ import {
     updateColumnFiltersAction,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { TableType } from '../types/custom-aggrid-types';
 
 import { PARAM_PROVIDER_DYNAFLOW, PARAM_PROVIDER_DYNAWO } from '../utils/config-params';
 import {
@@ -24,6 +23,7 @@ import {
     snackWithFallback,
     useSnackMessage,
     RunningStatus,
+    TableType,
 } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import {

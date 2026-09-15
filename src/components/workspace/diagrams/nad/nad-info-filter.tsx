@@ -17,7 +17,7 @@ const INFO_ROWS: { key: NadSelectedInfoKey; labelId: string }[] = [
     { key: 'permanentLimitPercentage', labelId: 'nadInfoPermanentLimitPercentage' },
     { key: 'activePowerArrow', labelId: 'nadInfoActivePowerArrow' },
     { key: 'reactivePowerArrow', labelId: 'nadInfoReactivePowerArrow' },
-    { key: 'voltageLevelName', labelId: 'nadInfoVoltageLevelName' },
+    { key: 'voltageLevelVoltage', labelId: 'nadInfoVoltageLevelVoltage' },
 ];
 
 const styles = {

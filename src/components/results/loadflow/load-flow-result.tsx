@@ -20,6 +20,7 @@ import {
     GridSection,
     RESULTS_LOADING_DELAY,
     RunningStatus,
+    TableType,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';
@@ -29,7 +30,6 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult, formatCountryAdequaciesResult, formatExchangesResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';
 import { AppState } from 'redux/reducer.type';
-import { TableType } from '../../../types/custom-aggrid-types';
 
 const styles = {
     gridContainer: {
