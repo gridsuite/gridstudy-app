@@ -6,10 +6,17 @@
  */
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText, GsLangUser, GlobalFilters } from '@gridsuite/commons-ui';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    GlobalFilters,
+    GsLangUser,
+    SortConfig,
+} from '@gridsuite/commons-ui';
 import { PccMinPagedResults } from 'components/results/pccmin/pcc-min-result.type';
 import { UUID } from 'node:crypto';
-import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';
+import { FilterConfig } from 'types/custom-aggrid-types';
 
 export function startPccMin(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): Promise<Response> {
     console.info(

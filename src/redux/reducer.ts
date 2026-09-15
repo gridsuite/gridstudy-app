@@ -37,6 +37,8 @@ import {
     MAX_RECENT_GLOBAL_FILTERS,
     removeSelectedGlobalFiltersFromTableState,
     TableType,
+    TableSortConfig,
+    SortWay,
 } from '@gridsuite/commons-ui';
 
 import {
@@ -292,8 +294,6 @@ import {
     SensitivityAnalysisTab,
     SHORTCIRCUIT_ANALYSIS_TABS,
     ShortcircuitAnalysisTab,
-    SortWay,
-    TableSortConfig,
 } from '../types/custom-aggrid-types';
 import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';

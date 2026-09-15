@@ -12,18 +12,19 @@ import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result'
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import {
+    buildValidGlobalFilters,
     ComputingType,
     EquipmentType,
-    ManagedExportCsvButton,
-    RunningStatus,
-    snackWithFallback,
-    useOpenLoaderShortWait,
-    useSnackMessage,
     GlobalFilterType,
     isCriteriaFilterType,
-    buildValidGlobalFilters,
+    ManagedExportCsvButton,
     RESULTS_LOADING_DELAY,
+    RunningStatus,
+    snackWithFallback,
+    SortWay,
     TableType,
+    useOpenLoaderShortWait,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 import type { UUID } from 'node:crypto';
@@ -44,7 +45,7 @@ import {
     SensitivityResultTabs,
 } from './sensitivity-analysis-result-utils';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
-import { PaginationType, SortWay } from '../../../types/custom-aggrid-types';
+import { PaginationType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
