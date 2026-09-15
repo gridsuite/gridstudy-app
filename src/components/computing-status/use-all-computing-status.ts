@@ -20,7 +20,7 @@ import {
 } from '../utils/running-status';
 
 import type { UUID } from 'node:crypto';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { BuildStatus, ComputingType } from '@gridsuite/commons-ui';
 import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
 import { fetchDynamicSimulationStatus } from '../../services/study/dynamic-simulation';
@@ -126,7 +126,12 @@ export const stateEstimationResultInvalidations = [NotificationType.STATE_ESTIMA
 export const pccMinResultInvalidations = [NotificationType.PCC_MIN_RESULT];
 
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
-export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): void => {
+export const useAllComputingStatus = (
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    currentNodeStatusBuildStatus: BuildStatus
+): void => {
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
@@ -294,6 +299,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid,
+        currentNodeStatusBuildStatus,
         fetchAllComputationStatus,
         fetchLoadFlowComputationInfosMap
     );
