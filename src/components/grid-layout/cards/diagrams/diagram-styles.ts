@@ -73,6 +73,18 @@ export const styles = {
         '& .sld-feeder-info.sld-measurement-critical text': {
             fontWeight: 'bold',
         },
+        '& .sld-observability-no-information': {
+            stroke: 'gray',
+        },
+        '& .sld-observability-observable': {
+            stroke: 'green',
+        },
+        '& .sld-observability-non-observable': {
+            stroke: 'red',
+        },
+        '& .sld-observability-border': {
+            stroke: 'blue',
+        },
         '.legend-root': {
             display: 'inline-flex',
             gap: '8px',
