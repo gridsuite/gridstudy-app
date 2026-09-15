@@ -21,11 +21,21 @@ export interface QualityPerRegionResult {
     level: number;
 }
 
+export interface MeasurementInformationResult {
+    equipmentId: string;
+    measurementType: string;
+    validityType: string;
+    value: number;
+    estimatedValue: number;
+    outOfBound: boolean;
+}
+
 export interface StateEstimationResult {
     resultUuid: UUID;
     writeTimeStamp: Date;
     status: string;
     qualityLevel: number;
+    measurementInformationResults: MeasurementInformationResult[];
     qualityCriterionResults: QualityCriterionResult[];
     qualityPerRegionResults: QualityPerRegionResult[];
 }
@@ -41,6 +51,8 @@ export interface StateEstimationResultTableProps {
     columnDefs: ColDef<any>[];
     tableName: string;
     exportCsvResetKey: Key;
+    filter?: boolean;
+    sortable?: boolean;
 }
 
 export interface StateEstimationResultStatusProps {

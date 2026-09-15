@@ -27,13 +27,20 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
+import {
+    MEASUREMENT_RESULTS_TABLE,
+    QUALITY_CRITERION_RESULTS_TABLE,
+    QUALITY_PER_REGION_RESULTS_TABLE,
+} from './state-estimation-result-utils';
 
-export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({
+const StateEstimationResult: FunctionComponent<StateEstimationResultProps> = ({
     result,
     isLoadingResult,
     columnDefs,
     tableName,
     exportCsvResetKey,
+    filter = false,
+    sortable = false,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -73,8 +80,8 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
 
     const defaultColDef = useMemo(
         () => ({
-            filter: false,
-            sortable: false,
+            filter: filter,
+            sortable: sortable,
             resizable: true,
             lockPinned: true,
             suppressMovable: true,
@@ -83,41 +90,42 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
             flex: 1,
             cellRenderer: DefaultCellRenderer,
         }),
-        []
+        [filter, sortable]
     );
 
-    const renderStateEstimationQualities = () => {
-        const message = getNoRowsMessage(
-            messages,
-            tableName === 'qualityCriterionResults' ? result.qualityCriterionResults : result.qualityPerRegionResults,
-            stateEstimationStatus,
-            !isLoadingResult
-        );
-        const rowsToShow =
-            (tableName === 'qualityCriterionResults'
-                ? result.qualityCriterionResults
-                : result.qualityPerRegionResults) ?? [];
+    const rowsToShow = (() => {
+        switch (tableName) {
+            case MEASUREMENT_RESULTS_TABLE:
+                return result.measurementInformationResults ?? [];
+            case QUALITY_CRITERION_RESULTS_TABLE:
+                return result.qualityCriterionResults ?? [];
+            case QUALITY_PER_REGION_RESULTS_TABLE:
+                return result.qualityPerRegionResults ?? [];
+            default:
+                return [];
+        }
+    })();
 
-        return (
-            <>
-                <Box sx={{ height: '4px' }}>{openLoaderTab && <LinearProgress />}</Box>
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={columnDefs}
-                    defaultColDef={defaultColDef}
-                    tableName={tableNameFormatted}
-                    rows={rowsToShow}
-                    getRowStyle={getRowStyle}
-                    overlayNoRowsTemplate={message}
-                    skipColumnHeaders={false}
-                    computationType={TableType.StateEstimation}
-                    computationSubType={tableName}
-                    exportCsvResetKey={exportCsvResetKey}
-                    language={language}
-                />
-            </>
-        );
-    };
+    const message = getNoRowsMessage(messages, rowsToShow, stateEstimationStatus, !isLoadingResult);
 
-    return renderStateEstimationQualities();
+    return (
+        <>
+            <Box sx={{ height: '4px' }}>{openLoaderTab && <LinearProgress />}</Box>
+            <RenderTableAndExportCsv
+                gridRef={gridRef}
+                columns={columnDefs}
+                defaultColDef={defaultColDef}
+                tableName={tableNameFormatted}
+                rows={rowsToShow}
+                getRowStyle={getRowStyle}
+                overlayNoRowsTemplate={message}
+                skipColumnHeaders={false}
+                computationType={TableType.StateEstimation}
+                computationSubType={tableName}
+                exportCsvResetKey={exportCsvResetKey}
+                language={language}
+            />
+        </>
+    );
 };
+export default StateEstimationResult;
