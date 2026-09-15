@@ -8,8 +8,8 @@
 import * as React from 'react';
 import { ColDef, GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
-import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
-import { LimitViolation, GlobalFilters, RunningStatus, RunningStatusMessage } from '@gridsuite/commons-ui';
+import { FilterConfig } from '../../../types/custom-aggrid-types';
+import { GlobalFilters, LimitViolation, RunningStatus, RunningStatusMessage, SortConfig } from '@gridsuite/commons-ui';
 
 export interface PreContingencyResult {
     subjectId?: string;

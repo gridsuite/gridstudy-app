@@ -20,29 +20,7 @@ import {
 } from 'utils/store-sort-filter-fields';
 import { UUID } from 'node:crypto';
 import React, { ComponentType } from 'react';
-import { TableSort, TableType } from '@gridsuite/commons-ui';
-
-export type SortConfig = {
-    colId: string;
-    sort: SortWay;
-    children?: boolean;
-};
-
-export enum SortWay {
-    ASC = 'asc',
-    DESC = 'desc',
-}
-
-export type TableSortConfig = Record<string, SortConfig[]>;
-
-export type TableSortKeysType = keyof TableSort;
-
-export type SortParams = {
-    table: TableSortKeysType;
-    tab: string;
-    isChildren?: boolean;
-    persistSort?: (api: GridApi, sort: SortConfig) => Promise<void>;
-};
+import { SortParams, TableType } from '@gridsuite/commons-ui';
 
 export type FilterData = {
     dataType?: string;

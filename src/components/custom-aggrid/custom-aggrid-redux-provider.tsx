@@ -13,12 +13,14 @@ import {
     CustomAggridSortContext,
     type CustomAggridSortContextValue,
     snackWithFallback,
+    SortConfig,
+    SortParams,
     TableType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../redux/reducer.type';
 import { setTableSort, updateColumnFiltersAction } from '../../redux/actions';
-import { FilterConfig, FilterParams, SortConfig, SortParams } from '../../types/custom-aggrid-types';
+import { FilterConfig, FilterParams } from '../../types/custom-aggrid-types';
 import { persistSpreadsheetColumnFilter } from '../spreadsheet-view/columns/utils/persist-spreadsheet-column-filter';
 import { persistComputationColumnFilter } from '../results/common/column-filter/persist-computation-column-filter';
 
