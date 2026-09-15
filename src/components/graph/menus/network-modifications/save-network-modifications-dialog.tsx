@@ -44,12 +44,10 @@ export default function SaveNetworkModificationsDialog({
 }: Readonly<SaveNetworkModificationsDialogProps>) {
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const { snackError } = useSnackMessage();
-    const [selectionHasSharedContent, setSelectionHasSharedContent] = useState<boolean>();
+    const [hasReference, setHasReference] = useState<boolean>();
 
-    const selectionContainsShared = useMemo(
-        () =>
-            selectedModifications.some((modification) => modification.type === ModificationType.MODIFICATION_REFERENCE),
-        [selectedModifications]
+    const isReferenceSelected = selectedModifications.some(
+        (modification) => modification.type === ModificationType.MODIFICATION_REFERENCE
     );
     const selectedCompositeUuids = useMemo(
         () =>
@@ -68,28 +66,28 @@ export default function SaveNetworkModificationsDialog({
 
     // nested references are lazily loaded by the table, so the selection alone can't tell : ask the server
     useEffect(() => {
-        setSelectionHasSharedContent(undefined);
+        setHasReference(undefined);
         if (!open) {
             return;
         }
-        if (selectionContainsShared || selectedCompositeUuids.length === 0) {
-            setSelectionHasSharedContent(selectionContainsShared);
+        if (isReferenceSelected || selectedCompositeUuids.length === 0) {
+            setHasReference(isReferenceSelected);
             return;
         }
         let active = true; // to manage race condition
         hasModificationReferences(selectedCompositeUuids)
-            .then((hasReferences) => {
+            .then((exists) => {
                 if (active) {
-                    setSelectionHasSharedContent(hasReferences);
+                    setHasReference(exists);
                 }
             })
             .catch((error) => snackWithFallback(snackError, error));
         return () => {
             active = false;
         };
-    }, [open, selectionContainsShared, selectedCompositeUuids, snackError]);
+    }, [open, isReferenceSelected, selectedCompositeUuids, snackError]);
 
-    const isSharingAvailable = isDeveloperMode && isSelectedCompositeShareable && selectionHasSharedContent === false;
+    const isSharingAvailable = isDeveloperMode && isSelectedCompositeShareable && hasReference === false;
 
     return (
         <ElementSaveDialog
@@ -108,7 +106,7 @@ export default function SaveNetworkModificationsDialog({
             createLabelId="CreateCompositeModificationLabel"
             createSharedLabelId="ShareCompositeModificationLabel"
             updateLabelId="UpdateCompositeModificationLabel"
-            alertMessageId={selectionHasSharedContent ? 'SharedModificationsSavedAsCopy' : undefined}
+            alertMessageId={hasReference ? 'SharedModificationsSavedAsCopy' : undefined}
         />
     );
 }
