@@ -175,7 +175,11 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                                 onDragEnd={handleDragEnd}
                             />
                         </Grid>
-                        <Grid padding={1}>
+                        <Grid
+                            sx={{
+                                padding: 1,
+                            }}
+                        >
                             <TooltipIconButton
                                 tooltip={intl.formatMessage({
                                     id: 'DynamicSimulationAddTab',

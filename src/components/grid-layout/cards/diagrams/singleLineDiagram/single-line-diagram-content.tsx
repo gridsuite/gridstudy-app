@@ -460,7 +460,11 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
 
     return (
         <>
-            <Box height={2}>
+            <Box
+                sx={{
+                    height: 2,
+                }}
+            >
                 {(loadingState || modificationInProgress || isOneBusScRunning) && <LinearProgress />}
                 {isOneBusScRunning && (
                     <Chip

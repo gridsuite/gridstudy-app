@@ -52,21 +52,24 @@ export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
 
     return (
         <Box
-            // react-flow needs a non-absolute, non-empty node with height and width to calculate
-            // the global size of the tree for its fitView function.
-            height="0"
-            width="0"
-            visibility="hidden"
+            sx={{
+                height: '0',
+                width: '0',
+                visibility: 'hidden',
+            }}
         >
-            &nbsp;
             <Box
-                position={'absolute'}
-                visibility={'visible'}
-                top={labeledGroupTopPosition}
-                left={labeledGroupLeftPosition}
-                height={labeledGroupHeight}
-                width={labeledGroupWidth}
-                sx={styles.border}
+                sx={[
+                    {
+                        position: 'absolute',
+                        visibility: 'visible',
+                        top: labeledGroupTopPosition,
+                        left: labeledGroupLeftPosition,
+                        height: labeledGroupHeight,
+                        width: labeledGroupWidth,
+                    },
+                    styles.border,
+                ]}
             >
                 {zoom >= 0.5 && (
                     <Box sx={styles.label}>

@@ -19,7 +19,12 @@ interface GeneratorPopoverContentProps {
 
 export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = ({ equipmentInfos, loadFlowStatus }) => {
     return (
-        <Stack spacing={2} alignItems="center">
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: 'center',
+            }}
+        >
             <Grid sx={styles.grid}>
                 <TableContainer sx={styles.table}>
                     <Table size="small" sx={styles.layout}>

@@ -292,12 +292,32 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     );
 
     return (
-        <Stack spacing={2} paddingTop={1} sx={[{ height: '100%' }]}>
+        <Stack
+            spacing={2}
+            sx={[
+                {
+                    paddingTop: 1,
+                },
+                { height: '100%' },
+            ]}
+        >
             <Grid sx={{ width: 400, maxWidth: '100%' }}>{equipmentTypeField}</Grid>
             {equipmentType && (
                 <>
-                    <Grid container spacing={2} justifyContent="space-between" alignItems="center">
-                        <Grid container alignItems="center">
+                    <Grid
+                        container
+                        spacing={2}
+                        sx={{
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Grid
+                            container
+                            sx={{
+                                alignItems: 'center',
+                            }}
+                        >
                             <Grid>
                                 <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
                             </Grid>
