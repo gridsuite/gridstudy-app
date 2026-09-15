@@ -1556,7 +1556,9 @@ export const reducer = createReducer(initialState, (builder) => {
         }
         // remove sort and filter for the removed column
         if (tableDefinition && tableSort[tableDefinition.name]) {
-            tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter((sort: { colId: string; }) => sort.colId !== value);
+            tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter(
+                (sort: { colId: string }) => sort.colId !== value
+            );
         }
         if (tableDefinition && tableFilter?.[tableDefinition.uuid]) {
             tableFilter[tableDefinition.uuid] = tableFilter[tableDefinition.uuid].filter(

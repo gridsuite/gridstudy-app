@@ -28,7 +28,8 @@ import {
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
-    isEditingGlobalFilter, TableType,
+    isEditingGlobalFilter,
+    TableType,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';

@@ -17,7 +17,8 @@ import {
     getNoRowsMessage,
     getRows,
     RESULTS_LOADING_DELAY,
-    RunningStatus, TableType,
+    RunningStatus,
+    TableType,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';

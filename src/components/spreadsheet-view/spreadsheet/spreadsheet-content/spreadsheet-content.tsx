@@ -7,7 +7,7 @@
 
 import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { EquipmentTable } from './equipment-table';
-import {type Identifiable, type MuiStyles, TableType} from '@gridsuite/commons-ui';
+import { type Identifiable, type MuiStyles, TableType } from '@gridsuite/commons-ui';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';

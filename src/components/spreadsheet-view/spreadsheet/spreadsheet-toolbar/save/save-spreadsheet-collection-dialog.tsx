@@ -29,7 +29,8 @@ import {
     snackWithFallback,
     useSnackMessage,
     type UseStateBooleanReturn,
-    GlobalFilter, TableType,
+    GlobalFilter,
+    TableType,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../../redux/reducer.type';
 import { SelectOptionsDialog } from '../../../../../utils/dialogs';

@@ -21,7 +21,8 @@ import {
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
     RunningStatus,
-    RESULTS_LOADING_DELAY, TableType,
+    RESULTS_LOADING_DELAY,
+    TableType,
 } from '@gridsuite/commons-ui';
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';

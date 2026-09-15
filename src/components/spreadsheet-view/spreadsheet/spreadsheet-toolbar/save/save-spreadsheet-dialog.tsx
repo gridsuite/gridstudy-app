@@ -9,7 +9,8 @@ import {
     ElementType,
     IElementCreationDialog,
     IElementUpdateDialog,
-    snackWithFallback, TableType,
+    snackWithFallback,
+    TableType,
     useSnackMessage,
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';

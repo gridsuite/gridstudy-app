@@ -15,7 +15,8 @@ import {
     DefaultCellRenderer,
     getNoRowsMessage,
     RESULTS_LOADING_DELAY,
-    RunningStatus, TableType,
+    RunningStatus,
+    TableType,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';

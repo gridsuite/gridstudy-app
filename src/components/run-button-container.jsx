@@ -22,7 +22,8 @@ import {
     PARAM_DEVELOPER_MODE,
     snackWithFallback,
     useSnackMessage,
-    RunningStatus, TableType,
+    RunningStatus,
+    TableType,
 } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import {

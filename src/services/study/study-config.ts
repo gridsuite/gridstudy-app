@@ -12,7 +12,7 @@ import {
     backendFetchJson,
     NetworkVisualizationParameters,
     GlobalFilter,
-    TableType
+    TableType,
 } from '@gridsuite/commons-ui';
 import {
     ColumnStateDto,

@@ -15,7 +15,7 @@ import { AppState } from '../../../../../redux/reducer.type';
 import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/hooks/use-selected-global-filters';
 
-import {isCriteriaFilterType, TableType} from '@gridsuite/commons-ui';
+import { isCriteriaFilterType, TableType } from '@gridsuite/commons-ui';
 
 type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact | null>;

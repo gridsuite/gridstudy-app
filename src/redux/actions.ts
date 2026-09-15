@@ -19,7 +19,8 @@ import {
     PARAM_LANGUAGE,
     PARAM_THEME,
     RunningStatus,
-    GlobalFilter, TableType,
+    GlobalFilter,
+    TableType,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';

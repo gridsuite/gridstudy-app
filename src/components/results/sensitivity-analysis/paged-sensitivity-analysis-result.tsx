@@ -24,7 +24,8 @@ import {
     useDebounce,
     useSnackMessage,
     buildValidGlobalFilters,
-    RESULT_PAGE_OPTIONS, TableType,
+    RESULT_PAGE_OPTIONS,
+    TableType,
 } from '@gridsuite/commons-ui';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -143,7 +144,7 @@ function PagedSensitivityAnalysisResult({
         const sortSelector = sortConfig?.length
             ? {
                   sortKeysWithWeightAndDirection: Object.fromEntries(
-                      sortConfig.map((value: { colId: string; sort: SortWay; }) => [
+                      sortConfig.map((value: { colId: string; sort: SortWay }) => [
                           DATA_KEY_TO_SORT_KEY[value.colId as keyof typeof DATA_KEY_TO_SORT_KEY],
                           value.sort === SortWay.DESC ? -1 : 1,
                       ])

@@ -6,7 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import {ComputingType, RunningStatus, buildValidGlobalFilters, TableType} from '@gridsuite/commons-ui';
+import { ComputingType, RunningStatus, buildValidGlobalFilters, TableType } from '@gridsuite/commons-ui';
 import { voltageInitResultInvalidations } from './computing-status/use-all-computing-status';
 import { useNodeData } from './use-node-data';
 import type { UUID } from 'node:crypto';

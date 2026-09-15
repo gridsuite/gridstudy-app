@@ -16,7 +16,8 @@ import {
     ComputingType,
     EquipmentType,
     RESULTS_LOADING_DELAY,
-    RunningStatus, TableType,
+    RunningStatus,
+    TableType,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';

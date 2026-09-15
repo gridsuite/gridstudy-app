@@ -8,7 +8,8 @@
 import { FunctionComponent, useEffect } from 'react';
 import {
     RenderTableAndExportCsv as RenderTableAndExportCsvBase,
-    RenderTableAndExportCsvProps as BaseProps, TableType,
+    RenderTableAndExportCsvProps as BaseProps,
+    TableType,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer.type';

@@ -15,7 +15,7 @@ import {
     SpreadsheetTabDefinition,
 } from '../../types/spreadsheet.type';
 import { Dispatch } from 'redux';
-import {snackWithFallback, UseStateBooleanReturn, GlobalFilter, TableType} from '@gridsuite/commons-ui';
+import { snackWithFallback, UseStateBooleanReturn, GlobalFilter, TableType } from '@gridsuite/commons-ui';
 import {
     addSortForNewSpreadsheet,
     initOrUpdateGlobalFilters,

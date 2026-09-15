@@ -12,7 +12,7 @@ import {
     getNoRowsMessage,
     makeAgGridCustomHeaderColumn,
     TableType,
-    useIntlResultStatusMessages
+    useIntlResultStatusMessages,
 } from '@gridsuite/commons-ui';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';

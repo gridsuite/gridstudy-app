@@ -35,11 +35,7 @@ import { Box, LinearProgress } from '@mui/material';
 import { DisplayedColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import {
-    FilterEnumsType,
-    PaginationType,
-    ShortcircuitAnalysisTab,
-} from '../../../types/custom-aggrid-types';
+import { FilterEnumsType, PaginationType, ShortcircuitAnalysisTab } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
@@ -125,7 +121,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         setIsFetching(true);
         updateResult(null);
 
-        const backSortConfig = sortConfig?.map((sort: { colId: string | number; }) => ({
+        const backSortConfig = sortConfig?.map((sort: { colId: string | number }) => ({
             ...sort,
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));

@@ -33,7 +33,8 @@ import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-col
 import {
     LimitViolationResult,
     RESULTS_LOADING_DELAY,
-    RunningStatus, TableSort, TableType,
+    RunningStatus,
+    TableType,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';
 import { StatusCellRender } from '../common/result-cell-renderers';
@@ -134,7 +135,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             }
             const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
             return fetchLimitViolations(studyUuid, nodeUuid, currentRootNetworkUuid, {
-                sort: sortConfig.map((sort: { colId: string | number; }) => ({
+                sort: sortConfig.map((sort: { colId: string | number }) => ({
                     ...sort,
                     colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
                 })),

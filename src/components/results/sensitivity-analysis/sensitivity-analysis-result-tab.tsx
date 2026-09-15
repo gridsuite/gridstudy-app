@@ -22,7 +22,8 @@ import {
     GlobalFilterType,
     isCriteriaFilterType,
     buildValidGlobalFilters,
-    RESULTS_LOADING_DELAY, TableType,
+    RESULTS_LOADING_DELAY,
+    TableType,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 import type { UUID } from 'node:crypto';

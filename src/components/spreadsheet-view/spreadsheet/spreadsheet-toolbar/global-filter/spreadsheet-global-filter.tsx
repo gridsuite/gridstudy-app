@@ -10,7 +10,7 @@ import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../.
 import GlobalFilterSelector, {
     type GlobalFilterSelectorProps,
 } from '../../../../results/common/global-filter/global-filter-selector';
-import {EquipmentType, GlobalFilterType, TableType} from '@gridsuite/commons-ui';
+import { EquipmentType, GlobalFilterType, TableType } from '@gridsuite/commons-ui';
 
 export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;

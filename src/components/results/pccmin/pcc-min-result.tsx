@@ -17,7 +17,8 @@ import {
     snackWithFallback,
     useSnackMessage,
     buildValidGlobalFilters,
-    RESULT_PAGE_OPTIONS, TableType,
+    RESULT_PAGE_OPTIONS,
+    TableType,
 } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
