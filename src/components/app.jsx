@@ -29,6 +29,7 @@ import {
     useNotificationsListener,
     useSnackMessage,
     isEditingGlobalFilter,
+    TableType,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -53,7 +54,6 @@ import {
     updateColumnFiltersAction,
     updateTableColumns,
 } from '../redux/actions';
-import { TableType } from '../types/custom-aggrid-types';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import {
     isComputationResultColumnFilterUpdatedNotification,
