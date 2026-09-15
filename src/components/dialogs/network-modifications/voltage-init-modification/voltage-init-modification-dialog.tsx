@@ -76,14 +76,21 @@ function check(x: number | undefined) {
 
 const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
-    TRANSFORMER_TAB: 1,
-    STATIC_VAR_COMPENSATOR_TAB: 2,
-    VSC_CONVERTER_STATION_TAB: 3,
-    SHUNT_COMPENSATOR_TAB: 4,
-    BUS_TAB: 5,
+    BATTERY_TAB: 1,
+    TRANSFORMER_TAB: 2,
+    STATIC_VAR_COMPENSATOR_TAB: 3,
+    VSC_CONVERTER_STATION_TAB: 4,
+    SHUNT_COMPENSATOR_TAB: 5,
+    BUS_TAB: 6,
 };
 
 interface GeneratorRowData {
+    ID: string;
+    [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
+    [REACTIVE_POWER_SET_POINT]: number | undefined;
+}
+
+interface BatteryRowData {
     ID: string;
     [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
     [REACTIVE_POWER_SET_POINT]: number | undefined;
@@ -127,6 +134,12 @@ interface GeneratorData {
     targetQ: number | undefined;
 }
 
+interface BatteryData {
+    batteryId: string;
+    targetV: number | undefined;
+    targetQ: number | undefined;
+}
+
 interface TransformerData {
     transformerId: string;
     ratioTapChangerPosition: number | undefined;
@@ -161,6 +174,7 @@ interface BusData {
 
 export interface EditData {
     generators: GeneratorData[];
+    batteries: BatteryData[];
     transformers: TransformerData[];
     staticVarCompensators: StaticVarCompensatorData[];
     vscConverterStations: VscConverterStationData[];
@@ -201,7 +215,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
 
     const gridRef = useRef<AgGridReact>(null);
 
-    const generatorsColumnDefs = useMemo<ColDef[]>(
+    const voltageInitSetpointColumnDefs = useMemo<ColDef[]>(
         () => [
             {
                 headerName: intl.formatMessage({ id: 'ID' }),
@@ -252,56 +266,6 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                     id: 'VoltageSetpointKV',
                 }),
                 field: RATIO_TAP_CHANGER_TARGET_V,
-                cellRenderer: DefaultCellRenderer,
-                numeric: true,
-            },
-        ],
-        [intl]
-    );
-
-    const staticVarCompensatorsColumnDefs = useMemo<ColDef[]>(
-        () => [
-            {
-                headerName: intl.formatMessage({ id: 'ID' }),
-                field: 'ID',
-                pinned: true,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
-                field: FieldConstants.VOLTAGE_SET_POINT,
-                cellRenderer: DefaultCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'ReactivePowerSetpointMVAR',
-                }),
-                field: REACTIVE_POWER_SET_POINT,
-                cellRenderer: DefaultCellRenderer,
-                numeric: true,
-            },
-        ],
-        [intl]
-    );
-
-    const vscConverterStationsColumnDefs = useMemo<ColDef[]>(
-        () => [
-            {
-                headerName: intl.formatMessage({ id: 'ID' }),
-                field: 'ID',
-                pinned: true,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
-                field: FieldConstants.VOLTAGE_SET_POINT,
-                cellRenderer: DefaultCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'ReactivePowerSetpointMVAR',
-                }),
-                field: REACTIVE_POWER_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
@@ -405,6 +369,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             <Grid container>
                 <Tabs value={tabIndex} variant="scrollable" onChange={(event, newValue) => handleTabChange(newValue)}>
                     <Tab label={<FormattedMessage id="Generators" />} />
+                    <Tab label={<FormattedMessage id="Batteries" />} />
                     <Tab label={<FormattedMessage id="Transformers" />} />
                     <Tab label={<FormattedMessage id="StaticVarCompensators" />} />
                     <Tab label={<FormattedMessage id="VscConverterStations" />} />
@@ -423,11 +388,28 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 let tableName: string = '';
                 if (editData) {
                     if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
-                        columnDefs = generatorsColumnDefs;
+                        columnDefs = voltageInitSetpointColumnDefs;
                         tableName = 'Generators';
                         editData.generators.forEach((m: GeneratorData) => {
                             let row: GeneratorRowData = {
                                 ID: m.generatorId,
+                                [FieldConstants.VOLTAGE_SET_POINT]: undefined,
+                                [REACTIVE_POWER_SET_POINT]: undefined,
+                            };
+                            if (check(m.targetV)) {
+                                row[FieldConstants.VOLTAGE_SET_POINT] = m.targetV;
+                            }
+                            if (check(m.targetQ)) {
+                                row[REACTIVE_POWER_SET_POINT] = m.targetQ;
+                            }
+                            rowData.push(row);
+                        });
+                    } else if (currentTab === EquipmentTypeTabs.BATTERY_TAB) {
+                        columnDefs = voltageInitSetpointColumnDefs;
+                        tableName = 'Batteries';
+                        editData.batteries.forEach((m: BatteryData) => {
+                            let row: BatteryRowData = {
+                                ID: m.batteryId,
                                 [FieldConstants.VOLTAGE_SET_POINT]: undefined,
                                 [REACTIVE_POWER_SET_POINT]: undefined,
                             };
@@ -461,7 +443,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             rowData.push(row);
                         });
                     } else if (currentTab === EquipmentTypeTabs.STATIC_VAR_COMPENSATOR_TAB) {
-                        columnDefs = staticVarCompensatorsColumnDefs;
+                        columnDefs = voltageInitSetpointColumnDefs;
                         tableName = 'StaticVarCompensators';
                         editData.staticVarCompensators.forEach((m: StaticVarCompensatorData) => {
                             let row: StaticVarCompensatorRowData = {
@@ -478,7 +460,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             rowData.push(row);
                         });
                     } else if (currentTab === EquipmentTypeTabs.VSC_CONVERTER_STATION_TAB) {
-                        columnDefs = vscConverterStationsColumnDefs;
+                        columnDefs = voltageInitSetpointColumnDefs;
                         tableName = 'VscConverterStations';
                         editData.vscConverterStations.forEach((m: VscConverterStationData) => {
                             let row: VscConverterStationRowData = {
@@ -570,10 +552,8 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
         [
             editData,
             editDataFetchStatus,
-            generatorsColumnDefs,
+            voltageInitSetpointColumnDefs,
             transformersColumnDefs,
-            staticVarCompensatorsColumnDefs,
-            vscConverterStationsColumnDefs,
             shuntCompensatorsColumnDefs,
             busColumnDefs,
             language,
