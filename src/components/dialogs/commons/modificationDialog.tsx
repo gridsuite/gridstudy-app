@@ -7,7 +7,7 @@
 
 import { PropsWithChildren, useCallback } from 'react';
 import { FieldErrors, FieldValues, useFormContext } from 'react-hook-form';
-import { SubmitButton } from '@gridsuite/commons-ui';
+import { SubmitButton, useCustomFormContext } from '@gridsuite/commons-ui';
 import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
 
 /**
@@ -33,7 +33,6 @@ export type ModificationDialogProps<TFieldValues extends FieldValues> = Omit<
     'closeAndClear' | 'submitButton'
 > & {
     disabledSave?: boolean;
-    readOnly?: boolean;
     onClear: () => void;
     onClose?: () => void;
     onSave: (modificationData: TFieldValues) => void;
@@ -43,7 +42,6 @@ export type ModificationDialogProps<TFieldValues extends FieldValues> = Omit<
 
 export function ModificationDialog<TFieldValues extends FieldValues>({
     disabledSave = false,
-    readOnly = false,
     onClear,
     onClose,
     onSave,
@@ -53,6 +51,7 @@ export function ModificationDialog<TFieldValues extends FieldValues>({
     ...dialogProps
 }: Readonly<PropsWithChildren<ModificationDialogProps<TFieldValues>>>) {
     const { handleSubmit } = useFormContext<TFieldValues>();
+    const { readOnly } = useCustomFormContext();
 
     const closeAndClear = () => {
         onClear();
@@ -94,12 +93,17 @@ export function ModificationDialog<TFieldValues extends FieldValues>({
             data-testid="ValidateButton"
             onClick={handleSubmit(handleValidate, handleValidationError)}
             variant="outlined"
-            disabled={disabledSave || readOnly}
+            disabled={disabledSave}
         />
     );
 
     return (
-        <ModificationDialogContent closeAndClear={closeAndClear} submitButton={submitButton} {...dialogProps}>
+        <ModificationDialogContent
+            readOnly={readOnly}
+            closeAndClear={closeAndClear}
+            submitButton={submitButton}
+            {...dialogProps}
+        >
             {children}
         </ModificationDialogContent>
     );
