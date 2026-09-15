@@ -121,7 +121,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         setIsFetching(true);
         updateResult(null);
 
-        const backSortConfig = sortConfig?.map((sort: { colId: string | number }) => ({
+        const backSortConfig = sortConfig?.map((sort) => ({
             ...sort,
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));

@@ -592,6 +592,7 @@ const initialState: AppState = {
 
     [LOGS_PAGINATION_STORE_FIELD]: { ...initialLogsPaginationState },
 
+    // @ts-ignore
     [TABLE_SORT_STORE]: {
         [SPREADSHEET_SORT_STORE]: {},
         [LOADFLOW_RESULT_SORT_STORE]: {

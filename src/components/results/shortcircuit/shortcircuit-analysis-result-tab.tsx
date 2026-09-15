@@ -222,7 +222,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         const oneBusCase = analysisType === ShortCircuitAnalysisType.ONE_BUS;
         const fromFrontColumnToBackKeys = oneBusCase ? FROM_COLUMN_TO_FIELD_ONE_BUS : FROM_COLUMN_TO_FIELD;
 
-        const backSortConfig = sortConfig?.map((sort: { colId: string | number }) => ({
+        const backSortConfig = sortConfig?.map((sort) => ({
             ...sort,
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));

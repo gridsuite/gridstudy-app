@@ -135,7 +135,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             }
             const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
             return fetchLimitViolations(studyUuid, nodeUuid, currentRootNetworkUuid, {
-                sort: sortConfig.map((sort: { colId: string | number }) => ({
+                sort: sortConfig.map((sort) => ({
                     ...sort,
                     colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
                 })),
