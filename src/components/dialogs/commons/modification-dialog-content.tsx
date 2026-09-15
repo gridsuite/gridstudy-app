@@ -12,7 +12,7 @@ import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import React, { ReactNode } from 'react';
 import { UseFormSearchCopy } from './use-form-search-copy';
 import { FormattedMessage } from 'react-intl';
-import { CancelButton } from '@gridsuite/commons-ui';
+import { CancelButton, CloseButton } from '@gridsuite/commons-ui';
 import { DialogProps } from '@mui/material/Dialog';
 
 /**
@@ -35,6 +35,7 @@ export type ModificationDialogContentProps = Omit<DialogProps, 'onClose' | 'aria
     searchCopy?: UseFormSearchCopy;
     submitButton: ReactNode;
     subtitle?: ReactNode;
+    readOnly?: boolean;
 };
 
 export function ModificationDialogContent({
@@ -45,6 +46,7 @@ export function ModificationDialogContent({
     searchCopy,
     submitButton,
     subtitle,
+    readOnly = false,
     ...dialogProps
 }: Readonly<ModificationDialogContentProps>) {
     const catalogButton = useButtonWithTooltip({
@@ -89,8 +91,14 @@ export function ModificationDialogContent({
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
-                <CancelButton onClick={handleCancel} />
-                {submitButton}
+                {readOnly ? (
+                    <CloseButton onClick={handleCancel} />
+                ) : (
+                    <>
+                        <CancelButton onClick={handleCancel} />
+                        {submitButton}
+                    </>
+                )}
             </DialogActions>
         </Dialog>
     );

@@ -289,7 +289,6 @@ const LineModificationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                readOnly={readOnly}
                 maxWidth={'xl'}
                 titleId="ModifyLine"
                 onValidationError={useTabsReturn.onError}
