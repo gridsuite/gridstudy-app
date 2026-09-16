@@ -16,6 +16,7 @@ import {
     getNoRowsMessage,
     RESULTS_LOADING_DELAY,
     RunningStatus,
+    TableType,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';
@@ -25,7 +26,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';
-import { TableType } from 'types/custom-aggrid-types';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 
 export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({

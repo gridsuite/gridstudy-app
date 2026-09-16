@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { RESULT_TYPE, SubjectIdRendererType } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
-import { ComputingType, ContingencyCellRenderer, NmkType, RunningStatus } from '@gridsuite/commons-ui';
+import { ComputingType, ContingencyCellRenderer, NmkType, RunningStatus, TableType } from '@gridsuite/commons-ui';
 import { translateLimitNameFrontToBack } from '../common/utils';
 import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import {
@@ -32,7 +32,6 @@ import {
     FilterConfig,
     FilterEnumsType,
     SortParams,
-    TableType,
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { createEnumColumn } from '../common/column-filter/utilis';
