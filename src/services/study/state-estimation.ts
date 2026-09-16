@@ -104,5 +104,6 @@ export function computeLogicalControls(
     );
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/state-estimation/logical-controls`;
     console.debug(url);
-    return backendFetchJson(url, { method: 'post', timeoutMs: 300000 });
+    // 60s before timeout cause we have performance issues to address, and this is a synchronous computation
+    return backendFetchJson(url, { method: 'post', timeoutMs: 60000 });
 }
