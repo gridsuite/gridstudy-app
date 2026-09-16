@@ -10,13 +10,13 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    FilterConfig,
     GlobalFilters,
     GsLangUser,
     SortConfig,
 } from '@gridsuite/commons-ui';
 import { PccMinPagedResults } from 'components/results/pccmin/pcc-min-result.type';
 import { UUID } from 'node:crypto';
-import { FilterConfig } from 'types/custom-aggrid-types';
 
 export function startPccMin(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): Promise<Response> {
     console.info(

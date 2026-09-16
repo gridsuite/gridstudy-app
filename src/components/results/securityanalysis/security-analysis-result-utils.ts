@@ -13,6 +13,7 @@ import {
     ComputingType,
     ContingencyCellRenderer,
     CustomAggridComparatorFilter,
+    FilterConfig,
     makeAgGridCustomHeaderColumn,
     NmkType,
     RunningStatus,
@@ -36,7 +37,6 @@ import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    FilterConfig,
     FilterEnumsType,
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';

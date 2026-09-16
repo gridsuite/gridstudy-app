@@ -10,6 +10,7 @@ import type { Action } from 'redux';
 import {
     BaseVoltage,
     ComputingType,
+    FilterConfig,
     GlobalFilter,
     type GsLang,
     type GsLangUser,
@@ -35,7 +36,6 @@ import type {
 } from './reducer.type';
 
 import {
-    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PccminTab,

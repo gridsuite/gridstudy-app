@@ -16,6 +16,7 @@ import {
 } from '../../types/spreadsheet.type';
 import { Dispatch } from 'redux';
 import {
+    FilterConfig,
     GlobalFilter,
     snackWithFallback,
     SortConfig,
@@ -31,7 +32,6 @@ import {
     updateColumnFiltersAction,
     updateTableDefinition,
 } from 'redux/actions';
-import { FilterConfig } from 'types/custom-aggrid-types';
 import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';

@@ -39,6 +39,7 @@ import {
     TableType,
     TableSortConfig,
     SortWay,
+    FilterConfig,
 } from '@gridsuite/commons-ui';
 
 import {
@@ -283,7 +284,6 @@ import {
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
-    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PCCMIN_ANALYSIS_TABS,

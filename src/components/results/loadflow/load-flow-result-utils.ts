@@ -19,6 +19,7 @@ import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import {
     ComputingType,
     CustomAggridComparatorFilter,
+    FilterConfig,
     makeAgGridCustomHeaderColumn,
     RunningStatus,
     SortParams,
@@ -40,7 +41,6 @@ import {
     ColumnContext,
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
-    FilterConfig,
     FilterEnumsType,
     numericFilterParams,
     textFilterParams,
