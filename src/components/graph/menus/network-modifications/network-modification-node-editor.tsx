@@ -8,8 +8,6 @@
 import {
     ArrowsInputIcon,
     ComposedModificationMetadata,
-    ElementSaveDialog,
-    ElementType,
     EquipmentType,
     ErrorMessage,
     fetchNetworkModification,
@@ -93,7 +91,6 @@ import { createCompositeModifications, updateCompositeModifications } from '../.
 import {
     assembleModificationsIntoComposite,
     fetchNetworkModifications,
-    hasModificationReferences,
     shareCompositeModification,
     stashModifications,
 } from '../../../../services/study/network-modifications';
@@ -112,6 +109,7 @@ import ModificationByFormulaDialog from '../../../dialogs/network-modifications/
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
+import SaveNetworkModificationsDialog from './save-network-modifications-dialog';
 import {
     CommonStudyEventData,
     isModificationsDeleteFinishedNotification,
@@ -172,9 +170,6 @@ const NetworkModificationNodeEditor = () => {
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
         []
     );
-    // nested references are lazily loaded by the table, so the selection alone can't tell : ask the backend
-    // for each selected composite, but only once the save dialog is open
-    const [selectionHasSharedContent, setSelectionHasSharedContent] = useState(false);
 
     // TODO : this is temporary, until merge/delete is done for the shared modification
     const selectionContainsShared: boolean = useMemo(() => {
@@ -818,22 +813,8 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const openCreateCompositeModificationDialog = useCallback(() => {
-        setSelectionHasSharedContent(false);
         setCreateCompositeModificationDialogOpen(true);
-        if (selectionContainsShared) {
-            setSelectionHasSharedContent(true);
-            return;
-        }
-        // nested references are lazily loaded by the table, so the selection alone can't tell: ask the backend
-        const compositeUuids = selectedNetworkModifications
-            .filter((m) => m.type === ModificationType.COMPOSITE_MODIFICATION)
-            .map((m) => m.uuid);
-        if (compositeUuids.length > 0) {
-            hasModificationReferences(compositeUuids)
-                .then(setSelectionHasSharedContent)
-                .catch((error) => snackWithFallback(snackError, error));
-        }
-    }, [selectedNetworkModifications, selectionContainsShared, snackError]);
+    }, []);
 
     const doStashModification = useCallback(() => {
         const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
@@ -1103,14 +1084,6 @@ const NetworkModificationNodeEditor = () => {
             ? (JSON.parse(selectedNetworkModifications[0]?.messageValues)?.name ?? null)
             : null;
 
-    // Sharing moves the selected composite itself into gridexplore : it needs exactly one composite, and an
-    // already shared one (a reference) cannot be shared again. Only a composite of the node itself can be shared,
-    // not one nested in another composite, so the third condition: the modifications list holds the modifications of the node only
-    const isSharingAvailable =
-        selectedNetworkModifications.length === 1 &&
-        selectedNetworkModifications[0].type === ModificationType.COMPOSITE_MODIFICATION &&
-        modifications.some((modification) => modification.uuid === selectedNetworkModifications[0].uuid);
-
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
             return (
@@ -1161,23 +1134,15 @@ const NetworkModificationNodeEditor = () => {
     const renderCreateCompositeNetworkModificationsDialog = () => {
         return (
             studyUuid && (
-                <ElementSaveDialog
+                <SaveNetworkModificationsDialog
                     open={createCompositeModificationDialogOpen}
+                    onClose={() => setCreateCompositeModificationDialogOpen(false)}
+                    studyUuid={studyUuid}
+                    selectedModifications={selectedNetworkModifications}
+                    defaultName={defaultSaveModificationName}
                     onSave={doCreateCompositeModificationsElements}
                     onSaveShared={doShareCompositeModificationElement}
-                    createSharedDisabled={!isSharingAvailable}
-                    OnUpdate={doUpdateCompositeModificationsElements}
-                    onClose={() => setCreateCompositeModificationDialogOpen(false)}
-                    type={ElementType.MODIFICATION}
-                    titleId="CreateCompositeModification"
-                    prefixIdForGeneratedName="GeneratedModification"
-                    defaultName={defaultSaveModificationName}
-                    studyUuid={studyUuid}
-                    selectorTitleId="SelectCompositeModificationTitle"
-                    createLabelId="CreateCompositeModificationLabel"
-                    createSharedLabelId="ShareCompositeModificationLabel"
-                    updateLabelId="UpdateCompositeModificationLabel"
-                    alertMessageId={selectionHasSharedContent ? 'SharedModificationsSavedAsCopy' : undefined}
+                    onUpdate={doUpdateCompositeModificationsElements}
                 />
             )
         );
