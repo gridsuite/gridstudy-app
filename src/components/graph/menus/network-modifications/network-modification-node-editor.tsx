@@ -1079,7 +1079,7 @@ const NetworkModificationNodeEditor = () => {
             : null;
 
     const defaultSaveModificationDescription =
-        selectedNetworkModifications.length === 1 ? selectedNetworkModifications[0]?.description ?? null : null;
+        selectedNetworkModifications.length === 1 ? (selectedNetworkModifications[0]?.description ?? null) : null;
 
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
