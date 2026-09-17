@@ -50,7 +50,7 @@ export const TABLE_SORT_STORE = 'tableSort';
 export const STATEESTIMATION_RESULT_SORT_STORE = 'stateEstimationResult';
 export const STATEESTIMATION_QUALITY_CRITERION = 'stateEstimationQualityCriterion';
 export const STATEESTIMATION_QUALITY_PER_REGION = 'stateEstimationQualityPerRegion';
-export const STATEESTIMATION_RESULT = 'stateEstimationResult';
+export const STATEESTIMATION_MEASUREMENTS = 'stateEstimationMeasurements';
 
 //pccMin result store fields
 export const PCCMIN_ANALYSIS_RESULT_SORT_STORE = 'pccminAnalysisResult';
