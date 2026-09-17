@@ -75,7 +75,7 @@ export const TARGET_P = 'targetP';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
 export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
 
-/* Tabylar creations reactive capability curve table values for csv */
+/* Tabular creations reactive capability curve table values for csv */
 
 export const V = 'v';
 export const ANGLE = 'angle';

@@ -9,6 +9,16 @@ import { memo, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    ComputingType,
+    EquipmentType,
+    mergeSx,
+    PARAM_DEVELOPER_MODE,
+    RunningStatus,
+    snackWithFallback,
+    TableType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import {
     equipmentsWithPopover,
     getEquipmentTypeFromFeederType,
     MAX_HEIGHT_SUBSTATION,
@@ -29,15 +39,7 @@ import {
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
 import { useIsEditBlocked } from 'components/node-activity/hooks/use-node-activity';
 import { darken, lighten, Theme, useTheme } from '@mui/material/styles';
-import {
-    ComputingType,
-    EquipmentType,
-    mergeSx,
-    PARAM_DEVELOPER_MODE,
-    RunningStatus,
-    snackWithFallback,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -51,7 +53,6 @@ import {
     setOneBusShortcircuitAnalysisContext,
     updateColumnFiltersAction,
 } from '../../../../../redux/actions';
-import { TableType } from '../../../../../types/custom-aggrid-types';
 import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';

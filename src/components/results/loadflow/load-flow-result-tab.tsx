@@ -34,6 +34,7 @@ import {
     LimitViolationResult,
     RESULTS_LOADING_DELAY,
     RunningStatus,
+    TableType,
     useOpenLoaderShortWait,
 } from '@gridsuite/commons-ui';
 import { StatusCellRender } from '../common/result-cell-renderers';
@@ -48,7 +49,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
-import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS, TableType } from '../../../types/custom-aggrid-types';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
