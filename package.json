@@ -65,6 +65,9 @@
             "plotly.js": {
                 "esbuild-style-plugin": "npm:dry-uninstall@^0.3.0"
             }
+        },
+        "mui-nested-menu": {
+            "@mui/material": ">=5.0.0"
         }
     },
     "scripts": {
