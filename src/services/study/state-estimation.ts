@@ -100,10 +100,9 @@ export function computeLogicalControls(
     currentRootNetworkUuid: UUID
 ): Promise<LogicalControlsResultDto> {
     console.info(
-        `compute logical controls on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+        `compute and retrieve logical controls on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/state-estimation/logical-controls`;
     console.debug(url);
-    // 60s before timeout cause we have performance issues to address, and this is a synchronous computation
-    return backendFetchJson(url, { method: 'post', timeoutMs: 60000 });
+    return backendFetchJson(url, { method: 'post' });
 }
