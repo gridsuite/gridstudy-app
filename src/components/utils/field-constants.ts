@@ -75,7 +75,7 @@ export const TARGET_P = 'targetP';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
 export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
 
-/* Tabylar creations reactive capability curve table values for csv */
+/* Tabular creations reactive capability curve table values for csv */
 
 export const V = 'v';
 export const ANGLE = 'angle';
@@ -308,6 +308,11 @@ export const P_MIN = 'pmin';
 export const P_MAX = 'pmax';
 export const Q_MIN = 'qmin';
 export const Q_MAX = 'qmax';
+
+export const AREA_INVALIDATIONS = 'areaInvalidations';
+export const INVALIDATE = 'invalidate';
+export const FILTER = 'filter';
+export const INVALIDATION_TYPE = 'invalidationType';
 
 /* State estimation extensions */
 export const STATE_ESTIMATION = 'stateEstimation';

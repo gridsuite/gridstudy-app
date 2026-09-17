@@ -7,27 +7,20 @@
 import { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
 import {
     ALL_BUSES,
-    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
-    LOADFLOW_RESULT_SORT_STORE,
     ONE_BUS,
-    PCCMIN_ANALYSIS_RESULT_SORT_STORE,
     PCCMIN_RESULT,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
-    SECURITY_ANALYSIS_RESULT_SORT_STORE,
-    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
     SENSITIVITY_AT_NODE_N,
     SENSITIVITY_AT_NODE_N_K,
     SENSITIVITY_IN_DELTA_A_N,
     SENSITIVITY_IN_DELTA_A_N_K,
     SENSITIVITY_IN_DELTA_MW_N,
     SENSITIVITY_IN_DELTA_MW_N_K,
-    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-    SPREADSHEET_SORT_STORE,
-    STATEESTIMATION_RESULT_SORT_STORE,
 } from 'utils/store-sort-filter-fields';
 import { UUID } from 'node:crypto';
 import React, { ComponentType } from 'react';
+import { TableSort, TableType } from '@gridsuite/commons-ui';
 
 export type SortConfig = {
     colId: string;
@@ -42,16 +35,6 @@ export enum SortWay {
 
 export type TableSortConfig = Record<string, SortConfig[]>;
 
-export type TableSort = {
-    [SPREADSHEET_SORT_STORE]: TableSortConfig;
-    [LOADFLOW_RESULT_SORT_STORE]: TableSortConfig;
-    [SECURITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
-    [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
-    [PCCMIN_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-};
 export type TableSortKeysType = keyof TableSort;
 
 export type SortParams = {
@@ -60,19 +43,6 @@ export type SortParams = {
     isChildren?: boolean;
     persistSort?: (api: GridApi, sort: SortConfig) => Promise<void>;
 };
-
-export enum TableType {
-    Loadflow = 'Loadflow',
-    SecurityAnalysis = 'SecurityAnalysis',
-    SensitivityAnalysis = 'SensitivityAnalysis',
-    ShortcircuitAnalysis = 'ShortcircuitAnalysis',
-    DynamicSimulation = 'DynamicSimulation',
-    Spreadsheet = 'Spreadsheet',
-    Logs = 'Logs',
-    StateEstimation = 'StateEstimation',
-    PccMin = 'PccMin',
-    VoltageInit = 'VoltageInit',
-}
 
 export type FilterData = {
     dataType?: string;

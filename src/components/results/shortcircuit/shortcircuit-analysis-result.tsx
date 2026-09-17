@@ -28,18 +28,14 @@ import {
     mappingTabs,
     convertFilterValues,
     SCAPagedResults,
+    TableType,
 } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { DisplayedColumnsChangedEvent, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import {
-    FilterEnumsType,
-    PaginationType,
-    ShortcircuitAnalysisTab,
-    TableType,
-} from '../../../types/custom-aggrid-types';
+import { FilterEnumsType, PaginationType, ShortcircuitAnalysisTab } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import { useSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';

@@ -8,8 +8,6 @@
 import {
     ArrowsInputIcon,
     ComposedModificationMetadata,
-    ElementSaveDialog,
-    ElementType,
     EquipmentType,
     ErrorMessage,
     fetchNetworkModification,
@@ -21,7 +19,6 @@ import {
     NetworkModificationMetadata,
     NetworkModificationsTable,
     NotificationsUrlKeys,
-    ReferenceModificationInfos,
     removeNullFields,
     setModificationMetadata,
     snackWithFallback,
@@ -110,6 +107,7 @@ import ModificationByFormulaDialog from '../../../dialogs/network-modifications/
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
+import SaveNetworkModificationsDialog from './save-network-modifications-dialog';
 import {
     CommonStudyEventData,
     isModificationsDeleteFinishedNotification,
@@ -213,7 +211,6 @@ const NetworkModificationNodeEditor = () => {
             cleanOtherTabsClipboard('copiedModificationsInvalidationMsgFromStudyClosure');
         });
     }, [cleanOtherTabsClipboard]);
-
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
     // a modification on a public study which is in the clipboard.
@@ -865,24 +862,16 @@ const NetworkModificationNodeEditor = () => {
         folderId,
     }: IElementCreationDialog) => {
         setSaveInProgress(true);
+        const isSingleSelection = selectedNetworkModifications.length === 1;
+        const singleModification = selectedNetworkModifications[0];
+        const isSingleCompositeOrShared =
+            isSingleSelection &&
+            (singleModification.type === MODIFICATION_TYPES.MODIFICATION_REFERENCE.type ||
+                singleModification.type === MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type);
 
-        Promise.all(
-            selectedNetworkModifications.map((item) =>
-                item.type === MODIFICATION_TYPES.MODIFICATION_REFERENCE.type
-                    ? fetchNetworkModification(item.uuid as UUID)
-                          .then((res) => res.json())
-                          .then((detail: ReferenceModificationInfos) => {
-                              if (detail.referenceId == null) {
-                                  throw new Error(`Missing referenceId for modification reference ${item.uuid}`);
-                              }
-                              return detail.referenceId;
-                          })
-                    : Promise.resolve(item.uuid)
-            )
-        )
-            .then((selectedModificationsUuid) =>
-                createCompositeModifications(name, description, folderId, selectedModificationsUuid)
-            )
+        const inheritedDescription = isSingleCompositeOrShared ? singleModification.description : '';
+        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
+        createCompositeModifications(name, description || inheritedDescription, folderId, selectedModificationsUuid)
             .then(() => {
                 snackInfo({
                     headerId: 'infoCreateModificationsMsg',
@@ -1089,14 +1078,6 @@ const NetworkModificationNodeEditor = () => {
             ? (JSON.parse(selectedNetworkModifications[0]?.messageValues)?.name ?? null)
             : null;
 
-    // Sharing moves the selected composite itself into gridexplore : it needs exactly one composite, and an
-    // already shared one (a reference) cannot be shared again. Only a composite of the node itself can be shared,
-    // not one nested in another composite, so the third condition: the modifications list holds the modifications of the node only
-    const isSharingAvailable =
-        selectedNetworkModifications.length === 1 &&
-        selectedNetworkModifications[0].type === ModificationType.COMPOSITE_MODIFICATION &&
-        modifications.some((modification) => modification.uuid === selectedNetworkModifications[0].uuid);
-
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
             return (
@@ -1147,22 +1128,15 @@ const NetworkModificationNodeEditor = () => {
     const renderCreateCompositeNetworkModificationsDialog = () => {
         return (
             studyUuid && (
-                <ElementSaveDialog
+                <SaveNetworkModificationsDialog
                     open={createCompositeModificationDialogOpen}
+                    onClose={() => setCreateCompositeModificationDialogOpen(false)}
+                    studyUuid={studyUuid}
+                    selectedModifications={selectedNetworkModifications}
+                    defaultName={defaultSaveModificationName}
                     onSave={doCreateCompositeModificationsElements}
                     onSaveShared={doShareCompositeModificationElement}
-                    createSharedDisabled={!isSharingAvailable}
-                    OnUpdate={doUpdateCompositeModificationsElements}
-                    onClose={() => setCreateCompositeModificationDialogOpen(false)}
-                    type={ElementType.MODIFICATION}
-                    titleId="CreateCompositeModification"
-                    prefixIdForGeneratedName="GeneratedModification"
-                    defaultName={defaultSaveModificationName}
-                    studyUuid={studyUuid}
-                    selectorTitleId="SelectCompositeModificationTitle"
-                    createLabelId="CreateCompositeModificationLabel"
-                    createSharedLabelId="ShareCompositeModificationLabel"
-                    updateLabelId="UpdateCompositeModificationLabel"
+                    onUpdate={doUpdateCompositeModificationsElements}
                 />
             )
         );
