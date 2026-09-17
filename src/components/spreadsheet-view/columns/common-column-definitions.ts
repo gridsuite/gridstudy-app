@@ -97,13 +97,21 @@ export const enumColumnDefinition = (
                 {
                     displayKey: 'customInRange',
                     displayName: 'customInRange', // translation key
-                    predicate: (filterValues: (string | number)[][], cellValue: string | number) => {
-                        const allowedValues = filterValues[0];
-                        // if allowedValues is empty there is no filter
-                        if (!allowedValues || allowedValues.length === 0) {
+                    predicate: (filterValues: (string | number)[], cellValue: string | number) => {
+                        const raw = filterValues[0];
+                        // if raw is empty there is no filter
+                        if (!raw) {
                             return true;
                         }
-                        // allowedValues contains the list of selected enum values.
+                        // raw holds the selected enum values: comma-separated string (filter model) — array kept for robustness
+                        const allowedValues = Array.isArray(raw)
+                            ? raw
+                            : typeof raw === 'string'
+                              ? raw.split(',')
+                              : [raw];
+                        if (allowedValues.length === 0) {
+                            return true;
+                        }
                         return allowedValues.map(String).includes(String(cellValue));
                     },
                 },

@@ -24,7 +24,7 @@ const generateEnumFilterModel = (filter: FilterConfig) => {
     return {
         type: 'customInRange',
         filterType: 'text',
-        filter: filterValue,
+        filter: filterValue.join(','),
     };
 };
 
@@ -95,8 +95,10 @@ export const updateAgGridFilters = (api: GridApi | undefined, filters: FilterCon
     const currentColumnDefs = api.getColumns();
 
     // Filter out any filters that reference columns which are not visible or don't exist in the current column definitions
-    const validFilters = filters.filter((filter) =>
-        currentColumnDefs?.some((col) => col.getColId() === filter.column && col.isVisible())
+    const validFilters = filters.filter(
+        (filter) =>
+            currentColumnDefs?.some((col) => col.getColId() === filter.column && col.isVisible()) &&
+            !(Array.isArray(filter.value) && filter.value.length === 0)
     );
 
     if (!validFilters.length) {
