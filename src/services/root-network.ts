@@ -90,6 +90,12 @@ export function checkRootNetworkTagExistence(studyUuid: UUID, tag: string): Prom
     });
 }
 
+export function hasSharedModifications(studyUuid: UUID): Promise<boolean> {
+    const hasSharedModificationsUrl = getStudyUrl(studyUuid) + '/network-modifications/references/exists';
+    console.debug(hasSharedModificationsUrl);
+    return backendFetchJson(hasSharedModificationsUrl);
+}
+
 export function getModifications(studyUuid: UUID, rootNetworkUuid: UUID, userInput: string) {
     const fetchUrl =
         getStudyUrl(studyUuid) +
