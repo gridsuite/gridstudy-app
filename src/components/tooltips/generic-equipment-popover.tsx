@@ -122,7 +122,13 @@ const GenericEquipmentPopover: React.FC<GenericEquipmentPopoverProps> = ({
                             pb: 0,
                         }}
                         title={
-                            <Typography variant="caption" fontWeight="bold" textAlign="center">
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    fontWeight: 'bold',
+                                    textAlign: 'center',
+                                }}
+                            >
                                 {equipmentId}
                             </Typography>
                         }

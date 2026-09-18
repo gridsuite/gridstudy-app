@@ -103,17 +103,21 @@ export function EquipmentIdSelector({
             onInputChange={(_, data, reason) => handleChange(data, reason)}
             options={equipmentOptions}
             autoHighlight={autoHighlightEnabled}
-            renderInput={({ inputProps, ...rest }) => (
+            renderInput={(params) => (
                 <TextField
                     label={FieldLabel({
                         label: 'ID',
                     })}
-                    slotProps={{
-                        htmlInput: { ...inputProps, readOnly: readOnly },
-                    }}
-                    autoFocus
                     {...filledTextField}
-                    {...rest}
+                    {...params}
+                    autoFocus
+                    slotProps={{
+                        ...params.slotProps,
+                        htmlInput: {
+                            ...params.slotProps.htmlInput,
+                            readOnly,
+                        },
+                    }}
                 />
             )}
         />

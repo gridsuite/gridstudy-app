@@ -345,7 +345,16 @@ function DynamicSimulationResultChart({
     return (
         <Box sx={mergeSx(styles.root, fullView ? styles.modal : undefined)}>
             <Box>
-                <Grid container sx={styles.toolBar} alignItems="center" justifyContent="center">
+                <Grid
+                    container
+                    sx={[
+                        {
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        },
+                        styles.toolBar,
+                    ]}
+                >
                     {!plotIdScale && (
                         <Grid>
                             <Paper elevation={2} sx={styles.paperOptionsGroup}>
@@ -392,7 +401,11 @@ function DynamicSimulationResultChart({
                         </Grid>
                     )}
                     {!plotIdScale && (
-                        <Grid ml={2}>
+                        <Grid
+                            sx={{
+                                ml: 2,
+                            }}
+                        >
                             <TooltipIconButton
                                 tooltip={intl.formatMessage({
                                     id: 'DynamicSimulationAddGraph',
