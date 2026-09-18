@@ -1078,6 +1078,9 @@ const NetworkModificationNodeEditor = () => {
             ? (JSON.parse(selectedNetworkModifications[0]?.messageValues)?.name ?? null)
             : null;
 
+    const defaultSaveModificationDescription =
+        selectedNetworkModifications.length === 1 ? (selectedNetworkModifications[0]?.description ?? null) : null;
+
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
             return (
@@ -1134,6 +1137,7 @@ const NetworkModificationNodeEditor = () => {
                     studyUuid={studyUuid}
                     selectedModifications={selectedNetworkModifications}
                     defaultName={defaultSaveModificationName}
+                    defaultDescription={defaultSaveModificationDescription}
                     onSave={doCreateCompositeModificationsElements}
                     onSaveShared={doShareCompositeModificationElement}
                     onUpdate={doUpdateCompositeModificationsElements}
