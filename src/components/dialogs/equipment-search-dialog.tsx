@@ -84,6 +84,7 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
                     })}
                     value={displayedValue}
                     slotProps={{
+                        ...params.slotProps,
                         input: {
                             ...params.slotProps.input,
                             startAdornment: (

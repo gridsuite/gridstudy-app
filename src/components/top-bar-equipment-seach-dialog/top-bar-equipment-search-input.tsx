@@ -58,6 +58,7 @@ export const TopBarEquipmentSearchInput = (props: TopBarEquipmentSearchInputProp
                 })}
                 value={displayedValue}
                 slotProps={{
+                    ...params.slotProps,
                     input: {
                         ...params.slotProps.input,
                         startAdornment: (
