@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
-import { RowClassParams } from 'ag-grid-community';
+import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 import {
     ComputingType,
     DefaultCellRenderer,
@@ -27,13 +27,25 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
+import {
+    MEASUREMENT_RESULTS_TABLE,
+    QUALITY_CRITERION_RESULTS_TABLE,
+    QUALITY_PER_REGION_RESULTS_TABLE,
+    applyStateEstimationSort,
+} from './state-estimation-result-utils';
+import {
+    STATEESTIMATION_MEASUREMENTS,
+    STATEESTIMATION_RESULT_SORT_STORE,
+} from '../../../utils/store-sort-filter-fields';
 
-export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({
+const StateEstimationResult: FunctionComponent<StateEstimationResultProps> = ({
     result,
     isLoadingResult,
     columnDefs,
     tableName,
     exportCsvResetKey,
+    filter = false,
+    sortable = false,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -45,6 +57,11 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
     const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
+    const sortConfig = useSelector((state: AppState) =>
+        tableName === MEASUREMENT_RESULTS_TABLE
+            ? state.tableSort[STATEESTIMATION_RESULT_SORT_STORE][STATEESTIMATION_MEASUREMENTS]
+            : undefined
+    );
 
     //We give each tab its own loader, so we don't have a loader spinning because another tab is still doing some work
     const openLoaderTab = useOpenLoaderShortWait({
@@ -71,10 +88,20 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
 
     const messages = useIntlResultStatusMessages(intl, true);
 
+    //The grid unmounts on every tab change, so the persisted sort (redux, drives the header arrow) has to be re-applied on mount
+    const handleGridReady = useCallback(
+        (params: GridReadyEvent) => {
+            if (sortConfig?.[0]) {
+                applyStateEstimationSort(params.api, sortConfig[0]);
+            }
+        },
+        [sortConfig]
+    );
+
     const defaultColDef = useMemo(
         () => ({
-            filter: false,
-            sortable: false,
+            filter: filter,
+            sortable: sortable,
             resizable: true,
             lockPinned: true,
             suppressMovable: true,
@@ -83,41 +110,43 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
             flex: 1,
             cellRenderer: DefaultCellRenderer,
         }),
-        []
+        [filter, sortable]
     );
 
-    const renderStateEstimationQualities = () => {
-        const message = getNoRowsMessage(
-            messages,
-            tableName === 'qualityCriterionResults' ? result.qualityCriterionResults : result.qualityPerRegionResults,
-            stateEstimationStatus,
-            !isLoadingResult
-        );
-        const rowsToShow =
-            (tableName === 'qualityCriterionResults'
-                ? result.qualityCriterionResults
-                : result.qualityPerRegionResults) ?? [];
+    const rowsToShow = (() => {
+        switch (tableName) {
+            case MEASUREMENT_RESULTS_TABLE:
+                return result.measurementInformationResults ?? [];
+            case QUALITY_CRITERION_RESULTS_TABLE:
+                return result.qualityCriterionResults ?? [];
+            case QUALITY_PER_REGION_RESULTS_TABLE:
+                return result.qualityPerRegionResults ?? [];
+            default:
+                return [];
+        }
+    })();
 
-        return (
-            <>
-                <Box sx={{ height: '4px' }}>{openLoaderTab && <LinearProgress />}</Box>
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={columnDefs}
-                    defaultColDef={defaultColDef}
-                    tableName={tableNameFormatted}
-                    rows={rowsToShow}
-                    getRowStyle={getRowStyle}
-                    overlayNoRowsTemplate={message}
-                    skipColumnHeaders={false}
-                    computationType={TableType.StateEstimation}
-                    computationSubType={tableName}
-                    exportCsvResetKey={exportCsvResetKey}
-                    language={language}
-                />
-            </>
-        );
-    };
+    const message = getNoRowsMessage(messages, rowsToShow, stateEstimationStatus, !isLoadingResult);
 
-    return renderStateEstimationQualities();
+    return (
+        <>
+            <Box sx={{ height: '4px' }}>{openLoaderTab && <LinearProgress />}</Box>
+            <RenderTableAndExportCsv
+                gridRef={gridRef}
+                columns={columnDefs}
+                defaultColDef={defaultColDef}
+                tableName={tableNameFormatted}
+                rows={rowsToShow}
+                getRowStyle={getRowStyle}
+                overlayNoRowsTemplate={message}
+                skipColumnHeaders={false}
+                computationType={TableType.StateEstimation}
+                computationSubType={tableName}
+                exportCsvResetKey={exportCsvResetKey}
+                language={language}
+                onGridReady={handleGridReady}
+            />
+        </>
+    );
 };
+export default StateEstimationResult;

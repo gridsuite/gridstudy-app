@@ -16,7 +16,7 @@ import { AppState } from '../../redux/reducer.type';
 import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
 import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
-interface RenderTableAndExportCsvProps extends Omit<BaseProps, 'onGridReady'> {
+interface RenderTableAndExportCsvProps extends BaseProps {
     computationType: TableType;
     computationSubType: string;
 }
@@ -25,9 +25,10 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     computationType,
     computationSubType,
     gridRef,
+    onGridReady,
     ...rest
 }) => {
-    const onGridReady = useAgGridInitialColumnFilters(computationType, computationSubType);
+    const handleGridReady = useAgGridInitialColumnFilters(computationType, computationSubType, onGridReady);
     const columnFilters = useSelector(
         (state: AppState) => state.tableFilters.columnsFilters?.[computationType]?.[computationSubType]
     );
@@ -36,5 +37,5 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
         updateAgGridFilters(gridRef.current?.api, columnFilters);
     }, [columnFilters, gridRef]);
 
-    return <RenderTableAndExportCsvBase gridRef={gridRef} onGridReady={onGridReady} {...rest} />;
+    return <RenderTableAndExportCsvBase gridRef={gridRef} onGridReady={handleGridReady} {...rest} />;
 };

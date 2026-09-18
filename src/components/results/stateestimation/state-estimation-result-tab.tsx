@@ -10,15 +10,22 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { QualityCriterionResult, StateEstimationTabProps } from './state-estimation-result.type';
+import { StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
 import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
 import { AppState } from 'redux/reducer.type';
-import { ComputingType, RunningStatus, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, TableType, type MuiStyles, RunningStatus } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { StateEstimationQualityResult } from './state-estimation-quality-result';
+import StateEstimationResult from './state-estimation-result';
 import GlassPane from '../common/glass-pane';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import {
+    mapMeasurementResults,
+    mapQualityCriterionResults,
+    MEASUREMENT_RESULTS_TABLE,
+    QUALITY_CRITERION_RESULTS_TABLE,
+    QUALITY_PER_REGION_RESULTS_TABLE,
+    stateEstimationMeasurementColumnsDefinition,
     stateEstimationQualityCriterionColumnsDefinition,
     stateEstimationQualityPerRegionColumnsDefinition,
 } from './state-estimation-result-utils';
@@ -64,11 +71,15 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         invalidations: stateEstimationResultInvalidations,
     });
 
-    const stateEstimationQualityColumns = useMemo(() => {
+    useComputationColumnFilters(TableType.StateEstimation, MEASUREMENT_RESULTS_TABLE);
+
+    const stateEstimationResultColumns = useMemo(() => {
         switch (tabIndex) {
             case 1:
-                return stateEstimationQualityCriterionColumnsDefinition(intl);
+                return stateEstimationMeasurementColumnsDefinition(intl);
             case 2:
+                return stateEstimationQualityCriterionColumnsDefinition(intl);
+            case 3:
                 return stateEstimationQualityPerRegionColumnsDefinition(intl);
 
             default:
@@ -88,15 +99,12 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         }
         return {
             ...stateEstimationResult,
-            qualityCriterionResults: stateEstimationResult.qualityCriterionResults.map(
-                (qCrit: QualityCriterionResult) => {
-                    return {
-                        type: intl.formatMessage({ id: qCrit.type }),
-                        validity: qCrit.validity,
-                        value: qCrit.value,
-                        threshold: qCrit.threshold,
-                    };
-                }
+            measurementInformationResults: mapMeasurementResults(
+                stateEstimationResult.measurementInformationResults ?? []
+            ),
+            qualityCriterionResults: mapQualityCriterionResults(
+                stateEstimationResult.qualityCriterionResults ?? [],
+                intl
             ),
         };
     }, [stateEstimationStatus, stateEstimationResult, intl]);
@@ -117,6 +125,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             <Box sx={styles.flexWrapper}>
                 <Tabs value={tabIndex} onChange={handleTabChange} sx={styles.flexElement}>
                     <Tab label={<FormattedMessage id={'StateEstimationStatusResults'} />} />
+                    <Tab label={<FormattedMessage id={'StateEstimationMeasurementResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityCriterionResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityPerRegionResults'} />} />
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
@@ -127,27 +136,40 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             {tabIndex === 0 && <StateEstimationStatusResult result={result} />}
             {tabIndex === 1 && (
                 <GlassPane active={isLoadingResult}>
-                    <StateEstimationQualityResult
+                    <StateEstimationResult
                         result={result}
                         isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationQualityColumns}
-                        tableName="qualityCriterionResults"
+                        columnDefs={stateEstimationResultColumns}
+                        tableName={MEASUREMENT_RESULTS_TABLE}
                         exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                        filter={true}
+                        sortable={true}
                     />
                 </GlassPane>
             )}
             {tabIndex === 2 && (
                 <GlassPane active={isLoadingResult}>
-                    <StateEstimationQualityResult
+                    <StateEstimationResult
                         result={result}
                         isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationQualityColumns}
-                        tableName="qualityPerRegionResults"
+                        columnDefs={stateEstimationResultColumns}
+                        tableName={QUALITY_CRITERION_RESULTS_TABLE}
                         exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                     />
                 </GlassPane>
             )}
-            {tabIndex === 3 && renderReportViewer()}
+            {tabIndex === 3 && (
+                <GlassPane active={isLoadingResult}>
+                    <StateEstimationResult
+                        result={result}
+                        isLoadingResult={isLoadingResult}
+                        columnDefs={stateEstimationResultColumns}
+                        tableName={QUALITY_PER_REGION_RESULTS_TABLE}
+                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                    />
+                </GlassPane>
+            )}
+            {tabIndex === 4 && renderReportViewer()}
         </>
     );
 };
