@@ -53,6 +53,8 @@ export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
     return (
         <Box
             sx={{
+                // react-flow needs a non-absolute, non-empty node with height and width to calculate
+                // the global size of the tree for its fitView function.
                 height: '0',
                 width: '0',
                 visibility: 'hidden',
