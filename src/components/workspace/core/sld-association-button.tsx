@@ -61,9 +61,7 @@ export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAs
                 onClick={handleAssociateClick}
                 onMouseDown={(e) => e.stopPropagation()}
             >
-                <LinkIcon
-                     fontSize="small"
-                />
+                <LinkIcon fontSize="small" />
             </IconButton>
             <AssociateNadMenu
                 anchorEl={associateMenuAnchor}
