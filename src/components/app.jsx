@@ -20,16 +20,17 @@ import {
     getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
+    isEditingGlobalFilter,
     LAST_SELECTED_DIRECTORY,
     NotificationsUrlKeys,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
     snackWithFallback,
+    SortWay,
+    TableType,
     useNotificationsListener,
     useSnackMessage,
-    isEditingGlobalFilter,
-    TableType,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -72,7 +73,6 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
-import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
 import { useGlobalFilterOptions } from './results/common/global-filter/hooks/use-global-filter-options.ts';
 import { updateComputationColumnFilters, updateComputationGlobalFilters } from './results/common/utils.ts';
