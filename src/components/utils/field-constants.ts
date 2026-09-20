@@ -236,17 +236,9 @@ export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 = 'operatorActivePowerLimitSide2'
 export const CONVERTERS_MODE = 'convertersMode';
 export const ANGLE_DROOP_ACTIVE_POWER_CONTROL = 'angleDroopActivePowerControl';
 export const P0 = 'p0';
-export const CONVERTER_STATION_ID = 'converterStationId';
-export const CONVERTER_STATION_NAME = 'converterStationName';
-export const LOSS_FACTOR = 'lossFactor';
-export const POWER_FACTOR = 'powerFactor';
 export const VOLTAGE = 'voltage';
-export const HVDC_LINE_TAB = 'hvdcLineTab';
-export const CONVERTER_STATION_1 = 'converterStation1';
-export const CONVERTER_STATION_2 = 'converterStation2';
 
 export const EQUIPMENT_TYPE_FIELD = 'equipmentType';
-export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
 
 /* State estimation parameters fields */
 /* General */
