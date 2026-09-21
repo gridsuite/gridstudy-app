@@ -238,7 +238,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                         onSelectCase={onSelectCase}
                         originalCaseUuid={editableRootNetwork?.originalCaseUuid}
                     />
-                    <Stack direction="row" spacing={2} alignItems="center">
+                    <Stack direction="row" spacing={2}>
                         <UniqueCheckNameInput
                             name={TAG}
                             label={'rootTag'}
@@ -248,6 +248,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             errorMessageKey="tagAlreadyUsed"
                             catchMessageKey="rootNetworknameValidityCheckError"
                             max_length={MAX_TAG_LENGTH}
+                            formProps={{ sx: { width: 160, flexShrink: 0 } }}
                         />
                         {isRenamingTag && isStudyContainingSharedModifications && (
                             <Alert severity="warning">
