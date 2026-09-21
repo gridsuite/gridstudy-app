@@ -58,7 +58,9 @@
     },
     "overrides": {
         "@powsybl/network-viewer": {
-            "react-intl": "$react-intl"
+            "react-intl": "$react-intl",
+            "@mui/icons-material": "$@mui/icons-material",
+            "@mui/material": "$@mui/material"
         },
         "react-plotly.js": {
             "plotly.js": {
