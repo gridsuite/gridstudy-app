@@ -120,19 +120,17 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
         formState: { errors },
     } = formMethods;
 
-    // renaming the tag overwrites what the shared modifications of the study hold for the new one
-    const [isStudyHoldingSharedModifications, setIsStudyHoldingSharedModifications] = useState(false);
+    const [isStudyContainingSharedModifications, setIsStudyContainingSharedModifications] = useState(false);
     useEffect(() => {
         if (open && isModification && studyUuid) {
             hasSharedModifications(studyUuid)
-                .then(setIsStudyHoldingSharedModifications)
-                .catch(() => setIsStudyHoldingSharedModifications(false));
+                .then(setIsStudyContainingSharedModifications)
+                .catch(() => setIsStudyContainingSharedModifications(false));
         }
     }, [isModification, open, studyUuid]);
 
-    const tag = useWatch({ control, name: TAG });
-    const trimmedTag = tag?.trim();
-    const isRenamingTag = isModification && !!trimmedTag && trimmedTag !== editableRootNetwork?.tag;
+    const tag = useWatch({ control, name: TAG })?.trim();
+    const isRenamingTag = isModification && !!tag && tag !== editableRootNetwork?.tag;
 
     // Reset the form values when editableRootNetwork is available (for modification mode)
     useEffect(() => {
@@ -246,7 +244,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             catchMessageKey="rootNetworknameValidityCheckError"
                             max_length={MAX_TAG_LENGTH}
                         />
-                        {isRenamingTag && isStudyHoldingSharedModifications && (
+                        {isRenamingTag && isStudyContainingSharedModifications && (
                             <Alert severity="warning">
                                 <FormattedMessage id="sharedModificationsApplicabilitiesOverwritten" />
                             </Alert>
