@@ -136,14 +136,23 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
     }, [handleClearFilter]);
 
     return (
-        <Stack gap={0.8} sx={{ padding: '8px' }}>
+        <Stack
+            sx={{
+                gap: 0.8,
+                padding: '8px',
+            }}
+        >
             <CustomAggridComparatorSelector
                 value={selectedFilterComparator}
                 onChange={handleFilterComparatorChange}
                 options={comparators}
             />
             <Grid container columns={12} sx={styles.containerStyle}>
-                <Grid flex={1}>
+                <Grid
+                    sx={{
+                        flex: 1,
+                    }}
+                >
                     <TextField
                         fullWidth
                         size="small"
@@ -163,7 +172,11 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                 <Grid size={1} sx={styles.flexCenter}>
                     <Typography variant="body1">:</Typography>
                 </Grid>
-                <Grid flex={1}>
+                <Grid
+                    sx={{
+                        flex: 1,
+                    }}
+                >
                     <TextField
                         fullWidth
                         size="small"
@@ -181,7 +194,15 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
                     />
                 </Grid>
                 {selectedFilterData !== undefined && selectedFilterData !== '' && (
-                    <Grid size={1} sx={styles.flexCenter} ml={0.5}>
+                    <Grid
+                        size={1}
+                        sx={[
+                            {
+                                ml: 0.5,
+                            },
+                            styles.flexCenter,
+                        ]}
+                    >
                         <IconButton
                             onClick={clearValue}
                             sx={styles.iconStyle}
