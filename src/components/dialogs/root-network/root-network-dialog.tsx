@@ -211,7 +211,12 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                 titleId={titleId}
                 disabledSave={!isFormValid}
             >
-                <Stack spacing={2} marginTop={'auto'}>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        marginTop: 'auto',
+                    }}
+                >
                     <Grid>
                         <UniqueCheckNameInput
                             name={NAME}
