@@ -20,6 +20,7 @@ import {
     PARAM_THEME,
     RunningStatus,
     GlobalFilter,
+    TableType,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
@@ -40,7 +41,6 @@ import {
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
     SortConfig,
-    TableType,
 } from '../types/custom-aggrid-types';
 import type { IOptionalService } from '../components/utils/optional-services';
 import {

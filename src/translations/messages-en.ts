@@ -933,7 +933,7 @@ const messages_en = {
     GeneratorAvailability: 'Generator availability',
     chooseElement: 'Choose element',
     studyNetworkRecovered: 'Study network has been recreated successfully',
-    rootNetworkStudyUnloaded: 'Due to a period of inactivity, this study has been unloaded',
+    rootNetworkStudyUnloaded: "Due to a period of inactivity, the study's network has been unloaded",
     recreatingNetworkStudy:
         'Impossible to get the study network. Reconstruction of the network from the initial situation...',
     invalidStudyError: 'Invalid study : Root situation can not be found',
@@ -1338,8 +1338,8 @@ const messages_en = {
     ConsP: 'Pcons (MW)',
     removeAll: 'Close All',
     removeAllAssociatedSldsConfirmation: 'Are you sure you want to close all associated voltage levels?',
-    createNewNAD: 'Create New NAD',
-    existingNAD: 'Existing NAD',
+    createNewNAD: 'Create a new network area diagram',
+    existingNAD: 'Existing network area diagram',
     unbuildAllNodesTooltip: 'Unbuild all nodes',
     unbuildAllNodesDialogTitle: 'Confirmation',
     unbuildAllNodesDialogContent:

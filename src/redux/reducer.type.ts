@@ -22,6 +22,7 @@ import type {
     RunningStatus,
     GlobalFilter,
     RecentGlobalFilter,
+    TableSort,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { ValueOf } from 'type-fest';
@@ -33,7 +34,6 @@ import type {
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
-    TableSort,
 } from '../types/custom-aggrid-types';
 import type { IOptionalService } from '../components/utils/optional-services';
 import type { CopyType } from '../components/network-modification.type';
