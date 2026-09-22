@@ -114,7 +114,12 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                         </Tabs>
                     </Box>
                 </Box>
-                <Box mt={1} style={{ flexGrow: 1 }}>
+                <Box
+                    style={{ flexGrow: 1 }}
+                    sx={{
+                        mt: 1,
+                    }}
+                >
                     <CustomAGGrid
                         defaultColDef={defaultColDef}
                         rowData={displayedData}
