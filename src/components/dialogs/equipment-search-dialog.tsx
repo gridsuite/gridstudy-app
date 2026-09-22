@@ -19,7 +19,7 @@ import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/u
 import type { UUID } from 'node:crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import { TextField } from '@mui/material';
+import { Paper, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
 interface EquipmentSearchDialogProps {
@@ -74,6 +74,7 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
             loading={isLoading}
             getOptionLabel={(equipment) => equipment.label}
             isOptionEqualToValue={(equipment1, equipment2) => equipment1.id === equipment2.id}
+            PaperComponent={Paper}
             renderInput={(displayedValue, params) => (
                 <TextField
                     autoFocus={true}
@@ -83,12 +84,13 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
                     })}
                     value={displayedValue}
                     slotProps={{
+                        ...params.slotProps,
                         input: {
-                            ...params.InputProps,
+                            ...params.slotProps.input,
                             startAdornment: (
                                 <>
                                     <Search color="disabled" />
-                                    {params.InputProps.startAdornment}
+                                    {params.slotProps.input.startAdornment}
                                 </>
                             ),
                         },

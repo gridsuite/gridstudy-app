@@ -60,15 +60,16 @@ export default function SubstationsAutocomplete({
             size={'small'}
             freeSolo
             sx={styles.autocomplete}
-            renderInput={({ inputProps, ...rest }) => (
+            renderInput={(params) => (
                 <TextField
                     inputRef={ref}
+                    {...params}
                     slotProps={{
-                        htmlInput: { ...inputProps },
+                        ...params.slotProps,
+                        htmlInput: { ...params.slotProps.htmlInput },
                     }}
                     label={label}
                     {...genHelperError(error?.message)}
-                    {...rest}
                 />
             )}
             autoHighlight={true}

@@ -87,10 +87,20 @@ export function LccModificationForm({
     return (
         <>
             <Box>{headerAndTabs}</Box>
-            <Box hidden={tabIndex !== LccDialogTab.HVDC_LINE_TAB} p={1}>
+            <Box
+                hidden={tabIndex !== LccDialogTab.HVDC_LINE_TAB}
+                sx={{
+                    p: 1,
+                }}
+            >
                 <LccHvdcLine id={HVDC_LINE_TAB} previousValues={lccToModify} isModification />
             </Box>
-            <Box hidden={tabIndex !== LccDialogTab.CONVERTER_STATION_1} p={1}>
+            <Box
+                hidden={tabIndex !== LccDialogTab.CONVERTER_STATION_1}
+                sx={{
+                    p: 1,
+                }}
+            >
                 <LccConverterStation
                     studyUuid={studyUuid}
                     currentNode={currentNode}
@@ -101,7 +111,12 @@ export function LccModificationForm({
                     isModification
                 />
             </Box>
-            <Box hidden={tabIndex !== LccDialogTab.CONVERTER_STATION_2} p={1}>
+            <Box
+                hidden={tabIndex !== LccDialogTab.CONVERTER_STATION_2}
+                sx={{
+                    p: 1,
+                }}
+            >
                 <LccConverterStation
                     studyUuid={studyUuid}
                     currentNode={currentNode}
