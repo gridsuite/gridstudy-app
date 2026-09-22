@@ -26,7 +26,12 @@ const NodeOverlaySpinner = ({ activity }: Readonly<{ activity: NodeActivity }>) 
             })}
         >
             <CircularProgress size={35} sx={{ color: colors.blue[600] }} />
-            <Typography variant="caption" color="text.primary">
+            <Typography
+                variant="caption"
+                sx={{
+                    color: 'text.primary',
+                }}
+            >
                 <FormattedMessage id={nodeActivityLabelId(activity.label)} />
             </Typography>
         </Box>
