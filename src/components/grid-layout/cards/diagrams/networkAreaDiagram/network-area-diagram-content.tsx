@@ -566,7 +566,13 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     };
     return (
         <>
-            <Box height={2}>{loadingState && <LinearProgress />}</Box>
+            <Box
+                sx={{
+                    height: 2,
+                }}
+            >
+                {loadingState && <LinearProgress />}
+            </Box>
             {visible && shouldDisplayTooltip && displayTooltip()}
             {shouldDisplayMenu && (
                 <NodeContextMenu
