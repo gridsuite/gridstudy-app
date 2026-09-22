@@ -40,6 +40,10 @@ const hasStoredVoltageLevels = (
     source?: Pick<NetworkAreaDiagram, 'currentNadConfigUuid' | 'nadConfigUuid' | 'filterUuid'>
 ) => Boolean(source?.currentNadConfigUuid || source?.nadConfigUuid || source?.filterUuid);
 
+const hasNoConfig = (
+    source?: Pick<NetworkAreaDiagram, 'currentNadConfigUuid' | 'nadConfigUuid' | 'filterUuid'>
+) => !Boolean(source?.currentNadConfigUuid) && !Boolean(source?.nadConfigUuid) && !Boolean(source?.filterUuid);
+
 const BASE_RESET_STATE = {
     currentFilterUuid: undefined,
     voltageLevelIds: [],
@@ -58,6 +62,7 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
+    const isEmpty = hasNoConfig(initialFields) && !Boolean(initialFields?.initialVoltageLevelIds?.length);
     const isStored = hasStoredVoltageLevels(initialFields);
     const canFetchDiagram = isStored || Boolean(initialFields?.initialVoltageLevelIds?.length);
 
@@ -141,6 +146,9 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
 
     const fetchDiagram = useCallback(
         (persistAfterFetch = false) => {
+            if (isEmpty) {
+                return;
+            }
             if (!canFetchDiagram || !networkVisuParams) {
                 setLoading(true);
                 return;

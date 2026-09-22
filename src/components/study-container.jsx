@@ -22,7 +22,7 @@ import {
 } from '../redux/actions';
 import { setWorkspacesMetadata, setActiveWorkspace } from '../redux/slices/workspace-slice';
 import { fetchRootNetworks } from 'services/root-network';
-import { getWorkspacesMetadata, getWorkspace } from '../services/study/workspace';
+import { getWorkspacesMetadata, getWorkspace, saveNadConfig } from '../services/study/workspace';
 import {
     getLocalStorageActiveWorkspaceId,
     getLocalStoragePanelStates,
@@ -71,6 +71,7 @@ import { saveStudyAccessTimestamp } from '../redux/session-storage/local-storage
 import { getLastRootNetworkUuid } from 'redux/session-storage/last-root-network-local-storage';
 import { getLastTreeNodeUuid } from 'redux/session-storage/last-tree-node-local-storage';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
+import { PanelType } from './workspace/types/workspace.types.ts';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -531,6 +532,31 @@ export function StudyContainer() {
         listenerCallbackMessage: handleQuotaEvent,
     });
 
+
+    // TODO
+    const clearNadConfigs = async (workspaceId) => {
+        return getWorkspace(studyUuid, workspaceId).then((workspace) => {
+            if (workspace) {
+                workspace.panels.forEach(async (panel) => {
+                    if (panel.type === PanelType.NAD) {
+                        try {
+                            await saveNadConfig(studyUuid, workspaceId, panel.id, {
+                                title: panel.title,
+                                nadConfig: {},
+                                nadConfigUuid: null,
+                                filterUuid: null,
+                                currentFilterUuid: null,
+                                voltageLevelToOmitIds: [],
+                            });
+                        } catch (error) {
+                            console.error('Failed to clear NAD config for panel ' + panel.id + ' :', error);
+                        }
+                    }
+                });
+            }
+        });
+    };
+
     useEffect(() => {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
@@ -539,16 +565,22 @@ export function StudyContainer() {
 
             // Load workspaces metadata from backend
             getWorkspacesMetadata(studyUuid)
-                .then((workspacesMetadata) => {
+                .then(async (workspacesMetadata) => {
                     dispatch(setWorkspacesMetadata(workspacesMetadata));
 
                     if (workspacesMetadata.length > 0) {
-                        const savedId = getLocalStorageActiveWorkspaceId(studyUuid);
-                        const targetId =
-                            savedId && workspacesMetadata.some((w) => w.id === savedId)
-                                ? savedId
-                                : workspacesMetadata[0].id;
-                        return getWorkspace(studyUuid, targetId);
+                        // TODO
+                        const promises = workspacesMetadata.map((w) => clearNadConfigs(w.id));
+                        return await Promise.all(promises).then(
+                            () => {
+                                const savedId = getLocalStorageActiveWorkspaceId(studyUuid);
+                                const targetId =
+                                    savedId && workspacesMetadata.some((w) => w.id === savedId)
+                                        ? savedId
+                                        : workspacesMetadata[0].id;
+                                return getWorkspace(studyUuid, targetId);
+                            }
+                        );
                     }
                 })
                 .then((workspace) => {
