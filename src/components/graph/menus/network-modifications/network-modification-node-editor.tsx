@@ -168,14 +168,6 @@ const NetworkModificationNodeEditor = () => {
         []
     );
 
-    // TODO : this is temporary, until merge/delete is done for the shared modification
-    const selectionContainsShared: boolean = useMemo(() => {
-        return selectedNetworkModifications.some(
-            (modification: ComposedModificationMetadata) =>
-                modification.type === ModificationType.MODIFICATION_REFERENCE
-        );
-    }, [selectedNetworkModifications]);
-
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
 
