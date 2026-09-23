@@ -6,7 +6,7 @@
  */
 
 import LineSplitDiagram from '../../../../images/network-modifications/illustrations/lines-attach-to-split-lines.svg?react';
-import GenericIllustrationNetworkModification from 'components/dialogs/illustrations/generic-Illustration-network-modification';
+import { GenericIllustrationNetworkModification } from '@gridsuite/commons-ui';
 
 const replacedTexts = [
     {
