@@ -15,7 +15,6 @@ import {
     IElementUpdateDialog,
     MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
-    modificationLocation,
     ModificationMoveRequest,
     ModificationType,
     moveModifications,
@@ -993,10 +992,9 @@ const NetworkModificationNodeEditor = () => {
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
             const modifications: ModificationMoveRequest[] = networkModificationsToCopy.map((modification) => ({
                 modificationUuid: modification.uuid,
-                source: modificationLocation(copyInfos.originNodeUuid, modification.parentCompositeUuid),
-                target: modificationLocation(currentNode.id),
+                sourceCompositeUuid: modification.parentCompositeUuid,
             }));
-            moveModifications(studyUuid, currentNode.id, modifications)
+            moveModifications(studyUuid, currentNode.id, modifications, copyInfos.originNodeUuid)
                 .then(() => cleanClipboard(false))
                 .catch((error) => {
                     snackWithFallback(snackError, error, {
