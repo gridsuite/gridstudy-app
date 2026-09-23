@@ -7,7 +7,7 @@
 
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { TextField, Tooltip, TextFieldProps } from '@mui/material';
+import { TextField, Tooltip, type InputProps } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
@@ -53,7 +53,7 @@ export const useButtonWithTooltip = ({ handleClick, label, icon, dataTestId }: U
 
 interface UseSimpleTextValueProps {
     defaultValue: string;
-    adornment: TextFieldProps['InputProps'];
+    adornment: InputProps;
     error: boolean;
     triggerReset: boolean;
 }
@@ -70,7 +70,7 @@ export const useSimpleTextValue = ({ defaultValue, adornment, error, triggerRese
             <TextField
                 value={value}
                 onChange={handleChangeValue}
-                {...(adornment && { InputProps: adornment })}
+                {...(adornment && { slotProps: { input: adornment } })}
                 error={error !== undefined}
                 autoFocus={true}
                 fullWidth={true}
