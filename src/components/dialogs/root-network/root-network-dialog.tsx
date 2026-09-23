@@ -23,11 +23,8 @@ import * as yup from 'yup';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { ModificationDialog } from '../commons/modificationDialog';
-import {
-    checkRootNetworkNameExistence,
-    checkRootNetworkTagExistence,
-    hasSharedModifications,
-} from 'services/root-network';
+import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
+import { hasSharedModifications } from 'services/study/network-modifications';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
@@ -125,7 +122,10 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
         if (open && isModification && studyUuid) {
             hasSharedModifications(studyUuid)
                 .then(setIsStudyContainingSharedModifications)
-                .catch(() => setIsStudyContainingSharedModifications(false));
+                .catch((error) => {
+                    console.error('Failed to fetch whether the study contains shared modifications', error);
+                    setIsStudyContainingSharedModifications(false);
+                });
         }
     }, [isModification, open, studyUuid]);
 
