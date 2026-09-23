@@ -8,7 +8,13 @@
 import type { UUID } from 'node:crypto';
 import { RefObject, useCallback, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { ComputingType, NotificationsUrlKeys, RunningStatus, useNotificationsListener } from '@gridsuite/commons-ui';
+import {
+    BuildStatus,
+    ComputingType,
+    NotificationsUrlKeys,
+    RunningStatus,
+    useNotificationsListener,
+} from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
@@ -20,6 +26,7 @@ interface UseComputingStatusProps {
         studyUuid: UUID,
         nodeUuid: UUID,
         currentRootNetworkUuid: UUID,
+        currentNodeBuildStatus: BuildStatus,
         computingStatusFetcher: (
             studyUuid: UUID,
             nodeUuid: UUID,
@@ -107,6 +114,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
+    currentNodeBuildStatus,
     computingStatusFetcher,
     invalidations,
     completions,
@@ -216,6 +224,10 @@ export const useComputingStatus: UseComputingStatusProps = (
             ) {
                 return;
             }
+            if (currentNodeBuildStatus === BuildStatus.NOT_BUILT) {
+                dispatch(setComputingStatus(computingType, RunningStatus.IDLE));
+                return;
+            }
             const eventData = parseEventData<StudyUpdatedEventData>(event ?? null);
             const isUpdateForUs = isWorthUpdate(
                 eventData,
@@ -232,7 +244,10 @@ export const useComputingStatus: UseComputingStatusProps = (
         },
         [
             computingStatusFetcher,
+            computingType,
+            currentNodeBuildStatus,
             currentRootNetworkUuid,
+            dispatch,
             invalidations,
             nodeUuid,
             optionalServiceAvailabilityStatus,

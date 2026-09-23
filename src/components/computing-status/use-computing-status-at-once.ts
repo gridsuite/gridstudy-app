@@ -185,14 +185,7 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
             const headers = eventData?.headers;
             const updateType = headers?.updateType;
             const notificationNode = headers?.node;
-            // no need to request the back if node is not built
-            if (currentNodeBuildStatus === BuildStatus.NOT_BUILT) {
-                Object.values(ComputingType).forEach((computingType: ComputingType) => {
-                    dispatch(setComputingStatus(computingType, RunningStatus.IDLE));
-                });
-                nodeUuidRef.current = nodeUuid;
-                return;
-            }
+
             const isUpdateForUs = isWorthUpdate(
                 updateType,
                 nodeUuidRef,
@@ -202,6 +195,15 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
                 notificationNode
             );
             if (isUpdateForUs) {
+                console.log('SBO currentNodeBuildStatus', currentNodeBuildStatus);
+                // no need to request the back if node is not built
+                if (currentNodeBuildStatus === BuildStatus.NOT_BUILT) {
+                    Object.values(ComputingType).forEach((computingType: ComputingType) => {
+                        dispatch(setComputingStatus(computingType, RunningStatus.IDLE));
+                    });
+                    nodeUuidRef.current = nodeUuid;
+                    return;
+                }
                 updateAll(updateType);
             }
         },
