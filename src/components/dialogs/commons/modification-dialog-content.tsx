@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress } from '@mui/material';
+import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, Alert } from '@mui/material';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
@@ -92,7 +92,12 @@ export function ModificationDialogContent({
             <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
                 {readOnly ? (
-                    <CloseButton onClick={handleCancel} />
+                    <>
+                        <Alert severity="info">
+                            <FormattedMessage id="ReadOnlyForm" />
+                        </Alert>
+                        <CloseButton onClick={handleCancel} />
+                    </>
                 ) : (
                     <>
                         <CancelButton onClick={handleCancel} />
