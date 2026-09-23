@@ -46,7 +46,10 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
 
     // only one computation can run at a time on a node, so we can take the first running one found
     const runningRunnable = useMemo(
-        () => activeRunnables.find((runnable) => getStatus(runnable) === RunningStatus.RUNNING),
+        () => activeRunnables.find((runnable) => {
+                const status = getStatus(runnable);
+                return status === RunningStatus.RUNNING || status === RunningStatus.PRELOADING;
+            }),
         [activeRunnables, getStatus]
     );
 
@@ -66,6 +69,9 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
 
     function isButtonDisable() {
         if (!canRun(selectedRunnable)) {
+            return true;
+        }
+        if (getRunningStatus() === RunningStatus.PRELOADING) {
             return true;
         }
 
