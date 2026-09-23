@@ -238,7 +238,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                         onSelectCase={onSelectCase}
                         originalCaseUuid={editableRootNetwork?.originalCaseUuid}
                     />
-                    <Stack direction="row" spacing={2}>
+                    <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
                         <UniqueCheckNameInput
                             name={TAG}
                             label={'rootTag'}
