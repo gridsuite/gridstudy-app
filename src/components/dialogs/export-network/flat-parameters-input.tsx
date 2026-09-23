@@ -58,7 +58,14 @@ export function FlatParametersInput({ name, parameters }: Readonly<FlatParameter
                 />
             </Collapse>
 
-            <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
+            <Stack
+                direction="row"
+                sx={{
+                    marginTop: '0.7em',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}
+            >
                 <Typography
                     component="span"
                     color={hasParameters ? 'text.main' : 'text.disabled'}

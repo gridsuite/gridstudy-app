@@ -288,7 +288,12 @@ export default function SpreadsheetTabs({
     return (
         <>
             <Grid container direction="row" wrap="nowrap">
-                <Grid padding={1} size="auto">
+                <Grid
+                    size="auto"
+                    sx={{
+                        padding: 1,
+                    }}
+                >
                     <AddSpreadsheetButton disabled={disabled} />
                 </Grid>
                 <Grid size="grow" sx={{ overflow: 'hidden' }}>

@@ -23,14 +23,15 @@ import { useSelector } from 'react-redux';
 import {
     ElementSaveDialog,
     ElementType,
+    GlobalFilter,
     type IElementCreationDialog,
     type IElementUpdateDialog,
     type MuiStyles,
     snackWithFallback,
+    SortConfig,
+    TableType,
     useSnackMessage,
     type UseStateBooleanReturn,
-    GlobalFilter,
-    TableType,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../../redux/reducer.type';
 import { SelectOptionsDialog } from '../../../../../utils/dialogs';
@@ -43,7 +44,6 @@ import {
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
-import { SortConfig } from '../../../../../types/custom-aggrid-types';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
 
 interface SaveSpreadsheetCollectionDialogProps {

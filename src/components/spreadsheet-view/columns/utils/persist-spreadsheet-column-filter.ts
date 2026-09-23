@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import type { UUID } from 'node:crypto';
-import { FilterConfig } from '../../../../types/custom-aggrid-types';
+import { FilterConfig } from '@gridsuite/commons-ui';
 import { ColumnDefinition } from '../../types/spreadsheet.type';
 import { updateSpreadsheetColumn } from 'services/study/study-config';
 import { mapColDefToDto } from '../../add-spreadsheet/dialogs/add-spreadsheet-utils';
