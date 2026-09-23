@@ -38,6 +38,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                 return Object.values(runnablesText);
             case RunningStatus.RUNNING:
                 return Array.of(intl.formatMessage({ id: 'StopComputation' }));
+            case RunningStatus.PRELOADING:
             default:
                 return [];
         }
@@ -131,7 +132,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                 onClick={attemptStartComputation}
                 runningStatus={getRunningStatus()}
                 buttonDisabled={disabled || isButtonDisable()}
-                selectionDisabled={disabled}
+                selectionDisabled={disabled || getRunningStatus() === RunningStatus.PRELOADING}
                 text={runnablesText[selectedRunnable] || ''}
                 actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
                 computationStopped={computationStopped}
