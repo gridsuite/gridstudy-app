@@ -266,6 +266,7 @@ import {
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
     SPREADSHEET_SORT_STORE,
+    STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
     STATEESTIMATION_RESULT_SORT_STORE,
@@ -647,6 +648,12 @@ const initialState: AppState = {
             [PCCMIN_RESULT]: [{ colId: 'busId', sort: SortWay.ASC }],
         },
         [STATEESTIMATION_RESULT_SORT_STORE]: {
+            [STATEESTIMATION_MEASUREMENTS]: [
+                {
+                    colId: 'equipmentId',
+                    sort: SortWay.ASC,
+                },
+            ],
             [STATEESTIMATION_QUALITY_CRITERION]: [
                 {
                     colId: 'type',

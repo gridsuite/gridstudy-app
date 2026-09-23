@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback } from 'react';
-import { useStore } from 'react-redux';
-import { GridReadyEvent } from 'ag-grid-community';
+import { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { GridApi, GridReadyEvent } from 'ag-grid-community';
 import { TableType } from '@gridsuite/commons-ui';
 import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import type { RootState } from '../../../redux/store';
@@ -24,20 +24,32 @@ export const useAgGridInitialColumnFilters = (
     computationSubType: string,
     onGridReady?: (params: GridReadyEvent) => void
 ) => {
-    const store = useStore<RootState>();
+    const [gridApi, setGridApi] = useState<GridApi | undefined>(undefined);
+    const filters = useSelector(
+        (state: RootState) => state.tableFilters.columnsFilters?.[tableType]?.[computationSubType]
+    );
+
+    // re-runs when the filters change AND when a new grid becomes ready
+    useEffect(() => {
+        if (!gridApi || gridApi.isDestroyed()) {
+            return;
+        }
+        updateAgGridFilters(gridApi, filters);
+    }, [filters, gridApi]);
 
     return useCallback(
         (params: GridReadyEvent) => {
-            const api = params.api;
-            if (!api) return;
-            const { tableFilters } = store.getState();
-            const filters = tableFilters.columnsFilters?.[tableType]?.[computationSubType];
-            updateAgGridFilters(api, filters);
+            if (!params.api) {
+                return;
+            }
+            setGridApi(params.api); // triggers the effect above with the current filters
             requestAnimationFrame(() => {
-                api.sizeColumnsToFit();
+                if (!params.api.isDestroyed()) {
+                    params.api.sizeColumnsToFit();
+                }
             });
             onGridReady?.(params);
         },
-        [tableType, computationSubType, store, onGridReady]
+        [onGridReady]
     );
 };
