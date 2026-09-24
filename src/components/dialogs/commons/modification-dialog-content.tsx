@@ -77,12 +77,25 @@ export function ModificationDialogContent({
         <Dialog onClose={handleClose} aria-labelledby={titleId} {...dialogProps}>
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
-                <Grid container spacing={2} justifyContent={'space-between'}>
+                <Grid
+                    container
+                    spacing={2}
+                    sx={{
+                        justifyContent: 'space-between',
+                    }}
+                >
                     <Grid size={6}>
                         <FormattedMessage id={titleId} />
                     </Grid>
 
-                    <Grid size={6} container spacing={2} justifyContent={'right'}>
+                    <Grid
+                        size={6}
+                        container
+                        spacing={2}
+                        sx={{
+                            justifyContent: 'right',
+                        }}
+                    >
                         {onOpenCatalogDialog && <Grid size={1}>{catalogButton}</Grid>}
                         {searchCopy && !readOnly && <Grid size={1}>{copyEquipmentButton}</Grid>}
                     </Grid>

@@ -6,7 +6,7 @@
  */
 
 import { AppState } from '../reducer.type';
-import { FilterConfig, TableType } from '../../types/custom-aggrid-types';
+import { FilterConfig, TableType } from '@gridsuite/commons-ui';
 
 export const getColumnFiltersFromState = (
     state: AppState,

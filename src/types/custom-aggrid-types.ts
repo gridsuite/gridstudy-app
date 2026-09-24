@@ -4,95 +4,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
+import { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import {
     ALL_BUSES,
-    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
-    LOADFLOW_RESULT_SORT_STORE,
     ONE_BUS,
-    PCCMIN_ANALYSIS_RESULT_SORT_STORE,
     PCCMIN_RESULT,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
-    SECURITY_ANALYSIS_RESULT_SORT_STORE,
-    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
     SENSITIVITY_AT_NODE_N,
     SENSITIVITY_AT_NODE_N_K,
     SENSITIVITY_IN_DELTA_A_N,
     SENSITIVITY_IN_DELTA_A_N_K,
     SENSITIVITY_IN_DELTA_MW_N,
     SENSITIVITY_IN_DELTA_MW_N_K,
-    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-    SPREADSHEET_SORT_STORE,
-    STATEESTIMATION_RESULT_SORT_STORE,
 } from 'utils/store-sort-filter-fields';
 import { UUID } from 'node:crypto';
 import React, { ComponentType } from 'react';
-
-export type SortConfig = {
-    colId: string;
-    sort: SortWay;
-    children?: boolean;
-};
-
-export enum SortWay {
-    ASC = 'asc',
-    DESC = 'desc',
-}
-
-export type TableSortConfig = Record<string, SortConfig[]>;
-
-export type TableSort = {
-    [SPREADSHEET_SORT_STORE]: TableSortConfig;
-    [LOADFLOW_RESULT_SORT_STORE]: TableSortConfig;
-    [SECURITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
-    [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
-    [PCCMIN_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-};
-export type TableSortKeysType = keyof TableSort;
-
-export type SortParams = {
-    table: TableSortKeysType;
-    tab: string;
-    isChildren?: boolean;
-    persistSort?: (api: GridApi, sort: SortConfig) => Promise<void>;
-};
-
-export enum TableType {
-    Loadflow = 'Loadflow',
-    SecurityAnalysis = 'SecurityAnalysis',
-    SensitivityAnalysis = 'SensitivityAnalysis',
-    ShortcircuitAnalysis = 'ShortcircuitAnalysis',
-    DynamicSimulation = 'DynamicSimulation',
-    Spreadsheet = 'Spreadsheet',
-    Logs = 'Logs',
-    StateEstimation = 'StateEstimation',
-    PccMin = 'PccMin',
-    VoltageInit = 'VoltageInit',
-}
-
-export type FilterData = {
-    dataType?: string;
-    type?: string;
-    originalType?: string; // used to store the original type of the filter before any transformation (e.g EQUALS and NOT_EQUAL in number filters)
-    value: unknown;
-    tolerance?: number; // tolerance when comparing values. Only useful for the number type
-};
-
-export type FilterConfig = FilterData & {
-    column: string;
-};
-
-export type FilterParams = {
-    type: TableType;
-    tab: string;
-    dataType?: string;
-    comparators?: string[];
-    debounceMs?: number;
-};
+import { CustomAggridFilterParams, SortParams } from '@gridsuite/commons-ui';
 
 export type PaginationConfig = {
     page: number;
@@ -179,12 +107,6 @@ export enum UNDISPLAYED_FILTER_NUMBER_COMPARATORS {
 }
 
 export type FilterEnumsType = Record<string, string[] | null>;
-
-export interface CustomAggridFilterParams {
-    api: GridApi;
-    colId: string;
-    filterParams: FilterParams;
-}
 
 export enum COLUMN_TYPES {
     TEXT = 'TEXT',
