@@ -7,6 +7,7 @@
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import {
     BooleanCellRenderer,
+    BooleanFilterValue,
     CustomAggridAutocompleteFilter,
     CustomAggridComparatorFilter,
     CustomHeaderComponent,
@@ -20,7 +21,6 @@ import {
 import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
 import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { BooleanFilterValue } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import {
     COLUMN_TYPES,
     CustomColDef,
