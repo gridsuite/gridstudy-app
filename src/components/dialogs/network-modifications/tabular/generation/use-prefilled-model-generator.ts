@@ -20,7 +20,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
-import { getNetworkElementsInfosByGlobalFilter } from 'services/study/filter';
+import { getNetworkElementsInfos } from 'services/study/filter';
 import { fetchNetworkElementsInfos } from 'services/study/network';
 import type { UUID } from 'node:crypto';
 import { getPrefilledColumnGroups } from './prefillable-columns-config';
@@ -76,22 +76,18 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
      * All filter IDs are passed to genericFilter regardless of their type
      */
     const fetchEquipmentsFromFilters = useCallback(
-        async (filterIds: UUID[]): Promise<Identifiable[]> => {
-            if (!(studyUuid && currentNode?.id && currentRootNetworkUuid) || !filterIds.length) {
+        async (filterUuids: UUID[]): Promise<Identifiable[]> => {
+            if (!(studyUuid && currentNode?.id && currentRootNetworkUuid) || !filterUuids.length) {
                 return [];
             }
 
             try {
-                const globalFilter = {
-                    genericFilter: filterIds,
-                };
-
-                const equipments = await getNetworkElementsInfosByGlobalFilter(
+                const equipments = await getNetworkElementsInfos(
                     studyUuid,
                     currentNode.id,
                     currentRootNetworkUuid,
                     equipmentType,
-                    globalFilter,
+                    filterUuids,
                     EQUIPMENT_INFOS_TYPES.FORM.type
                 );
 
