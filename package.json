@@ -1,6 +1,6 @@
 {
     "name": "gridstudy-app",
-    "version": "2.39.0-SNAPSHOT",
+    "version": "2.42.0-SNAPSHOT",
     "license": "MPL-2.0",
     "private": true,
     "type": "module",
@@ -11,14 +11,14 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@gridsuite/commons-ui": "0.292.0",
+        "@gridsuite/commons-ui": "0.299.0",
         "@hello-pangea/dnd": "^18.0.1",
         "@hookform/resolvers": "^4.1.3",
-        "@mui/icons-material": "^7.3.11",
-        "@mui/lab": "7.0.1-beta.25",
-        "@mui/material": "^7.3.11",
-        "@mui/x-charts": "^8.21.0",
-        "@mui/x-tree-view": "^8.21.0",
+        "@mui/icons-material": "^9.4.0",
+        "@mui/lab": "^9.0.0-beta.9",
+        "@mui/material": "^9.4.0",
+        "@mui/x-charts": "^9.13.0",
+        "@mui/x-tree-view": "^9.13.0",
         "@powsybl/network-viewer": "3.7.0",
         "@reduxjs/toolkit": "^2.9.0",
         "@svgdotjs/svg.js": "^3.2.4",
@@ -58,12 +58,17 @@
     },
     "overrides": {
         "@powsybl/network-viewer": {
-            "react-intl": "$react-intl"
+            "react-intl": "$react-intl",
+            "@mui/icons-material": "$@mui/icons-material",
+            "@mui/material": "$@mui/material"
         },
         "react-plotly.js": {
             "plotly.js": {
                 "esbuild-style-plugin": "npm:dry-uninstall@^0.3.0"
             }
+        },
+        "mui-nested-menu": {
+            "@mui/material": ">=5.0.0"
         }
     },
     "scripts": {

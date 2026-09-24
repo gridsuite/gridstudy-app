@@ -307,10 +307,20 @@ export function BalancesAdjustmentDialog({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <Box hidden={tabIndex !== BalancesAdjustmentTab.AREAS_TAB} p={1}>
+                <Box
+                    hidden={tabIndex !== BalancesAdjustmentTab.AREAS_TAB}
+                    sx={{
+                        p: 1,
+                    }}
+                >
                     <BalancesAdjustmentTable />
                 </Box>
-                <Box hidden={tabIndex !== BalancesAdjustmentTab.ADVANCED_TAB} p={1}>
+                <Box
+                    hidden={tabIndex !== BalancesAdjustmentTab.ADVANCED_TAB}
+                    sx={{
+                        p: 1,
+                    }}
+                >
                     <BalancesAdjustmentAdvancedContent />
                 </Box>
             </ModificationDialog>
