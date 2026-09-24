@@ -84,7 +84,7 @@ export function ModificationDialogContent({
 
                     <Grid size={6} container spacing={2} justifyContent={'right'}>
                         {onOpenCatalogDialog && <Grid size={1}>{catalogButton}</Grid>}
-                        {searchCopy && <Grid size={1}>{copyEquipmentButton}</Grid>}
+                        {searchCopy && !readOnly && <Grid size={1}>{copyEquipmentButton}</Grid>}
                     </Grid>
                     {subtitle && <Grid size={12}>{subtitle}</Grid>}
                 </Grid>
