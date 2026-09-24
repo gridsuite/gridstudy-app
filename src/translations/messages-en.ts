@@ -1058,7 +1058,6 @@ const messages_en = {
     StateEstimationQualityCriterionResults: 'Criterion quality',
     StateEstimationQualityPerRegionResults: 'Region Quality',
     StateEstimationStatusResults: 'Status',
-    Equipment: 'Equipment',
     MeasurementType: 'Type',
     ValidityType: 'Validity',
     EstimatedValue: 'Estimated value',
