@@ -37,13 +37,25 @@ function isWorthUpdate(
     nodeUuidRef: RefObject<UUID | undefined>,
     rootNetworkUuidRef: RefObject<UUID | undefined>,
     nodeUuid: UUID,
-    currentRootNetworkUuid: UUID
+    currentRootNetworkUuid: UUID,
+    notificationNode: UUID | undefined,
+    notificationRootNetworkUuid: UUID | undefined
 ): boolean {
+    // if current root network has changed
     if (rootNetworkUuidRef.current !== currentRootNetworkUuid) {
         return true;
     }
+    // if current node has changed
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
+    }
+    // if notification is about a root network that is not the current one, no need to update current node computation status
+    if (notificationRootNetworkUuid && notificationRootNetworkUuid !== currentRootNetworkUuid) {
+        return false;
+    }
+    // if notification is about a node that is not the current one, no need to update current node computation status
+    if (notificationNode && notificationNode !== nodeUuid) {
+        return false;
     }
     if (!updateType) {
         return false;
@@ -170,12 +182,16 @@ export const useAllComputingStatusAtOnce: UseComputingStatusProps = (
             const eventData = parseEventData<StudyUpdatedEventData>(event ?? null);
             const headers = eventData?.headers;
             const updateType = headers?.updateType;
+            const notificationNode = headers?.node;
+            const notificationRootNetworkUuid = headers?.rootNetworkUuid;
             const isUpdateForUs = isWorthUpdate(
                 updateType,
                 nodeUuidRef,
                 rootNetworkUuidRef,
                 nodeUuid,
-                currentRootNetworkUuid
+                currentRootNetworkUuid,
+                notificationNode,
+                notificationRootNetworkUuid
             );
             if (isUpdateForUs) {
                 updateAll(updateType);
