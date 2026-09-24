@@ -13,7 +13,7 @@ import { eventCenter, PlotEvents } from './plot-events';
 import { Series } from './plot-types';
 import { useDebounce } from '@gridsuite/commons-ui';
 import { Figure, PlotParams } from 'react-plotly.js';
-import { Layout, PlotData, PlotMarker } from 'plotly.js';
+import { Layout, ScatterData } from 'plotly.js';
 
 type CustomPlotParams = PlotParams & {
     ref: Ref<CustomPlotParams> /* hack to pass ref which is not in PlotParams type */;
@@ -26,9 +26,9 @@ const Plot = createPlotlyComponent(Plotly) as FunctionComponent<CustomPlotParams
 // Helper function
 function seriesToData(
     s: Series,
-    getMarker: (s: Series) => Partial<PlotMarker>,
-    defaults?: Partial<PlotData>
-): Partial<PlotData> {
+    getMarker: (s: Series) => ScatterData['marker'],
+    defaults?: Partial<ScatterData>
+): Partial<ScatterData> {
     return {
         ...defaults,
         name: s.name,
@@ -68,8 +68,8 @@ function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Reado
     // force refresh Plot in mutable layout but not work???
     //const [revision, setRevision] = useState(0);
 
-    const makeGetMarker = useCallback((defaults?: Partial<PlotMarker>) => {
-        return (s: Series): Partial<PlotMarker> => ({
+    const makeGetMarker = useCallback((defaults?: ScatterData['marker']) => {
+        return (s: Series): ScatterData['marker'] => ({
             ...defaults,
             color: 'rgba(255,255,255,0.5)',
             line: {
@@ -118,7 +118,7 @@ function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Reado
                         ...prev,
                         xaxis: {
                             ...prev.xaxis,
-                            range: [...(prev.xaxis.range ?? [])],
+                            range: [...(prev.xaxis?.range ?? [])],
                             autorange: false, // to force layout refresh with new range
                         },
                     };

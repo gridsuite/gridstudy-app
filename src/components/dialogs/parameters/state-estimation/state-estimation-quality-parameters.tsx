@@ -114,7 +114,11 @@ export const StateEstimationQualityParameters = () => {
             {basicParams.map((item) => (
                 <ParameterField id={TabValue.QUALITY} {...item} key={item.name} />
             ))}
-            <Box my={2}>
+            <Box
+                sx={{
+                    my: 2,
+                }}
+            >
                 <LineSeparator />
             </Box>
             <CustomVoltageLevelTable

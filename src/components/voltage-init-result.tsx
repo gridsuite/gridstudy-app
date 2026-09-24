@@ -19,6 +19,7 @@ import {
     RESULTS_LOADING_DELAY,
     RunningStatus,
     snackWithFallback,
+    TableType,
     unscrollableDialogStyles,
     useOpenLoaderShortWait,
     useSnackMessage,
@@ -47,7 +48,6 @@ import { AppState } from 'redux/reducer.type';
 import { useIsEditBlocked } from 'components/node-activity/hooks/use-node-activity';
 import { RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { TableType } from 'types/custom-aggrid-types';
 import { PARAM_COMPUTED_LANGUAGE } from '../utils/config-params';
 
 const styles = {
@@ -240,7 +240,15 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
         const totalInjection = calculateTotal(result.reactiveSlacks, false);
         const totalConsumption = calculateTotal(result.reactiveSlacks, true);
         return (
-            <Stack direction={'row'} gap={1} marginBottom={1} marginTop={0.5} marginLeft={2}>
+            <Stack
+                direction={'row'}
+                sx={{
+                    gap: 1,
+                    marginBottom: 1,
+                    marginTop: 0.5,
+                    marginLeft: 2,
+                }}
+            >
                 <Typography sx={styles.typography}>
                     <FormattedMessage id="TotalInjection" />
                 </Typography>
@@ -276,7 +284,15 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
         return (
             <Box sx={mergeSx(unscrollableDialogStyles.unscrollableContainer, { height: '100%' })}>
                 <Box sx={unscrollableDialogStyles.unscrollableHeader}>
-                    <Stack direction={'row'} gap={1} marginBottom={1} marginTop={0.5} marginLeft={2}>
+                    <Stack
+                        direction={'row'}
+                        sx={{
+                            gap: 1,
+                            marginBottom: 1,
+                            marginTop: 0.5,
+                            marginLeft: 2,
+                        }}
+                    >
                         <Typography style={{ fontWeight: 'bold' }}>
                             <FormattedMessage id="VoltageInitStatus" />
                             <span style={{ marginLeft: '4px' }}>{statusToShow}</span>
