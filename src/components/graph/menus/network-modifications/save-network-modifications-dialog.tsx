@@ -62,7 +62,7 @@ export default function SaveNetworkModificationsDialog({
     const isSelectedCompositeShareable =
         selectedModifications.length === 1 &&
         selectedModifications[0].type === ModificationType.COMPOSITE_MODIFICATION &&
-        !selectedModifications[0].childFromShared;
+        !selectedModifications[0].insideSharedModification;
 
     // nested references are lazily loaded by the table, so the selection alone can't tell : ask the server
     useEffect(() => {
