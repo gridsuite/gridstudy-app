@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress } from '@mui/material';
+import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, Alert } from '@mui/material';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import React, { ReactNode } from 'react';
 import { UseFormSearchCopy } from './use-form-search-copy';
 import { FormattedMessage } from 'react-intl';
-import { CancelButton } from '@gridsuite/commons-ui';
+import { CancelButton, CloseButton } from '@gridsuite/commons-ui';
 import { DialogProps } from '@mui/material/Dialog';
 
 /**
@@ -35,6 +35,7 @@ export type ModificationDialogContentProps = Omit<DialogProps, 'onClose' | 'aria
     searchCopy?: UseFormSearchCopy;
     submitButton: ReactNode;
     subtitle?: ReactNode;
+    readOnly?: boolean;
 };
 
 export function ModificationDialogContent({
@@ -45,6 +46,7 @@ export function ModificationDialogContent({
     searchCopy,
     submitButton,
     subtitle,
+    readOnly = false,
     ...dialogProps
 }: Readonly<ModificationDialogContentProps>) {
     const catalogButton = useButtonWithTooltip({
@@ -95,15 +97,26 @@ export function ModificationDialogContent({
                         }}
                     >
                         {onOpenCatalogDialog && <Grid size={1}>{catalogButton}</Grid>}
-                        {searchCopy && <Grid size={1}>{copyEquipmentButton}</Grid>}
+                        {searchCopy && !readOnly && <Grid size={1}>{copyEquipmentButton}</Grid>}
                     </Grid>
                     {subtitle && <Grid size={12}>{subtitle}</Grid>}
                 </Grid>
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
-                <CancelButton onClick={handleCancel} />
-                {submitButton}
+                {readOnly ? (
+                    <>
+                        <Alert severity="info">
+                            <FormattedMessage id="ReadOnlyForm" />
+                        </Alert>
+                        <CloseButton onClick={handleCancel} />
+                    </>
+                ) : (
+                    <>
+                        <CancelButton onClick={handleCancel} />
+                        {submitButton}
+                    </>
+                )}
             </DialogActions>
         </Dialog>
     );

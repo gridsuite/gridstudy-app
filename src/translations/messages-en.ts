@@ -1365,5 +1365,6 @@ const messages_en = {
     'button.previous': 'Previous',
     disconnectedLoadActivePower: 'Load cut off (MW)',
     disconnectedGenerationActivePower: 'Generation cut off (MW)',
+    ReadOnlyForm: "This form is read only",
 };
 export default messages_en;
