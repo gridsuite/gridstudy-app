@@ -6,7 +6,7 @@
  */
 import { FunctionComponent } from 'react';
 import { Stack, Typography } from '@mui/material';
-import { StateEstimationResultStatusProps } from './state-estimation-result.type';
+import { StateEstimationStatusResultProps } from './state-estimation-result.type';
 import { FormattedMessage } from 'react-intl';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 
@@ -19,7 +19,7 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const StateEstimationStatusResult: FunctionComponent<StateEstimationResultStatusProps> = ({ result }) => {
+export const StateEstimationStatusResult: FunctionComponent<StateEstimationStatusResultProps> = ({ result }) => {
     const renderStateEstimationStatusResult = () => {
         return (
             <>

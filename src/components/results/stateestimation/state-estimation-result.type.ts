@@ -85,7 +85,7 @@ export interface StateEstimationTabProps {
     currentRootNetworkUuid: UUID;
 }
 
-export interface StateEstimationResultTableProps {
+export interface StateEstimationResultTableProps extends StateEstimationStatusResultProps {
     isLoadingResult: boolean;
     columnDefs: ColDef<any>[];
     tableName: string;
@@ -94,8 +94,6 @@ export interface StateEstimationResultTableProps {
     sortable?: boolean;
 }
 
-export interface StateEstimationResultStatusProps {
+export interface StateEstimationStatusResultProps {
     result: StateEstimationResult;
 }
-
-export interface StateEstimationResultProps extends StateEstimationResultTableProps, StateEstimationResultStatusProps {}

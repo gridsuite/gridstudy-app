@@ -24,7 +24,7 @@ import { AppState } from '../../../redux/reducer.type';
 import LinearProgress from '@mui/material/LinearProgress';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
-import { StateEstimationResultProps } from './state-estimation-result.type';
+import { StateEstimationResultTableProps } from './state-estimation-result.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { useInitialColumnSort } from './state-estimation-result-utils';
 import { RowClassParams } from 'ag-grid-community';
@@ -34,7 +34,7 @@ import {
     STATEESTIMATION_QUALITY_PER_REGION,
 } from '../../../utils/store-sort-filter-fields';
 
-const StateEstimationResultTable: FunctionComponent<StateEstimationResultProps> = ({
+const StateEstimationResultTable: FunctionComponent<StateEstimationResultTableProps> = ({
     result,
     isLoadingResult,
     columnDefs,
