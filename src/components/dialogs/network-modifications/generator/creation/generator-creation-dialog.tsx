@@ -88,7 +88,9 @@ export default function GeneratorCreationDialog({
                 [FieldConstants.PLANNED_OUTAGE_RATE]: generator.generatorStartup?.plannedOutageRate,
                 [FieldConstants.FORCED_OUTAGE_RATE]: generator.generatorStartup?.forcedOutageRate,
                 [FieldConstants.FREQUENCY_REGULATION]: generator.activePowerControl?.participate,
-                [FieldConstants.DROOP]: generator.activePowerControl?.droop,
+                [FieldConstants.DROOP]: Number.isNaN(Number(generator.activePowerControl?.droop))
+                    ? null
+                    : generator.activePowerControl?.droop,
                 ...getShortCircuitFormData({
                     directTransX: generator.generatorShortCircuit?.directTransX,
                     stepUpTransformerX: generator.generatorShortCircuit?.stepUpTransformerX,
