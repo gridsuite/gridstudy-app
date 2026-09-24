@@ -30,7 +30,6 @@ import {
     GridSection,
     VoltageLevelCreationDto,
     LineToAttachOrSplitForm,
-    LineToAttachOrSplitOption,
     EquipmentType,
     snackWithFallback,
     useSnackMessage,
@@ -79,7 +78,7 @@ const LineAttachToVoltageLevelForm = ({
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
     const [attachmentPointDialogOpen, setAttachmentPointDialogOpen] = useState(false);
-    const [lineOptions, setLineOptions] = useState<LineToAttachOrSplitOption[]>([]);
+    const [lineOptions, setLineOptions] = useState<string[]>([]);
     const { snackError } = useSnackMessage();
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
@@ -88,7 +87,7 @@ const LineAttachToVoltageLevelForm = ({
     useEffect(() => {
         if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
             fetchEquipmentsIds(studyUuid, currentNode.id, currentRootNetworkUuid, undefined, EquipmentType.LINE, true)
-                .then((values: LineToAttachOrSplitOption[]) => {
+                .then((values: string[]) => {
                     setLineOptions(values.sort((a, b) => a.localeCompare(b)));
                 })
                 .catch((error: unknown) => {

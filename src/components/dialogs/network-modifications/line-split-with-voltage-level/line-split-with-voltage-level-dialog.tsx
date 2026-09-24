@@ -17,7 +17,6 @@ import {
     lineSplitWithVoltageLevelCreationFormSchema,
     lineSplitWithVoltageLevelCreationFormToDto,
     LineSplitWithVoltageLevelIllustration,
-    LineToAttachOrSplitOption,
     NewVoltageLevelPaneType,
     snackWithFallback,
     useSnackMessage,
@@ -85,7 +84,7 @@ const LineSplitWithVoltageLevelDialog = ({
     ...dialogProps
 }: LineSplitWithVoltageLevelDialogProps) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState<VoltageLevelOption[]>([]);
-    const [lineOptions, setLineOptions] = useState<LineToAttachOrSplitOption[]>([]);
+    const [lineOptions, setLineOptions] = useState<string[]>([]);
 
     const currentNodeUuid = currentNode?.id;
 
@@ -170,7 +169,7 @@ const LineSplitWithVoltageLevelDialog = ({
     useEffect(() => {
         if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
             fetchEquipmentsIds(studyUuid, currentNode.id, currentRootNetworkUuid, undefined, EquipmentType.LINE, true)
-                .then((values: LineToAttachOrSplitOption[]) => {
+                .then((values: string[]) => {
                     setLineOptions(values.sort((a, b) => a.localeCompare(b)));
                 })
                 .catch((error: unknown) => {
