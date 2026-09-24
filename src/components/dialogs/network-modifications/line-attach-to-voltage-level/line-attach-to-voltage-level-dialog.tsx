@@ -11,6 +11,9 @@ import {
     getConnectivityPropertiesData,
     getConnectivityPropertiesValidationSchema,
     getConnectivityWithoutPositionEmptyFormData,
+    getLineToAttachOrSplitEmptyFormData,
+    getLineToAttachOrSplitFormData,
+    getLineToAttachOrSplitFormValidationSchema,
     getNewVoltageLevelData,
     LineCreationDto,
     LineCreationDtoWithId,
@@ -42,11 +45,6 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
-import {
-    getLineToAttachOrSplitEmptyFormData,
-    getLineToAttachOrSplitFormData,
-    getLineToAttachOrSplitFormValidationSchema,
-} from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { attachLine } from '../../../../services/study/network-modifications';
