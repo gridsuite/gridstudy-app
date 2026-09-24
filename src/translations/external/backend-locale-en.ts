@@ -44,6 +44,8 @@ const backend_locale_en = {
     ECARTS_HN: 'Out of bounds deviations',
     NB_ITER: 'Iterations number',
     TRANSITS_PERDUS: 'Lost flows',
+    IN_BOUNDS: 'In bounds',
+    OUT_OF_BOUNDS: 'Out of bounds',
     TENSION: 'Voltage',
     TRANS_ACT_OR: 'Ori. active flow',
     TRANS_ACT_EX: 'Ext. active flow',

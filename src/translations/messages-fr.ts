@@ -1077,8 +1077,6 @@ const messages_fr = {
     EstimatedValue: 'Valeur estimée',
     DifferenceValue: 'Écart',
     OutOfBound: 'Hors norme',
-    IN_BOUNDS: 'Dans les normes',
-    OUT_OF_BOUNDS: 'Hors norme',
     CriterionType: 'Critère',
     Validity: 'Validité',
     Threshold: 'Seuil',

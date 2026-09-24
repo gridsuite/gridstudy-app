@@ -1063,8 +1063,6 @@ const messages_en = {
     EstimatedValue: 'Estimated value',
     DifferenceValue: 'Difference',
     OutOfBound: 'Out of bounds',
-    IN_BOUNDS: 'In bounds',
-    OUT_OF_BOUNDS: 'Out of bounds',
     CriterionType: 'Type',
     Validity: 'Validity',
     Threshold: 'Threshold',

@@ -44,6 +44,8 @@ const backend_locale_fr = {
     ECARTS_HN: 'Ecarts hors-normes',
     NB_ITER: "Nombre d'itérations",
     TRANSITS_PERDUS: 'Transits perdus',
+    IN_BOUNDS: 'Dans les normes',
+    OUT_OF_BOUNDS: 'Hors norme',
     TENSION: 'Tension',
     TRANS_ACT_OR: 'Transit actif Or.',
     TRANS_ACT_EX: 'Transit actif Ex.',
