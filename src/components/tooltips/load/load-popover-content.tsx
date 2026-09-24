@@ -17,7 +17,12 @@ interface LoadPopoverContentProps {
 export const LoadPopoverContent: React.FC<LoadPopoverContentProps> = ({ equipmentInfos }) => {
     const typeAffineFixe = getPropertyValue(equipmentInfos?.properties, 'typeAffineFixe');
     return (
-        <Stack spacing={2} alignItems="center">
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: 'center',
+            }}
+        >
             <Grid sx={styles.grid}>
                 <TableContainer sx={styles.table}>
                     <Table size="small" sx={styles.layout}>

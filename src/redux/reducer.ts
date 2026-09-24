@@ -7,35 +7,39 @@
 
 import { createReducer, type Draft } from '@reduxjs/toolkit';
 import {
+    addGlobalFilterId,
+    addSelectedGlobalFiltersToTableState,
     type AuthenticationActions,
     type AuthenticationRouterErrorAction,
+    clearSelectedGlobalFiltersFromTableState,
     ComputingType,
+    EquipmentType,
+    FilterConfig,
+    getGlobalFilterId,
+    GlobalFilter,
     type Identifiable,
     LOGOUT_ERROR,
     type LogoutErrorAction,
+    markNotFoundGlobalFiltersAsDeletedInState,
+    MAX_RECENT_GLOBAL_FILTERS,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    RecentGlobalFilter,
+    removeSelectedGlobalFiltersFromTableState,
     RESET_AUTHENTICATION_ROUTER_ERROR,
+    RunningStatus,
     SHOW_AUTH_INFO_LOGIN,
     type ShowAuthenticationRouterLoginAction,
+    SortWay,
+    TableSortConfig,
+    TableType,
     UNAUTHORIZED_USER_INFO,
     type UnauthorizedUserAction,
     USER,
     USER_VALIDATION_ERROR,
     type UserAction,
     type UserValidationErrorAction,
-    EquipmentType,
-    RunningStatus,
-    addGlobalFilterId,
-    getGlobalFilterId,
-    GlobalFilter,
-    RecentGlobalFilter,
-    addSelectedGlobalFiltersToTableState,
-    clearSelectedGlobalFiltersFromTableState,
-    markNotFoundGlobalFiltersAsDeletedInState,
-    MAX_RECENT_GLOBAL_FILTERS,
-    removeSelectedGlobalFiltersFromTableState,
 } from '@gridsuite/commons-ui';
 
 import {
@@ -170,6 +174,7 @@ import {
     SET_DIRTY_COMPUTATION_PARAMETERS,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MONO_ROOT_STUDY,
+    SET_NODE_ACTIVITIES,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
@@ -188,6 +193,7 @@ import {
     type SetDirtyComputationParametersAction,
     type SetLastCompletedComputationAction,
     type SetMonoRootStudyAction,
+    SetNodeActivitiesAction,
     type SetOneBusShortcircuitAnalysisContextAction,
     type SetOptionalServicesAction,
     type SetParamsLoadedAction,
@@ -199,23 +205,21 @@ import {
     ShortcircuitAnalysisResultPaginationAction,
     TABLE_SORT,
     type TableSortAction,
+    UPDATE_ALIASED_NODES_VALIDITY,
     UPDATE_COLUMN_FILTERS,
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
-    SET_NODE_ACTIVITIES,
-    SetNodeActivitiesAction,
     UPDATE_NODE_ALIASES,
     UPDATE_SPREADSHEET_PARTIAL_DATA,
     UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
+    UpdateAliasedNodesValidityAction,
     UpdateColumnFiltersAction,
     type UpdateColumnsDefinitionsAction,
     type UpdateEquipmentsAction,
     type UpdateNetworkVisualizationParametersAction,
     UpdateNodeAliasesAction,
-    UPDATE_ALIASED_NODES_VALIDITY,
-    UpdateAliasedNodesValidityAction,
     type UpdateSpreadsheetPartialDataAction,
     type UpdateTableColumnsAction,
     type UpdateTableDefinitionAction,
@@ -280,7 +284,6 @@ import {
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
-    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PCCMIN_ANALYSIS_TABS,
@@ -291,9 +294,6 @@ import {
     SensitivityAnalysisTab,
     SHORTCIRCUIT_ANALYSIS_TABS,
     ShortcircuitAnalysisTab,
-    SortWay,
-    TableSortConfig,
-    TableType,
 } from '../types/custom-aggrid-types';
 import { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
@@ -1518,6 +1518,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
+        state.tableSort[action.table] ??= {}; //  init on the fly
         state.tableSort[action.table][action.tab] = action.sort;
     });
 
@@ -1556,7 +1557,9 @@ export const reducer = createReducer(initialState, (builder) => {
         }
         // remove sort and filter for the removed column
         if (tableDefinition && tableSort[tableDefinition.name]) {
-            tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter((sort) => sort.colId !== value);
+            tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter(
+                (sort: { colId: string }) => sort.colId !== value
+            );
         }
         if (tableDefinition && tableFilter?.[tableDefinition.uuid]) {
             tableFilter[tableDefinition.uuid] = tableFilter[tableDefinition.uuid].filter(

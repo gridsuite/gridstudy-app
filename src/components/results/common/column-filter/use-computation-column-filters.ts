@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FilterConfig, TableType } from '../../../../types/custom-aggrid-types';
+import { FilterConfig, TableType } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer.type';
 import { useEffect } from 'react';

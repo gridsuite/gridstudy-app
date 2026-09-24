@@ -9,9 +9,18 @@ import { useEffect, useState } from 'react';
 import { RESULT_TYPE, SubjectIdRendererType } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
-import { ComputingType, ContingencyCellRenderer, NmkType, RunningStatus } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    ContingencyCellRenderer,
+    CustomAggridComparatorFilter,
+    FilterConfig,
+    makeAgGridCustomHeaderColumn,
+    NmkType,
+    RunningStatus,
+    SortParams,
+    TableType,
+} from '@gridsuite/commons-ui';
 import { translateLimitNameFrontToBack } from '../common/utils';
-import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import {
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
@@ -22,17 +31,13 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
-import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    FilterConfig,
     FilterEnumsType,
-    SortParams,
-    TableType,
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 import { createEnumColumn } from '../common/column-filter/utilis';

@@ -96,7 +96,13 @@ export function SpreadsheetModelGlobalEditorDialog({
             >
                 <FormulaSearchProvider>
                     <Stack>
-                        <Grid container justifyContent="flex-start" sx={{ my: 2 }}>
+                        <Grid
+                            container
+                            sx={{
+                                justifyContent: 'flex-start',
+                                my: 2,
+                            }}
+                        >
                             <FormulaSearchReplace />
                         </Grid>
                         <Grid>
