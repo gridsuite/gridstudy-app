@@ -44,7 +44,7 @@ export enum ValidityType {
     INV = 'INV',
 }
 
-export enum OutofBound {
+export enum Bounds {
     IN_BOUNDS = 'IN_BOUNDS',
     OUT_OF_BOUNDS = 'OUT_OF_BOUNDS',
 }
@@ -53,7 +53,7 @@ export interface MeasurementInformationResultDto {
     equipmentId: string;
     measurementType: string;
     validityType: string;
-    value: number;
+    currentValue: number;
     estimatedValue: number;
     differenceValue: number;
     outOfBound: boolean;
@@ -63,10 +63,10 @@ export interface MeasurementInformationResult {
     equipmentId: string;
     measurementType: MeasurementType;
     validityType: ValidityType;
-    value: number;
+    currentValue: number;
     estimatedValue: number;
     differenceValue: number;
-    outOfBound: OutofBound;
+    outOfBound: Bounds;
 }
 
 export interface StateEstimationResult {

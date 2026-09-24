@@ -44,6 +44,21 @@ const backend_locale_en = {
     ECARTS_HN: 'Out of bounds deviations',
     NB_ITER: 'Iterations number',
     TRANSITS_PERDUS: 'Lost flows',
+    TENSION: 'Voltage',
+    TRANS_ACT_OR: 'Ori. active flow',
+    TRANS_ACT_EX: 'Ext. active flow',
+    TRANS_REA_OR: 'Ori. reactive flow',
+    TRANS_REA_EX: 'Ext. reactive flow',
+    INJ_ACT: 'Active injection (MW)',
+    INJ_REA: 'Reactive injection',
+    PUISS_HVDC: 'HVDC power',
+    REDONDANTE: 'Redundant',
+    CRITIQUE: 'Critical',
+    INV_OBS: 'In unobservable zone',
+    INV_VERR: 'Aberrant voltage',
+    INV_PIV_NUL: 'Null pivot',
+    INV_ERR: 'Erroneous',
+    INV: 'Invalid',
 };
 
 export default backend_locale_en;

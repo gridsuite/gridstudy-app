@@ -34,7 +34,7 @@ import {
     STATEESTIMATION_QUALITY_PER_REGION,
 } from '../../../utils/store-sort-filter-fields';
 
-const StateEstimationResult: FunctionComponent<StateEstimationResultProps> = ({
+const StateEstimationResultTable: FunctionComponent<StateEstimationResultProps> = ({
     result,
     isLoadingResult,
     columnDefs,
@@ -131,4 +131,4 @@ const StateEstimationResult: FunctionComponent<StateEstimationResultProps> = ({
         </>
     );
 };
-export default StateEstimationResult;
+export default StateEstimationResultTable;

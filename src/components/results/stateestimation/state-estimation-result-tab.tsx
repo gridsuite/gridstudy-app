@@ -16,7 +16,7 @@ import { fetchStateEstimationResult } from '../../../services/study/state-estima
 import { AppState } from 'redux/reducer.type';
 import { ComputingType, TableType, type MuiStyles, RunningStatus } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import StateEstimationResult from './state-estimation-result';
+import StateEstimationResultTable from './state-estimation-result-table';
 import GlassPane from '../common/glass-pane';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import {
@@ -138,7 +138,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             {tabIndex === 0 && <StateEstimationStatusResult result={result} />}
             {tabIndex === 1 && (
                 <GlassPane active={isLoadingResult}>
-                    <StateEstimationResult
+                    <StateEstimationResultTable
                         result={result}
                         isLoadingResult={isLoadingResult}
                         columnDefs={stateEstimationResultColumns}
@@ -151,7 +151,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             )}
             {tabIndex === 2 && (
                 <GlassPane active={isLoadingResult}>
-                    <StateEstimationResult
+                    <StateEstimationResultTable
                         result={result}
                         isLoadingResult={isLoadingResult}
                         columnDefs={stateEstimationResultColumns}
@@ -162,7 +162,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             )}
             {tabIndex === 3 && (
                 <GlassPane active={isLoadingResult}>
-                    <StateEstimationResult
+                    <StateEstimationResultTable
                         result={result}
                         isLoadingResult={isLoadingResult}
                         columnDefs={stateEstimationResultColumns}

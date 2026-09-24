@@ -20,7 +20,7 @@ import {
     MeasurementInformationResult,
     MeasurementInformationResultDto,
     MeasurementType,
-    OutofBound,
+    Bounds,
     QualityCriterionResult,
     ValidityType,
 } from './state-estimation-result.type';
@@ -129,8 +129,8 @@ export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): Co
         ),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Value' }),
-            colId: 'value',
-            field: 'value',
+            colId: 'currentValue',
+            field: 'currentValue',
             context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
         }),
         makeAgGridCustomHeaderColumn({
@@ -148,7 +148,7 @@ export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): Co
         createEnumColumn(
             'outOfBound',
             'OutOfBound',
-            Object.values(OutofBound),
+            Object.values(Bounds),
             getEnumLabel,
             intl,
             sortParams,
@@ -235,10 +235,10 @@ export function mapMeasurementResults(
             equipmentId: measurementInformationResult.equipmentId,
             measurementType: measurementInformationResult.measurementType as MeasurementType,
             validityType: measurementInformationResult.validityType as ValidityType,
-            value: measurementInformationResult.value,
+            currentValue: measurementInformationResult.currentValue,
             estimatedValue: measurementInformationResult.estimatedValue,
             differenceValue: measurementInformationResult.differenceValue,
-            outOfBound: measurementInformationResult.outOfBound ? OutofBound.OUT_OF_BOUNDS : OutofBound.IN_BOUNDS,
+            outOfBound: measurementInformationResult.outOfBound ? Bounds.OUT_OF_BOUNDS : Bounds.IN_BOUNDS,
         };
     });
 }
