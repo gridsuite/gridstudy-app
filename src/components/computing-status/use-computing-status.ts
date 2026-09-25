@@ -56,6 +56,7 @@ function isWorthUpdate(
     const node = headers?.node;
     const nodes = headers?.nodes;
     const rootNetworkUuidFromNotification = headers?.rootNetworkUuid;
+    // if notification is about a root network that is not the current one, no need to update current node computation status
     if (rootNetworkUuidFromNotification && rootNetworkUuidFromNotification !== currentRootNetworkUuid) {
         return false;
     }
@@ -115,7 +116,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     computingStatusParametersFetcher,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
-    const lastUpdateRef = useRef<LastUpdateProps | null>(null);
+    const lastUpdateRef = useRef<LastUpdateProps>({ eventData: null, computingStatusFetcher });
     const dispatch = useDispatch<AppDispatch>();
     // Monotonic id identifying the latest in-flight request. A response is only
     // applied when its id is still the latest one, so an out-of-order response
