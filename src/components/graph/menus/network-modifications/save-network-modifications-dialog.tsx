@@ -27,6 +27,7 @@ export interface SaveNetworkModificationsDialogProps {
     studyUuid: UUID;
     selectedModifications: ComposedModificationMetadata[];
     defaultName: string | null;
+    defaultDescription: string | null;
     onSave: (data: IElementCreationDialog) => void;
     onSaveShared: (data: IElementCreationDialog) => void;
     onUpdate: (data: IElementUpdateDialog) => void;
@@ -38,6 +39,7 @@ export default function SaveNetworkModificationsDialog({
     studyUuid,
     selectedModifications,
     defaultName,
+    defaultDescription,
     onSave,
     onSaveShared,
     onUpdate,
@@ -101,6 +103,7 @@ export default function SaveNetworkModificationsDialog({
             titleId="CreateCompositeModification"
             prefixIdForGeneratedName="GeneratedModification"
             defaultName={defaultName}
+            defaultDescription={defaultDescription}
             studyUuid={studyUuid}
             selectorTitleId="SelectCompositeModificationTitle"
             createLabelId="CreateCompositeModificationLabel"
