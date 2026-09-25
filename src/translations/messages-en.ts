@@ -1063,6 +1063,8 @@ const messages_en = {
     rootName: 'Network name',
     rootTag: 'Network tag',
     TagRequiredCondition: 'Tag is required, should be unique in study and of length <= 4',
+    sharedModificationsApplicabilitiesOverwritten:
+        'This study contains shared modifications, which might have already defined applicability for this network tag: they will be overwritten with the current applicability for this network.',
     rootNetworksCount: '{count, plural, =1 {# network} other {# networks}}',
     deletingRootNetwork: 'Deleting root network ...',
     creatingRootNetwork: 'Creating root network ...',

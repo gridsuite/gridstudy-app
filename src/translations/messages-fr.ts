@@ -1077,6 +1077,8 @@ const messages_fr = {
     rootName: 'Nom du réseau',
     rootTag: 'Balise du réseau',
     TagRequiredCondition: "La balise est obligatoire, unique dans l'étude et de taille <= 4",
+    sharedModificationsApplicabilitiesOverwritten:
+        "L'étude contient des modifications partagées, qui peuvent avoir des applicabilités déjà définies pour cette balise de réseau : celles-ci seront écrasées par les applicabilités existantes sur le réseau.",
     rootNetworksCount: '{count, plural, =1 {# réseau} other {# réseaux}}',
     deletingRootNetwork: 'Suppression du réseau racine en cours ...',
     creatingRootNetwork: 'Création du réseau racine en cours ...',
