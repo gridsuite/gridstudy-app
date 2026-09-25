@@ -7,27 +7,27 @@
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import {
     BooleanCellRenderer,
+    BooleanFilterValue,
+    CustomAggridAutocompleteFilter,
+    CustomAggridComparatorFilter,
+    CustomHeaderComponent,
     DefaultCellRenderer,
     NumericCellRenderer,
     SnackInputs,
     snackWithFallback,
+    SortConfig,
     TableType,
 } from '@gridsuite/commons-ui';
 import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
 import type { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
-import { CustomHeaderComponent } from '@gridsuite/commons-ui';
-import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { BooleanFilterValue } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import {
     COLUMN_TYPES,
     CustomColDef,
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
-    SortConfig,
     SPREADSHEET_FILTER_NUMBER_COMPARATORS,
 } from '../../../types/custom-aggrid-types';
-import { CustomAggridAutocompleteFilter } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
 import { ROW_INDEX_COLUMN_ID } from '../constants';
