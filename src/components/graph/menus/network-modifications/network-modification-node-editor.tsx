@@ -13,7 +13,6 @@ import {
     fetchNetworkModification,
     IElementCreationDialog,
     IElementUpdateDialog,
-    isInLockedSharedModification,
     MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
     ModificationType,
@@ -1044,7 +1043,7 @@ const NetworkModificationNodeEditor = () => {
         (selectedRows: ComposedModificationMetadata[], isAssemblyDepthExceeded: boolean) => {
             setSelectedNetworkModifications(selectedRows);
             setIsAssemblyDepthExceeded(isAssemblyDepthExceeded);
-            setSelectionContainsLockedModification(selectedRows.some(isInLockedSharedModification));
+            setSelectionContainsLockedModification(selectedRows.some((row) => row.childFromReadOnlyShared));
         },
         [setSelectedNetworkModifications, setIsAssemblyDepthExceeded]
     );
