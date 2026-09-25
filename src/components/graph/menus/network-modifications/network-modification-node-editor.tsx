@@ -15,7 +15,7 @@ import {
     IElementUpdateDialog,
     MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
-    ModificationMoveRequest,
+    ModificationMoveInfos,
     ModificationType,
     moveModifications,
     NetworkModificationMetadata,
@@ -990,7 +990,7 @@ const NetworkModificationNodeEditor = () => {
         );
 
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
-            const modifications: ModificationMoveRequest[] = networkModificationsToCopy.map((modification) => ({
+            const modifications: ModificationMoveInfos[] = networkModificationsToCopy.map((modification) => ({
                 modificationUuid: modification.uuid,
                 sourceCompositeUuid: modification.parentCompositeUuid,
             }));
