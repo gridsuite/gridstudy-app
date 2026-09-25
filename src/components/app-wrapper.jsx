@@ -390,6 +390,16 @@ function createThemeWithComponents(baseTheme, ...args) {
                         color: 'cancelButtonColor',
                     },
                 },
+                MuiDialog: {
+                    styleOverrides: {
+                        // Since MUI 7, the paper may get the focus, then hide the resulting outline
+                        paper: {
+                            '&:focus, &:focus-visible': {
+                                outline: 'none',
+                            },
+                        },
+                    },
+                },
             },
         },
         ...args
