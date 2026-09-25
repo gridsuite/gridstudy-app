@@ -6,13 +6,7 @@
  */
 
 import {
-    ACTIVE_POWER_SETPOINT_MAX_VALUE_ERROR,
-    ACTIVE_POWER_SETPOINT_MIN_VALUE_ERROR,
-    DC_RESISTANCE_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
-    MAX_P_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
-    NOMINAL_V_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
     OUT_OF_BOUNDS_PERCENTAGE,
-    Q_MAX_AT_NOMINAL_V_MUST_BE_GREATER_THAN_ZERO,
     SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO,
     TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
     VARIATION_LIST_EMPTY,
@@ -554,7 +548,6 @@ const messages_fr = {
     LoadCreationError: "Erreur lors de la création d'une consommation",
     LoadModificationError: "Erreur lors de la modification d'une consommation",
     HVDCLineConverterStationError: "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
-    LccCreationError: "Erreur lors de la création d'une HVDC (LCC)",
     LimitSetNamingError: "Deux jeux de limites ne peuvent pas avoir le même nom et s'appliquer d'un même côté.",
     LimitSetCreationEmptyError: 'Les noms de jeux de limites ne peuvent pas être vides.',
 
@@ -572,8 +565,6 @@ const messages_fr = {
     'withoutunit.directTransX': 'Réactance transitoire',
     'withoutunit.stepUpTransformerX': 'Réactance du transformateur',
     'withoutunit.plannedActivePowerSetPoint': 'P imposée',
-    CreateLcc: "Création d'une HVDC (LCC)",
-    Filters: 'Filtres',
     Side: 'Côté',
     QatNominalV: 'Q à tension nominale',
     LimitsTab: 'Limites',
@@ -584,7 +575,6 @@ const messages_fr = {
     shuntCompensatorType: 'Type',
     Information: 'Information',
     FillAllFields: 'Veuillez remplir tous les champs',
-    ModifyLcc: 'Modifier une HVDC (LCC)',
 
     CreateVoltageLevel: 'Créer un poste',
     Substation: 'Site',
@@ -653,16 +643,6 @@ const messages_fr = {
     permanentCurrentLimitMandatory:
         "Un IST doit être fourni si le jeu de limites contient des limites d'intensité temporaires",
 
-    [Q_MAX_AT_NOMINAL_V_MUST_BE_GREATER_THAN_ZERO]: 'La valeur Q installée à tension nominale doit être supérieure à 0',
-    powerFactorMaxValueError: 'La valeur du coefficient Q/P doit être inférieure à 1',
-    powerFactorMinValueError: 'La valeur du coefficient Q/P doit être supérieure à -1',
-    powerFactorIntervalValueError: 'La valeur du coefficient Q/P doit être comprise entre 0 et 1',
-    [NOMINAL_V_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'La valeur de la tension nominale DC doit être supérieure à 0',
-    [DC_RESISTANCE_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'La valeur de la résistance DC doit être supérieure à 0',
-    [MAX_P_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'La valeur de la puissance active max doit être supérieure à 0',
-    [ACTIVE_POWER_SETPOINT_MIN_VALUE_ERROR]: 'La valeur de la puissance active doit être supérieure à 0',
-    [ACTIVE_POWER_SETPOINT_MAX_VALUE_ERROR]:
-        'La valeur de la puissance active doit être inférieure à la valeur de la puissance active max',
     PermanentCurrentLimitText1: 'PATL 1',
     PermanentCurrentLimitText2: 'PATL 2',
 
@@ -952,13 +932,11 @@ const messages_fr = {
     marginalCost: 'Coût de démarrage',
 
     Connect: 'Reconnexion ?',
-    connected: 'Connecté',
     connected1: 'Connecté 1',
     connected2: 'Connecté 2',
     ConnectedT3WSide1: 'Connecté 1',
     ConnectedT3WSide2: 'Connecté 2',
     ConnectedT3WSide3: 'Connecté 3',
-    disconnected: 'Déconnecté',
     converterStationId: 'ID de la station',
     converterStationName: 'Nom de la station',
     converterStation1: 'Station 1',
@@ -969,9 +947,6 @@ const messages_fr = {
     operatorActivePowerLimitSide1Label: 'Limite de fonctionnement (1->2)',
     converterModeLabel: 'Mode de fonctionnement des stations',
     lossFactorLabel: 'Coefficient de pertes',
-    powerFactorLabel: 'Coefficient Q/P',
-    shuntCompensatorId: 'ID du MCS',
-    shuntCompensatorName: 'Nom du MCS',
     connectedToHvdc: 'Connecté à HVDC',
     'withoutunit.g': 'Conductance magnétisante',
     'withoutunit.b': 'Susceptance magnétisante',
@@ -1161,7 +1136,6 @@ const messages_fr = {
         'Les lignes avec l\'option "Invalider" activée sont appliquées dans l\'ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si une partie du réseau est incluse dans plusieurs filtres).',
     nodeAliasesRetrievingError: 'Erreur lors de la récupération des alias de nœuds',
     nodeAliasesUpdateError: 'Erreur lors de la mise à jour des alias de nœuds',
-    previousConnection: 'Connexion préc.',
 
     confirmRootNetworkCreation:
         "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nCela déréalisera tous les nœuds de l'étude.\n\nLe changement d'interface est irréversible.",
