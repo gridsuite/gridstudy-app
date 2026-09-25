@@ -114,6 +114,7 @@ import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
     isNodeDeletedNotification,
+    isSharedElementUpdateNotification,
     isRootNetworksUpdatedNotification,
     parseEventData,
 } from 'types/notification-types';
@@ -767,6 +768,14 @@ const NetworkModificationNodeEditor = () => {
                 dofetchNetworkModifications();
             }
             if (isModificationsDeleteFinishedNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
+                dofetchNetworkModifications();
+            }
+
+            // a shared (referenced) composite modification pointed at by this node was modified elsewhere
+            if (isSharedElementUpdateNotification(eventData)) {
                 if (currentNodeIdRef.current !== eventData.headers.parentNode) {
                     return;
                 }
