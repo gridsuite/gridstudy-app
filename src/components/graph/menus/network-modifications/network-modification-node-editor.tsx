@@ -1085,7 +1085,8 @@ const NetworkModificationNodeEditor = () => {
         [handleNameChange, isMonoRootStudy, rootNetworks]
     );
 
-    // If only one modification is selected and it is of type composite, saving it in gridexplore would make it take its name by default
+    // If only one modification is selected and it is of type composite,
+    // saving it in gridexplore would make it take its name and its description by default
     const defaultSaveModificationName =
         selectedNetworkModifications.length === 1
             ? (JSON.parse(selectedNetworkModifications[0]?.messageValues)?.name ?? null)
