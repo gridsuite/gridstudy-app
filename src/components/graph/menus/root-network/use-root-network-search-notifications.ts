@@ -18,6 +18,7 @@ import {
     isNodeEditedNotification,
     isNodeSubTreeCreatedNotification,
     isRootNetworksUpdatedNotification,
+    isSharedElementUpdateNotification,
 } from 'types/notification-types';
 
 type UseRootNetworkNotificationsProps = {
@@ -39,7 +40,8 @@ export const useRootNetworkSearchNotifications = ({
             const rootNetworksStatus = isRootNetworksUpdatedNotification(eventData);
             const networkModificationsStatus =
                 isModificationsDeleteFinishedNotification(eventData) ||
-                isModificationsUpdateFinishedNotification(eventData);
+                isModificationsUpdateFinishedNotification(eventData) ||
+                isSharedElementUpdateNotification(eventData);
             const nodeDeleted = isNodeDeletedNotification(eventData);
             const nodeCreated = isNodeCreatedNotification(eventData);
             const nodeEdited = isNodeEditedNotification(eventData);

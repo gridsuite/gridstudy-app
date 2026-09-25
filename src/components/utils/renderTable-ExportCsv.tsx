@@ -10,6 +10,7 @@ import {
     RenderTableAndExportCsv as RenderTableAndExportCsvBase,
     RenderTableAndExportCsvProps as BaseProps,
     TableType,
+    updateAgGridFilters,
 } from '@gridsuite/commons-ui';
 import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
 
