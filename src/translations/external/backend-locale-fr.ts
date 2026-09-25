@@ -51,7 +51,7 @@ const backend_locale_fr = {
     TRANS_ACT_EX: 'Transit actif Ex.',
     TRANS_REA_OR: 'Transit réactif Or.',
     TRANS_REA_EX: 'Transit réactif Ex.',
-    INJ_ACT: 'Injection active (MW)',
+    INJ_ACT: 'Injection active',
     INJ_REA: 'Injection réactive',
     PUISS_HVDC: 'Puissance HVDC',
     REDONDANTE: 'Redondante',
