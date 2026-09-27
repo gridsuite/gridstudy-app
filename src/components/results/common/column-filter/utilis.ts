@@ -6,9 +6,9 @@
  */
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import {
-    makeAgGridCustomHeaderColumn,
     createMultiEnumFilterParams,
     CustomAggridAutocompleteFilter,
+    makeAgGridCustomHeaderColumn,
 } from '@gridsuite/commons-ui';
 import { FILTER_DATA_TYPES } from '../../../../types/custom-aggrid-types';
 import { IntlShape } from 'react-intl';

@@ -10,11 +10,11 @@ import {
     RenderTableAndExportCsv as RenderTableAndExportCsvBase,
     RenderTableAndExportCsvProps as BaseProps,
     TableType,
+    updateAgGridFilters,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer.type';
 import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
-import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 interface RenderTableAndExportCsvProps extends Omit<BaseProps, 'onGridReady'> {
     computationType: TableType;
