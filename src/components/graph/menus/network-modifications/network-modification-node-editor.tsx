@@ -15,7 +15,9 @@ import {
     IElementUpdateDialog,
     MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
+    ModificationMoveInfos,
     ModificationType,
+    moveModifications,
     NetworkModificationMetadata,
     NetworkModificationsTable,
     NotificationsUrlKeys,
@@ -85,7 +87,6 @@ import RestoreModificationDialog from 'components/dialogs/restore-modification-d
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
-import { copyOrMoveModifications } from '../../../../services/study';
 import {
     assembleModificationsIntoComposite,
     fetchNetworkModifications,
@@ -131,6 +132,7 @@ import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-netwo
 import { FetchStatus } from '../../../../services/utils.type';
 import { createBaseColumns, createRootNetworksColumns } from './network-modification-table/createColumns';
 import { ColumnDef } from '@tanstack/react-table';
+import { copyModifications } from '../../../../services/study';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -997,17 +999,19 @@ const NetworkModificationNodeEditor = () => {
         );
 
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
-            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos)
-                .then(() => {
-                    cleanClipboard(false);
-                })
+            const modifications: ModificationMoveInfos[] = networkModificationsToCopy.map((modification) => ({
+                modificationUuid: modification.uuid,
+                sourceCompositeUuid: modification.parentCompositeUuid,
+            }));
+            moveModifications(studyUuid, currentNode.id, modifications, copyInfos.originNodeUuid)
+                .then(() => cleanClipboard(false))
                 .catch((error) => {
                     snackWithFallback(snackError, error, {
                         headerId: 'errCutModificationMsg',
                     });
                 });
         } else {
-            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos).catch((error) => {
+            copyModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos).catch((error) => {
                 snackWithFallback(snackError, error, {
                     headerId: 'errDuplicateModificationMsg',
                 });
