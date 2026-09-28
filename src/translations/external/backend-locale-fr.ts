@@ -44,6 +44,23 @@ const backend_locale_fr = {
     ECARTS_HN: 'Ecarts hors-normes',
     NB_ITER: "Nombre d'itérations",
     TRANSITS_PERDUS: 'Transits perdus',
+    IN_BOUNDS: 'Dans les normes',
+    OUT_OF_BOUNDS: 'Hors norme',
+    TENSION: 'Tension',
+    TRANS_ACT_OR: 'Transit actif Or.',
+    TRANS_ACT_EX: 'Transit actif Ex.',
+    TRANS_REA_OR: 'Transit réactif Or.',
+    TRANS_REA_EX: 'Transit réactif Ex.',
+    INJ_ACT: 'Injection active',
+    INJ_REA: 'Injection réactive',
+    PUISS_HVDC: 'Puissance HVDC',
+    REDONDANTE: 'Redondante',
+    CRITIQUE: 'Critique',
+    INV_OBS: 'En zone inobservable',
+    INV_VERR: 'Tension aberrante',
+    INV_PIV_NUL: 'Pivot nul',
+    INV_ERR: 'Erronée',
+    INV: 'Invalide',
 };
 
 export default backend_locale_fr;

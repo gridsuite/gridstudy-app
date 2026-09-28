@@ -13,7 +13,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
 
-interface RenderTableAndExportCsvProps extends Omit<BaseProps, 'onGridReady'> {
+interface RenderTableAndExportCsvProps extends BaseProps {
     computationType: TableType;
     computationSubType: string;
 }
@@ -22,9 +22,10 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     computationType,
     computationSubType,
     gridRef,
+    onGridReady,
     ...rest
 }) => {
-    const onGridReady = useAgGridInitialColumnFilters(computationType, computationSubType);
+    const handleOnGridReady = useAgGridInitialColumnFilters(computationType, computationSubType, onGridReady);
 
-    return <RenderTableAndExportCsvBase gridRef={gridRef} onGridReady={onGridReady} {...rest} />;
+    return <RenderTableAndExportCsvBase gridRef={gridRef} onGridReady={handleOnGridReady} {...rest} />;
 };
