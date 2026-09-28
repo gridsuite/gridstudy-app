@@ -7,8 +7,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { GridApi, GridReadyEvent } from 'ag-grid-community';
-import { TableType } from '@gridsuite/commons-ui';
-import { updateAgGridFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { TableType, updateAgGridFilters } from '@gridsuite/commons-ui';
 import type { RootState } from '../../../redux/store';
 
 /**

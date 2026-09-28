@@ -7,7 +7,7 @@
 
 import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { EquipmentTable } from './equipment-table';
-import { FilterConfig, type Identifiable, type MuiStyles, TableType } from '@gridsuite/commons-ui';
+import { FilterConfig, type Identifiable, type MuiStyles, TableType, updateAgGridFilters } from '@gridsuite/commons-ui';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
@@ -27,7 +27,6 @@ import type { RootState } from '../../../../redux/store';
 import { selectPanelTargetEquipment } from '../../../../redux/slices/workspace-selectors';
 import type { UUID } from 'node:crypto';
 import { useWorkspacePanelActions } from '../../../workspace/hooks/use-workspace-panel-actions';
-import { updateAgGridFilters } from '../../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { getColumnFiltersFromState } from '../../../../redux/selectors/filter-selectors';
 
 import { SPREADSHEET_INVALID_CELL_CLASS } from '../../columns/utils/column-mapper';
