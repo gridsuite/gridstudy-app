@@ -1182,7 +1182,7 @@ const NetworkModificationNodeEditor = () => {
     }, [modificationsToRestore.length, isEditBlocked]);
 
     const isCompositeNestingLimitReached = useMemo(() => {
-        // A single selection gets one extra level of tolerance
+        // A single selection gets one extra level of tolerance thanks to non wrapping behaviour when saving
         const limit = MAX_COMPOSITE_NESTING_DEPTH + (selectedNetworkModifications.length === 1 ? 1 : 0);
         return selectedNetworkModifications.some((row) => (row.maxDepth ?? 0) >= limit);
     }, [selectedNetworkModifications]);
