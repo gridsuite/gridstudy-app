@@ -46,7 +46,11 @@ export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
                 tableMinWidth={400}
             />
 
-            <Box my={2}>
+            <Box
+                sx={{
+                    my: 2,
+                }}
+            >
                 <LineSeparator />
             </Box>
             <GridSection title="StateEstimationParametersDefaultFixedBoundsSection" heading={4} />

@@ -90,7 +90,13 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode, currentRootNetworkUui
             {LINE_FIELDS.map(({ name, label, sectionTitle }) => (
                 <Fragment key={name}>
                     <GridSection title={sectionTitle} />
-                    <Grid container spacing={GRID_SPACING} alignItems="center">
+                    <Grid
+                        container
+                        spacing={GRID_SPACING}
+                        sx={{
+                            alignItems: 'center',
+                        }}
+                    >
                         <GridItem size={GRID_ITEM_SIZE}>
                             <AutocompleteInput
                                 {...LINE_AUTOCOMPLETE_SHARED_PROPS}

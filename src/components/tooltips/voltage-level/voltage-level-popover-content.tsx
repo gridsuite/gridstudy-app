@@ -16,7 +16,12 @@ export interface VoltageLevelPopoverContent {
 
 export const VoltageLevelPopoverContent = ({ equipmentInfos }: VoltageLevelPopoverContent) => {
     return (
-        <Stack spacing={2} alignItems="center">
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: 'center',
+            }}
+        >
             <VoltageLevelPopoverBusInfos
                 buses={equipmentInfos?.busInfos}
                 fallbackVoltage={equipmentInfos?.umin ?? equipmentInfos?.umax}

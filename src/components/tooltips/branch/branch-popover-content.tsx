@@ -25,7 +25,12 @@ export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
     equipmentType,
 }) => {
     return (
-        <Stack spacing={2} alignItems="center">
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: 'center',
+            }}
+        >
             <BranchCharacteristicsTable equipmentInfos={equipmentInfos} />
             <BranchCharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
             {equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER && (

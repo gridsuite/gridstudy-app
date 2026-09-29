@@ -45,7 +45,12 @@ export default function BalancesAdjustmentAdvancedContent() {
     });
 
     return (
-        <Stack sx={{ width: '66%' }} minWidth={'300px'}>
+        <Stack
+            sx={{
+                minWidth: '300px',
+                width: '66%',
+            }}
+        >
             <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <Grid>
                     <GridSection title="Loadflow" />

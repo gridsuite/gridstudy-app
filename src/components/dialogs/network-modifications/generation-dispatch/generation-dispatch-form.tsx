@@ -69,7 +69,14 @@ const GenerationDispatchForm = ({
     );
 
     const generatorsWithFixedActivePowerField = (
-        <Grid container alignItems="center" spacing={2} direction={'row'}>
+        <Grid
+            container
+            spacing={2}
+            direction={'row'}
+            sx={{
+                alignItems: 'center',
+            }}
+        >
             <Grid size={5}>
                 <FieldLabel label={'GeneratorsWithFixedActivePower'} optional />
             </Grid>
@@ -89,7 +96,13 @@ const GenerationDispatchForm = ({
     const defaultOutageRateField = (
         <Grid container spacing={2}>
             <Grid size={12}>
-                <Typography variant="body1" component="h4" fontWeight="fontWeightMedium">
+                <Typography
+                    variant="body1"
+                    component="h4"
+                    sx={{
+                        fontWeight: 'fontWeightMedium',
+                    }}
+                >
                     <FormattedMessage id="GeneratorAvailability" />
                 </Typography>
             </Grid>
@@ -105,7 +118,14 @@ const GenerationDispatchForm = ({
     );
 
     const generatorsWithoutOutageField = (
-        <Grid container alignItems="center" spacing={2} direction={'row'}>
+        <Grid
+            container
+            spacing={2}
+            direction={'row'}
+            sx={{
+                alignItems: 'center',
+            }}
+        >
             <Grid size={5}>
                 <FieldLabel label={'GeneratorsWithoutOutage'} optional />
             </Grid>
@@ -123,19 +143,41 @@ const GenerationDispatchForm = ({
     );
 
     return (
-        <Box pt={2}>
-            <Grid container spacing={2} mb={2}>
+        <Box
+            sx={{
+                pt: 2,
+            }}
+        >
+            <Grid
+                container
+                spacing={2}
+                sx={{
+                    mb: 2,
+                }}
+            >
                 <GridItem size={4}>{lossCoefficientField}</GridItem>
                 <GridItem size={12}>{generatorsWithFixedActivePowerField}</GridItem>
             </Grid>
             <GridSection title="ReduceMaxP" />
-            <Grid container spacing={2} mb={3}>
+            <Grid
+                container
+                spacing={2}
+                sx={{
+                    mb: 3,
+                }}
+            >
                 <GridItem size={4}>{defaultOutageRateField}</GridItem>
                 <GridItem size={12}>{generatorsWithoutOutageField}</GridItem>
             </Grid>
             <Grid container spacing={2}>
                 <Grid>
-                    <Typography variant="body1" component="h4" fontWeight="fontWeightMedium">
+                    <Typography
+                        variant="body1"
+                        component="h4"
+                        sx={{
+                            fontWeight: 'fontWeightMedium',
+                        }}
+                    >
                         <FormattedMessage id="frequencyReserve" />
                     </Typography>
                 </Grid>

@@ -11,28 +11,38 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { QualityCriterionResult, StateEstimationTabProps } from './state-estimation-result.type';
+import { StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
 import { computeLogicalControls, fetchStateEstimationResult } from '../../../services/study/state-estimation';
 import { LogicalControlsResultDto } from './logicalcontrols/logicalControls.types';
 import { AppState } from 'redux/reducer.type';
 import {
     ComputingType,
-    RunningStatus,
     type MuiStyles,
+    RunningStatus,
     snackWithFallback,
+    TableType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { StateEstimationQualityResult } from './state-estimation-quality-result';
+import StateEstimationResultTable from './state-estimation-result-table';
 import GlassPane from '../common/glass-pane';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import {
+    mapMeasurementResults,
+    mapQualityCriterionResults,
+    stateEstimationMeasurementColumnsDefinition,
     stateEstimationQualityCriterionColumnsDefinition,
     stateEstimationQualityPerRegionColumnsDefinition,
 } from './state-estimation-result-utils';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { stateEstimationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
+import {
+    STATEESTIMATION_MEASUREMENTS,
+    STATEESTIMATION_QUALITY_CRITERION,
+    STATEESTIMATION_QUALITY_PER_REGION,
+} from '../../../utils/store-sort-filter-fields';
 import { LogicalControlsResult } from './logicalcontrols/logical-controls-result';
 
 const styles = {
@@ -82,11 +92,15 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         invalidations: stateEstimationResultInvalidations,
     });
 
-    const stateEstimationQualityColumns = useMemo(() => {
+    useComputationColumnFilters(TableType.StateEstimation, STATEESTIMATION_MEASUREMENTS);
+
+    const stateEstimationResultColumns = useMemo(() => {
         switch (tabIndex) {
             case 1:
-                return stateEstimationQualityCriterionColumnsDefinition(intl);
+                return stateEstimationMeasurementColumnsDefinition(intl);
             case 2:
+                return stateEstimationQualityCriterionColumnsDefinition(intl);
+            case 3:
                 return stateEstimationQualityPerRegionColumnsDefinition(intl);
 
             default:
@@ -106,15 +120,12 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         }
         return {
             ...stateEstimationResult,
-            qualityCriterionResults: stateEstimationResult.qualityCriterionResults.map(
-                (qCrit: QualityCriterionResult) => {
-                    return {
-                        type: intl.formatMessage({ id: qCrit.type }),
-                        validity: qCrit.validity,
-                        value: qCrit.value,
-                        threshold: qCrit.threshold,
-                    };
-                }
+            measurementInformationResults: mapMeasurementResults(
+                stateEstimationResult.measurementInformationResults ?? []
+            ),
+            qualityCriterionResults: mapQualityCriterionResults(
+                stateEstimationResult.qualityCriterionResults ?? [],
+                intl
             ),
         };
     }, [stateEstimationStatus, stateEstimationResult, intl]);
@@ -152,6 +163,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             <Box sx={styles.flexWrapper}>
                 <Tabs value={tabIndex} onChange={handleTabChange} sx={styles.flexElement}>
                     <Tab label={<FormattedMessage id={'StateEstimationStatusResults'} />} />
+                    <Tab label={<FormattedMessage id={'StateEstimationMeasurementResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityCriterionResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityPerRegionResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationLogicalControlsResults'} />} />
@@ -170,34 +182,47 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             {tabIndex === 0 && <StateEstimationStatusResult result={result} />}
             {tabIndex === 1 && (
                 <GlassPane active={isLoadingResult}>
-                    <StateEstimationQualityResult
+                    <StateEstimationResultTable
                         result={result}
                         isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationQualityColumns}
-                        tableName="qualityCriterionResults"
+                        columnDefs={stateEstimationResultColumns}
+                        tableName={STATEESTIMATION_MEASUREMENTS}
                         exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                        filter={true}
+                        sortable={true}
                     />
                 </GlassPane>
             )}
             {tabIndex === 2 && (
                 <GlassPane active={isLoadingResult}>
-                    <StateEstimationQualityResult
+                    <StateEstimationResultTable
                         result={result}
                         isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationQualityColumns}
-                        tableName="qualityPerRegionResults"
+                        columnDefs={stateEstimationResultColumns}
+                        tableName={STATEESTIMATION_QUALITY_CRITERION}
                         exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                     />
                 </GlassPane>
             )}
             {tabIndex === 3 && (
+                <GlassPane active={isLoadingResult}>
+                    <StateEstimationResultTable
+                        result={result}
+                        isLoadingResult={isLoadingResult}
+                        columnDefs={stateEstimationResultColumns}
+                        tableName={STATEESTIMATION_QUALITY_PER_REGION}
+                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                    />
+                </GlassPane>
+            )}
+            {tabIndex === 4 && (
                 <LogicalControlsResult
                     result={logicalControlsResult}
                     isLoadingResult={isRunningLogicalControls}
                     exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                 />
             )}
-            {tabIndex === 4 && renderReportViewer()}
+            {tabIndex === 5 && renderReportViewer()}
         </>
     );
 };

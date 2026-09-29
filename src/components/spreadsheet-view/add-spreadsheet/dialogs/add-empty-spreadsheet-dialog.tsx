@@ -103,7 +103,12 @@ export default function AddEmptySpreadsheetDialog({ open }: Readonly<AddEmptySpr
                 onClear={() => {}}
                 slotProps={{ paper: { sx: dialogStyles.dialogContent } }}
             >
-                <Stack spacing={2} marginTop={2}>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        marginTop: 2,
+                    }}
+                >
                     <Box>
                         <TextInput
                             name={SPREADSHEET_NAME}

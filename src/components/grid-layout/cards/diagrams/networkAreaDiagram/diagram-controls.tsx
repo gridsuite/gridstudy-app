@@ -348,7 +348,11 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             titleId={'SaveToGridexplore'}
                         />
                     )}
-                    <Box minWidth="12em">
+                    <Box
+                        sx={{
+                            minWidth: '12em',
+                        }}
+                    >
                         <DirectoryItemSelector
                             open={isLoadSelectorOpen}
                             onClose={selectElement}
@@ -360,7 +364,11 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             multiSelect={false}
                         />
                     </Box>
-                    <Box minWidth="12em">
+                    <Box
+                        sx={{
+                            minWidth: '12em',
+                        }}
+                    >
                         <DirectoryItemSelector
                             open={isFilterSelectorOpen}
                             onClose={handleSelectFilter}

@@ -64,7 +64,11 @@ export const TopBarEquipmentSearchPopover = (props: TopBarEquipmentSearchPopover
             onClose={() => setIsOpen(false)}
             anchorEl={anchorEl}
         >
-            <Box m={2}>
+            <Box
+                sx={{
+                    m: 2,
+                }}
+            >
                 <FormControl>
                     <RadioGroup
                         value={equipmentType}

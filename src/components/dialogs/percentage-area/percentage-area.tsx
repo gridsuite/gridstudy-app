@@ -88,7 +88,14 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
     );
     return (
         <Grid container>
-            <Grid container size={12} justifyContent={'space-between'} spacing={2}>
+            <Grid
+                container
+                size={12}
+                spacing={2}
+                sx={{
+                    justifyContent: 'space-between',
+                }}
+            >
                 {upperLeftText && (
                     <Grid>
                         <Typography>
@@ -105,7 +112,14 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
                 )}
             </Grid>
             {slider}
-            <Grid container size={12} justifyContent={'space-between'} spacing={2}>
+            <Grid
+                container
+                size={12}
+                spacing={2}
+                sx={{
+                    justifyContent: 'space-between',
+                }}
+            >
                 <Grid size={3}>{leftSidePercentageField}</Grid>
                 <Grid size={3}>{rightSidePercentageField}</Grid>
             </Grid>

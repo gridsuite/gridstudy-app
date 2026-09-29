@@ -311,8 +311,17 @@ export function SaveSpreadsheetModelDialog({
                             <FormattedMessage id="showSelectDirectoryDialog" />
                         </Button>
                     </Grid>
-                    <Typography m={1} component="span">
-                        <Box fontWeight="fontWeightBold">
+                    <Typography
+                        component="span"
+                        sx={{
+                            m: 1,
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                fontWeight: 'fontWeightBold',
+                            }}
+                        >
                             {destinationFolder ? destinationFolder.name : <CircularProgress />}
                         </Box>
                     </Typography>
@@ -326,8 +335,19 @@ export function SaveSpreadsheetModelDialog({
                         <FormattedMessage id="showSelectDirectoryItemDialog" />
                     </Button>
                 </Grid>
-                <Typography m={1} component="span">
-                    <Box fontWeight="fontWeightBold">{selectedItem ? selectedItem.fullPath : null}</Box>
+                <Typography
+                    component="span"
+                    sx={{
+                        m: 1,
+                    }}
+                >
+                    <Box
+                        sx={{
+                            fontWeight: 'fontWeightBold',
+                        }}
+                    >
+                        {selectedItem ? selectedItem.fullPath : null}
+                    </Box>
                 </Typography>
             </Grid>
         );
@@ -345,7 +365,12 @@ export function SaveSpreadsheetModelDialog({
             }}
             disabledSave={disableSave}
         >
-            <Stack spacing={2} marginTop={2}>
+            <Stack
+                spacing={2}
+                sx={{
+                    marginTop: 2,
+                }}
+            >
                 <Grid>
                     <RadioInput
                         name={FieldConstants.OPERATION_TYPE}

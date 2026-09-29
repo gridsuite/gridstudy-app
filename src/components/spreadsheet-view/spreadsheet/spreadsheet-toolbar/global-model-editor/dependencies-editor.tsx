@@ -38,19 +38,20 @@ export default function DependenciesEditor({ name, dependencies, ...props }: Dep
             options={dependencies}
             size={'small'}
             sx={styles.autocomplete}
-            renderInput={({ inputProps, ...rest }) => (
+            renderInput={(params) => (
                 <TextField
                     inputRef={ref}
+                    {...params}
                     slotProps={{
+                        ...params.slotProps,
                         htmlInput: {
                             style: {
                                 fontSize: 'small',
                             },
-                            ...inputProps,
+                            ...params.slotProps.htmlInput,
                         },
                     }}
                     {...genHelperError(error?.message)}
-                    {...rest}
                 />
             )}
             autoHighlight={true}

@@ -21,7 +21,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import StopIcon from '@mui/icons-material/Stop';
 import LoopIcon from '@mui/icons-material/Loop';
 import DoneIcon from '@mui/icons-material/Done';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import { useSelector } from 'react-redux';
 import { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
@@ -193,7 +193,7 @@ const SplitButton = ({
             case RunningStatus.SUCCEED:
                 return <DoneIcon data-testid="ModelExecutionDone" />;
             case RunningStatus.FAILED:
-                return <ErrorOutlineIcon data-testid="ModelExecutionFail" />;
+                return <ErrorOutlinedIcon data-testid="ModelExecutionFail" />;
             case RunningStatus.IDLE:
             default:
                 return <PlayIcon />;

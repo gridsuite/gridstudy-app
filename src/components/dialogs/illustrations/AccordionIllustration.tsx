@@ -63,7 +63,12 @@ export const AccordionIllustration: FunctionComponent<PropsWithChildren<Accordio
                 onMouseLeave={() => setMouseHover(false)}
             >
                 <Typography variant="subtitle1">
-                    <Box component="span" fontWeight="fontWeightMedium">
+                    <Box
+                        component="span"
+                        sx={{
+                            fontWeight: 'fontWeightMedium',
+                        }}
+                    >
                         <FormattedMessage id="Information" />
                     </Box>
                 </Typography>

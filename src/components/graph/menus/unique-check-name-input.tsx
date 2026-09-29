@@ -25,7 +25,7 @@ export interface UniqueCheckNameInputProps {
         TextFieldProps,
         'value' | 'onChange' | 'name' | 'label' | 'inputRef' | 'inputProps' | 'InputProps'
     >;
-    inputProps?: TextFieldProps['inputProps'];
+    inputProps?: NonNullable<TextFieldProps['slotProps']>['htmlInput'];
     elementExists: (studyUuid: UUID, elementName: string) => Promise<boolean>;
     errorMessageKey: string;
     catchMessageKey: string;

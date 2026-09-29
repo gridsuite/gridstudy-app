@@ -10,8 +10,9 @@ import type { UUID } from 'node:crypto';
 import {
     backendFetch,
     backendFetchJson,
-    NetworkVisualizationParameters,
     GlobalFilter,
+    NetworkVisualizationParameters,
+    SortConfig,
     TableType,
 } from '@gridsuite/commons-ui';
 import {
@@ -19,7 +20,6 @@ import {
     SpreadsheetCollectionDto,
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
-import { SortConfig } from '../../types/custom-aggrid-types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');

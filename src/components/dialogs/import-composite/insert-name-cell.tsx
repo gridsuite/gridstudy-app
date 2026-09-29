@@ -25,7 +25,13 @@ const InsertNameCell = ({ rowIndex }: Readonly<InsertNameCellProps>): JSX.Elemen
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
             {isShared ? (
-                <Typography m={1} component="span" variant="body1">
+                <Typography
+                    component="span"
+                    variant="body1"
+                    sx={{
+                        m: 1,
+                    }}
+                >
                     {originalName}
                 </Typography>
             ) : (

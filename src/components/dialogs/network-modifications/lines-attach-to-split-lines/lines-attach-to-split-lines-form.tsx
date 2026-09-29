@@ -117,15 +117,33 @@ const LinesAttachToSplitLinesForm = ({
     return (
         <>
             <GridSection title="Line1" />
-            <Grid container spacing={2} alignItems="center">
+            <Grid
+                container
+                spacing={2}
+                sx={{
+                    alignItems: 'center',
+                }}
+            >
                 <GridItem size={5}>{lineToAttachTo1Field}</GridItem>
             </Grid>
             <GridSection title="Line2" />
-            <Grid container spacing={2} alignItems="center">
+            <Grid
+                container
+                spacing={2}
+                sx={{
+                    alignItems: 'center',
+                }}
+            >
                 <GridItem size={5}>{lineToAttachTo2Field}</GridItem>
             </Grid>
             <GridSection title="LineAttached" />
-            <Grid container spacing={2} alignItems="center">
+            <Grid
+                container
+                spacing={2}
+                sx={{
+                    alignItems: 'center',
+                }}
+            >
                 <GridItem size={5}>{attachedLineField}</GridItem>
             </Grid>
             <GridSection title="lineAttachedToSplitLineVoltageLevel" />

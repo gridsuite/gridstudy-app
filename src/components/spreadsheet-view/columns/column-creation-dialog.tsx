@@ -134,7 +134,14 @@ export default function ColumnCreationDialog({
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
 
     const dialogTitle = (
-        <Grid container spacing={2} justifyContent={'space-between'} alignItems="center">
+        <Grid
+            container
+            spacing={2}
+            sx={{
+                justifyContent: 'space-between',
+                alignItems: 'center',
+            }}
+        >
             <Grid size={6}>
                 <Typography variant="h6">
                     <FormattedMessage
@@ -146,7 +153,14 @@ export default function ColumnCreationDialog({
                     />
                 </Typography>
             </Grid>
-            <Grid size={6} container spacing={2} justifyContent={'right'}>
+            <Grid
+                size={6}
+                container
+                spacing={2}
+                sx={{
+                    justifyContent: 'right',
+                }}
+            >
                 <Grid>
                     <Tooltip
                         title={
@@ -347,7 +361,13 @@ export default function ColumnCreationDialog({
             >
                 <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>
-                    <Stack spacing={2} mt="5px" alignItems="center">
+                    <Stack
+                        spacing={2}
+                        sx={{
+                            mt: '5px',
+                            alignItems: 'center',
+                        }}
+                    >
                         <Grid sx={styles.field}>{columnNameField}</Grid>
                         <Grid sx={styles.field}>{columnIdField}</Grid>
                         <Grid sx={styles.field}>{columnType}</Grid>

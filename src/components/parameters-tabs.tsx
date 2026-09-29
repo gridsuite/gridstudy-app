@@ -576,7 +576,15 @@ const ParametersTabs: FunctionComponent = () => {
                 sx={[stylesLayout.rootContainer, isXsScreen && { flexDirection: 'column', flexWrap: 'nowrap' }]}
             >
                 {isXsScreen ? (
-                    <Grid container sx={tabStyles.listTitleDisplay} flexShrink={0}>
+                    <Grid
+                        container
+                        sx={[
+                            {
+                                flexShrink: 0,
+                            },
+                            tabStyles.listTitleDisplay,
+                        ]}
+                    >
                         <Grid size={6}>
                             <Select
                                 value={tabValue}
