@@ -44,6 +44,7 @@ import {
     TopologyVoltageLevelModificationDto,
     TabularModificationRow,
     TabularProperty,
+    VariationScalingDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -58,8 +59,6 @@ import {
     LccModificationInfos,
     LinesAttachToSplitLinesInfo,
     NetworkModificationRequestInfos,
-    Variations,
-    VariationType,
     VoltageLevelCreationInfo,
 } from '../network-modification-types';
 
@@ -296,14 +295,9 @@ export function generatorScaling(
     studyUuid: UUID,
     nodeUuid: UUID,
     modificationUuid: UUID | undefined,
-    variationType: VariationType,
-    variations: Variations[]
+    variationScalingDto: VariationScalingDto
 ) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.GENERATOR_SCALING.type,
-        variationType,
-        variations,
-    });
+    const body = JSON.stringify(variationScalingDto);
 
     let generatorScalingUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
@@ -1021,14 +1015,9 @@ export function loadScaling(
     studyUuid: string,
     nodeUuid: UUID,
     modificationUuid: UUID | undefined,
-    variationType: VariationType,
-    variations: Variations[]
+    variationScalingDto: VariationScalingDto
 ) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.LOAD_SCALING.type,
-        variationType,
-        variations,
-    });
+    const body = JSON.stringify(variationScalingDto);
 
     let loadScalingUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
