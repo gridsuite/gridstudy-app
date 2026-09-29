@@ -169,7 +169,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     <Tab label={<FormattedMessage id={'StateEstimationLogicalControlsResults'} />} />
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
-                {tabIndex === 3 && (
+                {tabIndex === 4 && (
                     <Box sx={styles.computeLogicalControlsButton}>
                         <Button variant="outlined" onClick={runLogicalControls} disabled={isRunningLogicalControls}>
                             <FormattedMessage id="StateEstimationRunLogicalControls" />
