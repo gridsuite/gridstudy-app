@@ -8,12 +8,13 @@ import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from
 import { Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
-import { type MuiStyles } from '@gridsuite/commons-ui';
-import { CustomAggridComparatorSelector } from '@gridsuite/commons-ui';
+import {
+    CustomAggridComparatorSelector,
+    CustomAggridFilterParams,
+    type MuiStyles,
+    useCustomAggridColumnFilter,
+} from '@gridsuite/commons-ui';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { useCustomAggridColumnFilter } from '@gridsuite/commons-ui';
-
-import { CustomAggridFilterParams } from '../../../types/custom-aggrid-types';
 
 const styles = {
     containerStyle: {

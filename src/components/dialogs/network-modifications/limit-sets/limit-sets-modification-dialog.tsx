@@ -4,21 +4,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    AMOUNT_TEMPORARY_LIMITS,
-    CSV_FILENAME,
-    MODIFICATIONS_TABLE,
-    OLGS_MODIFICATION_TYPE,
-    TYPE,
-} from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
 import {
     CustomFormProvider,
-    formatModification,
-    ModificationType,
-    OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE,
+    limitSetsTabularModificationEmptyFormData,
+    LimitSetsTabularModificationForm,
+    type LimitSetsTabularModificationDto,
+    limitSetsTabularModificationDtoToForm,
+    limitSetsTabularModificationFormSchema,
+    limitSetsTabularModificationFormToDto,
+    type LimitSetsTabularModificationFormType,
     snackWithFallback,
     useSnackMessage,
+    ModificationType,
 } from '@gridsuite/commons-ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -29,23 +27,12 @@ import { ModificationDialog } from '../../commons/modificationDialog';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from 'services/utils.type';
-import { LimitSetsTabularModificationForm } from './limit-sets-tabular-modification-form';
 import { createTabularModification } from '../../../../services/study/network-modifications';
-import {
-    emptyFormData,
-    formatBackToFront,
-    formatOperationalLimitGroupsFrontToBack,
-    formatSelectedOperationalGroupId,
-    formSchema,
-    LimitSetModificationMetadata,
-    SchemaType,
-    LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
-} from './limit-sets-tabular-modification-utils';
 
 interface LimitSetsModificationDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    editData: LimitSetModificationMetadata;
+    editData: LimitSetsTabularModificationDto;
     isUpdate: boolean;
     editDataFetchStatus: FetchStatus;
 }
@@ -62,26 +49,25 @@ export function LimitSetsModificationDialog({
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
-    const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+    const formMethods = useForm<LimitSetsTabularModificationFormType>({
+        defaultValues: limitSetsTabularModificationEmptyFormData,
+        resolver: yupResolver(limitSetsTabularModificationFormSchema),
     });
 
     const {
         reset,
-        getValues,
         formState: { errors },
     } = formMethods;
 
     const disableSave = Object.keys(errors).length > 0;
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(limitSetsTabularModificationEmptyFormData);
     }, [reset]);
 
     useEffect(() => {
         if (editData) {
-            reset(formatBackToFront(editData));
+            reset(limitSetsTabularModificationDtoToForm(editData));
         }
     }, [editData, reset, intl]);
 
@@ -89,41 +75,23 @@ export function LimitSetsModificationDialog({
         return isUpdate && editDataFetchStatus === FetchStatus.RUNNING;
     }, [editDataFetchStatus, isUpdate]);
 
-    const onSubmit = useCallback<SubmitHandler<SchemaType>>(
+    const onSubmit = useCallback<SubmitHandler<LimitSetsTabularModificationFormType>>(
         (formData) => {
-            const amountMaxTemporaryLimits = getValues(AMOUNT_TEMPORARY_LIMITS);
-            const equipmentModificationType = LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS[formData[TYPE]];
-            const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
-                let modification = formatModification(row);
-                Object.keys(modification).forEach((key) => {
-                    modification[key] = row[key];
-                });
-                modification.operationalLimitsGroups = [
-                    formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits),
-                ];
-                formatSelectedOperationalGroupId(modification);
-                modification.type = equipmentModificationType; // ex: LINE_MODIFICATION
-                if (row.modificationType === OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE) {
-                    // when 'modificationType' CSV column is REPLACE : activate the 'replace' back-end mode to delete
-                    // all existing limit sets before adding a new one.
-                    modification[OLGS_MODIFICATION_TYPE] = OPERATIONAL_LIMITS_GROUPS_MODIFICATION_TYPE.REPLACE;
-                }
-                return modification;
-            });
+            const { modificationType, modifications, csvFilename } = limitSetsTabularModificationFormToDto(formData);
 
             createTabularModification({
                 studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationType: equipmentModificationType,
+                modificationType,
                 modifications,
                 modificationUuid: editData?.uuid,
                 tabularType: ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
-                csvFilename: formData[CSV_FILENAME],
+                csvFilename,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'TabularModificationError' });
             });
         },
-        [currentNodeUuid, editData, getValues, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const open = useOpenShortWaitFetching({
@@ -133,7 +101,7 @@ export function LimitSetsModificationDialog({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={limitSetsTabularModificationFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}

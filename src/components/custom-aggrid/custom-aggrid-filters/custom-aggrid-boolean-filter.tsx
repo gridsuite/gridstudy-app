@@ -10,11 +10,15 @@ import { IconButton, MenuItem, Select } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { useCustomAggridColumnFilter } from '@gridsuite/commons-ui';
+import {
+    BooleanFilterValue,
+    useCustomAggridColumnFilter,
+    CustomAggridFilterParams,
+    mergeSx,
+    type MuiStyles,
+} from '@gridsuite/commons-ui';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
-import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
-import { BooleanFilterValue } from './utils/aggrid-filters-utils';
-import { CustomAggridFilterParams, FILTER_DATA_TYPES } from '../../../types/custom-aggrid-types';
+import { FILTER_DATA_TYPES } from '../../../types/custom-aggrid-types';
 
 const styles = {
     input: {

@@ -254,7 +254,7 @@ export function executeCompositeModificationAction(
     });
 }
 
-export function copyOrMoveModifications(
+export function copyModifications(
     studyUuid: UUID,
     targetNodeId: UUID,
     modificationsToCopyOrMove: ModificationMoveOrCopyInfos[],
@@ -269,7 +269,6 @@ export function copyOrMoveModifications(
         safeEncodeURIComponent(targetNodeId) +
         '?' +
         new URLSearchParams({
-            action: copyInfos.copyType,
             originStudyUuid: copyInfos.originStudyUuid ?? '',
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
