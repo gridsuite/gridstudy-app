@@ -1065,7 +1065,6 @@ const messages_fr = {
     StateEstimationRunLogicalControls: 'Lancer les contrôles logiques',
     LogicalControlsComputationErrorMsg:
         'Une erreur est survenue lors du calcul et de la récupération des résultats des contrôles logiques',
-    MeasurementType: 'Type',
     ValidityType: 'Validité',
     EstimatedValue: 'Valeur estimée',
     DifferenceValue: 'Écart',
@@ -1099,7 +1098,7 @@ const messages_fr = {
     ReactiveBalance: 'Bilan réactif',
     ActiveValidity: 'Validité en actif',
     ReactiveValidity: 'Validité en réactif',
-    MeasurementType: 'Type de TM',
+    MeasurementType: 'Type',
     'MeasurementType.ACTIVE_TRANSIT': 'Transit actif',
     'MeasurementType.ACTIVE_TRANSIT_ORIGIN': 'Transit actif origine',
     'MeasurementType.ACTIVE_TRANSIT_EXTREMITY': 'Transit actif extrémité',

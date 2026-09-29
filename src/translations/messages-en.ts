@@ -1084,7 +1084,6 @@ const messages_en = {
     ReactiveBalance: 'Reactive balance',
     ActiveValidity: 'Active validity',
     ReactiveValidity: 'Reactive validity',
-    MeasurementType: 'Measurement type',
     'MeasurementType.ACTIVE_TRANSIT': 'Active transit',
     'MeasurementType.ACTIVE_TRANSIT_ORIGIN': 'Side 1 active transit',
     'MeasurementType.ACTIVE_TRANSIT_EXTREMITY': 'Side 2 active transit',
