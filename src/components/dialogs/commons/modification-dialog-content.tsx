@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, Alert } from '@mui/material';
+import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, Alert, Tooltip } from '@mui/material';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import React, { ReactNode } from 'react';
 import { UseFormSearchCopy } from './use-form-search-copy';
 import { FormattedMessage } from 'react-intl';
@@ -84,8 +85,19 @@ export function ModificationDialogContent({
                         justifyContent: 'space-between',
                     }}
                 >
-                    <Grid size={6}>
+                    <Grid
+                        size={6}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <FormattedMessage id={titleId} />
+                        {readOnly && (
+                            <Tooltip title={<FormattedMessage id={'readOnly'} />}>
+                                <LockOutlinedIcon />
+                            </Tooltip>
+                        )}
                     </Grid>
 
                     <Grid
