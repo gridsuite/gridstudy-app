@@ -58,8 +58,7 @@ import { GenericPopoverContent } from 'components/tooltips/generic-popover-conte
 import { selectActiveWorkspaceId, selectPanel, selectPanelEditMode } from 'redux/slices/workspace-selectors';
 import { type RootState, store } from 'redux/store';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
-import { getLocalStoragePanelState, saveLocalStoragePanelState } from 'redux/session-storage/workspace-local-storage';
-import { PanelType } from 'components/workspace/types/workspace.types';
+import { getNadPanelLocalState, saveNadPanelLocalState } from 'redux/session-storage/workspace-local-storage';
 import { DiagramAdditionalMetadata } from '../diagram.type';
 
 type NetworkAreaDiagramContentProps = {
@@ -151,13 +150,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     latestRef.current = latestValues;
 
     const initialLocalStorageViewBox = useRef(
-        (() => {
-            if (!studyUuid || !workspaceId) {
-                return null;
-            }
-            const localState = getLocalStoragePanelState(studyUuid, workspaceId, nadPanelId);
-            return localState?.type === PanelType.NAD ? (localState.viewBox ?? null) : null;
-        })()
+        getNadPanelLocalState(studyUuid, workspaceId, nadPanelId)?.viewBox ?? null
     );
     // Update drag interaction without full viewer reinitialization
     if (diagramViewerRef.current) {
@@ -410,13 +403,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
             // viewer reference and viewbox because we do not want to use an obsolete viewbox on the new NAD.
             diagramViewerRef.current = null;
             initialLocalStorageViewBox.current = null;
-            if (studyUuid && workspaceId) {
-                saveLocalStoragePanelState(studyUuid, workspaceId, {
-                    id: nadPanelId,
-                    type: PanelType.NAD,
-                    viewBox: undefined,
-                });
-            }
+            saveNadPanelLocalState(studyUuid, workspaceId, nadPanelId, { viewBox: undefined });
             onReplaceNad(
                 elementName,
                 elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
@@ -452,15 +439,11 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     );
 
     const saveViewBoxToLocalStorage = useCallback(() => {
-        if (!diagramViewerRef.current || !studyUuid || !workspaceId) {
+        if (!diagramViewerRef.current) {
             return;
         }
         const viewBox = diagramViewerRef.current.getViewBox() ?? undefined;
-        saveLocalStoragePanelState(studyUuid, workspaceId, {
-            id: nadPanelId,
-            type: PanelType.NAD,
-            viewBox,
-        });
+        saveNadPanelLocalState(studyUuid, workspaceId, nadPanelId, { viewBox });
     }, [nadPanelId, studyUuid, workspaceId]);
 
     useEffect(() => {
