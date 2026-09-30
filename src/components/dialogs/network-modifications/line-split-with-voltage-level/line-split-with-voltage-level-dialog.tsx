@@ -25,6 +25,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    BUS_OR_BUSBAR_SECTION,
     CONNECTIVITY,
     ID,
     LINE1_ID,
@@ -99,7 +100,7 @@ const LineSplitWithVoltageLevelDialog = ({
         ),
     });
 
-    const { reset, setValue } = formMethods;
+    const { reset, setValue, getValues } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -112,7 +113,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 const formattedVoltageLevel = {
                     id: editNewVoltageLevel.equipmentId,
                     name: editNewVoltageLevel.equipmentName ?? '',
-                    exist: false as const,
+                    exist: false,
                     busbarCount: editNewVoltageLevel.busbarCount,
                     sectionCount: editNewVoltageLevel.sectionCount,
                     switchKinds: editNewVoltageLevel.switchKinds ?? [],
@@ -187,7 +188,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 const formattedVoltageLevel = {
                     id: preparedVoltageLevel.equipmentId,
                     name: preparedVoltageLevel.equipmentName ?? '',
-                    exist: false as const,
+                    exist: false,
                     busbarCount: preparedVoltageLevel.busbarCount,
                     sectionCount: preparedVoltageLevel.sectionCount,
                     switchKinds: preparedVoltageLevel.switchKinds ?? [],
@@ -202,10 +203,16 @@ const LineSplitWithVoltageLevelDialog = ({
 
                 setVoltageLevelOptions(newVoltageLevelOptions);
                 setNewVoltageLevel(preparedVoltageLevel);
+                // Addressing the nested `${CONNECTIVITY}.${VOLTAGE_LEVEL}` path directly makes react-hook-form's
+                // path types resolve to `never` for this FieldConstants-keyed schema. Set the whole connectivity
+                // object instead (keeping busOrBusbarSection as-is).
+                const currentConnectivity = getValues(CONNECTIVITY);
                 setValue(
-                    `${CONNECTIVITY}.${VOLTAGE_LEVEL}`,
+                    CONNECTIVITY,
                     {
-                        [ID]: preparedVoltageLevel.equipmentId,
+                        ...currentConnectivity,
+                        [VOLTAGE_LEVEL]: { [ID]: preparedVoltageLevel.equipmentId },
+                        [BUS_OR_BUSBAR_SECTION]: currentConnectivity?.[BUS_OR_BUSBAR_SECTION] ?? null,
                     },
                     {
                         shouldValidate: true,
@@ -214,7 +221,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 );
             });
         },
-        [setValue, newVoltageLevel, voltageLevelOptions]
+        [setValue, getValues, newVoltageLevel, voltageLevelOptions]
     );
 
     const fetchBusesOrBusbarSections = useCallback(
