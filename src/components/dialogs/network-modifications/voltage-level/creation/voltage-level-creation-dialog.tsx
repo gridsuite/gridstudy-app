@@ -119,6 +119,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     titleId = 'CreateVoltageLevel',
     ...dialogProps
 }) => {
+    const readOnly = isUpdate;
     const currentNodeUuid = currentNode.id;
     const { snackError, snackWarning } = useSnackMessage();
     const [substations, setSubstations] = useState<string[]>([]);
@@ -302,7 +303,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={voltageLevelCreationFormSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={voltageLevelCreationFormSchema} readOnly={readOnly} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

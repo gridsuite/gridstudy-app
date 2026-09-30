@@ -85,7 +85,7 @@ const LineModificationDialog = ({
     currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
-    readOnly = true,
+    // readOnly = true,
     ...dialogProps
 }: Readonly<LineModificationDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
@@ -96,7 +96,7 @@ const LineModificationDialog = ({
     const [lineToModify, setLineToModify] = useState<BranchInfos | null>(null);
     const [isOpenLineTypesCatalogDialog, setIsOpenLineTypesCatalogDialog] = useState(false);
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
-
+    const readOnly = isUpdate;
     const formMethods = useFormWithDirtyTracking<DeepNullable<LineModificationFormData>>({
         defaultValues: lineModificationEmptyFormData,
         resolver: yupResolver<DeepNullable<LineModificationFormData>>(lineModificationFormSchema),
@@ -330,6 +330,7 @@ const LineModificationDialog = ({
                             onSave={handleLineSegmentsBuildSubmit}
                             editData={editSegmentsData}
                             isModification
+                            isUpdate
                         />
                     </>
                 )}
