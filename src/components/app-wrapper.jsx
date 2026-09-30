@@ -104,8 +104,6 @@ import backend_locale_en from '../translations/external/backend-locale-en';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
 import dynamic_mapping_models_en from '../translations/external/dynamic-mapping-models-en';
 import dynamic_mapping_models_fr from '../translations/external/dynamic-mapping-models-fr';
-import csv_locale_en from '../translations/dynamic/csv-locale-en';
-import csv_locale_fr from '../translations/dynamic/csv-locale-fr';
 import filter_locale_en from '../translations/dynamic/filter-locale-en';
 import filter_locale_fr from '../translations/dynamic/filter-locale-fr';
 import menu_locale_en from '../translations/dynamic/menu-locale-en';
@@ -435,7 +433,6 @@ const messages = {
         ...grid_en,
         ...backend_locale_en,
         ...dynamic_mapping_models_en,
-        ...csv_locale_en,
         ...filter_locale_en,
         ...menu_locale_en,
         ...table_locale_en,
@@ -482,7 +479,6 @@ const messages = {
         ...grid_fr,
         ...backend_locale_fr,
         ...dynamic_mapping_models_fr,
-        ...csv_locale_fr,
         ...filter_locale_fr,
         ...menu_locale_fr,
         ...table_locale_fr,

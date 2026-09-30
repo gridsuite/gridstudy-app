@@ -41,16 +41,6 @@ export const EXPORT_PARAMETERS = 'exportParameters';
 export const EXPORT_DESTINATION = 'exportDestination';
 
 export const TYPE = 'type';
-export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
-export const MODIFICATION_TYPE = 'modificationType';
-export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
-export const SIDE = 'side';
-export const LIMIT_GROUP_NAME = 'limitGroupName';
-export const IS_ACTIVE = 'isActive';
-export const SELECTED_OPERATIONAL_LIMITS_GROUP_ID1 = 'selectedOperationalLimitsGroupId1';
-export const SELECTED_OPERATIONAL_LIMITS_GROUP_ID2 = 'selectedOperationalLimitsGroupId2';
-export const MODIFICATIONS_TABLE = 'modificationsTable';
-export const CSV_FILENAME = 'csvFilename';
 
 export const CHARACTERISTICS = 'characteristics';
 export const R = 'r';
@@ -63,8 +53,6 @@ export const CURRENT_LIMITS = 'currentLimits';
 export const LIMITS_PROPERTIES = 'limitsProperties';
 export const OLG_IS_DUPLICATE = 'operationalLimitsGroupsIsDuplicate';
 export const ENABLE_OLG_MODIFICATION = 'enableOLGModification';
-export const OLGS_MODIFICATION_TYPE = 'operationalLimitsGroupsModificationType';
-export const PERMANENT_LIMIT = 'permanentLimit';
 export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
 export const LINE_SEGMENTS = 'lineSegments';
@@ -125,9 +113,6 @@ export const TAB_HEADER = 'tabHeader';
 export const LIMIT_SET_NAME = 'limitSetName';
 export const LIMIT_VALUE = 'limitValue';
 export const TEMPORARY_LIMITS = 'temporaryLimits';
-export const TEMPORARY_LIMIT_NAME = 'name';
-export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
-export const TEMPORARY_LIMIT_VALUE = 'value';
 
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
