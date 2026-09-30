@@ -171,14 +171,6 @@ const NetworkModificationNodeEditor = () => {
         []
     );
 
-    // TODO : this is temporary, until merge/delete is done for the shared modification
-    const selectionContainsShared: boolean = useMemo(() => {
-        return selectedNetworkModifications.some(
-            (modification: ComposedModificationMetadata) =>
-                modification.type === ModificationType.MODIFICATION_REFERENCE
-        );
-    }, [selectedNetworkModifications]);
-
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
 
@@ -1181,10 +1173,11 @@ const NetworkModificationNodeEditor = () => {
         return modificationsToRestore.length === 0 || isEditBlocked;
     }, [modificationsToRestore.length, isEditBlocked]);
 
-    const isCompositeNestingLimitReached = useMemo(
-        () => selectedNetworkModifications.some((row) => (row.maxDepth ?? 0) >= MAX_COMPOSITE_NESTING_DEPTH),
-        [selectedNetworkModifications]
-    );
+    const isCompositeNestingLimitReached = useMemo(() => {
+        // A single selection gets one extra level of tolerance thanks to non wrapping behaviour when saving
+        const limit = MAX_COMPOSITE_NESTING_DEPTH + (selectedNetworkModifications.length === 1 ? 1 : 0);
+        return selectedNetworkModifications.some((row) => (row.maxDepth ?? 0) >= limit);
+    }, [selectedNetworkModifications]);
 
     const disabledCompositeCreation: boolean = useMemo(() => {
         return (
@@ -1192,17 +1185,9 @@ const NetworkModificationNodeEditor = () => {
             saveInProgress ||
             isRootNode ||
             isAssemblyDepthExceeded ||
-            isEditBlocked ||
-            selectionContainsShared
+            isEditBlocked
         );
-    }, [
-        selectedNetworkModifications?.length,
-        saveInProgress,
-        isRootNode,
-        isAssemblyDepthExceeded,
-        isEditBlocked,
-        selectionContainsShared,
-    ]);
+    }, [selectedNetworkModifications?.length, saveInProgress, isRootNode, isAssemblyDepthExceeded, isEditBlocked]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
         return (

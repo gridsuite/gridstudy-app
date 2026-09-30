@@ -9,7 +9,6 @@ import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
-import { RowClassParams } from 'ag-grid-community';
 import {
     ComputingType,
     DefaultCellRenderer,
@@ -25,19 +24,29 @@ import { AppState } from '../../../redux/reducer.type';
 import LinearProgress from '@mui/material/LinearProgress';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
-import { StateEstimationResultProps } from './state-estimation-result.type';
+import { StateEstimationResultTableProps } from './state-estimation-result.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
+import { useInitialColumnSort } from './state-estimation-result-utils';
+import { RowClassParams } from 'ag-grid-community';
+import {
+    STATEESTIMATION_MEASUREMENTS,
+    STATEESTIMATION_QUALITY_CRITERION,
+    STATEESTIMATION_QUALITY_PER_REGION,
+} from '../../../utils/store-sort-filter-fields';
 
-export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({
+const StateEstimationResultTable: FunctionComponent<StateEstimationResultTableProps> = ({
     result,
     isLoadingResult,
     columnDefs,
     tableName,
     exportCsvResetKey,
+    filter = false,
+    sortable = false,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
+    const handleOnGridReady = useInitialColumnSort(tableName, sortable);
 
     const tableNameFormatted = intl.formatMessage({ id: tableName });
 
@@ -48,13 +57,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
 
     //We give each tab its own loader, so we don't have a loader spinning because another tab is still doing some work
     const openLoaderTab = useOpenLoaderShortWait({
-        isLoading:
-            // We want the loader to start when the state estimation begins
-            stateEstimationStatus === RunningStatus.RUNNING ||
-            // We still want the loader to be displayed for the remaining time there is between "the state estimation is over"
-            // and "the data is post processed and can be displayed"
-            stateEstimationStatus === RunningStatus.SUCCEED ||
-            isLoadingResult,
+        isLoading: stateEstimationStatus === RunningStatus.RUNNING || isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -73,8 +76,8 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
 
     const defaultColDef = useMemo(
         () => ({
-            filter: false,
-            sortable: false,
+            filter: filter,
+            sortable: sortable,
             resizable: true,
             lockPinned: true,
             suppressMovable: true,
@@ -83,41 +86,43 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
             flex: 1,
             cellRenderer: DefaultCellRenderer,
         }),
-        []
+        [filter, sortable]
     );
 
-    const renderStateEstimationQualities = () => {
-        const message = getNoRowsMessage(
-            messages,
-            tableName === 'qualityCriterionResults' ? result.qualityCriterionResults : result.qualityPerRegionResults,
-            stateEstimationStatus,
-            !isLoadingResult
-        );
-        const rowsToShow =
-            (tableName === 'qualityCriterionResults'
-                ? result.qualityCriterionResults
-                : result.qualityPerRegionResults) ?? [];
+    const rowsToShow = (() => {
+        switch (tableName) {
+            case STATEESTIMATION_MEASUREMENTS:
+                return result.measurementInformationResults ?? [];
+            case STATEESTIMATION_QUALITY_CRITERION:
+                return result.qualityCriterionResults ?? [];
+            case STATEESTIMATION_QUALITY_PER_REGION:
+                return result.qualityPerRegionResults ?? [];
+            default:
+                return [];
+        }
+    })();
 
-        return (
-            <>
-                <Box sx={{ height: '4px' }}>{openLoaderTab && <LinearProgress />}</Box>
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={columnDefs}
-                    defaultColDef={defaultColDef}
-                    tableName={tableNameFormatted}
-                    rows={rowsToShow}
-                    getRowStyle={getRowStyle}
-                    overlayNoRowsTemplate={message}
-                    skipColumnHeaders={false}
-                    computationType={TableType.StateEstimation}
-                    computationSubType={tableName}
-                    exportCsvResetKey={exportCsvResetKey}
-                    language={language}
-                />
-            </>
-        );
-    };
+    const message = getNoRowsMessage(messages, rowsToShow, stateEstimationStatus, !isLoadingResult);
 
-    return renderStateEstimationQualities();
+    return (
+        <>
+            <Box sx={{ height: '4px', position: 'relative', zIndex: 1 }}>{openLoaderTab && <LinearProgress />}</Box>
+            <RenderTableAndExportCsv
+                gridRef={gridRef}
+                columns={columnDefs}
+                defaultColDef={defaultColDef}
+                tableName={tableNameFormatted}
+                rows={rowsToShow}
+                getRowStyle={getRowStyle}
+                overlayNoRowsTemplate={message}
+                skipColumnHeaders={false}
+                computationType={TableType.StateEstimation}
+                computationSubType={tableName}
+                onGridReady={handleOnGridReady}
+                exportCsvResetKey={exportCsvResetKey}
+                language={language}
+            />
+        </>
+    );
 };
+export default StateEstimationResultTable;
