@@ -105,7 +105,7 @@ export function saveLocalStoragePanelState(studyUuid: UUID, workspaceId: UUID, p
     });
 }
 
-export function readNadPanelLocalState(
+export function getNadPanelLocalState(
     studyUuid: UUID | null | undefined,
     workspaceId: UUID | null | undefined,
     panelId: UUID

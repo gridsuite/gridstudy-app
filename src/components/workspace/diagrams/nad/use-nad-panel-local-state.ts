@@ -12,7 +12,7 @@ import { AppState } from '../../../../redux/reducer.type';
 import { selectActiveWorkspaceId } from '../../../../redux/slices/workspace-selectors';
 import {
     type NadPanelLocalFields,
-    readNadPanelLocalState,
+    getNadPanelLocalState,
     saveNadPanelLocalState,
 } from '../../../../redux/session-storage/workspace-local-storage';
 
@@ -21,7 +21,7 @@ export function useNadPanelLocalState<K extends keyof NadPanelLocalFields>(panel
     const workspaceId = useSelector(selectActiveWorkspaceId);
 
     const [value, setValue] = useState<NadPanelLocalFields[K] | undefined>(
-        () => readNadPanelLocalState(studyUuid, workspaceId, panelId)?.[key]
+        () => getNadPanelLocalState(studyUuid, workspaceId, panelId)?.[key]
     );
 
     const setAndSaveValue = useCallback(

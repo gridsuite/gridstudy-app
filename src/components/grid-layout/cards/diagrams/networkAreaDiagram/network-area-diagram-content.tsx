@@ -58,7 +58,7 @@ import { GenericPopoverContent } from 'components/tooltips/generic-popover-conte
 import { selectActiveWorkspaceId, selectPanelEditMode } from 'redux/slices/workspace-selectors';
 import type { RootState } from 'redux/store';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
-import { readNadPanelLocalState, saveNadPanelLocalState } from 'redux/session-storage/workspace-local-storage';
+import { getNadPanelLocalState, saveNadPanelLocalState } from 'redux/session-storage/workspace-local-storage';
 import { DiagramAdditionalMetadata } from '../diagram.type';
 
 type NetworkAreaDiagramContentProps = {
@@ -150,7 +150,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     latestRef.current = latestValues;
 
     const initialLocalStorageViewBox = useRef(
-        readNadPanelLocalState(studyUuid, workspaceId, nadPanelId)?.viewBox ?? null
+        getNadPanelLocalState(studyUuid, workspaceId, nadPanelId)?.viewBox ?? null
     );
     // Update drag interaction without full viewer reinitialization
     if (diagramViewerRef.current) {
