@@ -29,6 +29,7 @@ import {
     LineCreationDtoWithId,
     GridSection,
     VoltageLevelCreationDto,
+    useCustomFormContext,
 } from '@gridsuite/commons-ui';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
@@ -77,6 +78,8 @@ const LineAttachToVoltageLevelForm = ({
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
     });
+
+    const { readOnly } = useCustomFormContext();
 
     const fetchBusesOrBusbarSections = useCallback(
         (voltageLevelId: string) =>
@@ -197,14 +200,16 @@ const LineAttachToVoltageLevelForm = ({
             <Grid container spacing={2}>
                 <GridItem>{attachmentPointIdField}</GridItem>
                 <GridItem>{attachmentPointNameField}</GridItem>
-                <GridItem>
-                    <AddButton
-                        onClick={openAttachmentPointDialog}
-                        mode={hasSubstationCreation ? AddButtonMode.EDIT : AddButtonMode.ADD}
-                        label="SpecifyAttachmentPoint"
-                        data-testid="AttachmentPointButton"
-                    />
-                </GridItem>
+                {!readOnly && (
+                    <GridItem>
+                        <AddButton
+                            onClick={openAttachmentPointDialog}
+                            mode={hasSubstationCreation ? AddButtonMode.EDIT : AddButtonMode.ADD}
+                            label="SpecifyAttachmentPoint"
+                            data-testid="AttachmentPointButton"
+                        />
+                    </GridItem>
+                )}
             </Grid>
             <GridSection title="AttachedVoltageLevelId" />
             <Grid container spacing={2}>
