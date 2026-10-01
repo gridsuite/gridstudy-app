@@ -11,6 +11,8 @@ import type {
     CommonStoreState,
     ComposedModificationMetadata,
     ComputingType,
+    TableColumnFilter,
+    GlobalFilter,
     GsLang,
     GsLangUser,
     GsTheme,
@@ -19,15 +21,13 @@ import type {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
-    RunningStatus,
-    GlobalFilter,
     RecentGlobalFilter,
+    RunningStatus,
     TableSort,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { ValueOf } from 'type-fest';
 import type {
-    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PccminTab,
@@ -142,7 +142,7 @@ export type GlobalFiltersState = {
 };
 
 export type TableFiltersState = {
-    columnsFilters: Record<string, Record<string, FilterConfig[]>>;
+    columnsFilters: TableColumnFilter;
     globalFilters: Record<string, GlobalFiltersState>;
 };
 

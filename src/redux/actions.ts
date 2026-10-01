@@ -10,6 +10,8 @@ import type { Action } from 'redux';
 import {
     BaseVoltage,
     ComputingType,
+    FilterConfig,
+    GlobalFilter,
     type GsLang,
     type GsLangUser,
     type GsTheme,
@@ -19,7 +21,8 @@ import {
     PARAM_LANGUAGE,
     PARAM_THEME,
     RunningStatus,
-    GlobalFilter,
+    SortConfig,
+    TableSortConfig,
     TableType,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
@@ -31,16 +34,14 @@ import type {
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisContext,
 } from './reducer.type';
-import type { TableSortConfig, TableSortKeysType } from '../types/custom-aggrid-types';
+
 import {
-    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PccminTab,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
-    SortConfig,
 } from '../types/custom-aggrid-types';
 import type { IOptionalService } from '../components/utils/optional-services';
 import {
@@ -1170,12 +1171,12 @@ export function updateSpreadsheetPartialData(
 
 export const TABLE_SORT = 'TABLE_SORT';
 export type TableSortAction = Readonly<Action<typeof TABLE_SORT>> & {
-    table: TableSortKeysType;
+    table: string;
     tab: string; //AppState['tableSort'][T];
     sort: SortConfig[];
 };
 
-export function setTableSort(table: TableSortKeysType, tab: string, sort: SortConfig[]): TableSortAction {
+export function setTableSort(table: string, tab: string, sort: SortConfig[]): TableSortAction {
     return {
         type: TABLE_SORT,
         table,

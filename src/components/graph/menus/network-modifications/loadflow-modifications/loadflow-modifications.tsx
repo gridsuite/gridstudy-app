@@ -8,11 +8,10 @@
 import { Box, Button, Dialog, DialogContent, DialogProps, DialogTitle, Tab, Tabs } from '@mui/material';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useLoadflowModifications } from './use-loadflow-modifications';
-import { CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
-import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
 import { GridReadyEvent, RowDataUpdatedEvent, ValueFormatterParams } from 'ag-grid-community';
-import { SortWay } from 'types/custom-aggrid-types';
+import { CustomAGGrid, type MuiStyles, SortWay } from '@gridsuite/commons-ui';
+import { useLoadflowModifications } from './use-loadflow-modifications';
+import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
 
 const styles = {
     container: {

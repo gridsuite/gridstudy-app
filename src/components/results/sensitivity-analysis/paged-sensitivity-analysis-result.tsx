@@ -17,15 +17,16 @@ import {
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import {
+    buildValidGlobalFilters,
     ComputingType,
     CustomTablePagination,
+    RESULT_PAGE_OPTIONS,
     RunningStatus,
     snackWithFallback,
+    SortWay,
+    TableType,
     useDebounce,
     useSnackMessage,
-    buildValidGlobalFilters,
-    RESULT_PAGE_OPTIONS,
-    TableType,
 } from '@gridsuite/commons-ui';
 import {
     fetchSensitivityAnalysisFilterOptions,
@@ -33,7 +34,7 @@ import {
 } from '../../../services/study/sensitivity-analysis';
 import { useSelector } from 'react-redux';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { PaginationType, SensitivityAnalysisTab, SortWay } from '../../../types/custom-aggrid-types';
+import { PaginationType, SensitivityAnalysisTab } from '../../../types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer.type';
