@@ -38,7 +38,9 @@ import { PARAM_USE_NAME } from '../../utils/config-params';
 import {
     ComputingType,
     type EquipmentInfos,
+    type ErrorMessageDescriptor,
     EquipmentType,
+    extractErrorMessageDescriptor,
     ExtendedEquipmentType,
     HvdcType,
     type MuiStyles,
@@ -55,7 +57,7 @@ import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../
 import { PanelType } from '../workspace/types/workspace.types';
 import { useWorkspacePanelActions } from '../workspace/hooks/use-workspace-panel-actions';
 import GSMapEquipments from './gs-map-equipments';
-import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
+import { Alert, AlertTitle, Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { deleteEquipment } from '../../services/study/network-modifications';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
@@ -113,6 +115,23 @@ const styles = {
         position: 'absolute',
         width: '100%',
         zIndex: 2,
+    },
+
+    geoDataErrorAlert: {
+        position: 'fixed',
+        bottom: '10px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        maxWidth: '80%',
+        zIndex: 2,
+
+        // same colors as notistack error snackbar (hardcoded there, not theme based)
+        backgroundColor: '#d32f2f',
+        color: (theme) => theme.palette.common.white,
+
+        '& .MuiAlert-icon, & .MuiAlert-action': {
+            color: (theme) => theme.palette.common.white,
+        },
     },
 
     searchButton: {
@@ -176,6 +195,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>();
     const [geoData, setGeoData] = useState<GeoData>();
+    const [geoDataError, setGeoDataError] = useState<ErrorMessageDescriptor>();
     const geoDataRef = useRef<any>(null);
 
     const basicDataReady = mapEquipments && geoData;
@@ -473,6 +493,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
             const missingLinesPositions = getMissingEquipmentsPositions(notFoundLineIds, fetchLinePositions);
 
             const nodeBeforeFetch = currentNodeRef.current;
+            setGeoDataError(undefined);
             return Promise.all([missingSubstationPositions, missingLinesPositions])
                 .then((positions) => {
                     // If the node changed or if it is not built anymore, we ignore the results returned by the fetch
@@ -512,14 +533,13 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                     if (!checkNodeConsistency(nodeBeforeFetch)) {
                         return;
                     }
-                    snackWithFallback(snackError, error, { headerId: 'geoDataLoadingFail' });
+                    setGeoDataError(extractErrorMessageDescriptor(error, 'geoDataLoadingFail'));
                 });
         } else {
             return Promise.resolve(true);
         }
     }, [
         lineFullPath,
-        snackError,
         studyUuid,
         getEquipmentsNotFoundIds,
         getMissingEquipmentsPositions,
@@ -539,6 +559,7 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
 
         setGeoData(undefined);
         geoDataRef.current = null;
+        setGeoDataError(undefined);
 
         const substationPositionsDone = fetchSubstationPositions(
             studyUuid,
@@ -570,14 +591,14 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                 setIsRootNodeGeoDataLoaded(true);
             })
             .catch(function (error) {
-                snackWithFallback(snackError, error, { headerId: 'geoDataLoadingFail' });
+                setGeoDataError(extractErrorMessageDescriptor(error, 'geoDataLoadingFail'));
             })
             .finally(() => {
                 if (currentNodeRef.current?.id === rootNodeId) {
                     dispatch(setMapDataLoading(false));
                 } // otherwise loadMissingGeoData will stop the loading
             });
-    }, [rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch, snackError]);
+    }, [rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
@@ -1252,6 +1273,16 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
         <>
             <Box sx={styles.divTemporaryGeoDataLoading}>{basicDataReady && mapDataLoading && <LinearProgress />}</Box>
             {renderMap()}
+            {geoDataError && (
+                <Alert severity="error" sx={styles.geoDataErrorAlert} onClose={() => setGeoDataError(undefined)}>
+                    <AlertTitle>
+                        <FormattedMessage id="geoDataLoadingFail" />
+                    </AlertTitle>
+                    {geoDataError.descriptor.id !== 'geoDataLoadingFail' && (
+                        <FormattedMessage id={geoDataError.descriptor.id} values={geoDataError.values} />
+                    )}
+                </Alert>
+            )}
             {!isInDrawingMode.value && (
                 <>
                     {renderEquipmentMenu()}

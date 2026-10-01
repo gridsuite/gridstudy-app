@@ -1233,7 +1233,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             ref={buttonAddRef}
                             onClick={openNetworkModificationConfiguration}
-                            disabled={isEditBlocked || mapDataLoading || isRootNode}
+                            disabled={isEditBlocked || isRootNode}
                             data-testid="AddModification"
                         >
                             <AddIcon />
