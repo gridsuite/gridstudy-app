@@ -13,7 +13,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import React, { ReactNode } from 'react';
 import { UseFormSearchCopy } from './use-form-search-copy';
 import { FormattedMessage } from 'react-intl';
-import { CancelButton, CloseButton } from '@gridsuite/commons-ui';
+import { CancelButton, CloseButton, useCustomFormContext } from '@gridsuite/commons-ui';
 import { DialogProps } from '@mui/material/Dialog';
 
 /**
@@ -36,7 +36,6 @@ export type ModificationDialogContentProps = Omit<DialogProps, 'onClose' | 'aria
     searchCopy?: UseFormSearchCopy;
     submitButton: ReactNode;
     subtitle?: ReactNode;
-    readOnly?: boolean;
 };
 
 export function ModificationDialogContent({
@@ -47,9 +46,10 @@ export function ModificationDialogContent({
     searchCopy,
     submitButton,
     subtitle,
-    readOnly = false,
     ...dialogProps
 }: Readonly<ModificationDialogContentProps>) {
+    const { readOnly } = useCustomFormContext();
+
     const catalogButton = useButtonWithTooltip({
         label: 'CatalogButtonTooltip',
         handleClick: onOpenCatalogDialog ?? (() => {}),

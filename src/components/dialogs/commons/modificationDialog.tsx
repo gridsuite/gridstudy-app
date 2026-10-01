@@ -7,7 +7,7 @@
 
 import { PropsWithChildren, useCallback } from 'react';
 import { FieldErrors, FieldValues, useFormContext } from 'react-hook-form';
-import { SubmitButton, useCustomFormContext } from '@gridsuite/commons-ui';
+import { SubmitButton } from '@gridsuite/commons-ui';
 import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
 
 /**
@@ -51,7 +51,6 @@ export function ModificationDialog<TFieldValues extends FieldValues>({
     ...dialogProps
 }: Readonly<PropsWithChildren<ModificationDialogProps<TFieldValues>>>) {
     const { handleSubmit } = useFormContext<TFieldValues>();
-    const { readOnly } = useCustomFormContext();
 
     const closeAndClear = () => {
         onClear();
@@ -98,12 +97,7 @@ export function ModificationDialog<TFieldValues extends FieldValues>({
     );
 
     return (
-        <ModificationDialogContent
-            readOnly={readOnly}
-            closeAndClear={closeAndClear}
-            submitButton={submitButton}
-            {...dialogProps}
-        >
+        <ModificationDialogContent closeAndClear={closeAndClear} submitButton={submitButton} {...dialogProps}>
             {children}
         </ModificationDialogContent>
     );
