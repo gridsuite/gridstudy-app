@@ -15,22 +15,23 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
-import { Grid, Stack } from '@mui/material';
+import { Alert, Grid, Stack } from '@mui/material';
 import { CASE_ID, CASE_NAME, DESCRIPTION, NAME, TAG } from '../../utils/field-constants';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { ModificationDialog } from '../commons/modificationDialog';
 import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
+import { hasSharedModifications } from 'services/study/network-modifications';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { getCaseImportParameters } from 'services/network-conversion';
 import { customizeCurrentParameters, formatCaseImportParameters } from 'components/graph/util/case-import-parameters';
 import { UUID } from 'node:crypto';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import ImportParametersSection from './import-parameters-section';
 
 export interface FormData {
@@ -109,11 +110,27 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     });
 
     const {
+        control,
         reset,
         setValue,
         setError,
         formState: { errors },
     } = formMethods;
+
+    const [isStudyContainingSharedModifications, setIsStudyContainingSharedModifications] = useState(false);
+    useEffect(() => {
+        if (open && isModification && studyUuid) {
+            hasSharedModifications(studyUuid)
+                .then(setIsStudyContainingSharedModifications)
+                .catch((error) => {
+                    console.error('Failed to fetch whether the study contains shared modifications', error);
+                    setIsStudyContainingSharedModifications(false);
+                });
+        }
+    }, [isModification, open, studyUuid]);
+
+    const tag = useWatch({ control, name: TAG })?.trim();
+    const isRenamingTag = isModification && !!tag && tag !== editableRootNetwork?.tag;
 
     // Reset the form values when editableRootNetwork is available (for modification mode)
     useEffect(() => {
@@ -221,7 +238,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                         onSelectCase={onSelectCase}
                         originalCaseUuid={editableRootNetwork?.originalCaseUuid}
                     />
-                    <Grid>
+                    <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
                         <UniqueCheckNameInput
                             name={TAG}
                             label={'rootTag'}
@@ -231,8 +248,14 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             errorMessageKey="tagAlreadyUsed"
                             catchMessageKey="rootNetworknameValidityCheckError"
                             max_length={MAX_TAG_LENGTH}
+                            formProps={{ sx: { width: 160, flexShrink: 0 } }}
                         />
-                    </Grid>
+                        {isRenamingTag && isStudyContainingSharedModifications && (
+                            <Alert severity="warning">
+                                <FormattedMessage id="sharedModificationsApplicabilitiesOverwritten" />
+                            </Alert>
+                        )}
+                    </Stack>
                 </Stack>
                 {!isModification && <ImportParametersSection />}
             </ModificationDialog>

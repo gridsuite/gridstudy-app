@@ -5,18 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent } from 'react';
 import {
     RenderTableAndExportCsv as RenderTableAndExportCsvBase,
     RenderTableAndExportCsvProps as BaseProps,
     TableType,
 } from '@gridsuite/commons-ui';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer.type';
 import { useAgGridInitialColumnFilters } from '../results/common/use-ag-grid-initial-column-filters';
-import { updateAgGridFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
-interface RenderTableAndExportCsvProps extends Omit<BaseProps, 'onGridReady'> {
+interface RenderTableAndExportCsvProps extends BaseProps {
     computationType: TableType;
     computationSubType: string;
 }
@@ -25,16 +22,10 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     computationType,
     computationSubType,
     gridRef,
+    onGridReady,
     ...rest
 }) => {
-    const onGridReady = useAgGridInitialColumnFilters(computationType, computationSubType);
-    const columnFilters = useSelector(
-        (state: AppState) => state.tableFilters.columnsFilters?.[computationType]?.[computationSubType]
-    );
+    const handleOnGridReady = useAgGridInitialColumnFilters(computationType, computationSubType, onGridReady);
 
-    useEffect(() => {
-        updateAgGridFilters(gridRef.current?.api, columnFilters);
-    }, [columnFilters, gridRef]);
-
-    return <RenderTableAndExportCsvBase gridRef={gridRef} onGridReady={onGridReady} {...rest} />;
+    return <RenderTableAndExportCsvBase gridRef={gridRef} onGridReady={handleOnGridReady} {...rest} />;
 };

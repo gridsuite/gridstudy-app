@@ -45,7 +45,7 @@ import {
     TabularModificationRow,
     TabularProperty,
 } from '@gridsuite/commons-ui';
-import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
+import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
@@ -71,7 +71,7 @@ export function changeNetworkModificationOrder(
     studyUuid: UUID | null,
     nodeUuid: UUID | undefined,
     itemUuid: UUID,
-    beforeUuid: UUID
+    insertBeforeUuid: UUID
 ) {
     console.info('reorder node ' + nodeUuid + ' of study ' + studyUuid + ' ...');
     const url =
@@ -79,7 +79,7 @@ export function changeNetworkModificationOrder(
         '/network-modification/' +
         itemUuid +
         '?' +
-        new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
+        new URLSearchParams({ insertBeforeUuid: insertBeforeUuid || '' }).toString();
     console.debug(url);
     return backendFetch(url, { method: 'put' });
 }
@@ -97,7 +97,7 @@ export function changeNetworkModificationOrder(
  * @param modificationUuid
  * @param sourceCompositeUuid  UUID of the composite that currently owns the modification; null if at root
  * @param targetCompositeUuid  UUID of the target composite; null to place at root level
- * @param beforeUuid           insert before this UUID in the target collection; null to append at end
+ * @param insertBeforeUuid           insert before this UUID in the target collection; null to append at end
  */
 export function changeCompositeSubModificationOrder(
     studyUuid: UUID | null,
@@ -105,13 +105,13 @@ export function changeCompositeSubModificationOrder(
     modificationUuid: UUID,
     sourceCompositeUuid: UUID | null,
     targetCompositeUuid: UUID | null,
-    beforeUuid: UUID | null
+    insertBeforeUuid: UUID | null
 ) {
     console.info('move composite sub-modification ' + modificationUuid + ' in node ' + nodeUuid);
     const params = new URLSearchParams();
     if (sourceCompositeUuid) params.set('sourceCompositeUuid', sourceCompositeUuid);
     if (targetCompositeUuid) params.set('targetCompositeUuid', targetCompositeUuid);
-    if (beforeUuid) params.set('beforeUuid', beforeUuid);
+    if (insertBeforeUuid) params.set('insertBeforeUuid', insertBeforeUuid);
     const url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
         '/composite-sub-modification/' +
@@ -1611,4 +1611,10 @@ export function hasModificationReferences(containerUuids: UUID[]): Promise<boole
     containerUuids.forEach((uuid) => params.append('uuids', uuid));
     const url = `${PREFIX_STUDY_QUERIES}/v1/containers/references/exists?${params.toString()}`;
     return backendFetchJson(url);
+}
+
+export function hasSharedModifications(studyUuid: UUID): Promise<boolean> {
+    const hasSharedModificationsUrl = getStudyUrl(studyUuid) + '/network-modifications/references/exists';
+    console.debug(hasSharedModificationsUrl);
+    return backendFetchJson(hasSharedModificationsUrl);
 }

@@ -15,7 +15,9 @@ import {
     IElementUpdateDialog,
     MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
+    ModificationMoveInfos,
     ModificationType,
+    moveModifications,
     NetworkModificationMetadata,
     NetworkModificationsTable,
     NotificationsUrlKeys,
@@ -85,7 +87,6 @@ import RestoreModificationDialog from 'components/dialogs/restore-modification-d
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
-import { copyOrMoveModifications } from '../../../../services/study';
 import {
     assembleModificationsIntoComposite,
     fetchNetworkModifications,
@@ -113,6 +114,7 @@ import {
     isModificationsDeleteFinishedNotification,
     isModificationsUpdateFinishedNotification,
     isNodeDeletedNotification,
+    isSharedElementUpdateNotification,
     isRootNetworksUpdatedNotification,
     parseEventData,
 } from 'types/notification-types';
@@ -130,6 +132,7 @@ import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-netwo
 import { FetchStatus } from '../../../../services/utils.type';
 import { createBaseColumns, createRootNetworksColumns } from './network-modification-table/createColumns';
 import { ColumnDef } from '@tanstack/react-table';
+import { copyModifications } from '../../../../services/study';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -167,14 +170,6 @@ const NetworkModificationNodeEditor = () => {
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<ComposedModificationMetadata[]>(
         []
     );
-
-    // TODO : this is temporary, until merge/delete is done for the shared modification
-    const selectionContainsShared: boolean = useMemo(() => {
-        return selectedNetworkModifications.some(
-            (modification: ComposedModificationMetadata) =>
-                modification.type === ModificationType.MODIFICATION_REFERENCE
-        );
-    }, [selectedNetworkModifications]);
 
     const [isDragging, setIsDragging] = useState(false);
     const [isAssemblyDepthExceeded, setIsAssemblyDepthExceeded] = useState(false);
@@ -770,6 +765,14 @@ const NetworkModificationNodeEditor = () => {
                 }
                 dofetchNetworkModifications();
             }
+
+            // a shared (referenced) composite modification pointed at by this node was modified elsewhere
+            if (isSharedElementUpdateNotification(eventData)) {
+                if (currentNodeIdRef.current !== eventData.headers.parentNode) {
+                    return;
+                }
+                dofetchNetworkModifications();
+            }
             // to get potentially updated network tags
             if (isRootNetworksUpdatedNotification(eventData)) {
                 dofetchNetworkModifications();
@@ -988,17 +991,19 @@ const NetworkModificationNodeEditor = () => {
         );
 
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
-            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos)
-                .then(() => {
-                    cleanClipboard(false);
-                })
+            const modifications: ModificationMoveInfos[] = networkModificationsToCopy.map((modification) => ({
+                modificationUuid: modification.uuid,
+                sourceCompositeUuid: modification.parentCompositeUuid,
+            }));
+            moveModifications(studyUuid, currentNode.id, modifications, copyInfos.originNodeUuid)
+                .then(() => cleanClipboard(false))
                 .catch((error) => {
                     snackWithFallback(snackError, error, {
                         headerId: 'errCutModificationMsg',
                     });
                 });
         } else {
-            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos).catch((error) => {
+            copyModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos).catch((error) => {
                 snackWithFallback(snackError, error, {
                     headerId: 'errDuplicateModificationMsg',
                 });
@@ -1168,10 +1173,11 @@ const NetworkModificationNodeEditor = () => {
         return modificationsToRestore.length === 0 || isEditBlocked;
     }, [modificationsToRestore.length, isEditBlocked]);
 
-    const isCompositeNestingLimitReached = useMemo(
-        () => selectedNetworkModifications.some((row) => (row.maxDepth ?? 0) >= MAX_COMPOSITE_NESTING_DEPTH),
-        [selectedNetworkModifications]
-    );
+    const isCompositeNestingLimitReached = useMemo(() => {
+        // A single selection gets one extra level of tolerance thanks to non wrapping behaviour when saving
+        const limit = MAX_COMPOSITE_NESTING_DEPTH + (selectedNetworkModifications.length === 1 ? 1 : 0);
+        return selectedNetworkModifications.some((row) => (row.maxDepth ?? 0) >= limit);
+    }, [selectedNetworkModifications]);
 
     const disabledCompositeCreation: boolean = useMemo(() => {
         return (
@@ -1179,17 +1185,9 @@ const NetworkModificationNodeEditor = () => {
             saveInProgress ||
             isRootNode ||
             isAssemblyDepthExceeded ||
-            isEditBlocked ||
-            selectionContainsShared
+            isEditBlocked
         );
-    }, [
-        selectedNetworkModifications?.length,
-        saveInProgress,
-        isRootNode,
-        isAssemblyDepthExceeded,
-        isEditBlocked,
-        selectionContainsShared,
-    ]);
+    }, [selectedNetworkModifications?.length, saveInProgress, isRootNode, isAssemblyDepthExceeded, isEditBlocked]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
         return (
