@@ -18,7 +18,7 @@ import {
     LINE2_NAME,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import {
     AddButton,
     AddButtonMode,
@@ -30,9 +30,6 @@ import {
     GridSection,
     VoltageLevelCreationDto,
     LineToAttachOrSplitForm,
-    EquipmentType,
-    snackWithFallback,
-    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
@@ -42,7 +39,7 @@ import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
-import { fetchEquipmentsIds } from '../../../../services/study/network-map';
+import { useLineOptions } from '../../commons/use-line-options';
 
 interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;
@@ -78,23 +75,10 @@ const LineAttachToVoltageLevelForm = ({
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
     const [attachmentPointDialogOpen, setAttachmentPointDialogOpen] = useState(false);
-    const [lineOptions, setLineOptions] = useState<string[]>([]);
-    const { snackError } = useSnackMessage();
+    const lineOptions = useLineOptions(studyUuid, currentNode?.id, currentRootNetworkUuid);
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
     });
-
-    useEffect(() => {
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchEquipmentsIds(studyUuid, currentNode.id, currentRootNetworkUuid, undefined, EquipmentType.LINE, true)
-                .then((values: string[]) => {
-                    setLineOptions(values.sort((a, b) => a.localeCompare(b)));
-                })
-                .catch((error: unknown) => {
-                    snackWithFallback(snackError, error, { headerId: 'equipmentsLoadingError' });
-                });
-        }
-    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, snackError]);
 
     const fetchBusesOrBusbarSections = useCallback(
         (voltageLevelId: string) =>

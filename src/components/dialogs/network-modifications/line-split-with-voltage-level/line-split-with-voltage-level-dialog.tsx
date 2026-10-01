@@ -8,7 +8,6 @@
 import {
     CustomFormProvider,
     DeepNullable,
-    EquipmentType,
     LineSplitWithVoltageLevelCreationForm,
     LineSplitWithVoltageLevelCreationFormData,
     lineSplitWithVoltageLevelCreationDtoToForm,
@@ -45,11 +44,11 @@ import {
     fetchBusesOrBusbarSectionsForVoltageLevel,
     fetchVoltageLevelsListInfos,
 } from '../../../../services/study/network';
-import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import { getNewVoltageLevelOptions, mergeVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
+import { useLineOptions } from '../../commons/use-line-options';
 
 interface LineSplitEditData extends LineSplitWithVoltageLevelCreationDto {
     uuid?: UUID;
@@ -85,9 +84,9 @@ const LineSplitWithVoltageLevelDialog = ({
     ...dialogProps
 }: LineSplitWithVoltageLevelDialogProps) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState<VoltageLevelOption[]>([]);
-    const [lineOptions, setLineOptions] = useState<string[]>([]);
 
     const currentNodeUuid = currentNode?.id;
+    const lineOptions = useLineOptions(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const [newVoltageLevel, setNewVoltageLevel] = useState<VoltageLevelCreationDto | null>(null);
 
@@ -166,18 +165,6 @@ const LineSplitWithVoltageLevelDialog = ({
             });
         }
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
-
-    useEffect(() => {
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchEquipmentsIds(studyUuid, currentNode.id, currentRootNetworkUuid, undefined, EquipmentType.LINE, true)
-                .then((values: string[]) => {
-                    setLineOptions(values.sort((a, b) => a.localeCompare(b)));
-                })
-                .catch((error: unknown) => {
-                    snackWithFallback(snackError, error, { headerId: 'equipmentsLoadingError' });
-                });
-        }
-    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, snackError]);
 
     const onVoltageLevelCreationDo = useCallback(
         (preparedVoltageLevel: VoltageLevelCreationDto) => {
