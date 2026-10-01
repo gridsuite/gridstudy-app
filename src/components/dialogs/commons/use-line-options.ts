@@ -26,7 +26,7 @@ export function useLineOptions(
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
             fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, EquipmentType.LINE, true)
                 .then((values: string[]) => {
-                    setLineOptions(values.sort((a, b) => a.localeCompare(b)));
+                    setLineOptions(values.toSorted((a, b) => a.localeCompare(b)));
                 })
                 .catch((error: unknown) => {
                     snackWithFallback(snackError, error, { headerId: 'equipmentsLoadingError' });
