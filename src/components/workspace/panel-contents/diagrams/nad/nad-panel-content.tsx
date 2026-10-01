@@ -18,6 +18,7 @@ import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-act
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
 import { useNadVoltageLevelFilter } from '../../../diagrams/nad/use-nad-voltage-level-filter';
 import { useNadInfoFilter } from '../../../diagrams/nad/use-nad-info-filter';
+import { useNadPanelLocalState } from '../../../diagrams/nad/use-nad-panel-local-state';
 
 interface NadPanelContentProps {
     panelId: UUID;
@@ -34,24 +35,30 @@ export const NadPanelContent = memo(function NadPanelContent({
 }: NadPanelContentProps) {
     const { addToNadNavigationHistory, associateVoltageLevelWithNad } = useWorkspacePanelActions();
 
+    // Voltages checked in the voltage filter, kept here so that loading another NAD can reset them:
+    // back to `undefined`, all the voltages of the new NAD get checked once drawn.
+    const [voltageSelection, setVoltageSelection] = useNadPanelLocalState(panelId, 'selectedNominalVoltages');
+    const resetVoltageSelection = useCallback(() => setVoltageSelection(undefined), [setVoltageSelection]);
+
     const { diagram, loading, globalError, editDiagram, replaceNadConfig, moveNode, moveTextNode } = useNadDiagram({
         panelId,
         studyUuid,
         currentNodeId,
         currentRootNetworkUuid,
+        onNadReplaced: resetVoltageSelection,
     });
 
     const { handleShowInSpreadsheet } = useDiagramNavigation();
 
-    // Voltage-level band filtering using CSS classes. The context key changes only when a different NAD
-    // is loaded (nadConfigUuid), which resets the filter. Changing the filter, the node or the root
-    // network keeps the current selection.
-    const filterContextKey = diagram.nadConfigUuid ?? '';
-    const { presentNominalVoltages, selectedNominalVoltages, setSelectedNominalVoltages, unselectedVlNames } =
-        useNadVoltageLevelFilter(diagram.svg?.metadata as DiagramMetadata | null | undefined, filterContextKey);
+    // Voltage-level band filtering using CSS classes
+    const { presentNominalVoltages, selectedNominalVoltages, unselectedVlNames } = useNadVoltageLevelFilter(
+        diagram.svg?.metadata as DiagramMetadata | null | undefined,
+        voltageSelection,
+        setVoltageSelection
+    );
 
     // Information-layer filtering (P/Q values, % IST, arrows, labels) using CSS classes
-    const { selectedInfos, toggleSelectedInfo, hiddenInfoSelectors } = useNadInfoFilter();
+    const { selectedInfos, toggleSelectedInfo, hiddenInfoSelectors } = useNadInfoFilter(panelId);
 
     // Handle voltage level click in NAD: add to history + open/associate SLD
     const handleVoltageLevelClick = useCallback(
@@ -110,7 +117,7 @@ export const NadPanelContent = memo(function NadPanelContent({
                     nadPanelId={panelId}
                     allNominalVoltages={presentNominalVoltages}
                     selectedNominalVoltages={selectedNominalVoltages}
-                    onNominalVoltagesChange={setSelectedNominalVoltages}
+                    onNominalVoltagesChange={setVoltageSelection}
                     selectedInfos={selectedInfos}
                     onSelectedInfoToggle={toggleSelectedInfo}
                 />
