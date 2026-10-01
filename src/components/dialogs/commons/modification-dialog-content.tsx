@@ -94,7 +94,7 @@ export function ModificationDialogContent({
                     >
                         <FormattedMessage id={titleId} />
                         {readOnly && (
-                            <Tooltip title={<FormattedMessage id={'readOnly'} />}>
+                            <Tooltip title={<FormattedMessage id={'readOnlyForm'} />}>
                                 <LockOutlinedIcon />
                             </Tooltip>
                         )}
@@ -117,12 +117,7 @@ export function ModificationDialogContent({
             <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
                 {readOnly ? (
-                    <>
-                        <Alert severity="info">
-                            <FormattedMessage id="ReadOnlyForm" />
-                        </Alert>
-                        <CloseButton onClick={handleCancel} />
-                    </>
+                    <CloseButton onClick={handleCancel} />
                 ) : (
                     <>
                         <CancelButton onClick={handleCancel} />
