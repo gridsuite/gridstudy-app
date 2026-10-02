@@ -903,6 +903,8 @@ const messages_en = {
     partialCopyShuntCompensator: 'Partial copy : copying sections is not supported for this shunt compensator',
     SensitivityAnalysisResultsError: 'An error occurred while fetching sensitivity results',
     ComputationFilterResultsError: 'Filter not found:',
+    muiTablePaginationLabelRowsPerPageAllBusesSCA: 'Faults per page: ',
+    muiTablePaginationLabelRowsPerPageOneBusSCA: 'Feeders per page: ',
     previewModifications: 'View modifications',
     errPreviewVoltageInitModificationMsg:
         'An error occurred while retrieving the modifications coming from voltage profile initialization',

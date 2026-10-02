@@ -916,6 +916,8 @@ const messages_fr = {
         "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
     SensitivityAnalysisResultsError: "Une erreur s'est produite lors de la récupération du résultat de sensibilité",
     ComputationFilterResultsError: 'Filtre introuvable :',
+    muiTablePaginationLabelRowsPerPageAllBusesSCA: 'Défauts par page : ',
+    muiTablePaginationLabelRowsPerPageOneBusSCA: 'Départs par page : ',
     previewModifications: 'Visualiser modifications',
     errPreviewVoltageInitModificationMsg:
         "Une erreur est survenue lors de la récupération des modifications issues de l'initialisation du plan de tension",

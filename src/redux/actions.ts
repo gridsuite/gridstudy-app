@@ -16,6 +16,7 @@ import {
     type GsLangUser,
     type GsTheme,
     type Identifiable,
+    LogType,
     type NetworkVisualizationParameters,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
@@ -62,7 +63,6 @@ import {
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
-import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 import type { NodeActivity } from '../components/node-activity/types/node-activity.type';
 import type { NodeValidity } from '../components/spreadsheet-view/columns/utils/column-validity';
@@ -1131,12 +1131,12 @@ export function resetLogsFilter(): ResetLogsFilterAction {
 
 export const LOGS_RESULT_PAGINATION = 'LOGS_RESULT_PAGINATION';
 export type LogsResultPaginationAction = Readonly<Action<typeof LOGS_RESULT_PAGINATION>> & {
-    paginationTab: ComputingAndNetworkModificationType;
+    paginationTab: LogType;
     [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationConfig;
 };
 
 export function setLogsResultPagination(
-    paginationTab: ComputingAndNetworkModificationType,
+    paginationTab: LogType,
     logsPagination: LogsPaginationConfig
 ): LogsResultPaginationAction {
     return {
