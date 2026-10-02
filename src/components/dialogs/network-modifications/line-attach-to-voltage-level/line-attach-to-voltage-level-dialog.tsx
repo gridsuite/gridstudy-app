@@ -9,7 +9,6 @@ import {
     AttachedLinePaneType,
     CustomFormProvider,
     DeepNullable,
-    EquipmentType,
     LineAttachToVoltageLevelCreationDto,
     LineAttachToVoltageLevelCreationForm,
     LineAttachToVoltageLevelCreationFormData,
@@ -48,13 +47,13 @@ import {
     fetchBusesOrBusbarSectionsForVoltageLevel,
     fetchVoltageLevelsListInfos,
 } from '../../../../services/study/network';
-import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import { getNewVoltageLevelOptions, mergeVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
+import { useLineOptions } from '../../commons/use-line-options';
 
 interface LineAttachEditData extends LineAttachToVoltageLevelCreationDto {
     uuid?: UUID;
@@ -100,7 +99,7 @@ const LineAttachToVoltageLevelDialog = ({
     const { snackError } = useSnackMessage();
 
     const [voltageLevelOptions, setVoltageLevelOptions] = useState<VoltageLevelOption[]>([]);
-    const [lineOptions, setLineOptions] = useState<string[]>([]);
+    const lineOptions = useLineOptions(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const formMethods = useForm<DeepNullable<LineAttachToVoltageLevelCreationFormData>>({
         defaultValues: lineAttachToVoltageLevelCreationEmptyFormData,
@@ -127,7 +126,7 @@ const LineAttachToVoltageLevelDialog = ({
                 const formattedVoltageLevel = {
                     id: newVoltageLevelInfos.equipmentId,
                     name: newVoltageLevelInfos.equipmentName ?? '',
-                    exist: false as const,
+                    exist: false,
                     busbarCount: newVoltageLevelInfos.busbarCount,
                     sectionCount: newVoltageLevelInfos.sectionCount,
                     switchKinds: newVoltageLevelInfos.switchKinds ?? [],
@@ -186,18 +185,6 @@ const LineAttachToVoltageLevelDialog = ({
             });
         }
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
-
-    useEffect(() => {
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchEquipmentsIds(studyUuid, currentNode.id, currentRootNetworkUuid, undefined, EquipmentType.LINE, true)
-                .then((values: string[]) => {
-                    setLineOptions(values.sort((a, b) => a.localeCompare(b)));
-                })
-                .catch((error: unknown) => {
-                    snackWithFallback(snackError, error, { headerId: 'equipmentsLoadingError' });
-                });
-        }
-    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, snackError]);
 
     const fetchBusesOrBusbarSections = useCallback(
         (voltageLevelId: string) =>
@@ -275,7 +262,7 @@ const LineAttachToVoltageLevelDialog = ({
                 const formattedVoltageLevel = {
                     id: preparedVoltageLevel.equipmentId,
                     name: preparedVoltageLevel.equipmentName ?? '',
-                    exist: false as const,
+                    exist: false,
                     busbarCount: preparedVoltageLevel.busbarCount,
                     sectionCount: preparedVoltageLevel.sectionCount,
                     switchKinds: preparedVoltageLevel.switchKinds ?? [],
