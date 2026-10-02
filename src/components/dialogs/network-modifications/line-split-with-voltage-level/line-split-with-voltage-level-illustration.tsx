@@ -6,8 +6,8 @@
  */
 
 import LineSplitDiagram from '../../../../images/network-modifications/illustrations/line-split-with-voltage-level.svg?react';
-import GenericIllustrationNetworkModification from 'components/dialogs/illustrations/generic-Illustration-network-modification';
 import React from 'react';
+import { GenericIllustrationNetworkModification } from '@gridsuite/commons-ui';
 
 const replacedTexts = [
     {

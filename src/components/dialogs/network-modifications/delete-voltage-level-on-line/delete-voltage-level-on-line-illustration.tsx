@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent } from 'react';
-import GenericIllustrationNetworkModification from 'components/dialogs/illustrations/generic-Illustration-network-modification';
+import { GenericIllustrationNetworkModification } from '@gridsuite/commons-ui';
 import DeleteAttachingLine from '../../../../images/network-modifications/illustrations/delete-voltage-level-on-line.svg?react';
 
 const replacedTexts = [
