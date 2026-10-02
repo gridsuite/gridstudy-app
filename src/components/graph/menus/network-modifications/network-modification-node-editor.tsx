@@ -727,11 +727,8 @@ const NetworkModificationNodeEditor = () => {
         modifications,
     ]);
 
-    const handleNameChange = useCallback(
-        (modification: ComposedModificationMetadata, newName: string) => {
-            setModificationNameAndDescription(modification.uuid, {
-                name: newName,
-                type: modification.type,
+    const handleNameChange = useCallback((modification: ComposedModificationMetadata, newName: string) => {
+        setModificationNameAndDescription(modification.uuid, {name: newName,type: modification.type,
             });
         }, []
     );
