@@ -641,7 +641,6 @@ const messages_fr = {
     LineAttachmentError: "Erreur lors de la création d'un piquage",
     LoadScalingError: 'Erreur lors de la création de la variation du plan de consommation',
     DeleteVoltageLevelOnLineError: "Erreur lors de la suppression d'une coupure",
-    DeleteAttachingLineError: "Erreur lors de la suppression d'un piquage",
     GenerationDispatchError: 'Erreur lors de la création du démarrage de groupes',
     lineAttachedToSplitLineVoltageLevel: 'Poste en piquage à passer en coupure',
 
@@ -804,7 +803,6 @@ const messages_fr = {
     Variations: 'Variations',
     LoadScaling: 'Variation plan de consommation',
     DeleteVoltageLevelOnLine: 'Supprimer une coupure',
-    DeleteAttachingLine: 'Supprimer un piquage',
     LossCoefficient: 'Coefficient de pertes',
     ReduceMaxP: 'Abattement Pmax',
     DefaultOutageRate: 'Taux indisponibilité par défaut',
