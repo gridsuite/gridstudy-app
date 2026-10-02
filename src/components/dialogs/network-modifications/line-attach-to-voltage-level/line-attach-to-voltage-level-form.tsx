@@ -29,16 +29,17 @@ import {
     LineCreationDtoWithId,
     GridSection,
     VoltageLevelCreationDto,
+    LineToAttachOrSplitForm,
 } from '@gridsuite/commons-ui';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
-import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import { useWatch } from 'react-hook-form';
 import { GridItem } from '../../commons/grid-item';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
+import { useLineOptions } from '../../commons/use-line-options';
 
 interface LineAttachToVoltageLevelFormProps {
     studyUuid: UUID;
@@ -74,6 +75,7 @@ const LineAttachToVoltageLevelForm = ({
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
     const [attachmentPointDialogOpen, setAttachmentPointDialogOpen] = useState(false);
+    const lineOptions = useLineOptions(studyUuid, currentNode?.id, currentRootNetworkUuid);
     const voltageLevelIdWatch = useWatch({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
     });
@@ -113,14 +115,7 @@ const LineAttachToVoltageLevelForm = ({
         setVoltageLevelDialogOpen(true);
     };
 
-    const lineToAttachToForm = (
-        <LineToAttachOrSplitForm
-            label={'LineToAttachTo'}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-        />
-    );
+    const lineToAttachToForm = <LineToAttachOrSplitForm label={'LineToAttachTo'} lineOptions={lineOptions} />;
 
     const onAttachmentPointIdChange = useCallback(
         (value: string) => {
