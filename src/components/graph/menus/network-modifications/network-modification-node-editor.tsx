@@ -22,7 +22,7 @@ import {
     NetworkModificationsTable,
     NotificationsUrlKeys,
     removeNullFields,
-    setModificationMetadata, setModificationNameAndDescription,
+    setModificationNameAndDescription,
     snackWithFallback,
     TabularModificationType,
     useNotificationsListener,
@@ -732,9 +732,8 @@ const NetworkModificationNodeEditor = () => {
             setModificationNameAndDescription(modification.uuid, {
                 name: newName,
                 type: modification.type,
-            })
-        },
-        [studyUuid, currentNode?.id]
+            });
+        }, []
     );
 
     const handleEvent = useCallback(
