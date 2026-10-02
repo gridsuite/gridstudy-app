@@ -79,8 +79,6 @@ const LineAttachToVoltageLevelForm = ({
         name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
     });
 
-    const { readOnly } = useCustomFormContext();
-
     const fetchBusesOrBusbarSections = useCallback(
         (voltageLevelId: string) =>
             fetchBusesOrBusbarSectionsForVoltageLevel(
@@ -200,16 +198,14 @@ const LineAttachToVoltageLevelForm = ({
             <Grid container spacing={2}>
                 <GridItem>{attachmentPointIdField}</GridItem>
                 <GridItem>{attachmentPointNameField}</GridItem>
-                {!readOnly && (
-                    <GridItem>
-                        <AddButton
-                            onClick={openAttachmentPointDialog}
-                            mode={hasSubstationCreation ? AddButtonMode.EDIT : AddButtonMode.ADD}
-                            label="SpecifyAttachmentPoint"
-                            data-testid="AttachmentPointButton"
-                        />
-                    </GridItem>
-                )}
+                <GridItem>
+                    <AddButton
+                        onClick={openAttachmentPointDialog}
+                        mode={hasSubstationCreation ? AddButtonMode.EDIT : AddButtonMode.ADD}
+                        label="SpecifyAttachmentPoint"
+                        data-testid="AttachmentPointButton"
+                    />
+                </GridItem>
             </Grid>
             <GridSection title="AttachedVoltageLevelId" />
             <Grid container spacing={2}>
