@@ -165,8 +165,6 @@ export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';
 export const ATTACHMENT_POINT_NAME = 'attachmentPointName';
 export const ATTACHMENT_LINE_ID = 'attachmentLineId';
-export const LINE1_NAME = 'Line1Name';
-export const LINE2_NAME = 'Line2Name';
 export const LINE1_ID = 'Line1Id';
 export const LINE2_ID = 'Line2Id';
 
