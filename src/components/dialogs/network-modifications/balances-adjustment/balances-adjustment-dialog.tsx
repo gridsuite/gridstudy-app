@@ -294,7 +294,7 @@ export function BalancesAdjustmentDialog({
     );
 
     return (
-        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} readOnly={isUpdate} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

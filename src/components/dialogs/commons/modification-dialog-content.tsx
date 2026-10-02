@@ -5,14 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress } from '@mui/material';
+import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, Alert, Tooltip } from '@mui/material';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import React, { ReactNode } from 'react';
 import { UseFormSearchCopy } from './use-form-search-copy';
 import { FormattedMessage } from 'react-intl';
-import { CancelButton } from '@gridsuite/commons-ui';
+import { CancelButton, CloseButton, useCustomFormContext } from '@gridsuite/commons-ui';
 import { DialogProps } from '@mui/material/Dialog';
 
 /**
@@ -47,6 +48,8 @@ export function ModificationDialogContent({
     subtitle,
     ...dialogProps
 }: Readonly<ModificationDialogContentProps>) {
+    const { readOnly } = useCustomFormContext();
+
     const catalogButton = useButtonWithTooltip({
         label: 'CatalogButtonTooltip',
         handleClick: onOpenCatalogDialog ?? (() => {}),
@@ -82,8 +85,19 @@ export function ModificationDialogContent({
                         justifyContent: 'space-between',
                     }}
                 >
-                    <Grid size={6}>
+                    <Grid
+                        size={6}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <FormattedMessage id={titleId} />
+                        {readOnly && (
+                            <Tooltip title={<FormattedMessage id={'ReadOnlyForm'} />}>
+                                <LockOutlinedIcon />
+                            </Tooltip>
+                        )}
                     </Grid>
 
                     <Grid
@@ -95,15 +109,21 @@ export function ModificationDialogContent({
                         }}
                     >
                         {onOpenCatalogDialog && <Grid size={1}>{catalogButton}</Grid>}
-                        {searchCopy && <Grid size={1}>{copyEquipmentButton}</Grid>}
+                        {searchCopy && !readOnly && <Grid size={1}>{copyEquipmentButton}</Grid>}
                     </Grid>
                     {subtitle && <Grid size={12}>{subtitle}</Grid>}
                 </Grid>
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
-                <CancelButton onClick={handleCancel} />
-                {submitButton}
+                {readOnly ? (
+                    <CloseButton onClick={handleCancel} />
+                ) : (
+                    <>
+                        <CancelButton onClick={handleCancel} />
+                        {submitButton}
+                    </>
+                )}
             </DialogActions>
         </Dialog>
     );

@@ -60,6 +60,7 @@ export interface LineTypeSegmentDialogProps {
     ) => void;
     editData?: SegmentsFormData;
     isModification?: boolean;
+    isUpdate?: boolean;
 }
 
 export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
@@ -70,12 +71,13 @@ export default function LineTypeSegmentDialog({
     onClose,
     editData,
     isModification = false,
+    isUpdate,
 }: Readonly<LineTypeSegmentDialogProps>) {
     const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LineTypeSegmentDialogSchemaForm>>(LineTypeSegmentSchema),
     });
-
+    const readOnly = isUpdate;
     const { reset } = formMethods;
     const { getValues } = formMethods;
     const handleClear = useCallback(() => {
@@ -90,7 +92,7 @@ export default function LineTypeSegmentDialog({
     );
 
     return (
-        <CustomFormProvider validationSchema={LineTypeSegmentSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={LineTypeSegmentSchema} readOnly={readOnly} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}

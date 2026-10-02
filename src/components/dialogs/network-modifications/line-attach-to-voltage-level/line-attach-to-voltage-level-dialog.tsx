@@ -138,6 +138,7 @@ const LineAttachToVoltageLevelDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }: LineAttachToVoltageLevelDialogProps) => {
+    const readOnly = isUpdate;
     const currentNodeUuid = currentNode?.id;
 
     const [attachmentLine, setAttachmentLine] = useState<LineCreationDtoWithId>();
@@ -386,7 +387,7 @@ const LineAttachToVoltageLevelDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods} readOnly={readOnly}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

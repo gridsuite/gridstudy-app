@@ -137,6 +137,7 @@ const LineSplitWithVoltageLevelDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }: LineSplitWithVoltageLevelDialogProps) => {
+    const readOnly = isUpdate;
     const [voltageLevelOptions, setVoltageLevelOptions] = useState<VoltageLevelOption[]>([]);
 
     const currentNodeUuid = currentNode?.id;
@@ -299,7 +300,7 @@ const LineSplitWithVoltageLevelDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} readOnly={readOnly} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
