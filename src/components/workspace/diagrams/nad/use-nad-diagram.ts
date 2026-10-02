@@ -32,6 +32,7 @@ interface UseNadDiagramProps {
     studyUuid: UUID;
     currentNodeId: UUID;
     currentRootNetworkUuid: UUID;
+    onNadReplaced: () => void;
 }
 
 const NAD_CONFIG_SAVE_DEBOUNCE_MS = 700;
@@ -50,7 +51,13 @@ const BASE_RESET_STATE = {
     svg: null,
 };
 
-export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNetworkUuid }: UseNadDiagramProps) => {
+export const useNadDiagram = ({
+    panelId,
+    studyUuid,
+    currentNodeId,
+    currentRootNetworkUuid,
+    onNadReplaced,
+}: UseNadDiagramProps) => {
     const { updateNADFields } = useWorkspacePanelActions();
     const initialFields = useSelector((state: RootState) => selectNadDiagramFields(state, panelId));
     const workspaceId = useSelector((state: RootState) => selectActiveWorkspaceId(state));
@@ -283,8 +290,10 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
             }).catch((error) => console.error('Failed to replace NAD config:', error));
 
             replaceDiagram({ title, nadConfigUuid, filterUuid });
+            // The user's own choice to load: reset even if it's the same NAD again
+            onNadReplaced();
         },
-        [workspaceId, studyUuid, panelId, debounceSaveNad, replaceDiagram]
+        [workspaceId, studyUuid, panelId, debounceSaveNad, replaceDiagram, onNadReplaced]
     );
 
     const loadNadConfig = useCallback(() => {
@@ -296,6 +305,11 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                 if (!panel || !isNADPanel(panel)) {
                     return;
                 }
+                // Unlike the Load button, this also fires for edits to this same NAD by another client
+                // (moves, expands...): only reset if its config or filter actually changed
+                const isAnotherNad =
+                    panel.nadConfigUuid !== diagramRef.current.nadConfigUuid ||
+                    panel.filterUuid !== diagramRef.current.filterUuid;
                 replaceDiagram({
                     title: panel.title,
                     nadConfigUuid: panel.nadConfigUuid,
@@ -304,9 +318,12 @@ export const useNadDiagram = ({ panelId, studyUuid, currentNodeId, currentRootNe
                     currentFilterUuid: panel.currentFilterUuid,
                     voltageLevelToOmitIds: panel.voltageLevelToOmitIds || [],
                 });
+                if (isAnotherNad) {
+                    onNadReplaced();
+                }
             })
             .catch((error) => console.error('Failed to fetch updated NAD panel:', error));
-    }, [studyUuid, workspaceId, panelId, replaceDiagram]);
+    }, [studyUuid, workspaceId, panelId, replaceDiagram, onNadReplaced]);
 
     // Fetch on mount, and whenever what the request is built from changes
     useEffect(() => {
