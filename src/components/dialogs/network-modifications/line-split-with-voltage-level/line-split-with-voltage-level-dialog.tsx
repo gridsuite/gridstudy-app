@@ -8,7 +8,6 @@
 import {
     CustomFormProvider,
     DeepNullable,
-    EquipmentType,
     LineSplitWithVoltageLevelCreationForm,
     LineSplitWithVoltageLevelCreationFormData,
     lineSplitWithVoltageLevelCreationDtoToForm,
@@ -25,6 +24,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    BUS_OR_BUSBAR_SECTION,
     CONNECTIVITY,
     ID,
     LINE1_ID,
@@ -44,11 +44,11 @@ import {
     fetchBusesOrBusbarSectionsForVoltageLevel,
     fetchVoltageLevelsListInfos,
 } from '../../../../services/study/network';
-import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import { getNewVoltageLevelOptions, mergeVoltageLevelOptions } from '../../../utils/utils';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
+import { useLineOptions } from '../../commons/use-line-options';
 
 interface LineSplitEditData extends LineSplitWithVoltageLevelCreationDto {
     uuid?: UUID;
@@ -84,9 +84,9 @@ const LineSplitWithVoltageLevelDialog = ({
     ...dialogProps
 }: LineSplitWithVoltageLevelDialogProps) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState<VoltageLevelOption[]>([]);
-    const [lineOptions, setLineOptions] = useState<string[]>([]);
 
     const currentNodeUuid = currentNode?.id;
+    const lineOptions = useLineOptions(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const [newVoltageLevel, setNewVoltageLevel] = useState<VoltageLevelCreationDto | null>(null);
 
@@ -99,7 +99,7 @@ const LineSplitWithVoltageLevelDialog = ({
         ),
     });
 
-    const { reset, setValue } = formMethods;
+    const { reset, setValue, getValues } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -112,7 +112,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 const formattedVoltageLevel = {
                     id: editNewVoltageLevel.equipmentId,
                     name: editNewVoltageLevel.equipmentName ?? '',
-                    exist: false as const,
+                    exist: false,
                     busbarCount: editNewVoltageLevel.busbarCount,
                     sectionCount: editNewVoltageLevel.sectionCount,
                     switchKinds: editNewVoltageLevel.switchKinds ?? [],
@@ -166,18 +166,6 @@ const LineSplitWithVoltageLevelDialog = ({
         }
     }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
-    useEffect(() => {
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchEquipmentsIds(studyUuid, currentNode.id, currentRootNetworkUuid, undefined, EquipmentType.LINE, true)
-                .then((values: string[]) => {
-                    setLineOptions(values.sort((a, b) => a.localeCompare(b)));
-                })
-                .catch((error: unknown) => {
-                    snackWithFallback(snackError, error, { headerId: 'equipmentsLoadingError' });
-                });
-        }
-    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, snackError]);
-
     const onVoltageLevelCreationDo = useCallback(
         (preparedVoltageLevel: VoltageLevelCreationDto) => {
             return new Promise<string>(() => {
@@ -187,7 +175,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 const formattedVoltageLevel = {
                     id: preparedVoltageLevel.equipmentId,
                     name: preparedVoltageLevel.equipmentName ?? '',
-                    exist: false as const,
+                    exist: false,
                     busbarCount: preparedVoltageLevel.busbarCount,
                     sectionCount: preparedVoltageLevel.sectionCount,
                     switchKinds: preparedVoltageLevel.switchKinds ?? [],
@@ -202,10 +190,16 @@ const LineSplitWithVoltageLevelDialog = ({
 
                 setVoltageLevelOptions(newVoltageLevelOptions);
                 setNewVoltageLevel(preparedVoltageLevel);
+                // Addressing the nested `${CONNECTIVITY}.${VOLTAGE_LEVEL}` path directly makes react-hook-form's
+                // path types resolve to `never` for this FieldConstants-keyed schema. Set the whole connectivity
+                // object instead (keeping busOrBusbarSection as-is).
+                const currentConnectivity = getValues(CONNECTIVITY);
                 setValue(
-                    `${CONNECTIVITY}.${VOLTAGE_LEVEL}`,
+                    CONNECTIVITY,
                     {
-                        [ID]: preparedVoltageLevel.equipmentId,
+                        ...currentConnectivity,
+                        [VOLTAGE_LEVEL]: { [ID]: preparedVoltageLevel.equipmentId },
+                        [BUS_OR_BUSBAR_SECTION]: currentConnectivity?.[BUS_OR_BUSBAR_SECTION] ?? null,
                     },
                     {
                         shouldValidate: true,
@@ -214,7 +208,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 );
             });
         },
-        [setValue, newVoltageLevel, voltageLevelOptions]
+        [setValue, getValues, newVoltageLevel, voltageLevelOptions]
     );
 
     const fetchBusesOrBusbarSections = useCallback(

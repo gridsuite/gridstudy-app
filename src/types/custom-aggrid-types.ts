@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
+import { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import {
     ALL_BUSES,
     ONE_BUS,
@@ -20,49 +20,7 @@ import {
 } from 'utils/store-sort-filter-fields';
 import { UUID } from 'node:crypto';
 import React, { ComponentType } from 'react';
-import { TableSort, TableType } from '@gridsuite/commons-ui';
-
-export type SortConfig = {
-    colId: string;
-    sort: SortWay;
-    children?: boolean;
-};
-
-export enum SortWay {
-    ASC = 'asc',
-    DESC = 'desc',
-}
-
-export type TableSortConfig = Record<string, SortConfig[]>;
-
-export type TableSortKeysType = keyof TableSort;
-
-export type SortParams = {
-    table: TableSortKeysType;
-    tab: string;
-    isChildren?: boolean;
-    persistSort?: (api: GridApi, sort: SortConfig) => Promise<void>;
-};
-
-export type FilterData = {
-    dataType?: string;
-    type?: string;
-    originalType?: string; // used to store the original type of the filter before any transformation (e.g EQUALS and NOT_EQUAL in number filters)
-    value: unknown;
-    tolerance?: number; // tolerance when comparing values. Only useful for the number type
-};
-
-export type FilterConfig = FilterData & {
-    column: string;
-};
-
-export type FilterParams = {
-    type: TableType;
-    tab: string;
-    dataType?: string;
-    comparators?: string[];
-    debounceMs?: number;
-};
+import { CustomAggridFilterParams, SortParams } from '@gridsuite/commons-ui';
 
 export type PaginationConfig = {
     page: number;
@@ -149,12 +107,6 @@ export enum UNDISPLAYED_FILTER_NUMBER_COMPARATORS {
 }
 
 export type FilterEnumsType = Record<string, string[] | null>;
-
-export interface CustomAggridFilterParams {
-    api: GridApi;
-    colId: string;
-    filterParams: FilterParams;
-}
 
 export enum COLUMN_TYPES {
     TEXT = 'TEXT',
