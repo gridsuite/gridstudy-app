@@ -94,7 +94,7 @@ export function ModificationDialogContent({
                     >
                         <FormattedMessage id={titleId} />
                         {readOnly && (
-                            <Tooltip title={<FormattedMessage id={'readOnlyForm'} />}>
+                            <Tooltip title={<FormattedMessage id={'ReadOnlyForm'} />}>
                                 <LockOutlinedIcon />
                             </Tooltip>
                         )}
