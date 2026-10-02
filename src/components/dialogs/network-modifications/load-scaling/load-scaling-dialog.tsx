@@ -7,49 +7,33 @@
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { ModificationDialog } from '../../commons/modificationDialog';
-import LoadScalingForm from './load-scaling-form';
 import { useCallback, useEffect } from 'react';
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
-import { getVariationsSchema } from './variation/variation-utils';
-import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
+import {
+    CustomFormProvider,
+    emptyVariationScalingFormData,
+    loadScalingFormSchema,
+    snackWithFallback,
+    useSnackMessage,
+    VariationScalingFormData,
+    LoadScalingForm,
+    loadScalingFormToDto,
+    loadScalingDtoToForm,
+    VariationScalingDto,
+} from '@gridsuite/commons-ui';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { loadScaling } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import { UUID } from 'node:crypto';
-import { Variations, VariationType } from '../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-
-interface LoadScalingFormData {
-    [VARIATION_TYPE]: VariationType;
-    [VARIATIONS]: Variations[];
-}
-
-const emptyFormData: LoadScalingFormData = {
-    [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
-    [VARIATIONS]: [],
-};
-
-const formSchema = yup
-    .object()
-    .shape({
-        [VARIATION_TYPE]: yup.string().required(),
-        ...getVariationsSchema(VARIATIONS),
-    })
-    .required() as yup.ObjectSchema<LoadScalingFormData>;
 
 interface LoadScalingDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     isUpdate: boolean;
     editDataFetchStatus?: string;
-    editData?: {
-        uuid: UUID;
-        [VARIATION_TYPE]: VariationType;
-        [VARIATIONS]: Variations[];
-    };
+    editData?: VariationScalingDto;
 }
 
 const LoadScalingDialog = ({
@@ -64,34 +48,26 @@ const LoadScalingDialog = ({
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        defaultValues: emptyVariationScalingFormData,
+        resolver: yupResolver(loadScalingFormSchema),
     });
 
     const { reset } = formMethods;
 
     useEffect(() => {
         if (editData) {
-            reset({
-                [VARIATION_TYPE]: editData[VARIATION_TYPE],
-                [VARIATIONS]: editData[VARIATIONS],
-            });
+            reset(loadScalingDtoToForm(editData));
         }
     }, [editData, reset]);
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(emptyVariationScalingFormData);
     }, [reset]);
 
     const onSubmit = useCallback(
-        (loadScalingInfos: LoadScalingFormData) => {
-            loadScaling(
-                studyUuid,
-                currentNodeUuid,
-                editData?.uuid ?? undefined,
-                loadScalingInfos[VARIATION_TYPE],
-                loadScalingInfos[VARIATIONS]
-            ).catch((error) => {
+        (formData: VariationScalingFormData) => {
+            const dto = loadScalingFormToDto(formData);
+            loadScaling(studyUuid, currentNodeUuid, editData?.uuid ?? undefined, dto).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'LoadScalingError' });
             });
         },
@@ -104,7 +80,7 @@ const LoadScalingDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={loadScalingFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

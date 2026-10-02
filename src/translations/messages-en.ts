@@ -14,7 +14,6 @@ import {
     Q_MAX_AT_NOMINAL_V_MUST_BE_GREATER_THAN_ZERO,
     SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO,
     TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
-    VARIATION_LIST_EMPTY,
 } from '../utils/translationKeys';
 
 const messages_en = {
@@ -636,7 +635,6 @@ const messages_en = {
     ReplacingLineName: 'Name replacing line',
     LineDivisionError: 'Error while puting a voltage level amidst a line',
     LineAttachmentError: 'Error while attaching a voltage level to a line',
-    LoadScalingError: 'Error while creating a load scaling',
     DeleteVoltageLevelOnLineError: 'Error while deleting a voltage level on a line',
     DeleteAttachingLineError: 'Error while deleting an attaching line',
     GenerationDispatchError: 'Error while creating a generation dispatch',
@@ -667,14 +665,7 @@ const messages_en = {
     IncoherentLowTapPositionError: 'The value should match the lowest tap position generated',
     IncoherentHighTapPositionError: 'The value should match the highest tap position generated',
 
-    GeneratorScaling: 'Generator scaling',
     IterativeLabel: 'Iterative',
-    VariationMode: 'Variation mode',
-    ProportionalToPMax: 'Proportional to max P',
-    StackingUp: 'Stacking up',
-    GeneratorScalingError: 'Error while creating a generator scaling',
-    AllExplicitNamingFiltersError:
-        'All filters types have to be Explicit Naming when variation mode is stacking up or ventilation',
 
     FilterCreationError: 'Error while creating a filter',
     ContingencyListCreationError: 'Error while creating a contingency list',
@@ -782,20 +773,9 @@ const messages_en = {
     RatioTapChangerPosition: 'Ratio tap',
     Leg: 'Leg',
     Transformers: 'Transformers',
-    [VARIATION_LIST_EMPTY]: 'Variations list is empty',
     UnsupportedView: 'Search is unavailable in this view',
-
-    DeltaP: 'Δ P',
-    TargetPText: 'Target P',
-    CreateVariation: 'Add Variation',
     createNewSelection: 'Create a selection',
     ActiveVariationMode: 'Active variation mode',
-    ReactiveVariationMode: 'Reactive variation mode',
-    RegularDistribution: 'Regular distribution',
-    TanPhiFixed: 'tan(φ) fixed',
-    ConstantQWithoutUnit: 'Constant Q',
-    Variations: 'Variations',
-    LoadScaling: 'Load scaling',
     DeleteVoltageLevelOnLine: 'Delete a voltage level on a line',
     DeleteAttachingLine: 'Delete attaching line',
     LossCoefficient: 'Loss coefficient',
