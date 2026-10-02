@@ -105,7 +105,7 @@ const GeneratorScalingDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} readOnly={isUpdate} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
