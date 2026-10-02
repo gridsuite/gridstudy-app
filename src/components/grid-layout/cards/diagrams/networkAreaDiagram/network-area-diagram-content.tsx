@@ -35,7 +35,6 @@ import {
     ElementType,
     EquipmentType,
     ExtendedEquipmentType,
-    HvdcType,
     IElementCreationDialog,
     IElementUpdateDialog,
     mergeSx,
@@ -50,16 +49,13 @@ import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { styles } from '../diagram-styles';
-import { fetchNetworkElementInfos } from 'services/study/network';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import { selectActiveWorkspaceId, selectPanelEditMode } from 'redux/slices/workspace-selectors';
 import type { RootState } from 'redux/store';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
-import { getLocalStoragePanelState, saveLocalStoragePanelState } from 'redux/session-storage/workspace-local-storage';
-import { PanelType } from 'components/workspace/types/workspace.types';
+import { getNadPanelLocalState, saveNadPanelLocalState } from 'redux/session-storage/workspace-local-storage';
 import { DiagramAdditionalMetadata } from '../diagram.type';
 
 type NetworkAreaDiagramContentProps = {
@@ -151,13 +147,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     latestRef.current = latestValues;
 
     const initialLocalStorageViewBox = useRef(
-        (() => {
-            if (!studyUuid || !workspaceId) {
-                return null;
-            }
-            const localState = getLocalStoragePanelState(studyUuid, workspaceId, nadPanelId);
-            return localState?.type === PanelType.NAD ? (localState.viewBox ?? null) : null;
-        })()
+        getNadPanelLocalState(studyUuid, workspaceId, nadPanelId)?.viewBox ?? null
     );
     // Update drag interaction without full viewer reinitialization
     if (diagramViewerRef.current) {
@@ -307,38 +297,9 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
             };
             setShouldDisplayTooltip(false);
 
-            if (equipmentType === EquipmentType.HVDC_LINE) {
-                // need a query to know the HVDC converters type (LCC vs VSC)
-                // this section should be removed when the NAD will provide this information in the SVG metadata
-                fetchNetworkElementInfos(
-                    latestRef.current.studyUuid,
-                    latestRef.current.currentNode?.id,
-                    latestRef.current.currentRootNetworkUuid,
-                    EquipmentType.HVDC_LINE,
-                    EQUIPMENT_INFOS_TYPES.MAP.type,
-                    equipmentId,
-                    false
-                )
-                    .then((hvdcInfos) => {
-                        const equipmentSubtype =
-                            hvdcInfos?.hvdcType === HvdcType.LCC
-                                ? ExtendedEquipmentType.HVDC_LINE_LCC
-                                : ExtendedEquipmentType.HVDC_LINE_VSC;
-
-                        openMenu(EquipmentType.HVDC_LINE, equipmentSubtype);
-                    })
-                    .catch(() => {
-                        snackError({
-                            messageId: 'NetworkEquipmentNotFound',
-                            messageValues: { equipmentId: equipmentId },
-                        });
-                    });
-            } else {
-                const convertedType = getEquipmentTypeFromFeederType(equipmentType);
-
-                if (convertedType?.equipmentType) {
-                    openMenu(convertedType.equipmentType, convertedType.equipmentSubtype ?? null);
-                }
+            const convertedType = getEquipmentTypeFromFeederType(equipmentType);
+            if (convertedType?.equipmentType) {
+                openMenu(convertedType.equipmentType, convertedType.equipmentSubtype ?? null);
             }
         }
     );
@@ -410,13 +371,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
             // viewer reference and viewbox because we do not want to use an obsolete viewbox on the new NAD.
             diagramViewerRef.current = null;
             initialLocalStorageViewBox.current = null;
-            if (studyUuid && workspaceId) {
-                saveLocalStoragePanelState(studyUuid, workspaceId, {
-                    id: nadPanelId,
-                    type: PanelType.NAD,
-                    viewBox: undefined,
-                });
-            }
+            saveNadPanelLocalState(studyUuid, workspaceId, nadPanelId, { viewBox: undefined });
             onReplaceNad(
                 elementName,
                 elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
@@ -452,15 +407,11 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     );
 
     const saveViewBoxToLocalStorage = useCallback(() => {
-        if (!diagramViewerRef.current || !studyUuid || !workspaceId) {
+        if (!diagramViewerRef.current) {
             return;
         }
         const viewBox = diagramViewerRef.current.getViewBox() ?? undefined;
-        saveLocalStoragePanelState(studyUuid, workspaceId, {
-            id: nadPanelId,
-            type: PanelType.NAD,
-            viewBox,
-        });
+        saveNadPanelLocalState(studyUuid, workspaceId, nadPanelId, { viewBox });
     }, [nadPanelId, studyUuid, workspaceId]);
 
     useEffect(() => {

@@ -133,6 +133,8 @@ export const equipmentsWithContextualMenu = [
     FEEDER_TYPES.LOAD,
     FEEDER_TYPES.VOLTAGE_LEVEL,
     FEEDER_TYPES.GENERATOR,
+    FEEDER_TYPES.HVDC_LINE_VSC,
+    FEEDER_TYPES.HVDC_LINE_LCC,
 ];
 
 /**

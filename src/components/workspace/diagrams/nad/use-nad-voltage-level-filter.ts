@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { DiagramMetadata } from '@powsybl/network-viewer';
 import { useBaseVoltages } from '../../../../hooks/use-base-voltages';
 
@@ -14,7 +14,6 @@ interface UseNadVoltageLevelFilterReturn {
     presentNominalVoltages: number[];
     /** Representative voltages currently checked. */
     selectedNominalVoltages: number[];
-    setSelectedNominalVoltages: Dispatch<SetStateAction<number[] | undefined>>;
     /** Band names whose representative is unchecked → need to be hidden in the diagram. */
     unselectedVlNames: string[];
 }
@@ -24,9 +23,9 @@ interface UseNadVoltageLevelFilterReturn {
  */
 export function useNadVoltageLevelFilter(
     svgMetadata: DiagramMetadata | null | undefined,
-    // Identity of the loaded NAD (its config), NOT the filter, node or root network. It changes only
-    // when a different NAD is loaded, which resets the selection to "all shown".
-    contextKey: string
+    // Representative voltages checked, `undefined` until a diagram is drawn
+    voltageSelection: number[] | undefined,
+    setVoltageSelection: (voltageSelection: number[]) => void
 ): UseNadVoltageLevelFilterReturn {
     const { baseVoltages } = useBaseVoltages();
 
@@ -54,41 +53,25 @@ export function useNadVoltageLevelFilter(
     // The voltages displayed to the user on the filtering tab
     const presentNominalVoltages = useMemo(() => presentBaseVoltages.map((bv) => bv.minValue), [presentBaseVoltages]);
 
-    // Representative voltages currently shown (checked). `undefined` means "not initialized yet":
-    // until the effect below runs, nothing is hidden (see unselectedVlNames), which avoids a flash
-    // where every band would be hidden before the selection is populated.
-    const [selectedNominalVoltages, setSelectedNominalVoltages] = useState<number[]>();
-
-    // NAD context on the previous render, to detect when a different NAD is loaded (Load button).
-    const previousContextKeyRef = useRef(contextKey);
+    // Everything is checked on the first drawing, and saved so that voltages appearing afterwards (expand, add
+    // from a filter, another node or root network) stay unchecked, even after a reload or a workspace switch.
     useEffect(() => {
-        const contextChanged = previousContextKeyRef.current !== contextKey;
-        previousContextKeyRef.current = contextKey;
-        setSelectedNominalVoltages((prev) => {
-            // Initialize on first load, and reset to "all shown" only when a different NAD is loaded via
-            // the Load button (contextKey change). Otherwise keep the current selection untouched: newly
-            // present voltages (expand / add from a filter) are never auto-checked, and changing the
-            // node or root network keeps the same selection.
-            if (contextChanged || prev === undefined) {
-                return presentNominalVoltages.length > 0 ? presentNominalVoltages : undefined;
-            }
-            return prev;
-        });
-    }, [contextKey, presentNominalVoltages]);
+        if (voltageSelection === undefined && presentNominalVoltages.length > 0) {
+            setVoltageSelection(presentNominalVoltages);
+        }
+    }, [voltageSelection, presentNominalVoltages, setVoltageSelection]);
+
+    const selectedNominalVoltages = voltageSelection ?? presentNominalVoltages;
 
     // Bands whose representative is unchecked → hidden in the diagram.
-    const unselectedVlNames = useMemo(() => {
-        // Not initialized yet: hide nothing (the diagram shows fully until the selection is set).
-        if (selectedNominalVoltages === undefined) {
-            return [];
-        }
-        return presentBaseVoltages.filter((bv) => !selectedNominalVoltages.includes(bv.minValue)).map((bv) => bv.name);
-    }, [presentBaseVoltages, selectedNominalVoltages]);
+    const unselectedVlNames = useMemo(
+        () => presentBaseVoltages.filter((bv) => !selectedNominalVoltages.includes(bv.minValue)).map((bv) => bv.name),
+        [presentBaseVoltages, selectedNominalVoltages]
+    );
 
     return {
         presentNominalVoltages,
-        selectedNominalVoltages: selectedNominalVoltages ?? presentNominalVoltages,
-        setSelectedNominalVoltages,
+        selectedNominalVoltages,
         unselectedVlNames,
     };
 }
