@@ -5,7 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import type { UUID } from 'node:crypto';
+import { useNadPanelLocalState } from './use-nad-panel-local-state';
 
 /** Toggleable NAD information layers, in display order. */
 export type NadSelectedInfoKey =
@@ -50,15 +52,18 @@ interface UseNadInfoFilterReturn {
 }
 
 /**
- * Information-layer masking logic for NAD. Settings are transient (reset on reload),
- * default to "all shown" so the diagram looks unchanged until the user opts to hide something.
+ * Information-layer masking logic for NAD. Settings are persisted per panel in local storage
+ * and default to "all shown" so the diagram looks unchanged until the user opts to hide something.
  */
-export function useNadInfoFilter(): UseNadInfoFilterReturn {
-    const [selectedInfos, setSelectedInfos] = useState<NadSelectedInfos>(ALL_SHOWN);
+export function useNadInfoFilter(panelId: UUID): UseNadInfoFilterReturn {
+    const [storedInfos, setStoredInfos] = useNadPanelLocalState(panelId, 'selectedInfos');
 
-    const toggleSelectedInfo = useCallback((key: NadSelectedInfoKey) => {
-        setSelectedInfos((prev) => ({ ...prev, [key]: !prev[key] }));
-    }, []);
+    const selectedInfos = useMemo<NadSelectedInfos>(() => ({ ...ALL_SHOWN, ...storedInfos }), [storedInfos]);
+
+    const toggleSelectedInfo = useCallback(
+        (key: NadSelectedInfoKey) => setStoredInfos({ ...selectedInfos, [key]: !selectedInfos[key] }),
+        [selectedInfos, setStoredInfos]
+    );
 
     const hiddenInfoSelectors = useMemo(
         () =>

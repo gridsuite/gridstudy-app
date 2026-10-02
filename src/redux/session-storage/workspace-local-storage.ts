@@ -10,6 +10,7 @@ import { LOCAL_STORAGE_KEY_PREFIX } from '../../utils/config-params';
 import { PanelType } from '../../components/workspace/types/workspace.types';
 import { Viewport } from '@xyflow/react';
 import { ViewBoxLike } from '@svgdotjs/svg.js';
+import type { NadSelectedInfos } from '../../components/workspace/diagrams/nad/use-nad-info-filter';
 
 export interface BasePanelLocalState {
     id: UUID;
@@ -25,6 +26,8 @@ export interface TreePanelLocalState extends BasePanelLocalState {
 export interface NADPanelLocalState extends BasePanelLocalState {
     type: PanelType.NAD;
     viewBox?: ViewBoxLike;
+    selectedNominalVoltages?: number[];
+    selectedInfos?: Partial<NadSelectedInfos>;
 }
 
 export type OtherPanelLocalState = BasePanelLocalState & {
@@ -32,6 +35,8 @@ export type OtherPanelLocalState = BasePanelLocalState & {
 };
 
 export type PanelLocalState = TreePanelLocalState | NADPanelLocalState | OtherPanelLocalState;
+
+export type NadPanelLocalFields = Omit<NADPanelLocalState, 'id' | 'type'>;
 
 interface WorkspacesLocalState {
     activeWorkspaceId?: UUID;
@@ -98,6 +103,27 @@ export function saveLocalStoragePanelState(studyUuid: UUID, workspaceId: UUID, p
             [panelState.id]: { ...workspaceState.panels[panelState.id], ...panelState },
         },
     });
+}
+
+export function getNadPanelLocalState(
+    studyUuid: UUID | null | undefined,
+    workspaceId: UUID | null | undefined,
+    panelId: UUID
+): NADPanelLocalState | undefined {
+    const panelState =
+        studyUuid && workspaceId ? getLocalStoragePanelState(studyUuid, workspaceId, panelId) : undefined;
+    return panelState?.type === PanelType.NAD ? panelState : undefined;
+}
+
+export function saveNadPanelLocalState(
+    studyUuid: UUID | null | undefined,
+    workspaceId: UUID | null | undefined,
+    panelId: UUID,
+    nadState: Partial<NadPanelLocalFields>
+): void {
+    if (studyUuid && workspaceId) {
+        saveLocalStoragePanelState(studyUuid, workspaceId, { id: panelId, type: PanelType.NAD, ...nadState });
+    }
 }
 
 export function saveLocalStoragePanelZIndex(
