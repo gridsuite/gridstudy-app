@@ -20,7 +20,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
-import { getNetworkElementsInfos } from 'services/study/filter';
+import { getNetworkElementsInfosByFilters } from 'services/study/filter';
 import { fetchNetworkElementsInfos } from 'services/study/network';
 import type { UUID } from 'node:crypto';
 import { getPrefilledColumnGroups } from './prefillable-columns-config';
@@ -82,7 +82,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
             }
 
             try {
-                const equipments = await getNetworkElementsInfos(
+                const equipments = await getNetworkElementsInfosByFilters(
                     studyUuid,
                     currentNode.id,
                     currentRootNetworkUuid,

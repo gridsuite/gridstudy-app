@@ -57,7 +57,7 @@ export async function evaluateGlobalFilter(
  * @param infoType The info type (LIST, TAB, MAP, FORM) - defaults to LIST
  * @return The network elements infos matching the filter
  */
-export async function getNetworkElementsInfos<T extends Identifiable>(
+export async function getNetworkElementsInfosByFilters<T extends Identifiable>(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
