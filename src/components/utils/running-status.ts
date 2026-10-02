@@ -4,20 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
+import {ComputingType, RunningStatus} from '@gridsuite/commons-ui';
 
 export function getLoadFlowRunningStatus(loadFlowStatus: string | null): RunningStatus {
     switch (loadFlowStatus) {
         case 'CONVERGED':
             return RunningStatus.SUCCEED;
-        case 'DIVERGED':
-            return RunningStatus.FAILED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
-        case 'NOT_DONE':
-            return RunningStatus.IDLE;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING
+        case 'DIVERGED':
         case 'FAILED':
             return RunningStatus.FAILED;
+        case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
     }
@@ -31,8 +31,9 @@ export function getSecurityAnalysisRunningStatus(securityAnalysisStatus: string 
             return RunningStatus.FAILED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING
         case 'NOT_DONE':
-            return RunningStatus.IDLE;
         default:
             return RunningStatus.IDLE;
     }
@@ -44,10 +45,11 @@ export function getSensitivityAnalysisRunningStatus(sensitivityAnalysisStatus: s
             return RunningStatus.SUCCEED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
-        case 'NOT_DONE':
-            return RunningStatus.IDLE;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING
         case 'FAILED':
             return RunningStatus.FAILED;
+        case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
     }
@@ -59,10 +61,11 @@ export function getShortCircuitAnalysisRunningStatus(shortCircuitAnalysisStatus:
             return RunningStatus.SUCCEED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
-        case 'NOT_DONE':
-            return RunningStatus.IDLE;
         case 'FAILED':
             return RunningStatus.FAILED;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING
+        case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
     }
@@ -76,8 +79,9 @@ export function getDynamicSimulationRunningStatus(dynamicSimulationStatus: strin
             return RunningStatus.FAILED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING
         case 'NOT_DONE':
-            return RunningStatus.IDLE;
         default:
             return RunningStatus.IDLE;
     }
@@ -91,8 +95,9 @@ export function getDynamicSecurityAnalysisRunningStatus(dynamicSecurityAnalysisS
             return RunningStatus.FAILED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING
         case 'NOT_DONE':
-            return RunningStatus.IDLE;
         default:
             return RunningStatus.IDLE;
     }
@@ -106,8 +111,9 @@ export function getDynamicMarginCalculationRunningStatus(dynamicMarginCalculatio
             return RunningStatus.FAILED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING
         case 'NOT_DONE':
-            return RunningStatus.IDLE;
         default:
             return RunningStatus.IDLE;
     }
@@ -121,8 +127,9 @@ export function getVoltageInitRunningStatus(voltageInitStatus: string | null): R
             return RunningStatus.FAILED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING
         case 'NOT_DONE':
-            return RunningStatus.IDLE;
         default:
             return RunningStatus.IDLE;
     }
@@ -134,10 +141,11 @@ export function getStateEstimationRunningStatus(stateEstimationStatus: string | 
             return RunningStatus.SUCCEED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
-        case 'NOT_DONE':
-            return RunningStatus.IDLE;
         case 'DIVERGED':
             return RunningStatus.FAILED;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING
+        case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
     }
@@ -149,10 +157,11 @@ export function getPccMinRunningStatus(pccMinStatus: string | null): RunningStat
             return RunningStatus.SUCCEED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
-        case 'NOT_DONE':
-            return RunningStatus.IDLE;
         case 'FAILED':
             return RunningStatus.FAILED;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING
+        case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
     }

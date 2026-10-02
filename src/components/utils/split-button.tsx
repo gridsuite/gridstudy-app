@@ -23,10 +23,10 @@ import LoopIcon from '@mui/icons-material/Loop';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import PlayIcon from '@mui/icons-material/PlayArrow';
-import { useSelector } from 'react-redux';
-import { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
-import { AppState } from 'redux/reducer.type';
-import { mergeSx, RunningStatus, type MuiStyles } from '@gridsuite/commons-ui';
+import {useSelector} from 'react-redux';
+import {MouseEvent as ReactMouseEvent, useRef, useState} from 'react';
+import {AppState} from 'redux/reducer.type';
+import {mergeSx, type MuiStyles, RunningStatus} from '@gridsuite/commons-ui';
 
 const styles = {
     expand: (theme) => ({
@@ -188,6 +188,7 @@ const SplitButton = ({
 
     const getRunningIcon = (status: RunningStatus) => {
         switch (status) {
+            case RunningStatus.PRELOADING:
             case RunningStatus.RUNNING:
                 return <LoopIcon sx={styles.rotate} data-testid="ModelExecutionRunning" />;
             case RunningStatus.SUCCEED:
@@ -207,6 +208,7 @@ const SplitButton = ({
             case RunningStatus.FAILED:
                 return styles.failed;
             case RunningStatus.RUNNING:
+            case RunningStatus.PRELOADING:
                 return styles.running;
             case RunningStatus.IDLE:
             default:
