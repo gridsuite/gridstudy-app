@@ -642,7 +642,6 @@ const messages_fr = {
     LoadScalingError: 'Erreur lors de la création de la variation du plan de consommation',
     DeleteVoltageLevelOnLineError: "Erreur lors de la suppression d'une coupure",
     DeleteAttachingLineError: "Erreur lors de la suppression d'un piquage",
-    GenerationDispatchError: 'Erreur lors de la création du démarrage de groupes',
     lineAttachedToSplitLineVoltageLevel: 'Poste en piquage à passer en coupure',
 
     permanentCurrentLimitMandatory:
@@ -805,17 +804,6 @@ const messages_fr = {
     LoadScaling: 'Variation plan de consommation',
     DeleteVoltageLevelOnLine: 'Supprimer une coupure',
     DeleteAttachingLine: 'Supprimer un piquage',
-    LossCoefficient: 'Coefficient de pertes',
-    ReduceMaxP: 'Abattement Pmax',
-    DefaultOutageRate: 'Taux indisponibilité par défaut',
-    GeneratorsWithoutOutage: 'Groupes sans abattement indispo',
-    GeneratorsWithFixedActivePower: 'Groupes non ajustables',
-    GeneratorFilter: 'FILTRE GROUPE',
-    FrequencyReserve: 'RESERVE FREQUENCE (%)',
-    frequencyReserve: 'Réserve fréquence',
-    GeneratorsFiltersFrequencyReserveToolTip:
-        'Les saisies sont appliquées dans l’ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si un groupe est inclus dans plusieurs filtres)',
-    GeneratorsOrdering: 'Hiérarchie des sites',
     ReplacingLine: 'Liaison de remplacement',
 
     NetworkEquipmentNotFound: 'L\'ouvrage "{equipmentId}" n\'existe pas dans ce réseau',
@@ -921,7 +909,6 @@ const messages_fr = {
     errCloneVoltageInitModificationMsg:
         "Une erreur est survenue lors de l'application des modifications issues de l'initialisation du plan de tension",
     VoltageInitModification: 'Modification plan de tension',
-    GeneratorAvailability: 'Indisponibilité groupes',
     chooseElement: 'Choisir un element',
     studyNetworkRecovered: "Le réseau de l'étude a été réimporté avec succès",
     rootNetworkStudyUnloaded: "En raison d'une période d'inactivité, le réseau de cette étude a été déchargé",

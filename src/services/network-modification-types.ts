@@ -241,30 +241,6 @@ export interface LccModificationInfos {
     properties?: Property[] | null;
 }
 
-type GenerationDispatchInfos = {
-    lossCoefficient: number | null;
-    defaultOutageRate: number | null;
-    generatorsWithoutOutage: Filter[] | null;
-    generatorsWithFixedSupply: Filter[] | null;
-    generatorsFrequencyReserve:
-        | {
-              generatorsFilters: Filter[];
-              frequencyReserve: number;
-          }[]
-        | null;
-    substationsGeneratorsOrdering:
-        | {
-              substationIds: string[];
-          }[]
-        | null;
-};
-
-export type GenerationDispatchModificationInfos = GenerationDispatchInfos & {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    uuid?: UUID;
-};
-
 export interface CreateVoltageLevelTopologyInfos {
     type: ModificationType;
     uuid?: string;

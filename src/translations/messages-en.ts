@@ -639,7 +639,6 @@ const messages_en = {
     LoadScalingError: 'Error while creating a load scaling',
     DeleteVoltageLevelOnLineError: 'Error while deleting a voltage level on a line',
     DeleteAttachingLineError: 'Error while deleting an attaching line',
-    GenerationDispatchError: 'Error while creating a generation dispatch',
     lineAttachedToSplitLineVoltageLevel: 'Voltage level with attached line to place as splitter',
 
     permanentCurrentLimitMandatory:
@@ -798,17 +797,6 @@ const messages_en = {
     LoadScaling: 'Load scaling',
     DeleteVoltageLevelOnLine: 'Delete a voltage level on a line',
     DeleteAttachingLine: 'Delete attaching line',
-    LossCoefficient: 'Loss coefficient',
-    ReduceMaxP: 'Reduce maxP',
-    DefaultOutageRate: 'Default outage rate',
-    GeneratorsWithoutOutage: 'Generators without outage simulation',
-    GeneratorsWithFixedActivePower: 'Generators with fixed active power',
-    GeneratorFilter: 'GENERATOR FILTER',
-    FrequencyReserve: 'FREQUENCY RESERVE (%)',
-    frequencyReserve: 'Frequency reserve',
-    GeneratorsFiltersFrequencyReserveToolTip:
-        'User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry',
-    GeneratorsOrdering: 'Substations hierarchy',
     ReplacingLine: 'Replacing line',
 
     NetworkEquipmentNotFound: 'The equipment "{equipmentId}" does not exist in this network',
@@ -908,7 +896,6 @@ const messages_en = {
     errCloneVoltageInitModificationMsg:
         'An error occurred while applying the modifications coming from voltage profile initialization',
     VoltageInitModification: 'Voltage init modification',
-    GeneratorAvailability: 'Generator availability',
     chooseElement: 'Choose element',
     studyNetworkRecovered: 'Study network has been recreated successfully',
     rootNetworkStudyUnloaded: "Due to a period of inactivity, the study's network has been unloaded",

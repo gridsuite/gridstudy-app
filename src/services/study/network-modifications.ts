@@ -44,6 +44,7 @@ import {
     TopologyVoltageLevelModificationDto,
     TabularModificationRow,
     TabularProperty,
+    GenerationDispatchDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -53,7 +54,6 @@ import {
     BalancesAdjustmentInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
-    GenerationDispatchModificationInfos,
     LCCCreationInfo,
     LccModificationInfos,
     LinesAttachToSplitLinesInfo,
@@ -253,42 +253,27 @@ export function switchOnEquipment(
     return changeOperatingStatus(studyUuid, nodeUuid, branch, OPERATING_STATUS_ACTION.SWITCH_ON);
 }
 
-export function generationDispatch({
-    studyUuid,
-    nodeUuid,
-    uuid,
-    lossCoefficient,
-    defaultOutageRate,
-    generatorsWithoutOutage,
-    generatorsWithFixedSupply,
-    generatorsFrequencyReserve,
-    substationsGeneratorsOrdering,
-}: GenerationDispatchModificationInfos) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
-        lossCoefficient: lossCoefficient,
-        defaultOutageRate: defaultOutageRate,
-        generatorsWithoutOutage: generatorsWithoutOutage,
-        generatorsWithFixedSupply: generatorsWithFixedSupply,
-        generatorsFrequencyReserve: generatorsFrequencyReserve,
-        substationsGeneratorsOrdering: substationsGeneratorsOrdering,
-    });
-
+export function generationDispatch(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: GenerationDispatchDto
+) {
     let generationDispatchUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    if (uuid) {
-        console.info('Updating generation dispatch ', body);
-        generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(uuid);
+    if (modificationUuid) {
+        console.info('Updating generation dispatch ');
+        generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
     } else {
-        console.info('Creating generation dispatch ', body);
+        console.info('Creating generation dispatch ');
     }
 
     return backendFetchText(generationDispatchUrl, {
-        method: uuid ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body,
+        body: JSON.stringify(dto),
     });
 }
 
