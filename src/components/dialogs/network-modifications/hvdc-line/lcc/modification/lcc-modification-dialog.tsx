@@ -303,6 +303,7 @@ export const LccModificationDialog = ({
                         useTabsReturn={useTabsReturn}
                         lccHvdcLineToModify={lccToModify}
                         isModification
+                        isPreviousConnectionColumnDisplayed
                     />
                 )}
             </ModificationDialog>

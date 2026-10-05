@@ -912,16 +912,8 @@ const messages_en = {
     ConnectedT3WSide2: 'Connected 2',
     ConnectedT3WSide3: 'Connected 3',
 
-    converterStationId: 'Converter station ID',
-    converterStationName: 'Converter station name',
-    converterStation1: 'Converter station 1',
-    converterStation2: 'Converter station 2',
-    dcNominalVoltageLabel: 'DC nominal voltage',
-    dcResistanceLabel: 'DC resistance',
     operatorActivePowerLimitSide2Label: 'Operator active power limit (Side2->Side1)',
     operatorActivePowerLimitSide1Label: 'Operator active power limit (Side1->Side2)',
-    converterModeLabel: 'Converters mode',
-    lossFactorLabel: 'Loss Factor',
 
     'withoutunit.g': 'Magnetizing conductance',
     'withoutunit.b': 'Magnetizing susceptance',

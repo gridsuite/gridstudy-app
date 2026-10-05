@@ -50,7 +50,7 @@ const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos?: LccShun
             [FieldConstants.SHUNT_COMPENSATOR_ID]: shuntCp.id + '(1)',
             [FieldConstants.SHUNT_COMPENSATOR_NAME]: shuntCp?.name ?? '',
             [FieldConstants.MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
-            [FieldConstants.SHUNT_COMPENSATOR_SELECTED]: shuntCp.terminalConnected ?? true,
+            [FieldConstants.SHUNT_COMPENSATOR_SELECTED]: shuntCp.terminalConnected ?? true, //TODO : rename field to terminalConnected
         })) ?? []
     );
 };
@@ -127,7 +127,7 @@ export function LccCreationDialog({
         (lccHvdcLine: LccHvdcLineCreationFormData) => {
             const dto = lccHvdcLineCreationFormToDto(lccHvdcLine);
             createLcc(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: Error) => {
-                snackWithFallback(snackError, error, { headerId: 'LccCreationError' });
+                snackWithFallback(snackError, error, { headerId: 'HvdcLccCreationError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError]
