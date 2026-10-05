@@ -1190,7 +1190,6 @@ const NetworkModificationNodeEditor = () => {
             isRootNode ||
             isAssemblyDepthExceeded ||
             isEditBlocked ||
-            selectionContainsShared ||
             selectionContainsLockedModification
         );
     }, [
@@ -1199,7 +1198,6 @@ const NetworkModificationNodeEditor = () => {
         isRootNode,
         isAssemblyDepthExceeded,
         isEditBlocked,
-        selectionContainsShared,
         selectionContainsLockedModification,
     ]);
 
