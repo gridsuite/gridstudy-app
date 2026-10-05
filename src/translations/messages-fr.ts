@@ -482,10 +482,8 @@ const messages_fr = {
     CenterSelectedNode: 'Centrer sur le nœud sélectionné',
     DisplayTheWholeTree: "Visualiser l'arbre en entier",
 
-    Logs: 'Logs',
     logsTitle: 'Logs : {title}',
     showReport: 'Afficher logs',
-    loadingReport: 'Chargement des logs en cours...',
 
     ModifyNodeNotBuiltWarningMsg: 'Les valeurs sont celles du précédent nœud réalisé dans la branche courante',
 
@@ -908,14 +906,8 @@ const messages_fr = {
         "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
     SensitivityAnalysisResultsError: "Une erreur s'est produite lors de la récupération du résultat de sensibilité",
     ComputationFilterResultsError: 'Filtre introuvable :',
-    muiTablePaginationLabelRowsPerPage: 'Lignes par page : ',
     muiTablePaginationLabelRowsPerPageAllBusesSCA: 'Défauts par page : ',
     muiTablePaginationLabelRowsPerPageOneBusSCA: 'Départs par page : ',
-    muiTablePaginationOfLabel: 'sur',
-    muiTablePaginationPrevious: 'Aller à la page précédente',
-    muiTablePaginationNext: 'Aller à la page suivante',
-    muiTablePaginationFirst: 'Aller à la première page',
-    muiTablePaginationLast: 'Aller à la dernière page',
     previewModifications: 'Visualiser modifications',
     errPreviewVoltageInitModificationMsg:
         "Une erreur est survenue lors de la récupération des modifications issues de l'initialisation du plan de tension",
@@ -1034,8 +1026,6 @@ const messages_fr = {
     NoFilter: 'Aucun filtre',
     NoFolder: 'Aucun dossier',
     searchPlaceholder: 'Recherche',
-    searchPlaceholderLog: 'Rechercher dans les Logs',
-    searchPlaceholderLogsTreeStructure: "Rechercher dans l'arborescence",
     reportLogsPerPage: 'Logs par page : ',
     GeneratedModification: 'Modification-générée',
     'guidancePopUp.title': 'Sélection sur la carte',
