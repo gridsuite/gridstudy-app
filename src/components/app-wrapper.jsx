@@ -124,6 +124,7 @@ import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag
 import { getBaseVoltagesCssVars } from '../utils/colors.ts';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars.ts';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars.ts';
+import { amber, common, teal } from '@mui/material/colors';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -208,8 +209,8 @@ const lightTheme = createTheme({
         background: '#e6e6e6',
     },
     searchedText: {
-        highlightColor: '#53AAFF',
-        currentHighlightColor: '#FFA853',
+        highlightColor: amber[200],
+        currentHighlightColor: teal[100],
     },
     severityChip: {
         disabledColor: '#EAECED',
@@ -327,8 +328,9 @@ const darkTheme = createTheme({
         background: '#2C2C2C',
     },
     searchedText: {
-        highlightColor: '#123FBB',
-        currentHighlightColor: '#BB8E12',
+        highlightColor: amber[200],
+        currentHighlightColor: teal[100],
+        textColor: common.black,
     },
     severityChip: {
         disabledColor: '#3B434A',

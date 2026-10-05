@@ -10,6 +10,7 @@ import {
     ReportFetcherContext,
     ReportFilterContext,
     FilterConfig,
+    LogType,
     ReportFetcherContextValue,
     ReportFilterContextValue,
     PaginationConfig,
@@ -20,11 +21,10 @@ import { updateColumnFiltersAction } from '../../redux/actions';
 import { getColumnFiltersFromState } from '../../redux/selectors/filter-selectors';
 import { useLogsPagination } from './use-logs-pagination';
 import { useReportFetcher } from '../../hooks/use-report-fetcher';
-import { ComputingAndNetworkModificationType } from '../../utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 
 type ReportViewerProviderProps = PropsWithChildren<{
-    reportType: ComputingAndNetworkModificationType;
+    reportType: LogType;
 }>;
 
 export function ReportViewerProvider({ reportType, children }: ReportViewerProviderProps) {

@@ -93,6 +93,7 @@ declare module '@mui/material/styles' {
         searchedText: {
             highlightColor: string;
             currentHighlightColor: string;
+            textColor?: string;
         };
         severityChip: {
             disabledColor: string;
