@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {ComputingType, RunningStatus} from '@gridsuite/commons-ui';
+import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
 
 export function getLoadFlowRunningStatus(loadFlowStatus: string | null): RunningStatus {
     switch (loadFlowStatus) {
@@ -13,7 +13,7 @@ export function getLoadFlowRunningStatus(loadFlowStatus: string | null): Running
         case 'RUNNING':
             return RunningStatus.RUNNING;
         case 'PRELOADING':
-            return RunningStatus.PRELOADING
+            return RunningStatus.PRELOADING;
         case 'DIVERGED':
         case 'FAILED':
             return RunningStatus.FAILED;
@@ -32,7 +32,7 @@ export function getSecurityAnalysisRunningStatus(securityAnalysisStatus: string 
         case 'RUNNING':
             return RunningStatus.RUNNING;
         case 'PRELOADING':
-            return RunningStatus.PRELOADING
+            return RunningStatus.PRELOADING;
         case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
@@ -46,7 +46,7 @@ export function getSensitivityAnalysisRunningStatus(sensitivityAnalysisStatus: s
         case 'RUNNING':
             return RunningStatus.RUNNING;
         case 'PRELOADING':
-            return RunningStatus.PRELOADING
+            return RunningStatus.PRELOADING;
         case 'FAILED':
             return RunningStatus.FAILED;
         case 'NOT_DONE':
@@ -64,7 +64,7 @@ export function getShortCircuitAnalysisRunningStatus(shortCircuitAnalysisStatus:
         case 'FAILED':
             return RunningStatus.FAILED;
         case 'PRELOADING':
-            return RunningStatus.PRELOADING
+            return RunningStatus.PRELOADING;
         case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
@@ -80,7 +80,7 @@ export function getDynamicSimulationRunningStatus(dynamicSimulationStatus: strin
         case 'RUNNING':
             return RunningStatus.RUNNING;
         case 'PRELOADING':
-            return RunningStatus.PRELOADING
+            return RunningStatus.PRELOADING;
         case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
@@ -96,7 +96,7 @@ export function getDynamicSecurityAnalysisRunningStatus(dynamicSecurityAnalysisS
         case 'RUNNING':
             return RunningStatus.RUNNING;
         case 'PRELOADING':
-            return RunningStatus.PRELOADING
+            return RunningStatus.PRELOADING;
         case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
@@ -112,7 +112,7 @@ export function getDynamicMarginCalculationRunningStatus(dynamicMarginCalculatio
         case 'RUNNING':
             return RunningStatus.RUNNING;
         case 'PRELOADING':
-            return RunningStatus.PRELOADING
+            return RunningStatus.PRELOADING;
         case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
@@ -128,7 +128,7 @@ export function getVoltageInitRunningStatus(voltageInitStatus: string | null): R
         case 'RUNNING':
             return RunningStatus.RUNNING;
         case 'PRELOADING':
-            return RunningStatus.PRELOADING
+            return RunningStatus.PRELOADING;
         case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
@@ -144,7 +144,7 @@ export function getStateEstimationRunningStatus(stateEstimationStatus: string | 
         case 'DIVERGED':
             return RunningStatus.FAILED;
         case 'PRELOADING':
-            return RunningStatus.PRELOADING
+            return RunningStatus.PRELOADING;
         case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
@@ -160,7 +160,7 @@ export function getPccMinRunningStatus(pccMinStatus: string | null): RunningStat
         case 'FAILED':
             return RunningStatus.FAILED;
         case 'PRELOADING':
-            return RunningStatus.PRELOADING
+            return RunningStatus.PRELOADING;
         case 'NOT_DONE':
         default:
             return RunningStatus.IDLE;
