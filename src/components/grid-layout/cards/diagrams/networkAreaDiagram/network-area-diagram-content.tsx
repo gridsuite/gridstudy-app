@@ -52,8 +52,8 @@ import { styles } from '../diagram-styles';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
-import { selectActiveWorkspaceId, selectPanelEditMode } from 'redux/slices/workspace-selectors';
-import type { RootState } from 'redux/store';
+import { selectActiveWorkspaceId, selectPanel, selectPanelEditMode } from 'redux/slices/workspace-selectors';
+import { type RootState, store } from 'redux/store';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { getNadPanelLocalState, saveNadPanelLocalState } from 'redux/session-storage/workspace-local-storage';
 import { DiagramAdditionalMetadata } from '../diagram.type';
@@ -422,8 +422,12 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         return () => {
             globalThis.removeEventListener('workspace:switchWorkspace', saveViewBoxToLocalStorage);
             globalThis.removeEventListener('beforeunload', saveViewBoxToLocalStorage);
+            // Save viewbox on unmount (node not built, fetch error...), unless the panel was closed
+            if (selectPanel(store.getState(), nadPanelId)) {
+                saveViewBoxToLocalStorage();
+            }
         };
-    }, [saveViewBoxToLocalStorage]);
+    }, [saveViewBoxToLocalStorage, nadPanelId]);
     /**
      * DIAGRAM CONTENT BUILDING
      */
