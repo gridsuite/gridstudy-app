@@ -164,7 +164,9 @@ export const GENERATOR = 'generator';
 export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';
 export const ATTACHMENT_POINT_NAME = 'attachmentPointName';
+export const ATTACHMENT_POINT_DETAIL = 'attachmentPointDetail';
 export const ATTACHMENT_LINE_ID = 'attachmentLineId';
+export const ATTACHMENT_LINE = 'attachmentLine';
 export const LINE1_ID = 'Line1Id';
 export const LINE2_ID = 'Line2Id';
 

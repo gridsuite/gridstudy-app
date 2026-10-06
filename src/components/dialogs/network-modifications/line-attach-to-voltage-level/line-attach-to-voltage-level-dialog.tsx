@@ -16,10 +16,7 @@ import {
     lineAttachToVoltageLevelCreationEmptyFormData,
     lineAttachToVoltageLevelCreationFormSchema,
     lineAttachToVoltageLevelCreationFormToDto,
-    lineAttachToVoltageLevelEmptyAttachmentPoint,
     LineAttachToVoltageLevelIllustration,
-    LineCreationDto,
-    LineCreationDtoWithId,
     snackWithFallback,
     useSnackMessage,
     VoltageLevelCreationDto,
@@ -28,14 +25,10 @@ import {
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    ATTACHMENT_LINE_ID,
-    ATTACHMENT_POINT_ID,
-    ATTACHMENT_POINT_NAME,
-    BUS_OR_BUSBAR_SECTION,
+    ATTACHMENT_LINE,
+    ATTACHMENT_POINT_DETAIL,
     CONNECTIVITY,
-    ID,
     SLIDER_PERCENTAGE,
-    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -90,11 +83,7 @@ const LineAttachToVoltageLevelDialog = ({
 }: LineAttachToVoltageLevelDialogProps) => {
     const currentNodeUuid = currentNode?.id;
 
-    const [attachmentLine, setAttachmentLine] = useState<LineCreationDtoWithId | null>(null);
     const [newVoltageLevel, setNewVoltageLevel] = useState<VoltageLevelCreationDto | null>(null);
-    const [attachmentPoint, setAttachmentPoint] = useState<VoltageLevelCreationDto>(
-        lineAttachToVoltageLevelEmptyAttachmentPoint
-    );
 
     const { snackError } = useSnackMessage();
 
@@ -108,17 +97,12 @@ const LineAttachToVoltageLevelDialog = ({
         ),
     });
 
-    const { reset, setValue, getValues, trigger } = formMethods;
+    const { reset } = formMethods;
 
     useEffect(() => {
         if (editData) {
             const formData = lineAttachToVoltageLevelCreationDtoToForm(editData);
             reset(formData);
-
-            setAttachmentLine(editData.attachmentLine ?? null);
-            setAttachmentPoint(
-                editData.attachmentPointDetailInformation ?? lineAttachToVoltageLevelEmptyAttachmentPoint
-            );
 
             const newVoltageLevelInfos = editData.mayNewVoltageLevelInfos;
             if (newVoltageLevelInfos?.sectionCount && newVoltageLevelInfos?.busbarCount) {
@@ -142,18 +126,14 @@ const LineAttachToVoltageLevelDialog = ({
             const currentVoltageLevelId = lineAttach[CONNECTIVITY]?.voltageLevel?.id;
             if (
                 !lineAttach[SLIDER_PERCENTAGE] ||
-                !attachmentPoint ||
-                !attachmentLine ||
+                !lineAttach[ATTACHMENT_POINT_DETAIL] ||
+                !lineAttach[ATTACHMENT_LINE] ||
                 !currentVoltageLevelId ||
                 !bbsOrBusId
             ) {
                 return;
             }
-            const dto = lineAttachToVoltageLevelCreationFormToDto(lineAttach, {
-                attachmentPoint,
-                attachmentLine,
-                newVoltageLevel,
-            });
+            const dto = lineAttachToVoltageLevelCreationFormToDto(lineAttach);
             attachLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -175,7 +155,7 @@ const LineAttachToVoltageLevelDialog = ({
                 snackWithFallback(snackError, error, { headerId: 'LineAttachmentError' });
             });
         },
-        [attachmentLine, attachmentPoint, currentNodeUuid, editData, newVoltageLevel, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     useEffect(() => {
@@ -201,58 +181,6 @@ const LineAttachToVoltageLevelDialog = ({
         reset(lineAttachToVoltageLevelCreationEmptyFormData);
     }, [reset]);
 
-    const onAttachedLineCreated = useCallback(
-        ({ lineCreationInfos }: { lineCreationInfos: LineCreationDto }) => {
-            return new Promise<string>(() => {
-                // clean unused (required) fields by a simple copy with casting
-                const {
-                    type,
-                    equipmentId,
-                    equipmentName,
-                    r,
-                    x,
-                    g1,
-                    b1,
-                    g2,
-                    b2,
-                    operationalLimitsGroups,
-                    selectedOperationalLimitsGroupId1,
-                    selectedOperationalLimitsGroupId2,
-                    properties,
-                } = lineCreationInfos;
-
-                const preparedLine: LineCreationDto = {
-                    type,
-                    equipmentId,
-                    equipmentName,
-                    r,
-                    x,
-                    g1,
-                    b1,
-                    g2,
-                    b2,
-                    operationalLimitsGroups,
-                    selectedOperationalLimitsGroupId1,
-                    selectedOperationalLimitsGroupId2,
-                    properties,
-                } as LineCreationDto;
-
-                setAttachmentLine(preparedLine);
-                setValue(`${ATTACHMENT_LINE_ID}`, preparedLine.equipmentId, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                });
-                // Force the form dirty when attachment line props change but ID does not.
-                // The value itself is never read — any non-empty string would work; we use the
-                // stringified line for parity with onAttachmentPointModified and for debug visibility.
-                setValue('_dirtyTrigger', JSON.stringify(preparedLine), {
-                    shouldDirty: true,
-                });
-            });
-        },
-        [setValue]
-    );
-
     const onNewVoltageLevelCreated = useCallback(
         (preparedVoltageLevel: VoltageLevelCreationDto) => {
             return new Promise<string>(() => {
@@ -276,62 +204,11 @@ const LineAttachToVoltageLevelDialog = ({
                 );
 
                 setVoltageLevelOptions(newVoltageLevelOptions);
-
                 setNewVoltageLevel(preparedVoltageLevel);
-                // The connectivity sub-fields cannot be addressed individually: commons-ui builds their schema with
-                // FieldConstants enum keys, which react-hook-form's path types resolve to never. Set the whole
-                // connectivity instead, then validate the voltage level alone so that emptying the busbar section
-                // does not immediately raise its own "required" error.
-                setValue(
-                    CONNECTIVITY,
-                    {
-                        ...getValues(CONNECTIVITY),
-                        [VOLTAGE_LEVEL]: { [ID]: preparedVoltageLevel.equipmentId },
-                        [BUS_OR_BUSBAR_SECTION]: null,
-                    },
-                    {
-                        shouldDirty: true,
-                    }
-                );
-                trigger(`${CONNECTIVITY}.${VOLTAGE_LEVEL}`);
+                // LineAttachToVoltageLevelCreationForm updates the connectivity field itself.
             });
         },
-        [newVoltageLevel?.equipmentId, voltageLevelOptions, setValue, getValues, trigger]
-    );
-
-    const onAttachmentPointModified = useCallback(
-        (attachmentPointData: VoltageLevelCreationDto) => {
-            return new Promise<string>(() => {
-                setAttachmentPoint(attachmentPointData);
-                setValue(`${ATTACHMENT_POINT_ID}`, attachmentPointData.equipmentId, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                });
-                setValue(`${ATTACHMENT_POINT_NAME}`, attachmentPointData.equipmentName, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                });
-                // this is only used to validate schema if something was changed except ID or NAME and not used elsewhere
-                setValue('_dirtyTrigger', JSON.stringify(attachmentPointData), {
-                    shouldDirty: true,
-                });
-            });
-        },
-        [setValue]
-    );
-
-    const onAttachmentPointIdChanged = useCallback(
-        (value: string) => {
-            setAttachmentPoint((prevAttachmentPoint) => ({ ...prevAttachmentPoint, equipmentId: value }));
-        },
-        [setAttachmentPoint]
-    );
-
-    const onAttachmentPointNameChanged = useCallback(
-        (value: string) => {
-            setAttachmentPoint((prevAttachmentPoint) => ({ ...prevAttachmentPoint, equipmentName: value }));
-        },
-        [setAttachmentPoint]
+        [newVoltageLevel?.equipmentId, voltageLevelOptions]
     );
 
     const AttachmentPointPane: VoltageLevelCreationPaneType = useMemo(
@@ -431,16 +308,9 @@ const LineAttachToVoltageLevelDialog = ({
                     voltageLevelOptions={voltageLevelOptions}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
                     isUpdate={isUpdate}
-                    newVoltageLevel={newVoltageLevel}
                     onNewVoltageLevelCreated={onNewVoltageLevelCreated}
                     NewVoltageLevelPane={NewVoltageLevelPane}
-                    attachmentPoint={attachmentPoint}
-                    onAttachmentPointModified={onAttachmentPointModified}
-                    onAttachmentPointIdChanged={onAttachmentPointIdChanged}
-                    onAttachmentPointNameChanged={onAttachmentPointNameChanged}
                     AttachmentPointPane={AttachmentPointPane}
-                    attachmentLine={attachmentLine}
-                    onAttachedLineCreated={onAttachedLineCreated}
                     AttachedLinePane={AttachedLinePane}
                 />
             </ModificationDialog>
