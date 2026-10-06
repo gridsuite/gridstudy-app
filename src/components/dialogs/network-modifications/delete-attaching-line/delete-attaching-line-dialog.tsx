@@ -5,66 +5,47 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, sanitizeString, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DeleteAttachingLineDto,
+    deleteAttachingLineDtoToForm,
+    deleteAttachingLineEmptyFormData,
+    DeleteAttachingLineForm,
+    deleteAttachingLineFormSchema,
+    DeleteAttachingLineFormData,
+    deleteAttachingLineFormToDto,
+    DeleteAttachingLineIllustration,
+    EquipmentType,
+    Option,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import {
-    ATTACHED_LINE_ID,
-    LINE_TO_ATTACH_TO_1_ID,
-    LINE_TO_ATTACH_TO_2_ID,
-    REPLACING_LINE_1_ID,
-    REPLACING_LINE_1_NAME,
-} from 'components/utils/field-constants';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
 import { ModificationDialog } from '../../commons/modificationDialog';
-import DeleteAttachingLineForm from './delete-attaching-line-form';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { deleteAttachingLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
-import DeleteAttachingLineIllustration from './delete-attaching-line-illustration';
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { UUID } from 'node:crypto';
-import { NetworkModificationData } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
-interface DeleteAttachingLineFormData {
-    [ATTACHED_LINE_ID]: string;
-    [LINE_TO_ATTACH_TO_1_ID]: string;
-    [LINE_TO_ATTACH_TO_2_ID]: string;
-    [REPLACING_LINE_1_ID]: string;
-    [REPLACING_LINE_1_NAME]?: string;
+interface DeleteAttachingLineEditData extends DeleteAttachingLineDto {
+    uuid?: UUID;
 }
 
 interface DeleteAttachingLineDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    editData?: NetworkModificationData;
+    editData?: DeleteAttachingLineEditData;
     isUpdate: boolean;
     editDataFetchStatus: string;
     onClose: () => void;
     onValidated?: () => void;
 }
-
-const emptyFormData: DeleteAttachingLineFormData = {
-    [ATTACHED_LINE_ID]: '',
-    [LINE_TO_ATTACH_TO_1_ID]: '',
-    [LINE_TO_ATTACH_TO_2_ID]: '',
-    [REPLACING_LINE_1_ID]: '',
-    [REPLACING_LINE_1_NAME]: '',
-};
-
-const formSchema = yup
-    .object()
-    .shape({
-        [ATTACHED_LINE_ID]: yup.string().nullable().required(),
-        [LINE_TO_ATTACH_TO_1_ID]: yup.string().nullable().required(),
-        [LINE_TO_ATTACH_TO_2_ID]: yup.string().nullable().required(),
-        [REPLACING_LINE_1_ID]: yup.string().required(),
-        [REPLACING_LINE_1_NAME]: yup.string(),
-    })
-    .required();
 
 /**
  * Dialog to delete attaching line.
@@ -89,9 +70,11 @@ const DeleteAttachingLineDialog = ({
 
     const { snackError } = useSnackMessage();
 
+    const [linesOptions, setLinesOptions] = useState<Option[]>([]);
+
     const formMethods = useForm<DeleteAttachingLineFormData>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        defaultValues: deleteAttachingLineEmptyFormData,
+        resolver: yupResolver(deleteAttachingLineFormSchema),
     });
 
     const { reset } = formMethods;
@@ -102,36 +85,45 @@ const DeleteAttachingLineDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
-    const fromEditDataToFormValues = useCallback(
-        (editData: NetworkModificationData) => {
-            reset({
-                [ATTACHED_LINE_ID]: editData.attachedLineId,
-                [LINE_TO_ATTACH_TO_1_ID]: editData.lineToAttachTo1Id,
-                [LINE_TO_ATTACH_TO_2_ID]: editData.lineToAttachTo2Id,
-                [REPLACING_LINE_1_ID]: editData.replacingLine1Id,
-                [REPLACING_LINE_1_NAME]: editData.replacingLine1Name ?? '',
-            });
-        },
-        [reset]
-    );
-
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            reset(deleteAttachingLineDtoToForm(editData));
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [editData, reset]);
+
+    const loadLineOptions = useCallback(async () => {
+        try {
+            const values = await fetchEquipmentsIds(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                [],
+                EquipmentType.LINE,
+                true
+            );
+            setLinesOptions(values.toSorted((a: string, b: string) => a.localeCompare(b)));
+        } catch (error) {
+            console.error('Failed to fetch line options:', error);
+            setLinesOptions([]);
+        }
+    }, [studyUuid, currentNode.id, currentRootNetworkUuid]);
+
+    useEffect(() => {
+        loadLineOptions();
+    }, [loadLineOptions]);
 
     const onSubmit = useCallback(
         (formData: DeleteAttachingLineFormData) => {
+            const dto = deleteAttachingLineFormToDto(formData);
             deleteAttachingLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData ? editData.uuid : undefined,
-                lineToAttachTo1Id: formData[LINE_TO_ATTACH_TO_1_ID],
-                lineToAttachTo2Id: formData[LINE_TO_ATTACH_TO_2_ID],
-                attachedLineId: formData[ATTACHED_LINE_ID],
-                replacingLine1Id: formData[REPLACING_LINE_1_ID],
-                replacingLine1Name: sanitizeString(formData[REPLACING_LINE_1_NAME] ?? ''),
+                modificationUuid: editData?.uuid,
+                lineToAttachTo1Id: dto.lineToAttachTo1Id,
+                lineToAttachTo2Id: dto.lineToAttachTo2Id,
+                attachedLineId: dto.attachedLineId,
+                replacingLine1Id: dto.replacingLine1Id,
+                replacingLine1Name: dto.replacingLine1Name ?? null,
             }).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'DeleteAttachingLineError' });
             });
@@ -140,11 +132,11 @@ const DeleteAttachingLineDialog = ({
     );
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(deleteAttachingLineEmptyFormData);
     }, [reset]);
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={deleteAttachingLineFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -156,11 +148,7 @@ const DeleteAttachingLineDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <DeleteAttachingLineForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                <DeleteAttachingLineForm lineOptions={linesOptions} />
             </ModificationDialog>
         </CustomFormProvider>
     );
