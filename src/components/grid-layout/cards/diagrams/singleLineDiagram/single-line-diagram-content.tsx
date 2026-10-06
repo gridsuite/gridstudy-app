@@ -125,7 +125,8 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const { launchComputationWithConfirmation, renderComputationLaunchConfirmationDialog } = useLaunchComputationDialog();
+    const { launchComputationWithConfirmation, renderComputationLaunchConfirmationDialog } =
+        useLaunchComputationDialog();
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isEditBlocked = useIsEditBlocked(currentNode?.id);
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();

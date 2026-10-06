@@ -16,7 +16,8 @@ import { LOAD_FLOW_RUNNABLES } from './run-button.constant';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled, canRun = () => true }) => {
     const intl = useIntl();
-    const { launchComputationWithConfirmation, renderComputationLaunchConfirmationDialog } = useLaunchComputationDialog();
+    const { launchComputationWithConfirmation, renderComputationLaunchConfirmationDialog } =
+        useLaunchComputationDialog();
 
     const runnablesText = useMemo(
         () => Object.fromEntries(activeRunnables.map((k) => [k, intl.formatMessage({ id: runnables[k].messageId })])),
