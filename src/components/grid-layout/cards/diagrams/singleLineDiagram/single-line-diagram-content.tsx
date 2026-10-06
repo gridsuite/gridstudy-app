@@ -64,6 +64,7 @@ import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popov
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import useDebugSubscription from '../../../../../hooks/computation-debug/use-debug-subscription';
+import { useLaunchComputationDialog } from 'hooks/use-launch-computation-dialog';
 
 const oneBusLoaderStyle = (theme: Theme) => ({
     display: 'flex',
@@ -124,6 +125,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
+    const { launchComputationWithConfirmation, renderComputationLaunchConfirmationDialog } = useLaunchComputationDialog();
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isEditBlocked = useIsEditBlocked(currentNode?.id);
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
@@ -268,11 +270,18 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         [dispatch, equipmentId, studyUuid, currentNode, currentRootNetworkUuid, snackError, subscribeDebug]
     );
 
+    const handleRunShortcircuitAnalysisWithConfirmation = useCallback(
+        (busId: string, debug: boolean) => {
+            launchComputationWithConfirmation(() => handleRunShortcircuitAnalysis(busId, debug));
+        },
+        [launchComputationWithConfirmation, handleRunShortcircuitAnalysis]
+    );
+
     const displayBusMenu = () => {
         return (
             busMenu.display && (
                 <BusMenu
-                    handleRunShortcircuitAnalysis={handleRunShortcircuitAnalysis}
+                    handleRunShortcircuitAnalysis={handleRunShortcircuitAnalysisWithConfirmation}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     busId={busMenu.busId ?? ''}
                     position={busMenu.position}
@@ -461,6 +470,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
 
     return (
         <>
+            {renderComputationLaunchConfirmationDialog()}
             <Box
                 sx={{
                     height: 2,

@@ -7,22 +7,16 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 import SplitButton from './utils/split-button';
 import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
-import { useSelector } from 'react-redux';
-import { SelectOptionsDialog } from '../utils/dialogs';
-import { DialogContentText } from '@mui/material';
+import { useLaunchComputationDialog } from '../hooks/use-launch-computation-dialog';
 import { LOAD_FLOW_RUNNABLES } from './run-button.constant';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled, canRun = () => true }) => {
     const intl = useIntl();
-    const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
-    const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
-
-    // a transient state which is used only for a run with popup dialog
-    const [runWithDebug, setRunWithDebug] = useState(false);
+    const { launchComputationWithConfirmation, renderComputationLaunchConfirmationDialog } = useLaunchComputationDialog();
 
     const runnablesText = useMemo(
         () => Object.fromEntries(activeRunnables.map((k) => [k, intl.formatMessage({ id: runnables[k].messageId })])),
@@ -103,24 +97,10 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
 
     const attemptStartComputation = useCallback(
         (debug) => {
-            if (isDirtyComputationParameters) {
-                setIsLaunchingPopupOpen(true);
-                setRunWithDebug(debug);
-            } else {
-                runnables[selectedRunnable].startComputation(debug);
-            }
+            launchComputationWithConfirmation(() => runnables[selectedRunnable].startComputation(debug));
         },
-        [isDirtyComputationParameters, runnables, selectedRunnable]
+        [launchComputationWithConfirmation, runnables, selectedRunnable]
     );
-
-    const handleLaunchingPopupClose = useCallback(() => {
-        setIsLaunchingPopupOpen(false);
-    }, []);
-
-    const handleLaunchingPopup = useCallback(() => {
-        setIsLaunchingPopupOpen(false);
-        runnables[selectedRunnable].startComputation(runWithDebug);
-    }, [runnables, selectedRunnable, runWithDebug]);
 
     return (
         <>
@@ -136,18 +116,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                 actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
                 computationStopped={computationStopped}
             />
-            <SelectOptionsDialog
-                title={''}
-                open={isLaunchingPopupOpen}
-                onClose={handleLaunchingPopupClose}
-                onClick={handleLaunchingPopup}
-                child={
-                    <DialogContentText>
-                        <FormattedMessage id="launchComputationConfirmQuestion" />
-                    </DialogContentText>
-                }
-                validateKey={'dialog.button.launch'}
-            />
+            {renderComputationLaunchConfirmationDialog()}
         </>
     );
 };
