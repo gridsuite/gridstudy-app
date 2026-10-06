@@ -1,6 +1,6 @@
 # Creating and integrating SVG illustration files
 
-This guide explains how to create and integrate SVG illustration files for network modification dialogs. These illustrations must:
+This guide explains how to create and integrate SVG illustration files for dialogs. These illustrations must:
 
 - be **translated**: their texts must be updated at load time
 - be **theme-aware**: some sub-objects must be updated depending on the current theme (light/dark)

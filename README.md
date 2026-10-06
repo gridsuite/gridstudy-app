@@ -41,6 +41,6 @@ Notes :
 
 ## Useful technical information
 
-[Spreadsheet view](/src/components/spreadsheet-view/README.md)
+[Spreadsheet view](src/components/spreadsheet-view/README.md)
 
-[Network modifications illustrations](/src/components/dialogs/network-modifications/README.md)
+[Network illustrations](src/components/dialogs/README.md)
