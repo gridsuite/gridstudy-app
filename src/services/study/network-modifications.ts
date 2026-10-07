@@ -44,6 +44,8 @@ import {
     TopologyVoltageLevelModificationDto,
     TabularModificationRow,
     TabularProperty,
+    LccModificationDto,
+    LccHvdcLineCreationDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
@@ -54,8 +56,6 @@ import {
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
-    LCCCreationInfo,
-    LccModificationInfos,
     LinesAttachToSplitLinesInfo,
     NetworkModificationRequestInfos,
     Variations,
@@ -1258,82 +1258,49 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
     });
 }
 
-export function createLcc({
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    nominalV,
-    r,
-    maxP,
-    convertersMode,
-    activePowerSetpoint,
-    converterStation1,
-    converterStation2,
-    properties,
-    isUpdate = false,
-    modificationUuid,
-}: LCCCreationInfo) {
+export function createLcc(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: LccHvdcLineCreationDto
+) {
     let createLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (isUpdate) {
+    if (modificationUuid) {
         createLccUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating lcc hvdc line creation');
     } else {
         console.info('Creating lcc hvdc line creation');
     }
-
     return backendFetchText(createLccUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LCC_CREATION.type,
-            equipmentId: id,
-            equipmentName: name,
-            nominalV: nominalV,
-            r: r,
-            maxP: maxP,
-            convertersMode: convertersMode,
-            activePowerSetpoint: activePowerSetpoint,
-            converterStation1: converterStation1,
-            converterStation2: converterStation2,
-            properties: properties,
-        }),
+        body: JSON.stringify(dto),
     });
 }
 
-export function modifyLcc({
-    lccModificationInfos,
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    isUpdate,
-}: {
-    lccModificationInfos: LccModificationInfos;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid: string | null;
-    isUpdate: boolean;
-}) {
+export function modifyLccHvdcLine(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: LccModificationDto
+) {
     let modifyLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (isUpdate) {
+    if (modificationUuid) {
         modifyLccUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating lcc hvdc line modification');
     } else {
         console.info('Creating lcc hvdc line modification');
     }
-
     return backendFetchText(modifyLccUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(lccModificationInfos),
+        body: JSON.stringify(dto),
     });
 }
 
