@@ -248,6 +248,7 @@ const messages_fr = {
     FetchVoltageLevelsError: 'Une erreur est survenue lors du chargement des postes',
     FetchHvdcLineWithShuntCompensatorsError:
         'Une erreur est survenue lors du chargement des lignes HVDC et des MCS associés',
+    FetchUserQuotaStateError: "Une erreur est survenue lors du chargement des quotas de l'utilisateur",
 
     DynamicSimulationEventPropertyTEvent: "Temps de l'événement",
     DynamicSimulationEventPropertySide: 'Uniquement Côté',
