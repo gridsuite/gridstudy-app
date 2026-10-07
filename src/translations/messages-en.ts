@@ -244,6 +244,7 @@ const messages_en = {
     FetchVoltageLevelsError: 'An error occurred while fetching voltage levels',
     FetchHvdcLineWithShuntCompensatorsError:
         'An error occurred while fetching HVDC lines and related shunt compensators',
+    FetchUserQuotaStateError: 'An error occurred while fetching user quotas',
 
     DynamicSimulationEventPropertyTEvent: 'Event Time',
     DynamicSimulationEventPropertySide: 'Only Side',
