@@ -528,7 +528,7 @@ export function StudyContainer() {
                     snackWithFallback(snackError, error, { headerId: 'NodeUnbuildingError' });
                 });
         },
-        [userName]
+        [userName, snackError]
     );
 
     useNotificationsListener(NotificationsUrlKeys.QUOTA, {
