@@ -57,7 +57,7 @@ const StateEstimationResultTable: FunctionComponent<StateEstimationResultTablePr
 
     //We give each tab its own loader, so we don't have a loader spinning because another tab is still doing some work
     const openLoaderTab = useOpenLoaderShortWait({
-        isLoading: stateEstimationStatus === RunningStatus.RUNNING || isLoadingResult,
+        isLoading: stateEstimationStatus === RunningStatus.RUNNING || stateEstimationStatus === RunningStatus.PRELOADING || isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 

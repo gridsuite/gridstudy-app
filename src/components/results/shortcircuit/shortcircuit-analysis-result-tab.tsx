@@ -156,7 +156,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     }, [AllBusesShortCircuitStatus, OneBusShortCircuitStatus, tabIndex]);
 
     const openLoader = useOpenLoaderShortWait({
-        isLoading: shortCircuitTabIsRunning === RunningStatus.RUNNING,
+        isLoading: shortCircuitTabIsRunning === RunningStatus.RUNNING || shortCircuitTabIsRunning === RunningStatus.PRELOADING,
         delay: RESULTS_LOADING_DELAY,
     });
 

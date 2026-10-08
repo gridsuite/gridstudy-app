@@ -491,7 +491,8 @@ const ParametersTabs: FunctionComponent = () => {
             {
                 value: TAB_VALUES.lfParamsTabValue,
                 labelId: 'LoadFlow',
-                disabled: computationStatus === RunningStatus.RUNNING && tabValue === TAB_VALUES.lfParamsTabValue,
+                disabled: (computationStatus === RunningStatus.RUNNING || computationStatus === RunningStatus.PRELOADING)
+                    && tabValue === TAB_VALUES.lfParamsTabValue,
             },
             {
                 value: TAB_VALUES.securityAnalysisParamsTabValue,

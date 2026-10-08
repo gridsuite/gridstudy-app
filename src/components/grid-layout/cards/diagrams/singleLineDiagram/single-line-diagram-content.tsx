@@ -140,7 +140,8 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         diagramParams.type === DiagramType.VOLTAGE_LEVEL ? diagramParams.voltageLevelId : diagramParams.substationId;
     const isOneBusScRunning = useSelector(
         (state: AppState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS] === RunningStatus.RUNNING &&
+            (state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS] === RunningStatus.RUNNING ||
+                state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS] === RunningStatus.PRELOADING)&&
             state.oneBusShortCircuitAnalysisContext?.equipmentId === equipmentId &&
             state.oneBusShortCircuitAnalysisContext?.nodeId === state.currentTreeNode?.id &&
             state.oneBusShortCircuitAnalysisContext?.rootNetworkUuid === state.currentRootNetworkUuid
@@ -248,7 +249,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
             if (!currentNode || !currentRootNetworkUuid) {
                 return;
             }
-            dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
+            dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.PRELOADING));
             dispatch(setOneBusShortcircuitAnalysisContext(equipmentId, currentRootNetworkUuid, currentNode.id));
             dispatch(setComputationStarting(true));
             startShortCircuitAnalysis(studyUuid, currentNode.id, currentRootNetworkUuid, busId, debug)
