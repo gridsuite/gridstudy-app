@@ -148,8 +148,9 @@ const ParametersTabs: FunctionComponent = () => {
 
     const shouldDisplayGlassPane = useMemo(() => {
         return (
-            computationStatus === RunningStatus.RUNNING ||
-            (tabValue === TAB_VALUES.shortCircuitParamsTabValue && shortCircuitOneBusStatus === RunningStatus.RUNNING)
+            computationStatus === RunningStatus.RUNNING || computationStatus === RunningStatus.PRELOADING ||
+            (tabValue === TAB_VALUES.shortCircuitParamsTabValue &&
+                (shortCircuitOneBusStatus === RunningStatus.RUNNING || shortCircuitOneBusStatus === RunningStatus.PRELOADING))
         );
     }, [computationStatus, shortCircuitOneBusStatus, tabValue]);
 
