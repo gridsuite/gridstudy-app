@@ -25,12 +25,8 @@ export const CASE_NAME = 'caseName';
 export const CASE_ID = 'caseId';
 export const SUBSTATION_ID = 'substationId';
 export const NOMINAL_VOLTAGE = 'nominalVoltage';
-export const NOMINAL_V = 'nominalV';
 export const TOPOLOGY_KIND = 'topologyKind';
 export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
-export const CONNECTION_DIRECTION = 'connectionDirection';
-export const CONNECTION_NAME = 'connectionName';
-export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'terminalConnected';
 export const IS_REMOVED = 'isRemoved';
 export const IS_SEPARATOR = 'isSeparator';
@@ -43,7 +39,6 @@ export const EXPORT_DESTINATION = 'exportDestination';
 export const TYPE = 'type';
 
 export const CHARACTERISTICS = 'characteristics';
-export const R = 'r';
 export const X = 'x';
 export const G = 'g';
 export const B = 'b';
@@ -57,7 +52,6 @@ export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
 export const LINE_SEGMENTS = 'lineSegments';
 
-export const MAX_P = 'maxP';
 export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
 export const TARGET_P = 'targetP';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
@@ -104,9 +98,6 @@ export const REGULATING_TERMINAL_CONNECTABLE_TYPE = 'regulatingTerminalConnectab
 //ShuntCompensator
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
 export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
-export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
-export const SHUNT_COMPENSATOR_ID = 'shuntCompensatorId';
-export const SHUNT_COMPENSATOR_NAME = 'shuntCompensatorName';
 //line
 export const LIMITS = 'limits';
 export const TAB_HEADER = 'tabHeader';
@@ -164,9 +155,7 @@ export const GENERATOR = 'generator';
 export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';
 export const ATTACHMENT_POINT_NAME = 'attachmentPointName';
-export const ATTACHMENT_POINT_DETAIL = 'attachmentPointDetail';
 export const ATTACHMENT_LINE_ID = 'attachmentLineId';
-export const ATTACHMENT_LINE = 'attachmentLine';
 export const LINE1_ID = 'Line1Id';
 export const LINE2_ID = 'Line2Id';
 
@@ -221,8 +210,6 @@ export const DELETION_SPECIFIC_TYPE = 'specificType';
 export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
 export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
 export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
-export const SHUNT_COMPENSATOR_SELECTED = 'connectedToHvdc';
-export const PREVIOUS_SHUNT_COMPENSATOR_SELECTED = 'previousConnectedToHvdc';
 export const PROVIDER = 'provider';
 
 // VSC
@@ -230,20 +217,11 @@ export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
 export const REACTIVE_POWER = 'reactivePower';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 = 'operatorActivePowerLimitSide1';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 = 'operatorActivePowerLimitSide2';
-export const CONVERTERS_MODE = 'convertersMode';
 export const ANGLE_DROOP_ACTIVE_POWER_CONTROL = 'angleDroopActivePowerControl';
 export const P0 = 'p0';
-export const CONVERTER_STATION_ID = 'converterStationId';
-export const CONVERTER_STATION_NAME = 'converterStationName';
-export const LOSS_FACTOR = 'lossFactor';
-export const POWER_FACTOR = 'powerFactor';
 export const VOLTAGE = 'voltage';
-export const HVDC_LINE_TAB = 'hvdcLineTab';
-export const CONVERTER_STATION_1 = 'converterStation1';
-export const CONVERTER_STATION_2 = 'converterStation2';
 
 export const EQUIPMENT_TYPE_FIELD = 'equipmentType';
-export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
 
 /* State estimation parameters fields */
 /* General */

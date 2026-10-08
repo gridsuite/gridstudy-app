@@ -9,6 +9,7 @@ import {
     AttachedLinePaneType,
     CustomFormProvider,
     DeepNullable,
+    FieldConstants,
     LineAttachToVoltageLevelCreationDto,
     LineAttachToVoltageLevelCreationForm,
     LineAttachToVoltageLevelCreationFormData,
@@ -24,13 +25,8 @@ import {
     VoltageLevelOption,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    ATTACHMENT_LINE,
-    ATTACHMENT_POINT_DETAIL,
-    CONNECTIVITY,
-    SLIDER_PERCENTAGE,
-} from 'components/utils/field-constants';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { CONNECTIVITY, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
+import { ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -48,15 +44,11 @@ import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { useLineOptions } from '../../commons/use-line-options';
 
-interface LineAttachEditData extends LineAttachToVoltageLevelCreationDto {
-    uuid?: UUID;
-}
-
 interface LineAttachToVoltageLevelDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    editData?: LineAttachEditData;
+    editData?: LineAttachToVoltageLevelCreationDto;
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;
     onClose: () => void;
@@ -126,32 +118,15 @@ const LineAttachToVoltageLevelDialog = ({
             const currentVoltageLevelId = lineAttach[CONNECTIVITY]?.voltageLevel?.id;
             if (
                 !lineAttach[SLIDER_PERCENTAGE] ||
-                !lineAttach[ATTACHMENT_POINT_DETAIL] ||
-                !lineAttach[ATTACHMENT_LINE] ||
+                !lineAttach[FieldConstants.ATTACHMENT_POINT_DETAIL] ||
+                !lineAttach[FieldConstants.ATTACHMENT_LINE] ||
                 !currentVoltageLevelId ||
                 !bbsOrBusId
             ) {
                 return;
             }
             const dto = lineAttachToVoltageLevelCreationFormToDto(lineAttach);
-            attachLine({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                uuid: editData?.uuid,
-                lineToAttachToId: dto.lineToAttachToId,
-                percent: dto.percent,
-                attachmentPointId: dto.attachmentPointId,
-                attachmentPointName: dto.attachmentPointName ?? null,
-                attachmentPointDetailInformation: dto.attachmentPointDetailInformation,
-                mayNewVoltageLevelInfos: dto.mayNewVoltageLevelInfos ?? undefined,
-                existingVoltageLevelId: dto.existingVoltageLevelId,
-                bbsOrBusId: dto.bbsOrBusId,
-                attachmentLine: dto.attachmentLine,
-                newLine1Id: dto.newLine1Id,
-                newLine1Name: dto.newLine1Name ?? null,
-                newLine2Id: dto.newLine2Id,
-                newLine2Name: dto.newLine2Name ?? null,
-            }).catch((error) => {
+            attachLine(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'LineAttachmentError' });
             });
         },
@@ -247,7 +222,7 @@ const LineAttachToVoltageLevelDialog = ({
                 onCreateVoltageLevel,
                 editData: vlEditData,
                 isUpdate: vlIsUpdate,
-            }) {
+            }: ComponentProps<VoltageLevelCreationPaneType>) {
                 return (
                     <VoltageLevelCreationDialog
                         open={open}
@@ -267,7 +242,12 @@ const LineAttachToVoltageLevelDialog = ({
 
     const AttachedLinePane: AttachedLinePaneType = useMemo(
         () =>
-            function AttachedLinePane({ onClose, onCreateLine, editData: lineEditData, isUpdate: lineIsUpdate }) {
+            function AttachedLinePane({
+                onClose,
+                onCreateLine,
+                editData: lineEditData,
+                isUpdate: lineIsUpdate,
+            }: ComponentProps<AttachedLinePaneType>) {
                 return (
                     <LineCreationDialog
                         onClose={onClose}
