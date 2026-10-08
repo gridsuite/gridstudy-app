@@ -32,15 +32,11 @@ import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { UUID } from 'node:crypto';
 
-interface DeleteAttachingLineEditData extends DeleteAttachingLineDto {
-    uuid?: UUID;
-}
-
 interface DeleteAttachingLineDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    editData?: DeleteAttachingLineEditData;
+    editData?: DeleteAttachingLineDto;
     isUpdate: boolean;
     editDataFetchStatus: string;
     onClose: () => void;
@@ -115,16 +111,7 @@ const DeleteAttachingLineDialog = ({
     const onSubmit = useCallback(
         (formData: DeleteAttachingLineFormData) => {
             const dto = deleteAttachingLineFormToDto(formData);
-            deleteAttachingLine({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
-                lineToAttachTo1Id: dto.lineToAttachTo1Id,
-                lineToAttachTo2Id: dto.lineToAttachTo2Id,
-                attachedLineId: dto.attachedLineId,
-                replacingLine1Id: dto.replacingLine1Id,
-                replacingLine1Name: dto.replacingLine1Name ?? null,
-            }).catch((error) => {
+            deleteAttachingLine(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'DeleteAttachingLineError' });
             });
         },
