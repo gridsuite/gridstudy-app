@@ -244,7 +244,10 @@ function SensitivityAnalysisResult({
     const message = getNoRowsMessage(messages, rows, sensitivityAnalysisStatus, !isLoading);
 
     const openLoader = useOpenLoaderShortWait({
-        isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING || sensitivityAnalysisStatus === RunningStatus.PRELOADING || isLoading,
+        isLoading:
+            sensitivityAnalysisStatus === RunningStatus.RUNNING ||
+            sensitivityAnalysisStatus === RunningStatus.PRELOADING ||
+            isLoading,
         delay: RESULTS_LOADING_DELAY,
     });
 

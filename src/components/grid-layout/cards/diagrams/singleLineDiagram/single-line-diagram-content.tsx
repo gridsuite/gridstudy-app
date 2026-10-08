@@ -141,7 +141,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const isOneBusScRunning = useSelector(
         (state: AppState) =>
             (state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS] === RunningStatus.RUNNING ||
-                state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS] === RunningStatus.PRELOADING)&&
+                state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS] === RunningStatus.PRELOADING) &&
             state.oneBusShortCircuitAnalysisContext?.equipmentId === equipmentId &&
             state.oneBusShortCircuitAnalysisContext?.nodeId === state.currentTreeNode?.id &&
             state.oneBusShortCircuitAnalysisContext?.rootNetworkUuid === state.currentRootNetworkUuid

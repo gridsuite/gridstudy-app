@@ -148,9 +148,11 @@ const ParametersTabs: FunctionComponent = () => {
 
     const shouldDisplayGlassPane = useMemo(() => {
         return (
-            computationStatus === RunningStatus.RUNNING || computationStatus === RunningStatus.PRELOADING ||
+            computationStatus === RunningStatus.RUNNING ||
+            computationStatus === RunningStatus.PRELOADING ||
             (tabValue === TAB_VALUES.shortCircuitParamsTabValue &&
-                (shortCircuitOneBusStatus === RunningStatus.RUNNING || shortCircuitOneBusStatus === RunningStatus.PRELOADING))
+                (shortCircuitOneBusStatus === RunningStatus.RUNNING ||
+                    shortCircuitOneBusStatus === RunningStatus.PRELOADING))
         );
     }, [computationStatus, shortCircuitOneBusStatus, tabValue]);
 
@@ -491,8 +493,9 @@ const ParametersTabs: FunctionComponent = () => {
             {
                 value: TAB_VALUES.lfParamsTabValue,
                 labelId: 'LoadFlow',
-                disabled: (computationStatus === RunningStatus.RUNNING || computationStatus === RunningStatus.PRELOADING)
-                    && tabValue === TAB_VALUES.lfParamsTabValue,
+                disabled:
+                    (computationStatus === RunningStatus.RUNNING || computationStatus === RunningStatus.PRELOADING) &&
+                    tabValue === TAB_VALUES.lfParamsTabValue,
             },
             {
                 value: TAB_VALUES.securityAnalysisParamsTabValue,
