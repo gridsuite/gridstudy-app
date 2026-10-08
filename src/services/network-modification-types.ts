@@ -10,8 +10,6 @@ import { Filter } from '../components/dialogs/network-modifications/by-filter/co
 import {
     AssignmentDataType,
     AssignmentFieldValue,
-    AttributeModification,
-    LineCreationDto,
     ModificationType,
     Property,
     ReactiveCapabilityCurvePoints,
@@ -74,34 +72,6 @@ export interface ConverterStationCreationInfos {
     maxQ: number | null;
 }
 
-export interface LccShuntCompensatorInfos {
-    id: string;
-    name?: string | null;
-    maxQAtNominalV: number;
-    connectedToHvdc?: boolean | null;
-    terminalConnected?: boolean | null;
-    type?: string;
-}
-
-export interface LccShuntCompensatorModificationInfos extends LccShuntCompensatorInfos {
-    deletionMark: boolean;
-}
-
-export interface LCCCreationConverterStation {
-    type: string;
-    equipmentId: string;
-    equipmentName?: string;
-    lossFactor: number;
-    powerFactor: number;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    connectionName?: string | null;
-    connectionDirection: string;
-    connectionPosition?: number;
-    terminalConnected?: boolean;
-    shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
-}
-
 export interface Assignment {
     dataType?: AssignmentDataType;
     value?: AssignmentFieldValue;
@@ -129,25 +99,6 @@ export interface DivideLineInfo {
     mayNewVoltageLevelInfos: VoltageLevelCreationDto | null;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
-    newLine1Id: string;
-    newLine1Name: string | null;
-    newLine2Id: string;
-    newLine2Name: string | null;
-}
-
-export interface AttachLineInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    uuid?: UUID;
-    lineToAttachToId: string;
-    percent: number;
-    attachmentPointId: string;
-    attachmentPointName: string | null;
-    attachmentPointDetailInformation: VoltageLevelCreationDto;
-    mayNewVoltageLevelInfos?: VoltageLevelCreationDto;
-    existingVoltageLevelId: string;
-    bbsOrBusId: string;
-    attachmentLine: LineCreationDto;
     newLine1Id: string;
     newLine1Name: string | null;
     newLine2Id: string;
@@ -198,47 +149,6 @@ export interface VscCreationInfos {
     converterStation1: ConverterStationCreationInfos;
     converterStation2: ConverterStationCreationInfos;
     properties: Property[] | null;
-}
-
-export interface LCCCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name?: string | null;
-    nominalV: number;
-    r: number;
-    maxP: number;
-    convertersMode: string;
-    activePowerSetpoint: number;
-    converterStation1: LCCCreationConverterStation;
-    converterStation2: LCCCreationConverterStation;
-    properties?: Property[] | null;
-    isUpdate: boolean;
-    modificationUuid?: string;
-}
-
-export interface LccConverterStationModificationInfos {
-    type: string;
-    equipmentId: string;
-    equipmentName: AttributeModification<string> | null;
-    lossFactor: AttributeModification<number> | null;
-    powerFactor: AttributeModification<number> | null;
-    shuntCompensatorsOnSide: LccShuntCompensatorModificationInfos[];
-}
-
-export interface LccModificationInfos {
-    uuid: string | null;
-    type: string;
-    equipmentId: string;
-    equipmentName: AttributeModification<string> | null;
-    nominalV: AttributeModification<number> | null;
-    r: AttributeModification<number> | null;
-    maxP: AttributeModification<number> | null;
-    convertersMode: AttributeModification<string> | null;
-    activePowerSetpoint: AttributeModification<number> | null;
-    converterStation1: LccConverterStationModificationInfos;
-    converterStation2: LccConverterStationModificationInfos;
-    properties?: Property[] | null;
 }
 
 export interface CreateVoltageLevelTopologyInfos {
