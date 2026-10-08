@@ -6,7 +6,7 @@
  */
 
 import { FC } from 'react';
-import GenericIllustrationNetworkModification from 'components/dialogs/illustrations/generic-Illustration-network-modification';
+import { GenericIllustrationNetworkModification } from '@gridsuite/commons-ui';
 import DeleteAttachingLine from '../../../../images/network-modifications/illustrations/delete-attaching-line-illustration.svg?react';
 
 const replacedTexts = [

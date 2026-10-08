@@ -604,8 +604,6 @@ const messages_fr = {
     LineAttachToVoltageLevel: 'Créer un piquage',
     LinesAttachToSplitLines: 'Transformer un piquage en coupure',
     BusbarOrNodeID: 'ID SJB ou nœud',
-    Line1: 'Liaison côté 1',
-    Line2: 'Liaison côté 2',
     ReplacingLine1: 'Liaison de remplacement 1',
     ReplacingLine2: 'Liaison de remplacement 2',
     VoltageLevelToSplitAt: 'Poste en coupure',
@@ -622,12 +620,9 @@ const messages_fr = {
     AttachedLine: 'Liaison de piquage',
     LineAttached: 'Liaison de piquage',
     ReplacingLines: 'Liaisons de remplacement',
-    ReplacingLineId: 'ID liaison de remplacement',
-    ReplacingLineName: 'Nom liaison de remplacement',
     LineDivisionError: "Erreur lors de la création d'une coupure",
     LineAttachmentError: "Erreur lors de la création d'un piquage",
     LoadScalingError: 'Erreur lors de la création de la variation du plan de consommation',
-    DeleteVoltageLevelOnLineError: "Erreur lors de la suppression d'une coupure",
     DeleteAttachingLineError: "Erreur lors de la suppression d'un piquage",
     GenerationDispatchError: 'Erreur lors de la création du démarrage de groupes',
     lineAttachedToSplitLineVoltageLevel: 'Poste en piquage à passer en coupure',
@@ -780,7 +775,6 @@ const messages_fr = {
     ConstantQWithoutUnit: 'Q constant',
     Variations: 'Variations',
     LoadScaling: 'Variation plan de consommation',
-    DeleteVoltageLevelOnLine: 'Supprimer une coupure',
     DeleteAttachingLine: 'Supprimer un piquage',
     LossCoefficient: 'Coefficient de pertes',
     ReduceMaxP: 'Abattement Pmax',
@@ -793,7 +787,6 @@ const messages_fr = {
     GeneratorsFiltersFrequencyReserveToolTip:
         'Les saisies sont appliquées dans l’ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si un groupe est inclus dans plusieurs filtres)',
     GeneratorsOrdering: 'Hiérarchie des sites',
-    ReplacingLine: 'Liaison de remplacement',
 
     NetworkEquipmentNotFound: 'L\'ouvrage "{equipmentId}" n\'existe pas dans ce réseau',
 
