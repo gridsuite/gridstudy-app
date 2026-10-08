@@ -12,6 +12,7 @@ import {
     CheckBoxList,
     NetworkModificationMetadata,
     snackWithFallback,
+    toMessageValues,
     useModificationLabelComputer,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -77,12 +78,10 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
         if (!modif) {
             return '';
         }
-        // the applicabilities are not message values
-        const { applicabilityByRootNetworkTag, ...messageValues } = modif;
         return intl.formatMessage(
             { id: 'network_modifications.' + modif.messageType },
             {
-                ...messageValues,
+                ...toMessageValues(modif),
                 ...computeLabel(modif),
             }
         );

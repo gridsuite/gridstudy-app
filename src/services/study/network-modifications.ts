@@ -47,7 +47,7 @@ import {
     LccModificationDto,
     LccHvdcLineCreationDto,
 } from '@gridsuite/commons-ui';
-import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
@@ -1556,28 +1556,6 @@ export function shareCompositeModification(
         modificationUuid
     )}/share?${new URLSearchParams({ name, description, parentDirectoryUuid }).toString()}`;
     return backendFetch(url, { method: 'POST' });
-}
-
-export function getNetworkModificationsFromComposite(
-    compositeModificationUuids: string[],
-    onlyMetadata: boolean = true
-): Promise<Record<UUID, NetworkModificationMetadata[]>> {
-    const urlSearchParams = new URLSearchParams();
-    compositeModificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
-    urlSearchParams.append('onlyMetadata', String(onlyMetadata));
-    const url =
-        PREFIX_STUDY_QUERIES +
-        '/v1/network-composite-modifications/network-modifications?' +
-        urlSearchParams.toString();
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function hasModificationReferences(containerUuids: UUID[]): Promise<boolean> {
-    const params = new URLSearchParams();
-    containerUuids.forEach((uuid) => params.append('uuids', uuid));
-    const url = `${PREFIX_STUDY_QUERIES}/v1/containers/references/exists?${params.toString()}`;
-    return backendFetchJson(url);
 }
 
 export function hasSharedModifications(studyUuid: UUID): Promise<boolean> {
