@@ -116,7 +116,7 @@ const LinesAttachToSplitLinesDialog = ({
                 modificationUuid: editData?.uuid,
                 isUpdate: !!editData,
             }).catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'LineAttachmentError' });
+                snackWithFallback(snackError, error, { headerId: 'LinesAttachToSplitLinesError' });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError]
