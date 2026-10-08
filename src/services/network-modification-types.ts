@@ -10,7 +10,6 @@ import { Filter } from '../components/dialogs/network-modifications/by-filter/co
 import {
     AssignmentDataType,
     AssignmentFieldValue,
-    LineCreationDto,
     ModificationType,
     Property,
     ReactiveCapabilityCurvePoints,
@@ -100,25 +99,6 @@ export interface DivideLineInfo {
     mayNewVoltageLevelInfos: VoltageLevelCreationDto | null;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
-    newLine1Id: string;
-    newLine1Name: string | null;
-    newLine2Id: string;
-    newLine2Name: string | null;
-}
-
-export interface AttachLineInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    uuid?: UUID;
-    lineToAttachToId: string;
-    percent: number;
-    attachmentPointId: string;
-    attachmentPointName: string | null;
-    attachmentPointDetailInformation: VoltageLevelCreationDto;
-    mayNewVoltageLevelInfos?: VoltageLevelCreationDto;
-    existingVoltageLevelId: string;
-    bbsOrBusId: string;
-    attachmentLine: LineCreationDto;
     newLine1Id: string;
     newLine1Name: string | null;
     newLine2Id: string;
