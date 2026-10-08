@@ -11,10 +11,13 @@ import {
     AssignmentDataType,
     AssignmentFieldValue,
     AttributeModification,
+    BalanceType,
     LineCreationDto,
     ModificationType,
     Property,
     ReactiveCapabilityCurvePoints,
+    ShiftEquipmentType,
+    ShiftType,
     VoltageLevelCreationDto,
 } from '@gridsuite/commons-ui';
 import { VARIATION_TYPES } from '../components/network/constants';
@@ -278,23 +281,6 @@ export type NetworkModificationRequestInfos = {
     nodeUuid: UUID;
     modificationUuid?: UUID;
 };
-
-export enum ShiftEquipmentType {
-    LOAD = 'LOAD',
-    GENERATOR = 'GENERATOR',
-}
-
-export enum ShiftType {
-    PROPORTIONAL = 'PROPORTIONAL',
-    BALANCED = 'BALANCED',
-}
-
-export enum BalanceType {
-    PROPORTIONAL_TO_GENERATION_P = 'PROPORTIONAL_TO_GENERATION_P',
-    PROPORTIONAL_TO_GENERATION_P_MAX = 'PROPORTIONAL_TO_GENERATION_P_MAX',
-    PROPORTIONAL_TO_LOAD = 'PROPORTIONAL_TO_LOAD',
-    PROPORTIONAL_TO_CONFORM_LOAD = 'PROPORTIONAL_TO_CONFORM_LOAD',
-}
 
 export type BalancesAdjustmentZoneInfos = {
     name: string;

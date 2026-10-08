@@ -312,23 +312,6 @@ export const TO_BE_ESTIMATED = 'toBeEstimated';
 export const RATIO_TAP_CHANGER_STATUS = 'ratioTapChangerStatus';
 export const PHASE_TAP_CHANGER_STATUS = 'phaseTapChangerStatus';
 
-// BALANCES ADJUSTMENT
-export const BALANCES_ADJUSTMENT = 'balancesAdjustment';
-export const BALANCES_ADJUSTMENT_ZONES = 'balancesAdjustmentZones';
-export const BALANCES_ADJUSTMENT_ZONE = 'balancesAdjustmentZone';
-export const BALANCES_ADJUSTMENT_COUNTRIES = 'balancesAdjustmentCountries';
-export const BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE = 'balancesAdjustmentShiftEquipmentType';
-export const BALANCES_ADJUSTMENT_SHIFT_TYPE = 'balancesAdjustmentShfttType';
-export const BALANCES_ADJUSTMENT_TARGET = 'balancesAdjustmentTarget';
-export const BALANCES_ADJUSTMENT_ADVANCED = 'balancesAdjustmentAdvanced';
-export const BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS = 'balancesAdjustmentMaxNumberIterations';
-export const BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION = 'balancesAdjustmentThresholdNetPosition';
-export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCountriesToBalance';
-export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
-export const BALANCES_ADJUSTMENT_WITH_LOAD_FLOW = 'balancesAdjustmentWithLoadFlow';
-export const BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS = 'balancesAdjustmentWithRatioTapChangers';
-export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustmentSubtractLoadFlowBalancing';
-
 // move connections
 export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
 
