@@ -447,6 +447,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {isNmkTab && (
                     <SecurityAnalysisResultNmk
                         result={result}
+                        count={count}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
                         onGridReady={onGridReady}
                         nmkType={nmkType}
