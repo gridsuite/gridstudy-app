@@ -598,8 +598,6 @@ const messages_en = {
     BusbarOrNodeID: 'Bus bar section / bus',
     Line1: 'Line 1',
     Line2: 'Line 2',
-    ReplacingLine1: 'Replacing line 1',
-    ReplacingLine2: 'Replacing line 2',
     VoltageLevelToSplitAt: 'Voltage level to split at',
     Line1ID: 'Line 1 ID',
     Line2ID: 'Line 2 ID',

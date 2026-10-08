@@ -606,8 +606,6 @@ const messages_fr = {
     BusbarOrNodeID: 'ID SJB ou nœud',
     Line1: 'Liaison côté 1',
     Line2: 'Liaison côté 2',
-    ReplacingLine1: 'Liaison de remplacement 1',
-    ReplacingLine2: 'Liaison de remplacement 2',
     VoltageLevelToSplitAt: 'Poste en coupure',
     Line1ID: 'ID liaison côté 1',
     Line2ID: 'ID liaison côté 2',
