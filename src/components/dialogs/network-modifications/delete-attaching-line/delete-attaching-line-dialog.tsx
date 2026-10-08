@@ -87,26 +87,14 @@ const DeleteAttachingLineDialog = ({
         }
     }, [editData, reset]);
 
-    const loadLineOptions = useCallback(async () => {
-        try {
-            const values = await fetchEquipmentsIds(
-                studyUuid,
-                currentNode.id,
-                currentRootNetworkUuid,
-                [],
-                EquipmentType.LINE,
-                true
-            );
-            setLinesOptions(values.toSorted((a: string, b: string) => a.localeCompare(b)));
-        } catch (error) {
-            console.error('Failed to fetch line options:', error);
-            setLinesOptions([]);
-        }
-    }, [studyUuid, currentNode.id, currentRootNetworkUuid]);
-
     useEffect(() => {
-        loadLineOptions();
-    }, [loadLineOptions]);
+        fetchEquipmentsIds(studyUuid, currentNode.id, currentRootNetworkUuid, [], EquipmentType.LINE, true)
+            .then((values: string[]) => setLinesOptions(values.toSorted((a, b) => a.localeCompare(b))))
+            .catch((error: unknown) => {
+                snackWithFallback(snackError, error, { headerId: 'DeleteAttachingLineError' });
+                setLinesOptions([]);
+            });
+    }, [studyUuid, currentNode.id, currentRootNetworkUuid, snackError]);
 
     const onSubmit = useCallback(
         (formData: DeleteAttachingLineFormData) => {
