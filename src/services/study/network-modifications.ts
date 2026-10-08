@@ -9,6 +9,7 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    DeleteAttachingLineDto,
     EquipmentDeletionDto,
     EquipmentInfos,
     LineAttachToVoltageLevelCreationDto,
@@ -54,7 +55,6 @@ import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/c
 import type { UUID } from 'node:crypto';
 import {
     BalancesAdjustmentInfos,
-    DeleteAttachingLineInfo,
     DivideLineInfo,
     LinesAttachToSplitLinesInfo,
     NetworkModificationRequestInfos,
@@ -1087,24 +1087,13 @@ export function deleteVoltageLevelOnLine(
     });
 }
 
-export function deleteAttachingLine({
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    lineToAttachTo1Id,
-    lineToAttachTo2Id,
-    attachedLineId,
-    replacingLine1Id,
-    replacingLine1Name,
-}: DeleteAttachingLineInfo) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type,
-        lineToAttachTo1Id,
-        lineToAttachTo2Id,
-        attachedLineId,
-        replacingLine1Id,
-        replacingLine1Name,
-    });
+export function deleteAttachingLine(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: string | undefined,
+    deleteAttachingLineDto: DeleteAttachingLineDto
+) {
+    const body = JSON.stringify(deleteAttachingLineDto);
 
     let deleteVoltageLevelOnLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {

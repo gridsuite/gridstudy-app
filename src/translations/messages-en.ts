@@ -620,7 +620,6 @@ const messages_en = {
     LineAttachmentError: 'Error while attaching a voltage level to a line',
     LoadScalingError: 'Error while creating a load scaling',
     DeleteVoltageLevelOnLineError: 'Error while deleting a voltage level on a line',
-    DeleteAttachingLineError: 'Error while deleting an attaching line',
     lineAttachedToSplitLineVoltageLevel: 'Voltage level with attached line to place as splitter',
 
     permanentCurrentLimitMandatory:
@@ -768,7 +767,6 @@ const messages_en = {
     Variations: 'Variations',
     LoadScaling: 'Load scaling',
     DeleteVoltageLevelOnLine: 'Delete a voltage level on a line',
-    DeleteAttachingLine: 'Delete attaching line',
     ReplacingLine: 'Replacing line',
 
     NetworkEquipmentNotFound: 'The equipment "{equipmentId}" does not exist in this network',

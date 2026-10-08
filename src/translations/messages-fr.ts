@@ -628,7 +628,6 @@ const messages_fr = {
     LineAttachmentError: "Erreur lors de la création d'un piquage",
     LoadScalingError: 'Erreur lors de la création de la variation du plan de consommation',
     DeleteVoltageLevelOnLineError: "Erreur lors de la suppression d'une coupure",
-    DeleteAttachingLineError: "Erreur lors de la suppression d'un piquage",
     lineAttachedToSplitLineVoltageLevel: 'Poste en piquage à passer en coupure',
 
     permanentCurrentLimitMandatory:
@@ -780,7 +779,6 @@ const messages_fr = {
     Variations: 'Variations',
     LoadScaling: 'Variation plan de consommation',
     DeleteVoltageLevelOnLine: 'Supprimer une coupure',
-    DeleteAttachingLine: 'Supprimer un piquage',
     ReplacingLine: 'Liaison de remplacement',
 
     NetworkEquipmentNotFound: 'L\'ouvrage "{equipmentId}" n\'existe pas dans ce réseau',
