@@ -594,7 +594,6 @@ const messages_en = {
 
     LineSplitWithVoltageLevel: 'Create a voltage level on a line',
     LineAttachToVoltageLevel: 'Attach a line to another line',
-    LinesAttachToSplitLines: 'Attaching lines to splitting lines',
     LineToAttachTo: 'Existing line',
     BusbarOrNodeID: 'Bus bar section / bus',
     Line1: 'Line 1',
@@ -617,7 +616,6 @@ const messages_en = {
     AttachedLine: 'Attached line',
     LineAttached: 'Attached line',
     AttachedLineId: 'Attached line ID',
-    ReplacingLines: 'Replacing lines',
     ReplacingLineId: 'ID replacing line',
     ReplacingLineName: 'Name replacing line',
     LineDivisionError: 'Error while puting a voltage level amidst a line',
@@ -626,7 +624,6 @@ const messages_en = {
     DeleteVoltageLevelOnLineError: 'Error while deleting a voltage level on a line',
     DeleteAttachingLineError: 'Error while deleting an attaching line',
     GenerationDispatchError: 'Error while creating a generation dispatch',
-    lineAttachedToSplitLineVoltageLevel: 'Voltage level with attached line to place as splitter',
 
     permanentCurrentLimitMandatory:
         'A permanent limit has to be set if the limit set contains temporary current limits',

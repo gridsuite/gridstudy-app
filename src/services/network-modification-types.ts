@@ -125,21 +125,6 @@ export interface AttachLineInfo {
     newLine2Name: string | null;
 }
 
-export interface LinesAttachToSplitLinesInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    uuid?: UUID;
-    lineToAttachTo1Id: string;
-    lineToAttachTo2Id: string;
-    attachedLineId: string;
-    voltageLevelId: string | null;
-    bbsBusId: string | null;
-    replacingLine1Id: string;
-    replacingLine1Name: string | null;
-    replacingLine2Id: string;
-    replacingLine2Name: string | null;
-}
-
 export interface DeleteAttachingLineInfo {
     studyUuid: string;
     nodeUuid: UUID;

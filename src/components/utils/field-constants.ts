@@ -178,11 +178,8 @@ export const SPECIFIC_METADATA = 'specificMetadata';
 
 export const ATTACHED_LINE_ID = 'attachedLineId';
 export const VOLTAGE_LEVEL_ID = 'voltageLevelId';
-export const BUS_BAR_SECTION_ID = 'bbsBusId';
 export const REPLACING_LINE_1_ID = 'replacingLine1Id';
-export const REPLACING_LINE_2_ID = 'replacingLine2Id';
 export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
-export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
 
 // generation dispatch
 export const LOSS_COEFFICIENT = 'lossCoefficient';

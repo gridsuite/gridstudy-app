@@ -602,7 +602,6 @@ const messages_fr = {
 
     LineSplitWithVoltageLevel: 'Créer une coupure',
     LineAttachToVoltageLevel: 'Créer un piquage',
-    LinesAttachToSplitLines: 'Transformer un piquage en coupure',
     LineToAttachTo: 'Liaison piquée',
     BusbarOrNodeID: 'ID SJB ou nœud',
     Line1: 'Liaison côté 1',
@@ -625,7 +624,6 @@ const messages_fr = {
     AttachedLine: 'Liaison de piquage',
     LineAttached: 'Liaison de piquage',
     AttachedLineId: 'ID liaison de piquage',
-    ReplacingLines: 'Liaisons de remplacement',
     ReplacingLineId: 'ID liaison de remplacement',
     ReplacingLineName: 'Nom liaison de remplacement',
     LineDivisionError: "Erreur lors de la création d'une coupure",
@@ -634,7 +632,6 @@ const messages_fr = {
     DeleteVoltageLevelOnLineError: "Erreur lors de la suppression d'une coupure",
     DeleteAttachingLineError: "Erreur lors de la suppression d'un piquage",
     GenerationDispatchError: 'Erreur lors de la création du démarrage de groupes',
-    lineAttachedToSplitLineVoltageLevel: 'Poste en piquage à passer en coupure',
 
     permanentCurrentLimitMandatory:
         "Un IST doit être fourni si le jeu de limites contient des limites d'intensité temporaires",
