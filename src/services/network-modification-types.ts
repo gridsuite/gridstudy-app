@@ -15,7 +15,6 @@ import {
     ReactiveCapabilityCurvePoints,
     VoltageLevelCreationDto,
 } from '@gridsuite/commons-ui';
-import { VARIATION_TYPES } from '../components/network/constants';
 
 export interface WithModificationId {
     uuid: UUID;
@@ -27,31 +26,6 @@ export type VoltageLevelCreationInfo = VoltageLevelCreationDto & {
     isUpdate?: boolean;
     modificationUuid?: UUID;
 };
-
-type VariationFilter = {
-    id: string;
-    name: string;
-    specificMetadata: { type: string };
-};
-
-export type VariationType = keyof typeof VARIATION_TYPES;
-
-export interface ItemFilterType {
-    type?: string;
-    specificMetadata?: {
-        type?: string;
-        filterEquipmentsAttributes?: {
-            distributionKey?: number;
-        }[];
-    };
-}
-
-export interface Variations {
-    variationMode: string | null;
-    variationValue: number | null;
-    reactiveVariationMode: string | null;
-    filters: VariationFilter[];
-}
 
 export interface ConverterStationCreationInfos {
     equipmentId: string;
