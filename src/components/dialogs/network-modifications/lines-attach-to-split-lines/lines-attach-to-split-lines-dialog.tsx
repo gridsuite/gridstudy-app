@@ -9,7 +9,6 @@
 import {
     CustomFormProvider,
     DeepNullable,
-    EquipmentType,
     LineAttachToSplitLinesIllustration,
     LinesAttachToSplitLinesFormData,
     LinesAttachToSplittingLinesDto,
@@ -18,12 +17,11 @@ import {
     LinesAttachToSplittingLinesForm,
     linesAttachToSplittingLinesFormSchema,
     linesAttachToSplittingLinesFormToDto,
-    Option,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
@@ -33,7 +31,7 @@ import { linesAttachToSplitLines } from '../../../../services/study/network-modi
 import { FetchStatus } from 'services/utils.type';
 import type { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { UUID } from 'node:crypto';
-import { fetchEquipmentsIds } from '../../../../services/study/network-map';
+import { useLineOptions } from '../../commons/use-line-options';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network';
 import useVoltageLevelsListInfos from '../../../../hooks/use-voltage-levels-list-infos';
 
@@ -67,7 +65,6 @@ const LinesAttachToSplitLinesDialog = ({
 }: Readonly<LinesAttachToSplitLinesProps>) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const [lineOptions, setLineOptions] = useState<Option[]>([]);
 
     const formMethods = useForm<DeepNullable<LinesAttachToSplitLinesFormData>>({
         defaultValues: linesAttachToSplittingLinesEmptyFormData,
@@ -77,14 +74,7 @@ const LinesAttachToSplitLinesDialog = ({
     const { reset } = formMethods;
 
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
-
-    useEffect(() => {
-        fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, [], EquipmentType.LINE, true).then(
-            (values: string[]) => {
-                setLineOptions(values?.toSorted((a, b) => a.localeCompare(b)));
-            }
-        );
-    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
+    const lineOptions = useLineOptions(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const fetchBusesOrBusbarSections = useCallback(
         (voltageLevelId: string) =>
