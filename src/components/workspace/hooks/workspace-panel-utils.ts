@@ -85,7 +85,7 @@ export const createNADPanel = ({
     navigationHistory,
     nadConfigUuid,
     filterUuid,
-    currentFilterUuid,
+    filterName,
     position,
     size,
 }: {
@@ -94,7 +94,7 @@ export const createNADPanel = ({
     navigationHistory?: string[];
     nadConfigUuid?: UUID;
     filterUuid?: UUID;
-    currentFilterUuid?: UUID;
+    filterName?: string;
     position?: { x: number; y: number };
     size?: { width: number; height: number };
 }): NADPanel => {
@@ -107,7 +107,7 @@ export const createNADPanel = ({
         navigationHistory: navigationHistory || [],
         ...(nadConfigUuid && { nadConfigUuid }),
         ...(filterUuid && { filterUuid }),
-        ...(currentFilterUuid && { currentFilterUuid }),
+        ...(filterName && { filterName }),
         ...(position && { position }),
         ...(size && { size }),
     };

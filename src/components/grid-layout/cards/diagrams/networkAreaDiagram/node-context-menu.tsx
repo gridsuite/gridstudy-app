@@ -35,6 +35,7 @@ interface ContextMenuProps {
     onExpandItem: (id: string) => void;
     onHideItem: (id: string) => void;
     selectedItemId: string | undefined;
+    isExpandDisabled?: boolean;
 }
 
 const NodeContextMenu: React.FC<ContextMenuProps> = ({
@@ -44,6 +45,7 @@ const NodeContextMenu: React.FC<ContextMenuProps> = ({
     onExpandItem,
     onHideItem,
     selectedItemId,
+    isExpandDisabled,
 }) => {
     const intl = useIntl();
 
@@ -71,7 +73,7 @@ const NodeContextMenu: React.FC<ContextMenuProps> = ({
             }
             sx={styles.menu}
         >
-            <CustomMenuItem sx={styles.customMenuItem} onClick={handleExpandClick}>
+            <CustomMenuItem sx={styles.customMenuItem} onClick={handleExpandClick} disabled={isExpandDisabled}>
                 <ListItemIcon>
                     <AddLocationOutlined />
                 </ListItemIcon>

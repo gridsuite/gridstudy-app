@@ -27,6 +27,8 @@ import {
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { FormattedMessage } from 'react-intl';
 import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import { Point } from '@svgdotjs/svg.js';
@@ -43,10 +45,11 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import DiagramControls from './diagram-controls';
-import { createDiagramConfig, updateDiagramConfig } from 'services/explore';
+import { createDiagramConfig, type DiagramConfigPosition, updateDiagramConfig } from 'services/explore';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
+import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { styles } from '../diagram-styles';
 import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popover';
@@ -57,12 +60,10 @@ import { type RootState, store } from 'redux/store';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { getNadPanelLocalState, saveNadPanelLocalState } from 'redux/session-storage/workspace-local-storage';
 import { DiagramAdditionalMetadata } from '../diagram.type';
+import { type NadEdit, NadEditType, type NadHistory } from 'components/workspace/diagrams/nad/nad-edit-history';
 
 type NetworkAreaDiagramContentProps = {
     readonly nadPanelId: UUID;
-    readonly voltageLevelIds: string[];
-    readonly voltageLevelToExpandIds: string[];
-    readonly voltageLevelToOmitIds: string[];
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly svg?: string;
     readonly svgMetadata?: DiagramMetadata;
@@ -72,32 +73,26 @@ type NetworkAreaDiagramContentProps = {
     readonly hiddenInfoSelectors?: string[];
     readonly areVoltageLevelNamesHidden?: boolean;
     readonly loadingState: boolean;
-    readonly isNadCreationFromFilter: boolean;
+    readonly filterUuid?: UUID;
+    readonly filterName?: string;
+    readonly isFilterDeleted: boolean;
+    readonly hasHiddenVoltageLevels: boolean;
     readonly visible: boolean;
     readonly onVoltageLevelClick: (voltageLevelId: string) => void;
-    readonly onUpdateVoltageLevels: (params: {
-        voltageLevelIds: string[];
-        voltageLevelToExpandIds: string[];
-        voltageLevelToOmitIds: string[];
-    }) => void;
-    readonly onUpdateVoltageLevelsFromFilter: (filterUuid: UUID) => void;
-    readonly onMoveNode: (voltageLevelId: string, x: number, y: number) => void;
-    readonly onMoveTextNode: (voltageLevelId: string, shiftX: number, shiftY: number) => void;
+    readonly onEdit: (edit: NadEdit) => void;
     readonly onReplaceNad: (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => void;
+    readonly editHistory: NadHistory;
+    readonly onRestoreHistoryState: (target: number) => DiagramConfigPosition[];
 };
 
 const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const {
         visible,
-        voltageLevelIds,
-        voltageLevelToExpandIds,
-        voltageLevelToOmitIds,
         onVoltageLevelClick,
-        onUpdateVoltageLevels,
-        onUpdateVoltageLevelsFromFilter,
-        onMoveNode,
-        onMoveTextNode,
+        onEdit,
         onReplaceNad,
+        editHistory,
+        onRestoreHistoryState,
         nadPanelId,
         svg,
         svgMetadata,
@@ -107,10 +102,13 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         hiddenInfoSelectors,
         areVoltageLevelNamesHidden,
         loadingState,
-        isNadCreationFromFilter,
+        filterUuid,
+        filterName,
+        isFilterDeleted,
+        hasHiddenVoltageLevels,
         showInSpreadsheet,
     } = props;
-    const svgRef = useRef(null);
+    const svgRef = useRef<HTMLDivElement>(null);
     const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>(null);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
@@ -140,8 +138,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         studyUuid,
         currentNode,
         currentRootNetworkUuid,
-        onMoveNode,
-        onMoveTextNode,
+        onEdit,
     };
     const latestRef = useRef(latestValues);
     latestRef.current = latestValues;
@@ -151,7 +148,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     );
     // Update drag interaction without full viewer reinitialization
     if (diagramViewerRef.current) {
-        diagramViewerRef.current.enableDragInteraction = isEditNadMode;
+        diagramViewerRef.current.enableDragInteraction = isEditNadMode && !loadingState;
     }
 
     const handleToggleEditNadMode = useCallback(
@@ -304,65 +301,50 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         }
     );
 
-    const handleAddVoltageLevel = useCallback(
-        (voltageLevelIdToAdd: string) => {
-            if (voltageLevelIds.includes(voltageLevelIdToAdd)) {
-                return;
-            }
-            onUpdateVoltageLevels({
-                voltageLevelIds: [...voltageLevelIds, voltageLevelIdToAdd],
-                voltageLevelToExpandIds,
-                voltageLevelToOmitIds: voltageLevelToOmitIds.filter((id) => id !== voltageLevelIdToAdd),
-            });
-        },
-        [voltageLevelIds, voltageLevelToExpandIds, voltageLevelToOmitIds, onUpdateVoltageLevels]
-    );
-
-    const handleAddVoltageLevelsFromFilter = useCallback(
-        (filterUuid: UUID) => {
-            onUpdateVoltageLevelsFromFilter(filterUuid);
-        },
-        [onUpdateVoltageLevelsFromFilter]
-    );
-
     const handleExpandVoltageLevelId = useCallback(
-        (voltageLevelIdToExpand: string) => {
-            onUpdateVoltageLevels({
-                voltageLevelIds: voltageLevelIds.filter((id) => id !== voltageLevelIdToExpand),
-                voltageLevelToExpandIds: [...voltageLevelToExpandIds, voltageLevelIdToExpand],
-                voltageLevelToOmitIds,
-            });
-        },
-        [voltageLevelIds, voltageLevelToExpandIds, voltageLevelToOmitIds, onUpdateVoltageLevels]
+        (voltageLevelId: string) => onEdit({ type: NadEditType.EXPAND, voltageLevelId }),
+        [onEdit]
     );
-
-    const handleExpandAllVoltageLevels = useCallback(() => {
-        onUpdateVoltageLevels({
-            voltageLevelIds: [],
-            voltageLevelToExpandIds: [...voltageLevelIds],
-            voltageLevelToOmitIds,
-        });
-    }, [voltageLevelIds, voltageLevelToOmitIds, onUpdateVoltageLevels]);
 
     const handleHideVoltageLevelId = useCallback(
-        (voltageLevelIdToOmit: string) => {
-            onUpdateVoltageLevels({
-                voltageLevelIds: voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
-                voltageLevelToExpandIds,
-                voltageLevelToOmitIds: [...voltageLevelToOmitIds, voltageLevelIdToOmit],
-            });
-        },
-        [voltageLevelIds, voltageLevelToExpandIds, voltageLevelToOmitIds, onUpdateVoltageLevels]
+        (voltageLevelId: string) => onEdit({ type: NadEditType.HIDE, voltageLevelId }),
+        [onEdit]
     );
 
     const handleMoveNode = useEffectEvent((equipmentId: string, nodeId: string, x: number, y: number) => {
-        latestRef.current.onMoveNode(equipmentId, x, y);
+        latestRef.current.onEdit({
+            type: NadEditType.MOVE_NODE,
+            voltageLevelId: equipmentId,
+            position: { xPosition: x, yPosition: y },
+        });
     });
 
     const handleMoveTextnode = useEffectEvent(
         (equipmentId: string, vlNodeId: string, textNodeId: string, shiftX: number, shiftY: number) => {
-            latestRef.current.onMoveTextNode(equipmentId, shiftX, shiftY);
+            latestRef.current.onEdit({
+                type: NadEditType.MOVE_LABEL,
+                voltageLevelId: equipmentId,
+                position: { xLabelPosition: shiftX, yLabelPosition: shiftY },
+            });
         }
+    );
+
+    // When only nodes or labels moved, they are moved back without drawing/fetching again
+    const handleRestoreHistoryState = useCallback(
+        (target: number) => {
+            const diagramViewer = diagramViewerRef.current;
+            onRestoreHistoryState(target).forEach(
+                ({ voltageLevelId, xPosition, yPosition, xLabelPosition, yLabelPosition }) => {
+                    if (xPosition !== undefined && yPosition !== undefined) {
+                        diagramViewer?.moveNodeToCoordinates(voltageLevelId, xPosition, yPosition);
+                    }
+                    if (xLabelPosition !== undefined && yLabelPosition !== undefined) {
+                        diagramViewer?.moveTextNodeToCoordinates(voltageLevelId, xLabelPosition, yLabelPosition, 0, 0);
+                    }
+                }
+            );
+        },
+        [onRestoreHistoryState]
     );
 
     const handleReplaceNadConfig = useCallback(
@@ -467,6 +449,10 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
 
             // We keep a reference of the diagram viewer to get its viewbox for the next render.
             diagramViewerRef.current = diagramViewer;
+        } else if (!svg && svgRef.current) {
+            // Empty diagram: the previous one is cleared
+            svgRef.current.replaceChildren();
+            diagramViewerRef.current = null;
         }
     }, [svg, svgMetadata, nadPanelId, loadingState]);
 
@@ -537,6 +523,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     onExpandItem={handleExpandVoltageLevelId}
                     onHideItem={handleHideVoltageLevelId}
                     selectedItemId={selectedVoltageLevelId}
+                    isExpandDisabled={isFilterDeleted}
                 />
             )}
             <Box
@@ -551,19 +538,33 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                     hiddenInfosSx
                 )}
             />
+            {!svg && !loadingState && (
+                <Box sx={styles.emptyDiagram}>
+                    {isFilterDeleted ? (
+                        <AlertCustomMessageNode message={{ descriptor: { id: 'nadDeletedFilterMessage' } }} noMargin />
+                    ) : (
+                        <Typography variant="body2" color="text.secondary">
+                            <FormattedMessage id="nadEmpty" />
+                        </Typography>
+                    )}
+                </Box>
+            )}
             <DiagramControls
                 onSave={handleSaveNadConfig}
                 onUpdate={handleUpdateNadConfig}
                 onLoad={handleReplaceNadConfig}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={handleToggleEditNadMode}
-                onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
-                onAddVoltageLevel={handleAddVoltageLevel}
-                onAddVoltageLevelsFromFilter={handleAddVoltageLevelsFromFilter}
+                onEdit={onEdit}
                 isDiagramLoading={loadingState}
-                isNadCreationFromFilter={isNadCreationFromFilter}
+                filterUuid={filterUuid}
+                filterName={filterName}
+                isFilterDeleted={isFilterDeleted}
+                hasHiddenVoltageLevels={hasHiddenVoltageLevels}
                 svgVoltageLevels={svgVoltageLevels}
                 onFocusVoltageLevel={handleFocusVoltageLevel}
+                editHistory={editHistory}
+                onRestoreHistoryState={handleRestoreHistoryState}
             />
             {renderEquipmentMenu()}
             {renderModificationDialog()}

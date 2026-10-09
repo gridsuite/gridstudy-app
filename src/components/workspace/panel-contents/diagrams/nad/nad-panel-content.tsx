@@ -40,7 +40,17 @@ export const NadPanelContent = memo(function NadPanelContent({
     const [voltageSelection, setVoltageSelection] = useNadPanelLocalState(panelId, 'selectedNominalVoltages');
     const resetVoltageSelection = useCallback(() => setVoltageSelection(undefined), [setVoltageSelection]);
 
-    const { diagram, loading, globalError, editDiagram, replaceNadConfig, moveNode, moveTextNode } = useNadDiagram({
+    const {
+        diagram,
+        shownVoltageLevelIds,
+        isFilterDeleted,
+        loading,
+        globalError,
+        editDiagram,
+        replaceNadConfig,
+        history,
+        restoreHistoryState,
+    } = useNadDiagram({
         panelId,
         studyUuid,
         currentNodeId,
@@ -69,13 +79,6 @@ export const NadPanelContent = memo(function NadPanelContent({
         [panelId, addToNadNavigationHistory, associateVoltageLevelWithNad]
     );
 
-    const handleUpdateVoltageLevelsFromFilter = useCallback(
-        (filterUuid?: UUID) => {
-            editDiagram({ currentFilterUuid: filterUuid });
-        },
-        [editDiagram]
-    );
-
     return (
         <Box sx={{ display: 'flex', height: '100%' }}>
             <Box
@@ -87,26 +90,25 @@ export const NadPanelContent = memo(function NadPanelContent({
             >
                 <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
                     <NetworkAreaDiagramContent
-                        voltageLevelIds={diagram.voltageLevelIds}
-                        voltageLevelToExpandIds={diagram.voltageLevelToExpandIds}
-                        voltageLevelToOmitIds={diagram.voltageLevelToOmitIds}
                         showInSpreadsheet={handleShowInSpreadsheet}
                         svg={diagram.svg?.svg ?? undefined}
                         svgMetadata={diagram.svg?.metadata ?? undefined}
                         additionalMetadata={diagram.svg?.additionalMetadata ?? undefined}
-                        svgVoltageLevels={diagram.voltageLevelIds}
+                        svgVoltageLevels={shownVoltageLevelIds}
                         hiddenVoltageBands={unselectedVlNames}
                         hiddenInfoSelectors={hiddenInfoSelectors}
                         areVoltageLevelNamesHidden={false}
                         loadingState={loading}
-                        isNadCreationFromFilter={!!diagram.filterUuid}
+                        filterUuid={diagram.filterUuid}
+                        filterName={diagram.filterName}
+                        isFilterDeleted={isFilterDeleted}
+                        hasHiddenVoltageLevels={diagram.voltageLevelToOmitIds.length > 0}
                         visible
                         onVoltageLevelClick={handleVoltageLevelClick}
-                        onUpdateVoltageLevels={editDiagram}
-                        onUpdateVoltageLevelsFromFilter={handleUpdateVoltageLevelsFromFilter}
-                        onMoveNode={moveNode}
-                        onMoveTextNode={moveTextNode}
+                        onEdit={editDiagram}
                         onReplaceNad={replaceNadConfig}
+                        editHistory={history}
+                        onRestoreHistoryState={restoreHistoryState}
                         nadPanelId={panelId}
                     />
                 </DiagramWrapper>
