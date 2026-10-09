@@ -23,18 +23,16 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import type { UUID } from 'node:crypto';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FetchStatus } from '../../../../services/utils';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
-import { BalancesAdjustmentZoneInfos } from '../../../../services/network-modification-types';
 import { balancesAdjustment } from 'services/study/network-modifications';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { getLoadFlowParametersId } from 'services/study/loadflow';
 
 export type BalancesAdjustmentDialogProps = NetworkModificationDialogProps & {
-    editData: BalancesAdjustmentDto & { uuid?: UUID };
+    editData: BalancesAdjustmentDto;
 };
 
 export function BalancesAdjustmentDialog({
@@ -77,19 +75,9 @@ export function BalancesAdjustmentDialog({
                 const dto = balancesAdjustmentFormToDto(form, null);
                 const loadFlowParametersId = dto.withLoadFlow ? await getLoadFlowParametersId(studyUuid) : null;
 
-                await balancesAdjustment({
-                    studyUuid: studyUuid,
-                    nodeUuid: currentNodeUuid,
-                    modificationUuid: editData?.uuid ?? undefined,
-                    maxNumberIterations: dto.maxNumberIterations,
-                    thresholdNetPosition: dto.thresholdNetPosition,
-                    countriesToBalance: dto.countriesToBalance,
-                    balanceType: dto.balanceType,
-                    withLoadFlow: dto.withLoadFlow,
-                    withRatioTapChangers: dto.withRatioTapChangers,
+                await balancesAdjustment(studyUuid, currentNodeUuid, editData?.uuid, {
+                    ...dto,
                     loadFlowParametersId,
-                    subtractLoadFlowBalancing: dto.subtractLoadFlowBalancing,
-                    areas: dto.areas satisfies BalancesAdjustmentZoneInfos[],
                 });
             } catch (error) {
                 snackWithFallback(snackError, error, {
