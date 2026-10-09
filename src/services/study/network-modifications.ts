@@ -9,8 +9,10 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    DeleteAttachingLineDto,
     EquipmentDeletionDto,
     EquipmentInfos,
+    LineAttachToVoltageLevelCreationDto,
     LoadCreationDto,
     LoadModificationDto,
     MODIFICATION_TYPES,
@@ -52,9 +54,7 @@ import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './in
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import {
-    AttachLineInfo,
     BalancesAdjustmentInfos,
-    DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchModificationInfos,
     NetworkModificationRequestInfos,
@@ -934,41 +934,12 @@ export function divideLine({
     });
 }
 
-export function attachLine({
-    studyUuid,
-    nodeUuid,
-    uuid,
-    lineToAttachToId,
-    percent,
-    attachmentPointId,
-    attachmentPointName,
-    attachmentPointDetailInformation,
-    mayNewVoltageLevelInfos,
-    existingVoltageLevelId,
-    bbsOrBusId,
-    attachmentLine,
-    newLine1Id,
-    newLine1Name,
-    newLine2Id,
-    newLine2Name,
-}: AttachLineInfo) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type,
-        lineToAttachToId,
-        percent,
-        attachmentPointId,
-        attachmentPointName,
-        attachmentPointDetailInformation,
-        mayNewVoltageLevelInfos,
-        existingVoltageLevelId,
-        bbsOrBusId,
-        attachmentLine,
-        newLine1Id,
-        newLine1Name,
-        newLine2Id,
-        newLine2Name,
-    });
-
+export function attachLine(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    uuid: string | undefined,
+    attachLineDto: LineAttachToVoltageLevelCreationDto
+) {
     let lineAttachUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (uuid) {
         lineAttachUrl += '/' + encodeURIComponent(uuid);
@@ -983,7 +954,7 @@ export function attachLine({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body,
+        body: JSON.stringify(attachLineDto),
     });
 }
 
@@ -1117,24 +1088,13 @@ export function deleteVoltageLevelOnLine(
     });
 }
 
-export function deleteAttachingLine({
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    lineToAttachTo1Id,
-    lineToAttachTo2Id,
-    attachedLineId,
-    replacingLine1Id,
-    replacingLine1Name,
-}: DeleteAttachingLineInfo) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type,
-        lineToAttachTo1Id,
-        lineToAttachTo2Id,
-        attachedLineId,
-        replacingLine1Id,
-        replacingLine1Name,
-    });
+export function deleteAttachingLine(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: string | undefined,
+    deleteAttachingLineDto: DeleteAttachingLineDto
+) {
+    const body = JSON.stringify(deleteAttachingLineDto);
 
     let deleteVoltageLevelOnLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
