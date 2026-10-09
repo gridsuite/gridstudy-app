@@ -75,8 +75,8 @@ const GeneratorScalingDialog = ({
     const onSubmit = useCallback(
         (formData: VariationScalingFormData) => {
             const dto = generatorScalingFormToDto(formData);
-            generatorScaling(studyUuid, currentNodeUuid, editData?.uuid ?? undefined, dto).catch((errorMessage) => {
-                snackWithFallback(snackError, errorMessage, { headerId: 'GeneratorScalingError' });
+            generatorScaling(studyUuid, currentNodeUuid, editData?.uuid ?? undefined, dto).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'GeneratorScalingError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]
