@@ -248,6 +248,15 @@ export function setShortCircuitParameters(studyUuid: UUID, newParams: any) {
     });
 }
 
+export function resetShortCircuitParameters(studyUuid: UUID) {
+    console.info('reset short circuit parameters');
+    const setShortCircuitParametersUrl = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters/reset';
+    console.debug(setShortCircuitParametersUrl);
+    return backendFetch(setShortCircuitParametersUrl, {
+        method: 'POST',
+    });
+}
+
 export function getShortCircuitParameters(studyUuid: UUID) {
     console.info('get short circuit parameters');
     const getScParams = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';

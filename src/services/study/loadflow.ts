@@ -23,6 +23,15 @@ export function setLoadFlowParameters(studyUuid: UUID, newParams: any) {
     });
 }
 
+export function resetLoadFlowParameters(studyUuid: UUID) {
+    console.info('reset load flow parameters');
+    const setLoadFlowParametersUrl = getStudyUrl(studyUuid) + '/loadflow/parameters/reset';
+    console.debug(setLoadFlowParametersUrl);
+    return backendFetch(setLoadFlowParametersUrl, {
+        method: 'POST',
+    });
+}
+
 export function getLoadFlowParameters(studyUuid: UUID) {
     console.info('get load flow parameters');
     const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';

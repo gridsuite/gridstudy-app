@@ -87,6 +87,16 @@ export function updateStateEstimationParameters(studyUuid: UUID | null, newParam
     });
 }
 
+export function resetStateEstimationParameters(studyUuid: UUID | null) {
+    console.info('reset state estimation parameters');
+    const url = getStudyUrl(studyUuid) + '/state-estimation/parameters/reset';
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'POST',
+    });
+}
+
 export function getStateEstimationStudyParameters(studyUuid: UUID) {
     console.info('get state estimation study parameters');
     const getStateEstimParams = getStudyUrl(studyUuid) + '/state-estimation/parameters';
