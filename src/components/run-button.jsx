@@ -33,6 +33,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                 return Object.values(runnablesText);
             case RunningStatus.RUNNING:
                 return Array.of(intl.formatMessage({ id: 'StopComputation' }));
+            case RunningStatus.PRELOADING:
             default:
                 return [];
         }
@@ -40,7 +41,11 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
 
     // only one computation can run at a time on a node, so we can take the first running one found
     const runningRunnable = useMemo(
-        () => activeRunnables.find((runnable) => getStatus(runnable) === RunningStatus.RUNNING),
+        () =>
+            activeRunnables.find((runnable) => {
+                const status = getStatus(runnable);
+                return status === RunningStatus.RUNNING || status === RunningStatus.PRELOADING;
+            }),
         [activeRunnables, getStatus]
     );
 
@@ -60,6 +65,9 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
 
     function isButtonDisable() {
         if (!canRun(selectedRunnable)) {
+            return true;
+        }
+        if (getRunningStatus() === RunningStatus.PRELOADING) {
             return true;
         }
 
@@ -112,7 +120,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                 onClick={attemptStartComputation}
                 runningStatus={getRunningStatus()}
                 buttonDisabled={disabled || isButtonDisable()}
-                selectionDisabled={disabled}
+                selectionDisabled={disabled || getRunningStatus() === RunningStatus.PRELOADING}
                 text={runnablesText[selectedRunnable] || ''}
                 actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
                 computationStopped={computationStopped}
