@@ -6,122 +6,36 @@
  */
 
 import {
-    addSelectedFieldToRows,
     CustomFormProvider,
     DeepNullable,
-    NORMALIZED_PERCENTAGE,
+    EquipmentType,
+    GenerationDispatchDto,
+    generationDispatchDtoToForm,
+    generationDispatchEmptyFormData,
+    GenerationDispatchForm,
+    GenerationDispatchFormData,
+    generationDispatchFormSchema,
+    generationDispatchFormToDto,
     snackWithFallback,
     useSnackMessage,
-    YUP_REQUIRED,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import {
-    DEFAULT_OUTAGE_RATE,
-    FREQUENCY_RESERVE,
-    GENERATORS_FILTERS,
-    GENERATORS_FREQUENCY_RESERVES,
-    GENERATORS_WITH_FIXED_ACTIVE_POWER,
-    GENERATORS_WITHOUT_OUTAGE,
-    ID,
-    LOSS_COEFFICIENT,
-    NAME,
-    SUBSTATION_IDS,
-    SUBSTATIONS_GENERATORS_ORDERING,
-} from 'components/utils/field-constants';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { ModificationDialog } from '../../commons/modificationDialog';
-import GenerationDispatchForm from './generation-dispatch-form';
 import { generationDispatch } from '../../../../services/study/network-modifications';
-import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { UUID } from 'node:crypto';
 import { FetchStatus } from 'services/utils.type';
-import { GenerationDispatchModificationInfos } from '../../../../services/network-modification-types';
+import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
+import { WithModificationId } from '../../../../services/network-modification-types';
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
-interface GenerationDispatchProps {
-    editData: GenerationDispatchModificationInfos;
-    currentNode: CurrentTreeNode;
-    studyUuid: UUID;
-    currentRootNetworkUuid: UUID;
-    isUpdate: boolean;
-    editDataFetchStatus: FetchStatus;
-}
+interface GenerationDispatchDtoWithId extends GenerationDispatchDto, WithModificationId {}
 
-const emptyFormData = {
-    [LOSS_COEFFICIENT]: null,
-    [DEFAULT_OUTAGE_RATE]: null,
-    [GENERATORS_WITHOUT_OUTAGE]: [],
-    [GENERATORS_WITH_FIXED_ACTIVE_POWER]: [],
-    [GENERATORS_FREQUENCY_RESERVES]: [],
-    [SUBSTATIONS_GENERATORS_ORDERING]: [],
+type GenerationDispatchProps = NetworkModificationDialogProps & {
+    editData?: GenerationDispatchDtoWithId;
 };
-
-const getGeneratorsFiltersSchema = () => {
-    return yup.array().of(
-        yup.object().shape({
-            [ID]: yup.string().required(),
-            [NAME]: yup.string().required(),
-        })
-    );
-};
-
-const getGeneratorsFrequencyReserveSchema = () => {
-    return yup.array().of(
-        yup.object().shape({
-            [GENERATORS_FILTERS]: yup
-                .array()
-                .of(
-                    yup.object().shape({
-                        [ID]: yup.string().required(),
-                        [NAME]: yup.string().required(),
-                    })
-                )
-                .min(1, YUP_REQUIRED)
-                .required(),
-            [FREQUENCY_RESERVE]: yup
-                .number()
-                .nullable()
-                .min(0, NORMALIZED_PERCENTAGE)
-                .max(100, NORMALIZED_PERCENTAGE)
-                .required(),
-        })
-    );
-};
-
-const getSubstationsGeneratorsOrderingSchema = () => {
-    return yup.array().of(
-        yup.object().shape({
-            [SUBSTATION_IDS]: yup.array().of(yup.string().required()).min(1, YUP_REQUIRED).required(),
-        })
-    );
-};
-
-const formSchema = yup
-    .object()
-    .shape({
-        [LOSS_COEFFICIENT]: yup
-            .number()
-            .nullable()
-            .min(0, NORMALIZED_PERCENTAGE)
-            .max(100, NORMALIZED_PERCENTAGE)
-            .required(),
-        [DEFAULT_OUTAGE_RATE]: yup
-            .number()
-            .nullable()
-            .min(0, NORMALIZED_PERCENTAGE)
-            .max(100, NORMALIZED_PERCENTAGE)
-            .required(),
-        [GENERATORS_WITHOUT_OUTAGE]: getGeneratorsFiltersSchema(),
-        [GENERATORS_WITH_FIXED_ACTIVE_POWER]: getGeneratorsFiltersSchema(),
-        [GENERATORS_FREQUENCY_RESERVES]: getGeneratorsFrequencyReserveSchema(),
-        [SUBSTATIONS_GENERATORS_ORDERING]: getSubstationsGeneratorsOrderingSchema(),
-    })
-    .required();
-
-type GenerationDispatchFormInfos = yup.InferType<typeof formSchema>;
 
 const GenerationDispatchDialog = ({
     editData,
@@ -133,60 +47,47 @@ const GenerationDispatchDialog = ({
     ...dialogProps
 }: Readonly<GenerationDispatchProps>) => {
     const currentNodeUuid = currentNode?.id;
+    const [substations, setSubstations] = useState<string[]>([]);
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<DeepNullable<GenerationDispatchFormInfos>>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<GenerationDispatchFormInfos>>(formSchema),
+    const formMethods = useForm<DeepNullable<GenerationDispatchFormData>>({
+        defaultValues: generationDispatchEmptyFormData,
+        resolver: yupResolver<DeepNullable<GenerationDispatchFormData>>(generationDispatchFormSchema),
     });
 
     const { reset } = formMethods;
 
-    const fromEditDataToFormValues = useCallback(
-        (generation: GenerationDispatchModificationInfos) => {
-            reset({
-                [LOSS_COEFFICIENT]: generation.lossCoefficient,
-                [DEFAULT_OUTAGE_RATE]: generation.defaultOutageRate,
-                [GENERATORS_WITHOUT_OUTAGE]: generation.generatorsWithoutOutage,
-                [GENERATORS_WITH_FIXED_ACTIVE_POWER]: generation.generatorsWithFixedSupply,
-                [GENERATORS_FREQUENCY_RESERVES]: generation.generatorsFrequencyReserve
-                    ? addSelectedFieldToRows(generation.generatorsFrequencyReserve)
-                    : [],
-                [SUBSTATIONS_GENERATORS_ORDERING]: generation.substationsGeneratorsOrdering
-                    ? addSelectedFieldToRows(generation.substationsGeneratorsOrdering)
-                    : [],
-            });
-        },
-        [reset]
-    );
-
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            reset(generationDispatchDtoToForm(editData));
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [reset, editData]);
+
+    useEffect(() => {
+        if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
+            fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, [], EquipmentType.SUBSTATION, true)
+                .then((values: string[]) => {
+                    setSubstations(values.toSorted((a, b) => a.localeCompare(b)));
+                })
+                .catch((error: unknown) => {
+                    snackWithFallback(snackError, error, { headerId: 'equipmentsLoadingError' });
+                    setSubstations([]);
+                });
+        }
+    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid, snackError]);
 
     const onSubmit = useCallback(
-        (generation: GenerationDispatchFormInfos) => {
-            generationDispatch({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                uuid: editData?.uuid,
-                lossCoefficient: generation.lossCoefficient,
-                defaultOutageRate: generation.defaultOutageRate,
-                generatorsWithoutOutage: generation[GENERATORS_WITHOUT_OUTAGE] ?? null,
-                generatorsWithFixedSupply: generation[GENERATORS_WITH_FIXED_ACTIVE_POWER] ?? null,
-                generatorsFrequencyReserve: generation[GENERATORS_FREQUENCY_RESERVES] ?? null,
-                substationsGeneratorsOrdering: generation[SUBSTATIONS_GENERATORS_ORDERING] ?? null,
-            }).catch((error) => {
+        (form: GenerationDispatchFormData) => {
+            const dto = generationDispatchFormToDto(form);
+            generationDispatch(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: Error) => {
                 snackWithFallback(snackError, error, { headerId: 'GenerationDispatchError' });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData?.uuid, studyUuid, currentNodeUuid, snackError]
     );
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(generationDispatchEmptyFormData);
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
@@ -196,7 +97,7 @@ const GenerationDispatchDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider validationSchema={generationDispatchFormSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -207,11 +108,7 @@ const GenerationDispatchDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <GenerationDispatchForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
+                <GenerationDispatchForm substationsIds={substations} />
             </ModificationDialog>
         </CustomFormProvider>
     );

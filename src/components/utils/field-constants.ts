@@ -169,22 +169,8 @@ export const SPECIFIC_METADATA = 'specificMetadata';
 
 export const ATTACHED_LINE_ID = 'attachedLineId';
 export const VOLTAGE_LEVEL_ID = 'voltageLevelId';
-export const BUS_BAR_SECTION_ID = 'bbsBusId';
 export const REPLACING_LINE_1_ID = 'replacingLine1Id';
-export const REPLACING_LINE_2_ID = 'replacingLine2Id';
 export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
-export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
-
-// generation dispatch
-export const LOSS_COEFFICIENT = 'lossCoefficient';
-export const DEFAULT_OUTAGE_RATE = 'defaultOutageRate';
-export const GENERATORS_WITHOUT_OUTAGE = 'generatorsWithoutOutage';
-export const GENERATORS_WITH_FIXED_ACTIVE_POWER = 'generatorsWithFixedActivePower';
-export const GENERATORS_FREQUENCY_RESERVES = 'generatorsFrequencyReserve';
-export const GENERATORS_FILTERS = 'generatorsFilters';
-export const FREQUENCY_RESERVE = 'frequencyReserve';
-export const SUBSTATIONS_GENERATORS_ORDERING = 'substationsGeneratorsOrdering';
-export const SUBSTATION_IDS = 'substationIds';
 
 export const SELECTION_TYPE = 'selectionType';
 
@@ -196,14 +182,6 @@ export const CONTAINER_NAME = 'containerName';
 export const RATIO_TAP_CHANGER_POSITION = 'ratioTapChangerPosition';
 export const RATIO_TAP_CHANGER_TARGET_V = 'ratioTapChangerTargetV';
 export const LEG_SIDE = 'legSide';
-
-// HVDC deletion
-export const DELETION_SPECIFIC_DATA = 'equipmentInfos';
-export const DELETION_SPECIFIC_TYPE = 'specificType';
-export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
-export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
-export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
-export const PROVIDER = 'provider';
 
 // VSC
 export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
@@ -266,22 +244,6 @@ export const AREA_INVALIDATIONS = 'areaInvalidations';
 export const INVALIDATE = 'invalidate';
 export const FILTER = 'filter';
 export const INVALIDATION_TYPE = 'invalidationType';
-
-/* State estimation extensions */
-export const STATE_ESTIMATION = 'stateEstimation';
-// Measurements common to Branch (line/2wt)
-export const MEASUREMENT_P1 = 'measurementP1';
-export const MEASUREMENT_P2 = 'measurementP2';
-export const MEASUREMENT_Q1 = 'measurementQ1';
-export const MEASUREMENT_Q2 = 'measurementQ2';
-// Measurements common for the rest of the equipments
-export const MEASUREMENT_P = 'measurementP';
-export const MEASUREMENT_Q = 'measurementQ';
-export const VALIDITY = 'validity';
-// toBeEstimated specific to 2WT
-export const TO_BE_ESTIMATED = 'toBeEstimated';
-export const RATIO_TAP_CHANGER_STATUS = 'ratioTapChangerStatus';
-export const PHASE_TAP_CHANGER_STATUS = 'phaseTapChangerStatus';
 
 // BALANCES ADJUSTMENT
 export const BALANCES_ADJUSTMENT = 'balancesAdjustment';
