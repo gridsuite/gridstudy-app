@@ -65,18 +65,16 @@ const GenerationDispatchDialog = ({
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                currentRootNetworkUuid,
-                [],
-                EquipmentType.SUBSTATION,
-                true
-            ).then((values: string[]) => {
-                setSubstations(values.toSorted((a, b) => a.localeCompare(b)));
-            });
+            fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, [], EquipmentType.SUBSTATION, true)
+                .then((values: string[]) => {
+                    setSubstations(values.toSorted((a, b) => a.localeCompare(b)));
+                })
+                .catch((error: unknown) => {
+                    snackWithFallback(snackError, error, { headerId: 'equipmentsLoadingError' });
+                    setSubstations([]);
+                });
         }
-    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
+    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid, snackError]);
 
     const onSubmit = useCallback(
         (form: GenerationDispatchFormData) => {
