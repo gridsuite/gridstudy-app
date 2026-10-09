@@ -616,7 +616,6 @@ const messages_en = {
     LineAttachmentError: 'Error while attaching a voltage level to a line',
     LoadScalingError: 'Error while creating a load scaling',
     DeleteVoltageLevelOnLineError: 'Error while deleting a voltage level on a line',
-    GenerationDispatchError: 'Error while creating a generation dispatch',
 
     permanentCurrentLimitMandatory:
         'A permanent limit has to be set if the limit set contains temporary current limits',

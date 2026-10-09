@@ -624,7 +624,6 @@ const messages_fr = {
     LineAttachmentError: "Erreur lors de la création d'un piquage",
     LoadScalingError: 'Erreur lors de la création de la variation du plan de consommation',
     DeleteVoltageLevelOnLineError: "Erreur lors de la suppression d'une coupure",
-    GenerationDispatchError: 'Erreur lors de la création du démarrage de groupes',
 
     permanentCurrentLimitMandatory:
         "Un IST doit être fourni si le jeu de limites contient des limites d'intensité temporaires",
