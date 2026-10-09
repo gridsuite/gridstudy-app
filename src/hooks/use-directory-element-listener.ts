@@ -31,35 +31,36 @@ export const useDirectoryElementListener = (elementUuid: UUID | undefined, liste
     latestRef.current = { elementUuid, listeners };
     const directoryUuidsRef = useRef<UUID[]>([]);
 
-    const refresh = useCallback(async (uuid: UUID, changedNames: (string | null)[] = []) => {
+    const refresh = useCallback((uuid: UUID, changedNames: (string | null)[] = []) => {
         const isFollowed = () => latestRef.current.elementUuid === uuid;
-        try {
-            // From the root directory to the element
-            const path = await fetchDirectoryElementPath(uuid);
-            if (!isFollowed()) {
-                return;
-            }
-            directoryUuidsRef.current = path.slice(0, -1).map((directory) => directory.elementUuid);
-            const { onName, onUpdate } = latestRef.current.listeners;
-            const name = path.at(-1)?.elementName;
-            if (name) {
-                onName?.(name);
-                if (changedNames.includes(name)) {
-                    onUpdate?.();
+        // From the root directory to the element
+        fetchDirectoryElementPath(uuid)
+            .then((path) => {
+                if (!isFollowed()) {
+                    return;
                 }
-            }
-        } catch (error) {
-            if (!isFollowed()) {
-                return;
-            }
-            if (isNotFound(error)) {
-                // A deleted element is no longer followed
-                directoryUuidsRef.current = [];
-                latestRef.current.listeners.onDelete?.();
-            } else {
-                console.error(`Failed to fetch element '${uuid}':`, error);
-            }
-        }
+                directoryUuidsRef.current = path.slice(0, -1).map((directory) => directory.elementUuid);
+                const { onName, onUpdate } = latestRef.current.listeners;
+                const name = path.at(-1)?.elementName;
+                if (name) {
+                    onName?.(name);
+                    if (changedNames.includes(name)) {
+                        onUpdate?.();
+                    }
+                }
+            })
+            .catch((error) => {
+                if (!isFollowed()) {
+                    return;
+                }
+                if (isNotFound(error)) {
+                    // A deleted element is no longer followed
+                    directoryUuidsRef.current = [];
+                    latestRef.current.listeners.onDelete?.();
+                } else {
+                    console.error(`Failed to fetch element '${uuid}':`, error);
+                }
+            });
     }, []);
 
     useEffect(() => {

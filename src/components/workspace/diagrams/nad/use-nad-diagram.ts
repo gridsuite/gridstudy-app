@@ -234,30 +234,29 @@ export const useNadDiagram = ({
         setGlobalError(extractErrorMessageDescriptor(error, ''));
     }, []);
 
-    // Resolves to whether the diagram was drawn
-    const fetchDiagram = useCallback(async () => {
-        if (!canFetchDiagram || !networkVisuParams) {
-            setLoading(true);
-            return false;
-        }
+    const fetchDiagram = useCallback(
+        (persistAfterFetch = false) => {
+            if (!canFetchDiagram || !networkVisuParams) {
+                setLoading(true);
+                return;
+            }
 
-        if (!currentNode || !isNodeBuilt(currentNode)) {
-            // Abort any still pending fetch so its late response can't overwrite this error
+            if (!currentNode || !isNodeBuilt(currentNode)) {
+                // Abort any still pending fetch so its late response can't overwrite this error
+                abortControllerRef.current?.abort();
+                setGlobalError({ descriptor: { id: 'InvalidNode' } });
+                setLoading(false);
+                return;
+            }
+
+            // Abort any still pending fetch so its response can be ignored
             abortControllerRef.current?.abort();
-            setGlobalError({ descriptor: { id: 'InvalidNode' } });
-            setLoading(false);
-            return false;
-        }
+            const abortController = new AbortController();
+            abortControllerRef.current = abortController;
 
-        // Abort any still pending fetch so its response can be ignored
-        abortControllerRef.current?.abort();
-        const abortController = new AbortController();
-        abortControllerRef.current = abortController;
+            setLoading(true);
+            setGlobalError(undefined);
 
-        setLoading(true);
-        setGlobalError(undefined);
-
-        try {
             const current = diagramRef.current;
             const body = {
                 nadPositionsGenerationMode: networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
@@ -268,50 +267,56 @@ export const useNadDiagram = ({
                 filterUuid: getDrawnFilterUuid(current) ?? current.filterToAddUuid,
                 language,
             };
-            const svgData = await fetchSvg(getNetworkAreaDiagramUrl(studyUuid, currentNodeId, currentRootNetworkUuid), {
+
+            fetchSvg(getNetworkAreaDiagramUrl(studyUuid, currentNodeId, currentRootNetworkUuid), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
                 signal: abortController.signal,
-            });
-            processSvgData(svgData as DiagramSvg | null);
-
-            // From a config or a filter the server rebuilds the diagram, only a panel whose
-            // voltage levels live nowhere else needs a config of its own
-            if (!hasStoredVoltageLevels(current)) {
-                debounceSaveNad();
-            }
-            return true;
-        } catch (error) {
-            // a newer fetchDiagram call already aborted this request, so its response is no longer relevant
-            if (abortController.signal.aborted) {
-                return false;
-            }
-            if (isEmptyDiagramError(error)) {
-                // Not an error: an empty diagram, which can still be edited
-                updateDiagram({ svg: null, voltageLevelToExpandIds: [], filterToAddUuid: undefined });
-                return true;
-            }
-            handleFetchError(error);
-            return false;
-        } finally {
-            if (!abortController.signal.aborted) {
-                setLoading(false);
-            }
-        }
-    }, [
-        currentNode,
-        language,
-        studyUuid,
-        currentNodeId,
-        currentRootNetworkUuid,
-        processSvgData,
-        updateDiagram,
-        handleFetchError,
-        debounceSaveNad,
-        canFetchDiagram,
-        networkVisuParams,
-    ]);
+            })
+                .then((svgData) => {
+                    processSvgData(svgData as DiagramSvg | null);
+                    // From a config or a filter the server rebuilds the diagram, only a panel whose
+                    // voltage levels live nowhere else needs a config of its own
+                    if (persistAfterFetch || !hasStoredVoltageLevels(current)) {
+                        debounceSaveNad();
+                    }
+                })
+                .catch((error) => {
+                    // a newer fetchDiagram call already aborted this request, so its response is no longer relevant
+                    if (abortController.signal.aborted) {
+                        return;
+                    }
+                    if (isEmptyDiagramError(error)) {
+                        // Not an error: an empty diagram, which can still be edited
+                        updateDiagram({ svg: null, voltageLevelToExpandIds: [], filterToAddUuid: undefined });
+                        if (persistAfterFetch) {
+                            debounceSaveNad();
+                        }
+                        return;
+                    }
+                    handleFetchError(error);
+                })
+                .finally(() => {
+                    if (!abortController.signal.aborted) {
+                        setLoading(false);
+                    }
+                });
+        },
+        [
+            currentNode,
+            language,
+            studyUuid,
+            currentNodeId,
+            currentRootNetworkUuid,
+            processSvgData,
+            updateDiagram,
+            handleFetchError,
+            debounceSaveNad,
+            canFetchDiagram,
+            networkVisuParams,
+        ]
+    );
 
     // The server draws from the saved config, so it is saved first. Loading from the start, so nothing can be edited
     // meanwhile.
@@ -327,7 +332,7 @@ export const useNadDiagram = ({
     }, [debounceSaveNad, saveNad, fetchDiagram, handleFetchError]);
 
     const editDiagram = useCallback(
-        async (edit: NadEdit) => {
+        (edit: NadEdit) => {
             const current = diagramRef.current;
             const updates = applyEdit(current, edit);
             if (!updates) {
@@ -349,9 +354,7 @@ export const useNadDiagram = ({
                     break;
                 default:
                     // Drawn first, to save what the server adds, like the neighbours of an expanded voltage level
-                    if (await fetchDiagram()) {
-                        debounceSaveNad();
-                    }
+                    fetchDiagram(true);
             }
         },
         [recordEdit, updateDiagram, debounceSaveNad, saveAndFetchDiagram, fetchDiagram]
