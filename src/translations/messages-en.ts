@@ -594,12 +594,9 @@ const messages_en = {
 
     LineSplitWithVoltageLevel: 'Create a voltage level on a line',
     LineAttachToVoltageLevel: 'Attach a line to another line',
-    LinesAttachToSplitLines: 'Attaching lines to splitting lines',
     BusbarOrNodeID: 'Bus bar section / bus',
     Line1: 'Line 1',
     Line2: 'Line 2',
-    ReplacingLine1: 'Replacing line 1',
-    ReplacingLine2: 'Replacing line 2',
     VoltageLevelToSplitAt: 'Voltage level to split at',
     Line1ID: 'Line 1 ID',
     Line2ID: 'Line 2 ID',
@@ -613,14 +610,12 @@ const messages_en = {
     SpecifyAttachmentPoint: 'Add attachment point information (option)',
     AttachedLine: 'Attached line',
     LineAttached: 'Attached line',
-    ReplacingLines: 'Replacing lines',
     ReplacingLineId: 'ID replacing line',
     ReplacingLineName: 'Name replacing line',
     LineDivisionError: 'Error while puting a voltage level amidst a line',
     LineAttachmentError: 'Error while attaching a voltage level to a line',
     LoadScalingError: 'Error while creating a load scaling',
     DeleteVoltageLevelOnLineError: 'Error while deleting a voltage level on a line',
-    lineAttachedToSplitLineVoltageLevel: 'Voltage level with attached line to place as splitter',
 
     permanentCurrentLimitMandatory:
         'A permanent limit has to be set if the limit set contains temporary current limits',
@@ -767,6 +762,17 @@ const messages_en = {
     Variations: 'Variations',
     LoadScaling: 'Load scaling',
     DeleteVoltageLevelOnLine: 'Delete a voltage level on a line',
+    LossCoefficient: 'Loss coefficient',
+    ReduceMaxP: 'Reduce maxP',
+    DefaultOutageRate: 'Default outage rate',
+    GeneratorsWithoutOutage: 'Generators without outage simulation',
+    GeneratorsWithFixedActivePower: 'Generators with fixed active power',
+    GeneratorFilter: 'GENERATOR FILTER',
+    FrequencyReserve: 'FREQUENCY RESERVE (%)',
+    frequencyReserve: 'Frequency reserve',
+    GeneratorsFiltersFrequencyReserveToolTip:
+        'User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry',
+    GeneratorsOrdering: 'Substations hierarchy',
     ReplacingLine: 'Replacing line',
 
     NetworkEquipmentNotFound: 'The equipment "{equipmentId}" does not exist in this network',
@@ -866,6 +872,7 @@ const messages_en = {
     errCloneVoltageInitModificationMsg:
         'An error occurred while applying the modifications coming from voltage profile initialization',
     VoltageInitModification: 'Voltage init modification',
+    GeneratorAvailability: 'Generator availability',
     chooseElement: 'Choose element',
     studyNetworkRecovered: 'Study network has been recreated successfully',
     rootNetworkStudyUnloaded: "Due to a period of inactivity, the study's network has been unloaded",

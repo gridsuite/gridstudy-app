@@ -48,6 +48,7 @@ import {
     TabularProperty,
     LccModificationDto,
     LccHvdcLineCreationDto,
+    LinesAttachToSplittingLinesDto,
     GenerationDispatchDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
@@ -56,7 +57,6 @@ import type { UUID } from 'node:crypto';
 import {
     BalancesAdjustmentInfos,
     DivideLineInfo,
-    LinesAttachToSplitLinesInfo,
     NetworkModificationRequestInfos,
     Variations,
     VariationType,
@@ -1007,48 +1007,34 @@ export function loadScaling(
 }
 
 export function linesAttachToSplitLines({
+    linesAttachToSplittingLinesDto,
     studyUuid,
     nodeUuid,
-    uuid,
-    lineToAttachTo1Id,
-    lineToAttachTo2Id,
-    attachedLineId,
-    voltageLevelId,
-    bbsBusId,
-    replacingLine1Id,
-    replacingLine1Name,
-    replacingLine2Id,
-    replacingLine2Name,
-}: LinesAttachToSplitLinesInfo) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
-        lineToAttachTo1Id,
-        lineToAttachTo2Id,
-        attachedLineId,
-        voltageLevelId,
-        bbsBusId,
-        replacingLine1Id,
-        replacingLine1Name,
-        replacingLine2Id,
-        replacingLine2Name,
-    });
-
+    modificationUuid,
+    isUpdate,
+}: {
+    linesAttachToSplittingLinesDto: LinesAttachToSplittingLinesDto;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
     let lineAttachUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (uuid) {
-        lineAttachUrl += '/' + encodeURIComponent(uuid);
+    if (modificationUuid) {
+        lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating attaching lines to splitting lines');
     } else {
         console.info('Creating attaching lines to splitting lines');
     }
 
     return backendFetchText(lineAttachUrl, {
-        method: uuid ? 'PUT' : 'POST',
+        method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body,
+        body: JSON.stringify(linesAttachToSplittingLinesDto),
     });
 }
 
