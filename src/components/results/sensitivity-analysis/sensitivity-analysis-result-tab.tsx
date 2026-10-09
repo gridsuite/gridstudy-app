@@ -95,7 +95,9 @@ function SensitivityAnalysisResultTab({
     useComputationGlobalFilters(TableType.SensitivityAnalysis, resetPagination);
 
     const openLoader = useOpenLoaderShortWait({
-        isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING,
+        isLoading:
+            sensitivityAnalysisStatus === RunningStatus.RUNNING ||
+            sensitivityAnalysisStatus === RunningStatus.PRELOADING,
         delay: RESULTS_LOADING_DELAY,
     });
 

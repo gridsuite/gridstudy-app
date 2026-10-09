@@ -10,13 +10,11 @@ import { Filter } from '../components/dialogs/network-modifications/by-filter/co
 import {
     AssignmentDataType,
     AssignmentFieldValue,
-    LineCreationDto,
     ModificationType,
     Property,
     ReactiveCapabilityCurvePoints,
     VoltageLevelCreationDto,
 } from '@gridsuite/commons-ui';
-import { VARIATION_TYPES } from '../components/network/constants';
 
 export interface WithModificationId {
     uuid: UUID;
@@ -28,31 +26,6 @@ export type VoltageLevelCreationInfo = VoltageLevelCreationDto & {
     isUpdate?: boolean;
     modificationUuid?: UUID;
 };
-
-type VariationFilter = {
-    id: string;
-    name: string;
-    specificMetadata: { type: string };
-};
-
-export type VariationType = keyof typeof VARIATION_TYPES;
-
-export interface ItemFilterType {
-    type?: string;
-    specificMetadata?: {
-        type?: string;
-        filterEquipmentsAttributes?: {
-            distributionKey?: number;
-        }[];
-    };
-}
-
-export interface Variations {
-    variationMode: string | null;
-    variationValue: number | null;
-    reactiveVariationMode: string | null;
-    filters: VariationFilter[];
-}
 
 export interface ConverterStationCreationInfos {
     equipmentId: string;
@@ -106,51 +79,6 @@ export interface DivideLineInfo {
     newLine2Name: string | null;
 }
 
-export interface AttachLineInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    uuid?: UUID;
-    lineToAttachToId: string;
-    percent: number;
-    attachmentPointId: string;
-    attachmentPointName: string | null;
-    attachmentPointDetailInformation: VoltageLevelCreationDto;
-    mayNewVoltageLevelInfos?: VoltageLevelCreationDto;
-    existingVoltageLevelId: string;
-    bbsOrBusId: string;
-    attachmentLine: LineCreationDto;
-    newLine1Id: string;
-    newLine1Name: string | null;
-    newLine2Id: string;
-    newLine2Name: string | null;
-}
-
-export interface LinesAttachToSplitLinesInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    uuid?: UUID;
-    lineToAttachTo1Id: string;
-    lineToAttachTo2Id: string;
-    attachedLineId: string;
-    voltageLevelId: string | null;
-    bbsBusId: string | null;
-    replacingLine1Id: string;
-    replacingLine1Name: string | null;
-    replacingLine2Id: string;
-    replacingLine2Name: string | null;
-}
-
-export interface DeleteAttachingLineInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    modificationUuid?: UUID;
-    lineToAttachTo1Id: string;
-    lineToAttachTo2Id: string;
-    attachedLineId: string;
-    replacingLine1Id: string;
-    replacingLine1Name: string | null;
-}
-
 export interface VscCreationInfos {
     type: ModificationType;
     uuid?: string;
@@ -170,30 +98,6 @@ export interface VscCreationInfos {
     converterStation2: ConverterStationCreationInfos;
     properties: Property[] | null;
 }
-
-type GenerationDispatchInfos = {
-    lossCoefficient: number | null;
-    defaultOutageRate: number | null;
-    generatorsWithoutOutage: Filter[] | null;
-    generatorsWithFixedSupply: Filter[] | null;
-    generatorsFrequencyReserve:
-        | {
-              generatorsFilters: Filter[];
-              frequencyReserve: number;
-          }[]
-        | null;
-    substationsGeneratorsOrdering:
-        | {
-              substationIds: string[];
-          }[]
-        | null;
-};
-
-export type GenerationDispatchModificationInfos = GenerationDispatchInfos & {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    uuid?: UUID;
-};
 
 export interface CreateVoltageLevelTopologyInfos {
     type: ModificationType;
