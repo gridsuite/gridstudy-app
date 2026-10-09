@@ -164,9 +164,6 @@ export const SLIDER_PERCENTAGE = 'sliderPercentage';
 export const LINE_TO_ATTACH_TO_1_ID = 'lineToAttachTo1Id';
 export const LINE_TO_ATTACH_TO_2_ID = 'lineToAttachTo2Id';
 
-// scaling
-export const FILTERS = 'filters';
-export const REACTIVE_VARIATION_MODE = 'reactiveVariationMode';
 // elements and directories
 export const SPECIFIC_METADATA = 'specificMetadata';
 
