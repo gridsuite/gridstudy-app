@@ -27,7 +27,8 @@ import {
     TabValue,
 } from './state-estimation-parameters-utils';
 import { StateEstimationParametersForm } from './state-estimation-parameters-form';
-import { updateStateEstimationParameters } from '../../../../services/study/state-estimation';
+import { updateStateEstimationParameters,
+resetStateEstimationParameters} from '../../../../services/study/state-estimation';
 import { UseGetStateEstimationParametersProps } from './use-get-state-estimation-parameters';
 
 export const StateEstimationParameters = ({
@@ -63,15 +64,11 @@ export const StateEstimationParameters = ({
         errors: formState.errors,
     });
 
-    const resetStateEstimationParameters = useCallback(() => {
-        updateStateEstimationParameters(studyUuid, null).catch((error) => {
+    const clear = useCallback(() => {
+        resetStateEstimationParameters(studyUuid).catch((error) => {
             snackWithFallback(snackError, error, { headerId: 'paramsChangingError' });
         });
     }, [studyUuid, snackError]);
-
-    const clear = useCallback(() => {
-        resetStateEstimationParameters();
-    }, [resetStateEstimationParameters]);
 
     const onSubmit = useCallback(
         (newParams: StateEstimationFormType) => {

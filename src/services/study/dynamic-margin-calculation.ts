@@ -90,7 +90,7 @@ export function fetchDynamicMarginCalculationProvider(studyUuid: UUID) {
 
 export function updateDynamicMarginCalculationParameters(
     studyUuid: UUID,
-    newParams: DynamicMarginCalculationParametersInfos | null
+    newParams: DynamicMarginCalculationParametersInfos
 ): Promise<Response> {
     console.info(`Setting dynamic margin calculation parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-margin-calculation/parameters';
@@ -102,5 +102,16 @@ export function updateDynamicMarginCalculationParameters(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newParams),
+    });
+}
+
+export function resetDynamicMarginCalculationParameters(
+    studyUuid: UUID
+): Promise<Response> {
+    console.info(`Resetting dynamic margin calculation parameters on study '${studyUuid}' ...`);
+    const url = getStudyUrl(studyUuid) + '/dynamic-margin-calculation/parameters/reset';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
     });
 }
