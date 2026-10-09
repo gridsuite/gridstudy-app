@@ -618,7 +618,6 @@ const messages_en = {
     LineDivisionError: 'Error while puting a voltage level amidst a line',
     LineAttachmentError: 'Error while attaching a voltage level to a line',
     DeleteVoltageLevelOnLineError: 'Error while deleting a voltage level on a line',
-    DeleteAttachingLineError: 'Error while deleting an attaching line',
     GenerationDispatchError: 'Error while creating a generation dispatch',
     lineAttachedToSplitLineVoltageLevel: 'Voltage level with attached line to place as splitter',
 
@@ -749,7 +748,6 @@ const messages_en = {
     createNewSelection: 'Create a selection',
     ActiveVariationMode: 'Active variation mode',
     DeleteVoltageLevelOnLine: 'Delete a voltage level on a line',
-    DeleteAttachingLine: 'Delete attaching line',
     LossCoefficient: 'Loss coefficient',
     ReduceMaxP: 'Reduce maxP',
     DefaultOutageRate: 'Default outage rate',

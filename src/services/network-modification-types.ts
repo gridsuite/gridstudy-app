@@ -94,17 +94,6 @@ export interface LinesAttachToSplitLinesInfo {
     replacingLine2Name: string | null;
 }
 
-export interface DeleteAttachingLineInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    modificationUuid?: UUID;
-    lineToAttachTo1Id: string;
-    lineToAttachTo2Id: string;
-    attachedLineId: string;
-    replacingLine1Id: string;
-    replacingLine1Name: string | null;
-}
-
 export interface VscCreationInfos {
     type: ModificationType;
     uuid?: string;

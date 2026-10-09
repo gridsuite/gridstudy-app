@@ -626,7 +626,6 @@ const messages_fr = {
     LineDivisionError: "Erreur lors de la création d'une coupure",
     LineAttachmentError: "Erreur lors de la création d'un piquage",
     DeleteVoltageLevelOnLineError: "Erreur lors de la suppression d'une coupure",
-    DeleteAttachingLineError: "Erreur lors de la suppression d'un piquage",
     GenerationDispatchError: 'Erreur lors de la création du démarrage de groupes',
     lineAttachedToSplitLineVoltageLevel: 'Poste en piquage à passer en coupure',
 
@@ -761,7 +760,6 @@ const messages_fr = {
     createNewSelection: 'Créer une sélection',
     ActiveVariationMode: "Mode variation de l'actif",
     DeleteVoltageLevelOnLine: 'Supprimer une coupure',
-    DeleteAttachingLine: 'Supprimer un piquage',
     LossCoefficient: 'Coefficient de pertes',
     ReduceMaxP: 'Abattement Pmax',
     DefaultOutageRate: 'Taux indisponibilité par défaut',
