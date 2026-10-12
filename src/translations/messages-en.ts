@@ -1159,6 +1159,7 @@ const messages_en = {
     addVoltageLevelsFromFilter: 'Add supplementary filter',
     addVoltageLevel: 'Add a voltage level',
     searchVoltageLevelInNad: 'Search voltage level',
+    exportNadPositions: 'Export positions as CSV',
     noResultsFound: 'No results found',
     hide: 'Hide',
     hideAll: 'Hide all',
