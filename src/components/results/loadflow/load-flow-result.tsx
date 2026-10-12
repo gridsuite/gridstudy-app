@@ -66,7 +66,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     const { translate } = useLocalizedCountries();
 
     const openLoaderStatusTab = useOpenLoaderShortWait({
-        isLoading: loadFlowStatus === RunningStatus.RUNNING || isLoadingResult,
+        isLoading:
+            loadFlowStatus === RunningStatus.RUNNING || loadFlowStatus === RunningStatus.PRELOADING || isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 

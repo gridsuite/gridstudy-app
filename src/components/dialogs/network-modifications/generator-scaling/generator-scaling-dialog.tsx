@@ -7,38 +7,27 @@
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { ModificationDialog } from '../../commons/modificationDialog';
-import GeneratorScalingForm from './generator-scaling-form';
 import { useCallback, useEffect } from 'react';
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
-import { getVariationsSchema } from './variation/variation-utils';
-import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
+import {
+    CustomFormProvider,
+    FieldConstants,
+    generatorScalingFormToDto,
+    snackWithFallback,
+    useSnackMessage,
+    emptyVariationScalingFormData,
+    VariationScalingFormData,
+    generatorScalingFormSchema,
+    Variations,
+    VariationType,
+    GeneratorScalingForm,
+} from '@gridsuite/commons-ui';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { generatorScaling } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
-import { Variations, VariationType } from '../../../../services/network-modification-types';
 import { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-
-interface GeneratorScalingFormData {
-    [VARIATION_TYPE]: VariationType;
-    [VARIATIONS]: Variations[];
-}
-
-const emptyFormData: GeneratorScalingFormData = {
-    [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
-    [VARIATIONS]: [],
-};
-
-const formSchema = yup
-    .object()
-    .shape({
-        [VARIATION_TYPE]: yup.string().required(),
-        ...getVariationsSchema(VARIATIONS),
-    })
-    .required() as yup.ObjectSchema<GeneratorScalingFormData>;
 
 interface GeneratorScalingDialogProps {
     studyUuid: UUID;
@@ -47,8 +36,8 @@ interface GeneratorScalingDialogProps {
     editDataFetchStatus?: string;
     editData?: {
         uuid: UUID;
-        [VARIATION_TYPE]: VariationType;
-        [VARIATIONS]: Variations[];
+        [FieldConstants.VARIATION_TYPE]: VariationType;
+        [FieldConstants.VARIATIONS]: Variations[];
     };
 }
 
@@ -64,8 +53,8 @@ const GeneratorScalingDialog = ({
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        defaultValues: emptyVariationScalingFormData,
+        resolver: yupResolver(generatorScalingFormSchema),
     });
 
     const { reset } = formMethods;
@@ -73,26 +62,21 @@ const GeneratorScalingDialog = ({
     useEffect(() => {
         if (editData) {
             reset({
-                [VARIATION_TYPE]: editData[VARIATION_TYPE],
-                [VARIATIONS]: editData[VARIATIONS],
+                [FieldConstants.VARIATION_TYPE]: editData[FieldConstants.VARIATION_TYPE],
+                [FieldConstants.VARIATIONS]: editData[FieldConstants.VARIATIONS],
             });
         }
     }, [editData, reset]);
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(emptyVariationScalingFormData);
     }, [reset]);
 
     const onSubmit = useCallback(
-        (generatorScalingInfos: GeneratorScalingFormData) => {
-            generatorScaling(
-                studyUuid,
-                currentNodeUuid,
-                editData?.uuid ?? undefined,
-                generatorScalingInfos[VARIATION_TYPE],
-                generatorScalingInfos[VARIATIONS]
-            ).catch((errorMessage) => {
-                snackWithFallback(snackError, errorMessage, { headerId: 'GeneratorScalingError' });
+        (formData: VariationScalingFormData) => {
+            const dto = generatorScalingFormToDto(formData);
+            generatorScaling(studyUuid, currentNodeUuid, editData?.uuid ?? undefined, dto).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'GeneratorScalingError' });
             });
         },
         [currentNodeUuid, editData, snackError, studyUuid]
@@ -105,7 +89,7 @@ const GeneratorScalingDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={generatorScalingFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

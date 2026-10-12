@@ -54,7 +54,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     }, []);
 
     const openLoader = useOpenLoaderShortWait({
-        isLoading: pccMinStatus === RunningStatus.RUNNING,
+        isLoading: pccMinStatus === RunningStatus.RUNNING || pccMinStatus === RunningStatus.PRELOADING,
         delay: RESULTS_LOADING_DELAY,
     });
 

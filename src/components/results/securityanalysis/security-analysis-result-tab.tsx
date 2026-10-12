@@ -256,7 +256,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     }, [result]);
 
     const shouldOpenLoader = useOpenLoaderShortWait({
-        isLoading: securityAnalysisStatus === RunningStatus.RUNNING || isLoadingResult,
+        isLoading:
+            securityAnalysisStatus === RunningStatus.RUNNING ||
+            securityAnalysisStatus === RunningStatus.PRELOADING ||
+            isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 

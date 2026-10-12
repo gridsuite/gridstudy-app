@@ -91,7 +91,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     const noRowMessage = getNoRowsMessage(statusMessage, result, pccMinStatus, !isFetching);
 
     const showLoader = useOpenLoaderShortWait({
-        isLoading: pccMinStatus === RunningStatus.RUNNING || isFetching,
+        isLoading: pccMinStatus === RunningStatus.RUNNING || pccMinStatus === RunningStatus.PRELOADING || isFetching,
         delay: RESULTS_LOADING_DELAY,
     });
 

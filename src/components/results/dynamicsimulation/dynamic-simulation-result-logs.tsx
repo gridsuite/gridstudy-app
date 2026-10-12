@@ -26,6 +26,7 @@ const DynamicSimulationResultLogs = memo(() => {
             case RunningStatus.IDLE:
                 return messages.noCalculation;
             case RunningStatus.RUNNING:
+            case RunningStatus.PRELOADING:
                 return messages.running;
             case RunningStatus.FAILED:
             case RunningStatus.SUCCEED:

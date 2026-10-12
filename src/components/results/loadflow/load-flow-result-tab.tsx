@@ -268,7 +268,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     }, [tabIndex]);
 
     const openLoaderReportTab = useOpenLoaderShortWait({
-        isLoading: loadFlowStatus === RunningStatus.RUNNING || isLoadingResult,
+        isLoading:
+            loadFlowStatus === RunningStatus.RUNNING || loadFlowStatus === RunningStatus.PRELOADING || isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 
