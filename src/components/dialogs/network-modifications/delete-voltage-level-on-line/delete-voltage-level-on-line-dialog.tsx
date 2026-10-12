@@ -90,8 +90,8 @@ const DeleteVoltageLevelOnLineDialog = ({
     });
 
     useEffect(() => {
-        fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, [], EquipmentType.LINE, true).then(
-            (values) => {
+        fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, [], EquipmentType.LINE, true)
+            .then((values) => {
                 setLinesOptions(
                     values
                         .sort((a: string, b: string) => a.localeCompare(b))
@@ -99,9 +99,12 @@ const DeleteVoltageLevelOnLineDialog = ({
                             return { id: value };
                         })
                 );
-            }
-        );
-    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
+            })
+            .catch((error: unknown) => {
+                snackWithFallback(snackError, error, { headerId: 'equipmentsLoadingError' });
+                setLinesOptions([]);
+            });
+    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid, snackError]);
 
     const fromEditDataToFormValues = useCallback(
         (editData: DeleteVoltageLevelOnLineFormData) => {
