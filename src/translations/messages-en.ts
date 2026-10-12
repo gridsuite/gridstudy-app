@@ -594,8 +594,6 @@ const messages_en = {
     LineSplitWithVoltageLevel: 'Create a voltage level on a line',
     LineAttachToVoltageLevel: 'Attach a line to another line',
     BusbarOrNodeID: 'Bus bar section / bus',
-    Line1: 'Line 1',
-    Line2: 'Line 2',
     VoltageLevelToSplitAt: 'Voltage level to split at',
     Line1ID: 'Line 1 ID',
     Line2ID: 'Line 2 ID',
@@ -609,11 +607,8 @@ const messages_en = {
     SpecifyAttachmentPoint: 'Add attachment point information (option)',
     AttachedLine: 'Attached line',
     LineAttached: 'Attached line',
-    ReplacingLineId: 'ID replacing line',
-    ReplacingLineName: 'Name replacing line',
     LineDivisionError: 'Error while puting a voltage level amidst a line',
     LineAttachmentError: 'Error while attaching a voltage level to a line',
-    DeleteVoltageLevelOnLineError: 'Error while deleting a voltage level on a line',
 
     permanentCurrentLimitMandatory:
         'A permanent limit has to be set if the limit set contains temporary current limits',
@@ -741,7 +736,6 @@ const messages_en = {
     UnsupportedView: 'Search is unavailable in this view',
     createNewSelection: 'Create a selection',
     ActiveVariationMode: 'Active variation mode',
-    DeleteVoltageLevelOnLine: 'Delete a voltage level on a line',
     LossCoefficient: 'Loss coefficient',
     ReduceMaxP: 'Reduce maxP',
     DefaultOutageRate: 'Default outage rate',
@@ -753,7 +747,6 @@ const messages_en = {
     GeneratorsFiltersFrequencyReserveToolTip:
         'User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry',
     GeneratorsOrdering: 'Substations hierarchy',
-    ReplacingLine: 'Replacing line',
 
     NetworkEquipmentNotFound: 'The equipment "{equipmentId}" does not exist in this network',
     SLDOpenedInTheGrid: 'The {diagramType} "{equipmentId}" was opened in the image grid',
