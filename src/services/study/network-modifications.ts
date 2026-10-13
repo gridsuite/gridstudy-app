@@ -49,18 +49,14 @@ import {
     TabularProperty,
     LccModificationDto,
     LccHvdcLineCreationDto,
+    LinesAttachToSplittingLinesDto,
+    GenerationDispatchDto,
+    VariationScalingDto,
 } from '@gridsuite/commons-ui';
 import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
-import {
-    DivideLineInfo,
-    GenerationDispatchModificationInfos,
-    LinesAttachToSplitLinesInfo,
-    Variations,
-    VariationType,
-    VoltageLevelCreationInfo,
-} from '../network-modification-types';
+import { DivideLineInfo, VoltageLevelCreationInfo } from '../network-modification-types';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -252,42 +248,27 @@ export function switchOnEquipment(
     return changeOperatingStatus(studyUuid, nodeUuid, branch, OPERATING_STATUS_ACTION.SWITCH_ON);
 }
 
-export function generationDispatch({
-    studyUuid,
-    nodeUuid,
-    uuid,
-    lossCoefficient,
-    defaultOutageRate,
-    generatorsWithoutOutage,
-    generatorsWithFixedSupply,
-    generatorsFrequencyReserve,
-    substationsGeneratorsOrdering,
-}: GenerationDispatchModificationInfos) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
-        lossCoefficient: lossCoefficient,
-        defaultOutageRate: defaultOutageRate,
-        generatorsWithoutOutage: generatorsWithoutOutage,
-        generatorsWithFixedSupply: generatorsWithFixedSupply,
-        generatorsFrequencyReserve: generatorsFrequencyReserve,
-        substationsGeneratorsOrdering: substationsGeneratorsOrdering,
-    });
-
+export function generationDispatch(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: GenerationDispatchDto
+) {
     let generationDispatchUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    if (uuid) {
-        console.info('Updating generation dispatch ', body);
-        generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(uuid);
+    if (modificationUuid) {
+        console.info('Updating generation dispatch ');
+        generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
     } else {
-        console.info('Creating generation dispatch ', body);
+        console.info('Creating generation dispatch ');
     }
 
     return backendFetchText(generationDispatchUrl, {
-        method: uuid ? 'PUT' : 'POST',
+        method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body,
+        body: JSON.stringify(dto),
     });
 }
 
@@ -295,14 +276,9 @@ export function generatorScaling(
     studyUuid: UUID,
     nodeUuid: UUID,
     modificationUuid: UUID | undefined,
-    variationType: VariationType,
-    variations: Variations[]
+    variationScalingDto: VariationScalingDto
 ) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.GENERATOR_SCALING.type,
-        variationType,
-        variations,
-    });
+    const body = JSON.stringify(variationScalingDto);
 
     let generatorScalingUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
@@ -991,14 +967,9 @@ export function loadScaling(
     studyUuid: string,
     nodeUuid: UUID,
     modificationUuid: UUID | undefined,
-    variationType: VariationType,
-    variations: Variations[]
+    variationScalingDto: VariationScalingDto
 ) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.LOAD_SCALING.type,
-        variationType,
-        variations,
-    });
+    const body = JSON.stringify(variationScalingDto);
 
     let loadScalingUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
@@ -1021,48 +992,34 @@ export function loadScaling(
 }
 
 export function linesAttachToSplitLines({
+    linesAttachToSplittingLinesDto,
     studyUuid,
     nodeUuid,
-    uuid,
-    lineToAttachTo1Id,
-    lineToAttachTo2Id,
-    attachedLineId,
-    voltageLevelId,
-    bbsBusId,
-    replacingLine1Id,
-    replacingLine1Name,
-    replacingLine2Id,
-    replacingLine2Name,
-}: LinesAttachToSplitLinesInfo) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
-        lineToAttachTo1Id,
-        lineToAttachTo2Id,
-        attachedLineId,
-        voltageLevelId,
-        bbsBusId,
-        replacingLine1Id,
-        replacingLine1Name,
-        replacingLine2Id,
-        replacingLine2Name,
-    });
-
+    modificationUuid,
+    isUpdate,
+}: {
+    linesAttachToSplittingLinesDto: LinesAttachToSplittingLinesDto;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
     let lineAttachUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    if (uuid) {
-        lineAttachUrl += '/' + encodeURIComponent(uuid);
+    if (modificationUuid) {
+        lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating attaching lines to splitting lines');
     } else {
         console.info('Creating attaching lines to splitting lines');
     }
 
     return backendFetchText(lineAttachUrl, {
-        method: uuid ? 'PUT' : 'POST',
+        method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body,
+        body: JSON.stringify(linesAttachToSplittingLinesDto),
     });
 }
 

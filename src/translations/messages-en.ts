@@ -8,7 +8,6 @@
 import {
     SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO,
     TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
-    VARIATION_LIST_EMPTY,
 } from '../utils/translationKeys';
 
 const messages_en = {
@@ -594,12 +593,7 @@ const messages_en = {
 
     LineSplitWithVoltageLevel: 'Create a voltage level on a line',
     LineAttachToVoltageLevel: 'Attach a line to another line',
-    LinesAttachToSplitLines: 'Attaching lines to splitting lines',
     BusbarOrNodeID: 'Bus bar section / bus',
-    Line1: 'Line 1',
-    Line2: 'Line 2',
-    ReplacingLine1: 'Replacing line 1',
-    ReplacingLine2: 'Replacing line 2',
     VoltageLevelToSplitAt: 'Voltage level to split at',
     Line1ID: 'Line 1 ID',
     Line2ID: 'Line 2 ID',
@@ -613,15 +607,8 @@ const messages_en = {
     SpecifyAttachmentPoint: 'Add attachment point information (option)',
     AttachedLine: 'Attached line',
     LineAttached: 'Attached line',
-    ReplacingLines: 'Replacing lines',
-    ReplacingLineId: 'ID replacing line',
-    ReplacingLineName: 'Name replacing line',
     LineDivisionError: 'Error while puting a voltage level amidst a line',
     LineAttachmentError: 'Error while attaching a voltage level to a line',
-    LoadScalingError: 'Error while creating a load scaling',
-    DeleteVoltageLevelOnLineError: 'Error while deleting a voltage level on a line',
-    GenerationDispatchError: 'Error while creating a generation dispatch',
-    lineAttachedToSplitLineVoltageLevel: 'Voltage level with attached line to place as splitter',
 
     permanentCurrentLimitMandatory:
         'A permanent limit has to be set if the limit set contains temporary current limits',
@@ -638,14 +625,7 @@ const messages_en = {
     IncoherentLowTapPositionError: 'The value should match the lowest tap position generated',
     IncoherentHighTapPositionError: 'The value should match the highest tap position generated',
 
-    GeneratorScaling: 'Generator scaling',
     IterativeLabel: 'Iterative',
-    VariationMode: 'Variation mode',
-    ProportionalToPMax: 'Proportional to max P',
-    StackingUp: 'Stacking up',
-    GeneratorScalingError: 'Error while creating a generator scaling',
-    AllExplicitNamingFiltersError:
-        'All filters types have to be Explicit Naming when variation mode is stacking up or ventilation',
 
     FilterCreationError: 'Error while creating a filter',
     ContingencyListCreationError: 'Error while creating a contingency list',
@@ -753,21 +733,9 @@ const messages_en = {
     RatioTapChangerPosition: 'Ratio tap',
     Leg: 'Leg',
     Transformers: 'Transformers',
-    [VARIATION_LIST_EMPTY]: 'Variations list is empty',
     UnsupportedView: 'Search is unavailable in this view',
-
-    DeltaP: 'Δ P',
-    TargetPText: 'Target P',
-    CreateVariation: 'Add Variation',
     createNewSelection: 'Create a selection',
     ActiveVariationMode: 'Active variation mode',
-    ReactiveVariationMode: 'Reactive variation mode',
-    RegularDistribution: 'Regular distribution',
-    TanPhiFixed: 'tan(φ) fixed',
-    ConstantQWithoutUnit: 'Constant Q',
-    Variations: 'Variations',
-    LoadScaling: 'Load scaling',
-    DeleteVoltageLevelOnLine: 'Delete a voltage level on a line',
     LossCoefficient: 'Loss coefficient',
     ReduceMaxP: 'Reduce maxP',
     DefaultOutageRate: 'Default outage rate',
@@ -779,7 +747,6 @@ const messages_en = {
     GeneratorsFiltersFrequencyReserveToolTip:
         'User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry',
     GeneratorsOrdering: 'Substations hierarchy',
-    ReplacingLine: 'Replacing line',
 
     NetworkEquipmentNotFound: 'The equipment "{equipmentId}" does not exist in this network',
     SLDOpenedInTheGrid: 'The {diagramType} "{equipmentId}" was opened in the image grid',
