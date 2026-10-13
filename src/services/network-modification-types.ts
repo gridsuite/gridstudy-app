@@ -10,14 +10,11 @@ import { Filter } from '../components/dialogs/network-modifications/by-filter/co
 import {
     AssignmentDataType,
     AssignmentFieldValue,
-    AttributeModification,
-    LineCreationDto,
     ModificationType,
     Property,
     ReactiveCapabilityCurvePoints,
     VoltageLevelCreationDto,
 } from '@gridsuite/commons-ui';
-import { VARIATION_TYPES } from '../components/network/constants';
 
 export interface WithModificationId {
     uuid: UUID;
@@ -29,31 +26,6 @@ export type VoltageLevelCreationInfo = VoltageLevelCreationDto & {
     isUpdate?: boolean;
     modificationUuid?: UUID;
 };
-
-type VariationFilter = {
-    id: string;
-    name: string;
-    specificMetadata: { type: string };
-};
-
-export type VariationType = keyof typeof VARIATION_TYPES;
-
-export interface ItemFilterType {
-    type?: string;
-    specificMetadata?: {
-        type?: string;
-        filterEquipmentsAttributes?: {
-            distributionKey?: number;
-        }[];
-    };
-}
-
-export interface Variations {
-    variationMode: string | null;
-    variationValue: number | null;
-    reactiveVariationMode: string | null;
-    filters: VariationFilter[];
-}
 
 export interface ConverterStationCreationInfos {
     equipmentId: string;
@@ -72,34 +44,6 @@ export interface ConverterStationCreationInfos {
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
-}
-
-export interface LccShuntCompensatorInfos {
-    id: string;
-    name?: string | null;
-    maxQAtNominalV: number;
-    connectedToHvdc?: boolean | null;
-    terminalConnected?: boolean | null;
-    type?: string;
-}
-
-export interface LccShuntCompensatorModificationInfos extends LccShuntCompensatorInfos {
-    deletionMark: boolean;
-}
-
-export interface LCCCreationConverterStation {
-    type: string;
-    equipmentId: string;
-    equipmentName?: string;
-    lossFactor: number;
-    powerFactor: number;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    connectionName?: string | null;
-    connectionDirection: string;
-    connectionPosition?: number;
-    terminalConnected?: boolean;
-    shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
 }
 
 export interface Assignment {
@@ -135,51 +79,6 @@ export interface DivideLineInfo {
     newLine2Name: string | null;
 }
 
-export interface AttachLineInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    uuid?: UUID;
-    lineToAttachToId: string;
-    percent: number;
-    attachmentPointId: string;
-    attachmentPointName: string | null;
-    attachmentPointDetailInformation: VoltageLevelCreationDto;
-    mayNewVoltageLevelInfos?: VoltageLevelCreationDto;
-    existingVoltageLevelId: string;
-    bbsOrBusId: string;
-    attachmentLine: LineCreationDto;
-    newLine1Id: string;
-    newLine1Name: string | null;
-    newLine2Id: string;
-    newLine2Name: string | null;
-}
-
-export interface LinesAttachToSplitLinesInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    uuid?: UUID;
-    lineToAttachTo1Id: string;
-    lineToAttachTo2Id: string;
-    attachedLineId: string;
-    voltageLevelId: string | null;
-    bbsBusId: string | null;
-    replacingLine1Id: string;
-    replacingLine1Name: string | null;
-    replacingLine2Id: string;
-    replacingLine2Name: string | null;
-}
-
-export interface DeleteAttachingLineInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    modificationUuid?: UUID;
-    lineToAttachTo1Id: string;
-    lineToAttachTo2Id: string;
-    attachedLineId: string;
-    replacingLine1Id: string;
-    replacingLine1Name: string | null;
-}
-
 export interface VscCreationInfos {
     type: ModificationType;
     uuid?: string;
@@ -199,71 +98,6 @@ export interface VscCreationInfos {
     converterStation2: ConverterStationCreationInfos;
     properties: Property[] | null;
 }
-
-export interface LCCCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name?: string | null;
-    nominalV: number;
-    r: number;
-    maxP: number;
-    convertersMode: string;
-    activePowerSetpoint: number;
-    converterStation1: LCCCreationConverterStation;
-    converterStation2: LCCCreationConverterStation;
-    properties?: Property[] | null;
-    isUpdate: boolean;
-    modificationUuid?: string;
-}
-
-export interface LccConverterStationModificationInfos {
-    type: string;
-    equipmentId: string;
-    equipmentName: AttributeModification<string> | null;
-    lossFactor: AttributeModification<number> | null;
-    powerFactor: AttributeModification<number> | null;
-    shuntCompensatorsOnSide: LccShuntCompensatorModificationInfos[];
-}
-
-export interface LccModificationInfos {
-    uuid: string | null;
-    type: string;
-    equipmentId: string;
-    equipmentName: AttributeModification<string> | null;
-    nominalV: AttributeModification<number> | null;
-    r: AttributeModification<number> | null;
-    maxP: AttributeModification<number> | null;
-    convertersMode: AttributeModification<string> | null;
-    activePowerSetpoint: AttributeModification<number> | null;
-    converterStation1: LccConverterStationModificationInfos;
-    converterStation2: LccConverterStationModificationInfos;
-    properties?: Property[] | null;
-}
-
-type GenerationDispatchInfos = {
-    lossCoefficient: number | null;
-    defaultOutageRate: number | null;
-    generatorsWithoutOutage: Filter[] | null;
-    generatorsWithFixedSupply: Filter[] | null;
-    generatorsFrequencyReserve:
-        | {
-              generatorsFilters: Filter[];
-              frequencyReserve: number;
-          }[]
-        | null;
-    substationsGeneratorsOrdering:
-        | {
-              substationIds: string[];
-          }[]
-        | null;
-};
-
-export type GenerationDispatchModificationInfos = GenerationDispatchInfos & {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    uuid?: UUID;
-};
 
 export interface CreateVoltageLevelTopologyInfos {
     type: ModificationType;

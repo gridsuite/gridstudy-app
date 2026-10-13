@@ -25,6 +25,7 @@ const DynamicMarginCalculationResultLogs = memo(() => {
         switch (dynamicMarginCalculationStatus) {
             case RunningStatus.IDLE:
                 return messages.noCalculation;
+            case RunningStatus.PRELOADING:
             case RunningStatus.RUNNING:
                 return messages.running;
             case RunningStatus.FAILED:

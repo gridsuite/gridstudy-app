@@ -6,15 +6,8 @@
  */
 
 import {
-    ACTIVE_POWER_SETPOINT_MAX_VALUE_ERROR,
-    ACTIVE_POWER_SETPOINT_MIN_VALUE_ERROR,
-    DC_RESISTANCE_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
-    MAX_P_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
-    NOMINAL_V_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
-    Q_MAX_AT_NOMINAL_V_MUST_BE_GREATER_THAN_ZERO,
     SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO,
     TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO,
-    VARIATION_LIST_EMPTY,
 } from '../utils/translationKeys';
 
 const messages_en = {
@@ -250,6 +243,7 @@ const messages_en = {
     FetchVoltageLevelsError: 'An error occurred while fetching voltage levels',
     FetchHvdcLineWithShuntCompensatorsError:
         'An error occurred while fetching HVDC lines and related shunt compensators',
+    FetchUserQuotaStateError: 'An error occurred while fetching user quotas',
 
     DynamicSimulationEventPropertyTEvent: 'Event Time',
     DynamicSimulationEventPropertySide: 'Only Side',
@@ -514,8 +508,6 @@ const messages_en = {
     ConnectedComponent: 'Connected component',
     SynchronousComponent: 'Synchronous component',
     EmptySelection: 'No equipment is selected',
-    connected: 'Connected',
-    disconnected: 'Disconnected',
     FieldAcceptNumeric: 'This field only accepts numeric values',
     errReorderModificationMsg: 'Reorder network modification error:',
     errDuplicateModificationMsg: 'Network modifications copy error',
@@ -543,7 +535,6 @@ const messages_en = {
     LoadCreationError: 'Error while creating load',
     LoadModificationError: 'Error while modifying load',
     HVDCLineConverterStationError: 'Error while getting HVDC line converter stations',
-    LccCreationError: 'Error while creating HVDC (LCC)',
     LimitSetNamingError: "Two limits sets can't have the same name and be applicable on a same side.",
     LimitSetCreationEmptyError: "Limit sets names can't be empty",
 
@@ -563,14 +554,9 @@ const messages_en = {
     'withoutunit.directTransX': 'Transient reactance',
     'withoutunit.stepUpTransformerX': 'Transformer reactance',
     'withoutunit.plannedActivePowerSetPoint': 'Planning P',
-    CreateLcc: 'Create HVDC (LCC)',
-    Filters: 'Filters',
     Side: 'Side',
     QatNominalV: 'Q at nominal voltage',
     LimitsTab: 'Limits',
-
-    shuntCompensatorId: 'Shunt compensator ID',
-    shuntCompensatorName: 'Shunt compensator name',
     connectedToHvdc: 'Connected To HVDC',
     ShuntSusceptancePerSection: 'Susceptance per section',
     ShuntIdenticalSections: 'Identical sections',
@@ -578,7 +564,6 @@ const messages_en = {
     shuntCompensatorType: 'Type',
     Information: 'Information',
     FillAllFields: 'Please fill all fields',
-    ModifyLcc: 'Modify HVDC (LCC)',
 
     CreateVoltageLevel: 'Create a voltage level',
     Substation: 'Substation',
@@ -608,13 +593,7 @@ const messages_en = {
 
     LineSplitWithVoltageLevel: 'Create a voltage level on a line',
     LineAttachToVoltageLevel: 'Attach a line to another line',
-    LinesAttachToSplitLines: 'Attaching lines to splitting lines',
-    LineToAttachTo: 'Existing line',
     BusbarOrNodeID: 'Bus bar section / bus',
-    Line1: 'Line 1',
-    Line2: 'Line 2',
-    ReplacingLine1: 'Replacing line 1',
-    ReplacingLine2: 'Replacing line 2',
     VoltageLevelToSplitAt: 'Voltage level to split at',
     Line1ID: 'Line 1 ID',
     Line2ID: 'Line 2 ID',
@@ -625,35 +604,14 @@ const messages_en = {
     NewVoltageLevel: 'Create voltage level',
     AttachedVoltageLevelId: 'Voltage level',
     AttachmentPoint: 'Attachment point',
-    AttachmentPointId: 'Attachment point ID',
-    AttachmentPointName: 'Attachment point name',
     SpecifyAttachmentPoint: 'Add attachment point information (option)',
     AttachedLine: 'Attached line',
     LineAttached: 'Attached line',
-    AttachedLineId: 'Attached line ID',
-    ReplacingLines: 'Replacing lines',
-    ReplacingLineId: 'ID replacing line',
-    ReplacingLineName: 'Name replacing line',
     LineDivisionError: 'Error while puting a voltage level amidst a line',
     LineAttachmentError: 'Error while attaching a voltage level to a line',
-    LoadScalingError: 'Error while creating a load scaling',
-    DeleteVoltageLevelOnLineError: 'Error while deleting a voltage level on a line',
-    DeleteAttachingLineError: 'Error while deleting an attaching line',
-    GenerationDispatchError: 'Error while creating a generation dispatch',
-    lineAttachedToSplitLineVoltageLevel: 'Voltage level with attached line to place as splitter',
 
     permanentCurrentLimitMandatory:
         'A permanent limit has to be set if the limit set contains temporary current limits',
-    [Q_MAX_AT_NOMINAL_V_MUST_BE_GREATER_THAN_ZERO]:
-        'The Qmax available at nominal voltage value must be greater than 0',
-    powerFactorMaxValueError: 'The power factor value must be less than 1',
-    powerFactorMinValueError: 'The power factor value must be greater than -1',
-    powerFactorIntervalValueError: 'The power factor value must be between 0 and 1',
-    [NOMINAL_V_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'The DC nominal voltage value must be greater than 0',
-    [DC_RESISTANCE_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'The DC resistance value must be greater than 0',
-    [MAX_P_MUST_BE_GREATER_OR_EQUAL_TO_ZERO]: 'The maximum active power value must be greater than 0',
-    [ACTIVE_POWER_SETPOINT_MIN_VALUE_ERROR]: 'The active power value must be greater than 0',
-    [ACTIVE_POWER_SETPOINT_MAX_VALUE_ERROR]: 'The active power value must be less than the maximum active power value',
     PermanentCurrentLimitText1: 'IST 1',
     PermanentCurrentLimitText2: 'IST 2',
 
@@ -667,14 +625,7 @@ const messages_en = {
     IncoherentLowTapPositionError: 'The value should match the lowest tap position generated',
     IncoherentHighTapPositionError: 'The value should match the highest tap position generated',
 
-    GeneratorScaling: 'Generator scaling',
     IterativeLabel: 'Iterative',
-    VariationMode: 'Variation mode',
-    ProportionalToPMax: 'Proportional to max P',
-    StackingUp: 'Stacking up',
-    GeneratorScalingError: 'Error while creating a generator scaling',
-    AllExplicitNamingFiltersError:
-        'All filters types have to be Explicit Naming when variation mode is stacking up or ventilation',
 
     FilterCreationError: 'Error while creating a filter',
     ContingencyListCreationError: 'Error while creating a contingency list',
@@ -782,22 +733,9 @@ const messages_en = {
     RatioTapChangerPosition: 'Ratio tap',
     Leg: 'Leg',
     Transformers: 'Transformers',
-    [VARIATION_LIST_EMPTY]: 'Variations list is empty',
     UnsupportedView: 'Search is unavailable in this view',
-
-    DeltaP: 'Δ P',
-    TargetPText: 'Target P',
-    CreateVariation: 'Add Variation',
     createNewSelection: 'Create a selection',
     ActiveVariationMode: 'Active variation mode',
-    ReactiveVariationMode: 'Reactive variation mode',
-    RegularDistribution: 'Regular distribution',
-    TanPhiFixed: 'tan(φ) fixed',
-    ConstantQWithoutUnit: 'Constant Q',
-    Variations: 'Variations',
-    LoadScaling: 'Load scaling',
-    DeleteVoltageLevelOnLine: 'Delete a voltage level on a line',
-    DeleteAttachingLine: 'Delete attaching line',
     LossCoefficient: 'Loss coefficient',
     ReduceMaxP: 'Reduce maxP',
     DefaultOutageRate: 'Default outage rate',
@@ -809,7 +747,6 @@ const messages_en = {
     GeneratorsFiltersFrequencyReserveToolTip:
         'User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry',
     GeneratorsOrdering: 'Substations hierarchy',
-    ReplacingLine: 'Replacing line',
 
     NetworkEquipmentNotFound: 'The equipment "{equipmentId}" does not exist in this network',
     SLDOpenedInTheGrid: 'The {diagramType} "{equipmentId}" was opened in the image grid',
@@ -937,17 +874,8 @@ const messages_en = {
     ConnectedT3WSide2: 'Connected 2',
     ConnectedT3WSide3: 'Connected 3',
 
-    converterStationId: 'Converter station ID',
-    converterStationName: 'Converter station name',
-    converterStation1: 'Converter station 1',
-    converterStation2: 'Converter station 2',
-    dcNominalVoltageLabel: 'DC nominal voltage',
-    dcResistanceLabel: 'DC resistance',
     operatorActivePowerLimitSide2Label: 'Operator active power limit (Side2->Side1)',
     operatorActivePowerLimitSide1Label: 'Operator active power limit (Side1->Side2)',
-    converterModeLabel: 'Converters mode',
-    lossFactorLabel: 'Loss Factor',
-    powerFactorLabel: 'Power Factor',
 
     'withoutunit.g': 'Magnetizing conductance',
     'withoutunit.b': 'Magnetizing susceptance',
@@ -1188,7 +1116,6 @@ const messages_en = {
         'Lines with an activated "Invalidate" option are applied one after another starting at the top of the list. If a substation is included in more than one filter, an entry can therefore be replaced by a subsequent entry.',
     nodeAliasesRetrievingError: 'An error occured while retrieving node aliases',
     nodeAliasesUpdateError: 'An error occured while updating node aliases',
-    previousConnection: 'Prev. connection',
 
     confirmRootNetworkCreation:
         'The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\nThis will unbuild all nodes in the study.\n\nThis interface change is irreversible.',

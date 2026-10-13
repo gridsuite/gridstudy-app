@@ -157,6 +157,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     disabled={
                         computationStarting ||
                         oneBusShortcircuitAnalysisState === RunningStatus.RUNNING ||
+                        oneBusShortcircuitAnalysisState === RunningStatus.PRELOADING ||
                         !canModifyEquipment
                     }
                 >

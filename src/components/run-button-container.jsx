@@ -179,7 +179,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             }
             setComputationStopped(false);
             dispatch(setComputationStarting(true));
-            dispatch(setComputingStatus(computingType, RunningStatus.RUNNING));
+            dispatch(setComputingStatus(computingType, RunningStatus.PRELOADING));
             fnStart()
                 .then(fnThen)
                 .catch((error) => {

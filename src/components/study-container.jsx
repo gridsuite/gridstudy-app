@@ -512,19 +512,23 @@ export function StudyContainer() {
             const eventData = parseEventData(event);
             const quotaType = eventData.headers.quotaType;
 
-            fetchUserQuotaState(userName).then((response) => {
-                const currentComputationQuota = response[quotaType];
+            fetchUserQuotaState(userName)
+                .then((response) => {
+                    const currentComputationQuota = response[quotaType];
 
-                if (currentComputationQuota != null) {
-                    if (currentComputationQuota.current >= currentComputationQuota.max) {
-                        console.debug('Quota reached', quotaType, currentComputationQuota);
-                    } else {
-                        console.debug('Quota available', quotaType, currentComputationQuota);
+                    if (currentComputationQuota != null) {
+                        if (currentComputationQuota.current >= currentComputationQuota.max) {
+                            console.debug('Quota reached', quotaType, currentComputationQuota);
+                        } else {
+                            console.debug('Quota available', quotaType, currentComputationQuota);
+                        }
                     }
-                }
-            });
+                })
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'NodeUnbuildingError' });
+                });
         },
-        [userName]
+        [userName, snackError]
     );
 
     useNotificationsListener(NotificationsUrlKeys.QUOTA, {

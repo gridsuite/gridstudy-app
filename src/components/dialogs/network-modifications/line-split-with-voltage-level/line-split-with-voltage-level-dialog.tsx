@@ -24,14 +24,11 @@ import {
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    BUS_OR_BUSBAR_SECTION,
     CONNECTIVITY,
-    ID,
     LINE1_ID,
     LINE2_ID,
     LINE_TO_ATTACH_OR_SPLIT_ID,
     SLIDER_PERCENTAGE,
-    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -99,7 +96,7 @@ const LineSplitWithVoltageLevelDialog = ({
         ),
     });
 
-    const { reset, setValue, getValues } = formMethods;
+    const { reset } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -133,7 +130,7 @@ const LineSplitWithVoltageLevelDialog = ({
             ) {
                 return;
             }
-            const dto = lineSplitWithVoltageLevelCreationFormToDto(lineSplit, newVoltageLevel);
+            const dto = lineSplitWithVoltageLevelCreationFormToDto(lineSplit);
             divideLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -151,7 +148,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 snackWithFallback(snackError, error, { headerId: 'LineDivisionError' });
             });
         },
-        [currentNodeUuid, editData, newVoltageLevel, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {
@@ -190,25 +187,10 @@ const LineSplitWithVoltageLevelDialog = ({
 
                 setVoltageLevelOptions(newVoltageLevelOptions);
                 setNewVoltageLevel(preparedVoltageLevel);
-                // Addressing the nested `${CONNECTIVITY}.${VOLTAGE_LEVEL}` path directly makes react-hook-form's
-                // path types resolve to `never` for this FieldConstants-keyed schema. Set the whole connectivity
-                // object instead (keeping busOrBusbarSection as-is).
-                const currentConnectivity = getValues(CONNECTIVITY);
-                setValue(
-                    CONNECTIVITY,
-                    {
-                        ...currentConnectivity,
-                        [VOLTAGE_LEVEL]: { [ID]: preparedVoltageLevel.equipmentId },
-                        [BUS_OR_BUSBAR_SECTION]: currentConnectivity?.[BUS_OR_BUSBAR_SECTION] ?? null,
-                    },
-                    {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                    }
-                );
+                // LineSplitWithVoltageLevelCreationForm updates the connectivity field itself.
             });
         },
-        [setValue, getValues, newVoltageLevel, voltageLevelOptions]
+        [newVoltageLevel, voltageLevelOptions]
     );
 
     const fetchBusesOrBusbarSections = useCallback(
@@ -270,7 +252,6 @@ const LineSplitWithVoltageLevelDialog = ({
                     lineOptions={lineOptions}
                     voltageLevelOptions={voltageLevelOptions}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
-                    newVoltageLevel={newVoltageLevel}
                     onNewVoltageLevelCreated={onVoltageLevelCreationDo}
                     isUpdate={isUpdate}
                     NewVoltageLevelPane={NewVoltageLevelPane}

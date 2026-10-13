@@ -25,12 +25,8 @@ export const CASE_NAME = 'caseName';
 export const CASE_ID = 'caseId';
 export const SUBSTATION_ID = 'substationId';
 export const NOMINAL_VOLTAGE = 'nominalVoltage';
-export const NOMINAL_V = 'nominalV';
 export const TOPOLOGY_KIND = 'topologyKind';
 export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
-export const CONNECTION_DIRECTION = 'connectionDirection';
-export const CONNECTION_NAME = 'connectionName';
-export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'terminalConnected';
 export const IS_REMOVED = 'isRemoved';
 export const IS_SEPARATOR = 'isSeparator';
@@ -43,7 +39,6 @@ export const EXPORT_DESTINATION = 'exportDestination';
 export const TYPE = 'type';
 
 export const CHARACTERISTICS = 'characteristics';
-export const R = 'r';
 export const X = 'x';
 export const G = 'g';
 export const B = 'b';
@@ -57,7 +52,6 @@ export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
 export const LINE_SEGMENTS = 'lineSegments';
 
-export const MAX_P = 'maxP';
 export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
 export const TARGET_P = 'targetP';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
@@ -104,9 +98,6 @@ export const REGULATING_TERMINAL_CONNECTABLE_TYPE = 'regulatingTerminalConnectab
 //ShuntCompensator
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
 export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
-export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
-export const SHUNT_COMPENSATOR_ID = 'shuntCompensatorId';
-export const SHUNT_COMPENSATOR_NAME = 'shuntCompensatorName';
 //line
 export const LIMITS = 'limits';
 export const TAB_HEADER = 'tabHeader';
@@ -165,8 +156,6 @@ export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';
 export const ATTACHMENT_POINT_NAME = 'attachmentPointName';
 export const ATTACHMENT_LINE_ID = 'attachmentLineId';
-export const LINE1_NAME = 'Line1Name';
-export const LINE2_NAME = 'Line2Name';
 export const LINE1_ID = 'Line1Id';
 export const LINE2_ID = 'Line2Id';
 
@@ -175,34 +164,13 @@ export const SLIDER_PERCENTAGE = 'sliderPercentage';
 export const LINE_TO_ATTACH_TO_1_ID = 'lineToAttachTo1Id';
 export const LINE_TO_ATTACH_TO_2_ID = 'lineToAttachTo2Id';
 
-// scaling
-export const VARIATIONS = 'variations';
-export const VARIATION_MODE = 'variationMode';
-export const FILTERS = 'filters';
-export const VARIATION_TYPE = 'variationType';
-export const VARIATION_VALUE = 'variationValue';
-export const REACTIVE_VARIATION_MODE = 'reactiveVariationMode';
 // elements and directories
 export const SPECIFIC_METADATA = 'specificMetadata';
 
 export const ATTACHED_LINE_ID = 'attachedLineId';
 export const VOLTAGE_LEVEL_ID = 'voltageLevelId';
-export const BUS_BAR_SECTION_ID = 'bbsBusId';
 export const REPLACING_LINE_1_ID = 'replacingLine1Id';
-export const REPLACING_LINE_2_ID = 'replacingLine2Id';
 export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
-export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
-
-// generation dispatch
-export const LOSS_COEFFICIENT = 'lossCoefficient';
-export const DEFAULT_OUTAGE_RATE = 'defaultOutageRate';
-export const GENERATORS_WITHOUT_OUTAGE = 'generatorsWithoutOutage';
-export const GENERATORS_WITH_FIXED_ACTIVE_POWER = 'generatorsWithFixedActivePower';
-export const GENERATORS_FREQUENCY_RESERVES = 'generatorsFrequencyReserve';
-export const GENERATORS_FILTERS = 'generatorsFilters';
-export const FREQUENCY_RESERVE = 'frequencyReserve';
-export const SUBSTATIONS_GENERATORS_ORDERING = 'substationsGeneratorsOrdering';
-export const SUBSTATION_IDS = 'substationIds';
 
 export const SELECTION_TYPE = 'selectionType';
 
@@ -215,35 +183,16 @@ export const RATIO_TAP_CHANGER_POSITION = 'ratioTapChangerPosition';
 export const RATIO_TAP_CHANGER_TARGET_V = 'ratioTapChangerTargetV';
 export const LEG_SIDE = 'legSide';
 
-// HVDC deletion
-export const DELETION_SPECIFIC_DATA = 'equipmentInfos';
-export const DELETION_SPECIFIC_TYPE = 'specificType';
-export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
-export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
-export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
-export const SHUNT_COMPENSATOR_SELECTED = 'connectedToHvdc';
-export const PREVIOUS_SHUNT_COMPENSATOR_SELECTED = 'previousConnectedToHvdc';
-export const PROVIDER = 'provider';
-
 // VSC
 export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
 export const REACTIVE_POWER = 'reactivePower';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 = 'operatorActivePowerLimitSide1';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 = 'operatorActivePowerLimitSide2';
-export const CONVERTERS_MODE = 'convertersMode';
 export const ANGLE_DROOP_ACTIVE_POWER_CONTROL = 'angleDroopActivePowerControl';
 export const P0 = 'p0';
-export const CONVERTER_STATION_ID = 'converterStationId';
-export const CONVERTER_STATION_NAME = 'converterStationName';
-export const LOSS_FACTOR = 'lossFactor';
-export const POWER_FACTOR = 'powerFactor';
 export const VOLTAGE = 'voltage';
-export const HVDC_LINE_TAB = 'hvdcLineTab';
-export const CONVERTER_STATION_1 = 'converterStation1';
-export const CONVERTER_STATION_2 = 'converterStation2';
 
 export const EQUIPMENT_TYPE_FIELD = 'equipmentType';
-export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
 
 /* State estimation parameters fields */
 /* General */
@@ -295,22 +244,6 @@ export const AREA_INVALIDATIONS = 'areaInvalidations';
 export const INVALIDATE = 'invalidate';
 export const FILTER = 'filter';
 export const INVALIDATION_TYPE = 'invalidationType';
-
-/* State estimation extensions */
-export const STATE_ESTIMATION = 'stateEstimation';
-// Measurements common to Branch (line/2wt)
-export const MEASUREMENT_P1 = 'measurementP1';
-export const MEASUREMENT_P2 = 'measurementP2';
-export const MEASUREMENT_Q1 = 'measurementQ1';
-export const MEASUREMENT_Q2 = 'measurementQ2';
-// Measurements common for the rest of the equipments
-export const MEASUREMENT_P = 'measurementP';
-export const MEASUREMENT_Q = 'measurementQ';
-export const VALIDITY = 'validity';
-// toBeEstimated specific to 2WT
-export const TO_BE_ESTIMATED = 'toBeEstimated';
-export const RATIO_TAP_CHANGER_STATUS = 'ratioTapChangerStatus';
-export const PHASE_TAP_CHANGER_STATUS = 'phaseTapChangerStatus';
 
 // BALANCES ADJUSTMENT
 export const BALANCES_ADJUSTMENT = 'balancesAdjustment';
