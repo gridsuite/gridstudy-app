@@ -117,7 +117,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     const intl = useIntl();
 
     const openLoader = useOpenLoaderShortWait({
-        isLoading: status === RunningStatus.RUNNING,
+        isLoading: status === RunningStatus.RUNNING || status === RunningStatus.PRELOADING,
         delay: RESULTS_LOADING_DELAY,
     });
 

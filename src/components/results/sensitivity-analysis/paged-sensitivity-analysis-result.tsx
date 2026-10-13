@@ -206,7 +206,7 @@ function PagedSensitivityAnalysisResult({
     const debouncedFetchResult = useDebounce(fetchResult, 1000);
 
     useEffect(() => {
-        if (sensiStatus === RunningStatus.RUNNING) {
+        if (sensiStatus === RunningStatus.RUNNING || sensiStatus === RunningStatus.PRELOADING) {
             setResult(null);
         }
         if (sensiStatus === RunningStatus.SUCCEED) {
