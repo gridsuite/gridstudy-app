@@ -24,7 +24,10 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { ModificationDialog } from '../commons/modificationDialog';
 import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
-import { hasSharedModifications } from 'services/study/network-modifications';
+import {
+    getSharedModificationsWriteAccess,
+    SharedModificationsWriteAccess,
+} from 'services/study/network-modifications';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
@@ -117,14 +120,15 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
         formState: { errors },
     } = formMethods;
 
-    const [isStudyContainingSharedModifications, setIsStudyContainingSharedModifications] = useState(false);
+    const [sharedModificationsWriteAccess, setSharedModificationsWriteAccess] =
+        useState<SharedModificationsWriteAccess>(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
     useEffect(() => {
         if (open && isModification && studyUuid) {
-            hasSharedModifications(studyUuid)
-                .then(setIsStudyContainingSharedModifications)
+            getSharedModificationsWriteAccess(studyUuid)
+                .then(setSharedModificationsWriteAccess)
                 .catch((error) => {
-                    console.error('Failed to fetch whether the study contains shared modifications', error);
-                    setIsStudyContainingSharedModifications(false);
+                    console.error('Failed to fetch the write access on the shared modifications of the study', error);
+                    setSharedModificationsWriteAccess(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
                 });
         }
     }, [isModification, open, studyUuid]);
@@ -250,11 +254,20 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             max_length={MAX_TAG_LENGTH}
                             formProps={{ sx: { width: 160, flexShrink: 0 } }}
                         />
-                        {isRenamingTag && isStudyContainingSharedModifications && (
-                            <Alert severity="warning">
-                                <FormattedMessage id="sharedModificationsApplicabilitiesOverwritten" />
-                            </Alert>
-                        )}
+                        {isRenamingTag &&
+                            sharedModificationsWriteAccess !==
+                                SharedModificationsWriteAccess.NO_SHARED_MODIFICATION && (
+                                <Alert severity="warning">
+                                    <FormattedMessage
+                                        id={
+                                            sharedModificationsWriteAccess ===
+                                            SharedModificationsWriteAccess.ALL_WRITABLE
+                                                ? 'sharedModificationsApplicabilitiesOverwritten'
+                                                : 'sharedModificationsNotWritableTagRenaming'
+                                        }
+                                    />
+                                </Alert>
+                            )}
                     </Stack>
                 </Stack>
                 {!isModification && <ImportParametersSection />}
