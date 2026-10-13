@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
     BalancesAdjustmentDto,
     BalancesAdjustmentForm,
@@ -28,7 +28,6 @@ import { FetchStatus } from '../../../../services/utils';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import { balancesAdjustment } from 'services/study/network-modifications';
-import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { getLoadFlowParametersId } from 'services/study/loadflow';
 
 export type BalancesAdjustmentDialogProps = NetworkModificationDialogProps & {
@@ -46,13 +45,10 @@ export function BalancesAdjustmentDialog({
 }: Readonly<BalancesAdjustmentDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const { countryCodes, translate } = useLocalizedCountries();
-
-    const formSchema = useMemo(() => balancesAdjustmentFormSchema(countryCodes), [countryCodes]);
 
     const formMethods = useForm<BalancesAdjustmentFormData>({
         defaultValues: balancesAdjustmentEmptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver(balancesAdjustmentFormSchema),
     });
 
     const { reset, formState } = formMethods;
@@ -99,7 +95,7 @@ export function BalancesAdjustmentDialog({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider validationSchema={balancesAdjustmentFormSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -111,11 +107,7 @@ export function BalancesAdjustmentDialog({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <BalancesAdjustmentForm
-                    countryCodes={countryCodes}
-                    translate={translate}
-                    useTabsReturn={useTabsReturn}
-                />
+                <BalancesAdjustmentForm useTabsReturn={useTabsReturn} />
             </ModificationDialog>
         </CustomFormProvider>
     );
