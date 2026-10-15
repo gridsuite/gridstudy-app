@@ -1129,7 +1129,6 @@ const messages_en = {
     notBuiltNodeTooltipForDiagram: 'Diagram from last build node in current branch',
     BalancesAdjustment: 'Balances adjustment',
     BalancesAdjustmentError: 'Error while creating a balances adjustment',
-    PROPORTIONAL: 'Proportional',
     loadFlowModification: 'Loadflow modification applied',
 
     CreateVoltageLevelTopology: 'Adding a busbar',

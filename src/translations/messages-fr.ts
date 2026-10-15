@@ -1145,7 +1145,6 @@ const messages_fr = {
     notBuiltNodeTooltipForDiagram: 'Diagramme du dernier nœud réalisé de la branche courante',
     BalancesAdjustment: 'Équilibrage bilan',
     BalancesAdjustmentError: "Erreur lors de la création de l'équilibrage bilan",
-    PROPORTIONAL: 'Proportionnelle',
     loadFlowModification: 'Modification par calcul de répartition appliquée',
     CreateVoltageLevelTopology: 'Ajouter un jeu de barre',
     diagramLoadingFail: 'Erreur lors du chargement de {diagramName}',
