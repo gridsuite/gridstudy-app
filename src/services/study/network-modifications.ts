@@ -9,6 +9,7 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    BalancesAdjustmentDto,
     DeleteAttachingLineDto,
     EquipmentDeletionDto,
     EquipmentInfos,
@@ -55,12 +56,7 @@ import {
 import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
-import {
-    BalancesAdjustmentInfos,
-    DivideLineInfo,
-    NetworkModificationRequestInfos,
-    VoltageLevelCreationInfo,
-} from '../network-modification-types';
+import { DivideLineInfo, VoltageLevelCreationInfo } from '../network-modification-types';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -1352,16 +1348,13 @@ export function createCouplingDevice({
     });
 }
 
-export function balancesAdjustment({
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    ...balancesAdjustmentInfos
-}: Omit<BalancesAdjustmentInfos, 'uuid'> & NetworkModificationRequestInfos) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.BALANCES_ADJUSTMENT.type,
-        ...balancesAdjustmentInfos,
-    });
+export function balancesAdjustment(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: string | undefined,
+    balancesAdjustmentDto: BalancesAdjustmentDto
+) {
+    const body = JSON.stringify(balancesAdjustmentDto);
 
     let balancesAdjustmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
