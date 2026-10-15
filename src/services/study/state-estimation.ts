@@ -94,6 +94,7 @@ export function getStateEstimationStudyParameters(studyUuid: UUID) {
     return backendFetchJson(getStateEstimParams);
 }
 
+// TODO DBR to be removed
 export function computeLogicalControls(
     studyUuid: UUID,
     currentNodeUuid: UUID,
@@ -105,4 +106,30 @@ export function computeLogicalControls(
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/state-estimation/logical-controls`;
     console.debug(url);
     return backendFetchJson(url, { method: 'post' });
+}
+
+export function startLogicalControls(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+): Promise<Response> {
+    console.info(
+        `Running logical controls on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/logical-controls/run`;
+    console.debug(url);
+    return backendFetch(url, { method: 'post' });
+}
+
+export function fetchLogicalControlsStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching logical controls status on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/logical-controls/status`;
+    console.debug(url);
+    return backendFetchText(url);
 }
