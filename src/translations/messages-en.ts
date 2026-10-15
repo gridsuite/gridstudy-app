@@ -939,7 +939,6 @@ const messages_en = {
     frequencyRegulation: 'Active power regulation',
     TieLines: 'Tie lines',
     StateEstimation: 'State estimation',
-    startStateEstmationError: 'An error occurred while launching the state estimation',
     stateEstimationError: 'An error occurred when executing the state estimation',
     PccMin: 'Pcc min N-1',
     startPccMinError: 'An error occurred while launching the pcc min',
