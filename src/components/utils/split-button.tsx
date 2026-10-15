@@ -11,7 +11,7 @@ import StopIcon from '@mui/icons-material/Stop';
 import DoneIcon from '@mui/icons-material/Done';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
 import { AppState } from 'redux/reducer.type';
 import { type MuiStyles, RunningStatus } from '@gridsuite/commons-ui';
@@ -59,6 +59,7 @@ const SplitButton = ({
     actionOnRunnable,
     onSelectionChange,
 }: SplitButtonProps) => {
+    const intl = useIntl();
     const [open, setOpen] = useState(false);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
 
@@ -109,6 +110,7 @@ const SplitButton = ({
                             )
                         }
                         disabled={buttonDisabled && runningStatus === RunningStatus.IDLE}
+                        aria-disabled={buttonDisabled}
                         onClick={buttonDisabled ? undefined : handleClick}
                         sx={buttonDisabled ? styles.notClickable : undefined}
                         data-testid="RunModelButton"
@@ -121,6 +123,7 @@ const SplitButton = ({
                         <span style={{ display: 'flex' }}>
                             <Button
                                 size="small"
+                                aria-label={intl.formatMessage({ id: 'StopComputation' })}
                                 onClick={actionOnRunnable}
                                 disabled={selectionDisabled || stopDisabled}
                                 data-testid="StopComputationButton"
