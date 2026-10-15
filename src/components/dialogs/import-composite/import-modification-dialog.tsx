@@ -15,10 +15,14 @@ import {
     DndTable,
     ElementType,
     PARAM_DEVELOPER_MODE,
-    snackWithFallback,
+    snackWarningOrFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import {
+    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED,
+    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
+} from 'components/graph/menus/root-network/root-network.types';
 import { type CompositesToBeInserted, insertCompositeModifications } from '../../../services/study';
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -132,7 +136,7 @@ const STEP_ORGANIZATION = 1;
 
 const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModificationDialogProps>): JSX.Element => {
     const intl = useIntl();
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
@@ -270,11 +274,18 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             description: m.description,
         }));
         insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, action).catch((error) =>
-            snackWithFallback(snackError, error, { headerId: 'importComposites.error' })
+            snackWarningOrFallback(
+                snackError,
+                snackWarning,
+                error,
+                [ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED],
+                { headerId: 'importComposites.error' },
+                ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS
+            )
         );
 
         handleClose();
-    }, [studyUuid, currentNode, isValid, selectedModifications, action, handleClose, snackError]);
+    }, [studyUuid, currentNode, isValid, selectedModifications, action, handleClose, snackError, snackWarning]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
