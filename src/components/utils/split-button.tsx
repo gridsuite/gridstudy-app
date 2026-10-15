@@ -5,127 +5,32 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    Button,
-    ButtonGroup,
-    ClickAwayListener,
-    Grow,
-    ListItemIcon,
-    ListItemText,
-    MenuItem,
-    MenuList,
-    Paper,
-    Popper,
-} from '@mui/material';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { Badge, Button, ButtonGroup, CircularProgress, Menu, MenuItem, Tooltip } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import StopIcon from '@mui/icons-material/Stop';
-import LoopIcon from '@mui/icons-material/Loop';
 import DoneIcon from '@mui/icons-material/Done';
-import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import { useSelector } from 'react-redux';
+import { FormattedMessage } from 'react-intl';
 import { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
 import { AppState } from 'redux/reducer.type';
-import { mergeSx, type MuiStyles, RunningStatus } from '@gridsuite/commons-ui';
+import { type MuiStyles, RunningStatus } from '@gridsuite/commons-ui';
 
 const styles = {
-    expand: (theme) => ({
-        marginLeft: 'auto',
-        transition: theme.transitions.create('transform', {
-            duration: theme.transitions.duration.shortest,
-        }),
-    }),
-    expandOpen: {
-        transform: 'rotate(180deg)',
-    },
-    listOptions: (theme) => ({
-        minWidth: '270px',
-        marginRight: '43px',
-        position: 'relative',
-        boxShadow: 'none',
-        borderRadius: '0',
-        border: '1px solid #7f7f7e',
-        background: theme.palette.background.default,
-        color: theme.palette.text.primary,
-        '& ul': {
+    badge: (theme) => ({
+        '& .MuiBadge-badge': {
+            minWidth: theme.spacing(2),
+            height: theme.spacing(2),
             padding: 0,
-            '& li:first-of-type': {
-                borderBottom: '1px solid #7f7f7e',
-            },
+            boxShadow: theme.shadows[2],
         },
     }),
-    stop: {
-        color: 'red',
+    // a running or already done computation keeps the button look even when it can't be clicked
+    notClickable: {
+        pointerEvents: 'none',
     },
-    rotate: {
-        animation: 'spin 1000ms infinite',
-    },
-    succeed: {
-        backgroundColor: '#0ca789',
-        color: '#fdfdfd',
-        border: '1px solid #0ca789',
-        '&:nth-of-type(1)': {
-            minWidth: '270px',
-        },
-        '&:nth-of-type(2)': {
-            borderLeft: '1px solid #92b1ab',
-        },
-        '&:disabled, &:hover': {
-            backgroundColor: '#0ca789',
-            color: '#fdfdfd',
-        },
-    },
-    failed: {
-        backgroundColor: '#d85050',
-        color: '#fdfdfd',
-        border: '1px solid #d85050',
-        '&:nth-of-type(1)': {
-            minWidth: '270px',
-        },
-        '&:nth-of-type(2)': {
-            borderLeft: '1px solid #c58585',
-        },
-        '&:disabled, &:hover': {
-            backgroundColor: '#d85050',
-            color: '#fdfdfd',
-        },
-    },
-    running: (theme) => ({
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-        border: '1px solid #808080',
-        '&:nth-of-type(1)': {
-            minWidth: '270px',
-            color: theme.palette.text.primary,
-        },
-        '&:nth-of-type(2)': {
-            borderLeft: '1px solid #4a4a4a',
-        },
-        '&:hover': {
-            backgroundColor: theme.palette.background.default,
-            color: theme.palette.text.primary,
-        },
-    }),
-    idle: (theme) => ({
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-        borderColor: '#808080',
-        '&:nth-of-type(1)': {
-            minWidth: '270px',
-            color: theme.palette.text.primary,
-        },
-
-        '&:hover': {
-            backgroundColor: theme.palette.background.default,
-            border: '1px solid ' + theme.palette.primary,
-            color: theme.palette.text.primary,
-        },
-        '&:disabled': {
-            color: theme.palette.text.disabled,
-        },
-    }),
-    runMenuButton: {
-        zIndex: 99,
+    menuPaper: {
+        marginTop: 0.5,
     },
 } as const satisfies MuiStyles;
 
@@ -159,127 +64,105 @@ const SplitButton = ({
 
     const anchorRef = useRef<HTMLDivElement | null>(null);
 
+    const isRunning = runningStatus === RunningStatus.RUNNING || runningStatus === RunningStatus.PRELOADING;
+
     const handleClick = (event: ReactMouseEvent<HTMLButtonElement>) => {
         if (onClick) {
             onClick(event.ctrlKey);
         }
     };
 
-    const handleMenuItemClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
-        if (runningStatus === RunningStatus.RUNNING) {
-            actionOnRunnable();
-        } else {
-            onSelectionChange(index);
-        }
+    const handleMenuItemClick = (index: number) => {
+        onSelectionChange(index);
         setOpen(false);
     };
 
-    const handleToggle = () => {
-        setOpen((prevOpen) => !prevOpen);
-    };
-
-    const handleClose = (event: MouseEvent | TouchEvent) => {
-        // after doing some researches, casting event.target as HTMLElement seems to be the way to type this
-        if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
-            return;
-        }
-        setOpen(false);
-    };
-
-    const getRunningIcon = (status: RunningStatus) => {
+    const getResultBadge = (status: RunningStatus) => {
         switch (status) {
-            case RunningStatus.PRELOADING:
-            case RunningStatus.RUNNING:
-                return <LoopIcon sx={styles.rotate} data-testid="ModelExecutionRunning" />;
             case RunningStatus.SUCCEED:
-                return <DoneIcon data-testid="ModelExecutionDone" />;
+                return <DoneIcon fontSize="inherit" data-testid="ModelExecutionDone" />;
             case RunningStatus.FAILED:
-                return <ErrorOutlinedIcon data-testid="ModelExecutionFail" />;
-            case RunningStatus.IDLE:
+                return <span data-testid="ModelExecutionFail">!</span>;
             default:
-                return <PlayIcon />;
+                return null;
         }
     };
 
-    const getStyle = (runningStatus: RunningStatus) => {
-        switch (runningStatus) {
-            case RunningStatus.SUCCEED:
-                return styles.succeed;
-            case RunningStatus.FAILED:
-                return styles.failed;
-            case RunningStatus.RUNNING:
-            case RunningStatus.PRELOADING:
-                return styles.running;
-            case RunningStatus.IDLE:
-            default:
-                return styles.idle;
-        }
-    };
-
-    const breakText = (text: string) => {
-        return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
-    };
-
-    const disabledOption =
+    const stopDisabled =
         computationStarting || // disable if fetch starting a computation is pending
-        ((runningStatus === RunningStatus.RUNNING || runningStatus === RunningStatus.PRELOADING) && computationStopped); // disable if already stopped once
+        computationStopped; // disable if already stopped once
 
     return (
         <>
-            <ButtonGroup ref={anchorRef}>
-                <Button
-                    variant="outlined"
-                    startIcon={getRunningIcon(runningStatus)}
-                    sx={getStyle(runningStatus)}
-                    disabled={buttonDisabled}
-                    onClick={handleClick}
-                    data-testid="RunModelButton"
+            <ButtonGroup variant="contained" ref={anchorRef}>
+                <Badge
+                    color={runningStatus === RunningStatus.FAILED ? 'error' : 'success'}
+                    badgeContent={getResultBadge(runningStatus)}
+                    sx={styles.badge}
                 >
-                    <span style={{ marginTop: '2px' }}>{breakText(text)}</span>
-                </Button>
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={handleToggle}
-                    sx={getStyle(runningStatus)}
-                    disabled={selectionDisabled}
-                    data-testid="RunnableModelsButton"
-                >
-                    <ArrowDropDownIcon sx={mergeSx(styles.expand, open ? styles.expandOpen : undefined)} />
-                </Button>
-            </ButtonGroup>
-            <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition sx={styles.runMenuButton}>
-                {({ TransitionProps, placement }) => (
-                    <Grow
-                        {...TransitionProps}
-                        style={{
-                            transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
-                        }}
+                    <Button
+                        startIcon={
+                            isRunning ? (
+                                <CircularProgress color="inherit" size={20} data-testid="ModelExecutionRunning" />
+                            ) : (
+                                <PlayIcon />
+                            )
+                        }
+                        disabled={buttonDisabled && runningStatus === RunningStatus.IDLE}
+                        onClick={buttonDisabled ? undefined : handleClick}
+                        sx={buttonDisabled ? styles.notClickable : undefined}
+                        data-testid="RunModelButton"
                     >
-                        <Paper sx={styles.listOptions}>
-                            <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList id="split-button-menu">
-                                    {options.map((option, index) => (
-                                        <MenuItem
-                                            disabled={disabledOption}
-                                            key={option}
-                                            selected={index === selectedIndex}
-                                            onClick={(event) => handleMenuItemClick(event, index)}
-                                        >
-                                            {runningStatus === RunningStatus.RUNNING && (
-                                                <ListItemIcon>
-                                                    <StopIcon fontSize="small" sx={styles.stop} />
-                                                </ListItemIcon>
-                                            )}
-                                            <ListItemText primary={breakText(option)} />
-                                        </MenuItem>
-                                    ))}
-                                </MenuList>
-                            </ClickAwayListener>
-                        </Paper>
-                    </Grow>
+                        {text}
+                    </Button>
+                </Badge>
+                {isRunning ? (
+                    <Tooltip title={<FormattedMessage id="StopComputation" />}>
+                        <span style={{ display: 'flex' }}>
+                            <Button
+                                size="small"
+                                onClick={actionOnRunnable}
+                                disabled={selectionDisabled || stopDisabled}
+                                data-testid="StopComputationButton"
+                            >
+                                <StopIcon />
+                            </Button>
+                        </span>
+                    </Tooltip>
+                ) : (
+                    <Button
+                        size="small"
+                        onClick={() => setOpen(true)}
+                        disabled={selectionDisabled}
+                        data-testid="RunnableModelsButton"
+                    >
+                        <ExpandMoreIcon />
+                    </Button>
                 )}
-            </Popper>
+            </ButtonGroup>
+            <Menu
+                id="split-button-menu"
+                anchorEl={anchorRef.current}
+                open={open}
+                onClose={() => setOpen(false)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{ paper: { sx: styles.menuPaper } }}
+                marginThreshold={0}
+                elevation={1}
+            >
+                {options.map((option, index) => (
+                    <MenuItem
+                        disabled={computationStarting}
+                        key={option}
+                        selected={index === selectedIndex}
+                        divider={index === 0}
+                        onClick={() => handleMenuItemClick(index)}
+                    >
+                        {option}
+                    </MenuItem>
+                ))}
+            </Menu>
         </>
     );
 };

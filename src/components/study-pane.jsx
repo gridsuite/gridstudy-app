@@ -19,7 +19,6 @@ import useStudyPath from 'hooks/use-study-path';
 import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 import { CustomAggridReduxProvider } from './custom-aggrid/custom-aggrid-redux-provider';
 import { RunButtonContainer } from './run-button-container';
-import StudyNavigationSyncToggle from './study-navigation-sync-toggle';
 
 const styles = {
     paneContainer: {
@@ -45,16 +44,6 @@ const styles = {
         gap: 1,
         p: 1,
     }),
-    '@global': {
-        '@keyframes spin': {
-            '0%': {
-                transform: 'rotate(0deg)',
-            },
-            '100%': {
-                transform: 'rotate(-360deg)',
-            },
-        },
-    },
 };
 
 const StudyPane = () => {
@@ -81,7 +70,6 @@ const StudyPane = () => {
                 <Box sx={styles.breadCrumbs}>
                     <StudyPathBreadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
                     <Box sx={styles.studyControls}>
-                        <StudyNavigationSyncToggle />
                         {studyUuid && currentRootNetworkUuid && (
                             <RunButtonContainer
                                 studyUuid={studyUuid}
