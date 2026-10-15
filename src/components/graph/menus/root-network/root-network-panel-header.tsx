@@ -14,6 +14,7 @@ import {
     LeftPanelOpenIcon,
     type MuiStyles,
     OverflowableText,
+    snackWarningOrFallback,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -27,6 +28,10 @@ import { setHighlightModification, setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
+import {
+    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED,
+    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
+} from './root-network.types';
 
 const styles = {
     headerPanel: (theme) => ({
@@ -66,7 +71,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     setIsSearchActive,
     closeSearchPanel,
 }) => {
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const dispatch = useDispatch();
@@ -164,7 +169,14 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                 caseFormat: caseFormat ?? null,
             },
         }).catch((error) => {
-            snackWithFallback(snackError, error, { headerId: 'createRootNetworksError' });
+            snackWarningOrFallback(
+                snackError,
+                snackWarning,
+                error,
+                [ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED],
+                { headerId: 'createRootNetworksError' },
+                ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS
+            );
             setIsRootNetworksProcessing(false);
         });
 
