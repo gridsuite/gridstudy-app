@@ -980,10 +980,6 @@ const messages_fr = {
     StateEstimationQualityCriterionResults: 'Qualité critères',
     StateEstimationQualityPerRegionResults: 'Qualité régions',
     StateEstimationStatusResults: 'Statut',
-    StateEstimationLogicalControlsResults: 'Contrôles logiques',
-    StateEstimationRunLogicalControls: 'Lancer les contrôles logiques',
-    LogicalControlsComputationErrorMsg:
-        'Une erreur est survenue lors du calcul et de la récupération des résultats des contrôles logiques',
     ValidityType: 'Validité',
     EstimatedValue: 'Valeur estimée',
     DifferenceValue: 'Écart',

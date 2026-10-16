@@ -9,7 +9,6 @@ import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index'
 import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { StateEstimationParameters } from '../../components/dialogs/parameters/state-estimation/state-estimation-parameters-utils';
-import { LogicalControlsResultDto as SyncLogicalControlsResultDto } from '../../components/results/stateestimation/logicalcontrols/logicalControls.types';
 import { LogicalControlsResultDto } from '../../components/results/logicalcontrols/logicalControls.types';
 
 export function startStateEstimation(
@@ -93,20 +92,6 @@ export function getStateEstimationStudyParameters(studyUuid: UUID) {
     const getStateEstimParams = getStudyUrl(studyUuid) + '/state-estimation/parameters';
     console.debug(getStateEstimParams);
     return backendFetchJson(getStateEstimParams);
-}
-
-// TODO DBR to be removed
-export function computeLogicalControls(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID
-): Promise<SyncLogicalControlsResultDto> {
-    console.info(
-        `compute and retrieve logical controls on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
-    );
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/state-estimation/logical-controls`;
-    console.debug(url);
-    return backendFetchJson(url, { method: 'post' });
 }
 
 export function startLogicalControls(
