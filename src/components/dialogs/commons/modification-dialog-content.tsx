@@ -48,7 +48,7 @@ export function ModificationDialogContent({
     subtitle,
     ...dialogProps
 }: Readonly<ModificationDialogContentProps>) {
-    const { readOnly } = useCustomFormContext();
+    const { isReadOnly } = useCustomFormContext();
 
     const catalogButton = useButtonWithTooltip({
         label: 'CatalogButtonTooltip',
@@ -93,7 +93,7 @@ export function ModificationDialogContent({
                         }}
                     >
                         <FormattedMessage id={titleId} />
-                        {readOnly && (
+                        {isReadOnly && (
                             <Tooltip title={<FormattedMessage id={'ReadOnlyForm'} />}>
                                 <LockOutlinedIcon />
                             </Tooltip>
@@ -109,14 +109,14 @@ export function ModificationDialogContent({
                         }}
                     >
                         {onOpenCatalogDialog && <Grid size={1}>{catalogButton}</Grid>}
-                        {searchCopy && !readOnly && <Grid size={1}>{copyEquipmentButton}</Grid>}
+                        {searchCopy && !isReadOnly && <Grid size={1}>{copyEquipmentButton}</Grid>}
                     </Grid>
                     {subtitle && <Grid size={12}>{subtitle}</Grid>}
                 </Grid>
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
-                {readOnly ? (
+                {isReadOnly ? (
                     <CloseButton onClick={handleCancel} />
                 ) : (
                     <>

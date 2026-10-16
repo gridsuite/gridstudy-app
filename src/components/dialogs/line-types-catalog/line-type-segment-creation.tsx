@@ -41,7 +41,7 @@ export default function LineTypeSegmentCreation({
     const watchDistance = useWatch({
         name: `${name}.${index}.${SEGMENT_DISTANCE_VALUE}`,
     });
-    const { readOnly } = useCustomFormContext();
+    const { isReadOnly } = useCustomFormContext();
 
     const segmentDistanceField = (
         <FloatInput
@@ -65,7 +65,7 @@ export default function LineTypeSegmentCreation({
 
     const segmentTypeField = (
         <ButtonReadOnlyInput name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}>
-            {!readOnly && (
+            {!isReadOnly && (
                 <IconButton onClick={handleEditButtonClick} data-testid="SegmentTypeEditButton">
                     <EditIcon />
                 </IconButton>
