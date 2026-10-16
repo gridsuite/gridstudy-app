@@ -19,7 +19,13 @@ import {
     SHUNT_COMPENSATOR_NAME,
     SHUNT_COMPENSATOR_SELECTED,
 } from '../../../../../utils/field-constants';
-import { FloatInput, ReactivePowerAdornment, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    FloatInput,
+    ReactivePowerAdornment,
+    SwitchInput,
+    TextInput,
+    useCustomFormContext,
+} from '@gridsuite/commons-ui';
 
 interface FiltersShuntCompensatorTableProps {
     id: string;
@@ -31,6 +37,7 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
         append: handleAddRow,
         remove: handleRemoveRow,
     } = useFieldArray({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
+    const { readOnly } = useCustomFormContext();
     const [isHover, setIsHover] = useState<Record<number, boolean>>({});
     const handleHover = (rowIndex: number, hoverState: boolean) => {
         setIsHover((prev) => ({
@@ -88,19 +95,21 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
                                 <Box>{column.label}</Box>
                             </TableCell>
                         ))}
-                        <TableCell sx={{ width: '10%', textAlign: 'right' }}>
-                            <Tooltip
-                                title={intl.formatMessage({
-                                    id: 'AddRows',
-                                })}
-                            >
-                                <span>
-                                    <IconButton onClick={() => handleAddRow(newRowData)}>
-                                        <AddCircleIcon />
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
-                        </TableCell>
+                        {!readOnly && (
+                            <TableCell sx={{ width: '10%', textAlign: 'right' }}>
+                                <Tooltip
+                                    title={intl.formatMessage({
+                                        id: 'AddRows',
+                                    })}
+                                >
+                                    <span>
+                                        <IconButton onClick={() => handleAddRow(newRowData)}>
+                                            <AddCircleIcon />
+                                        </IconButton>
+                                    </span>
+                                </Tooltip>
+                            </TableCell>
+                        )}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -136,19 +145,21 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
                                     )}
                                 </TableCell>
                             ))}
-                            <TableCell>
-                                {isHover[index] && (
-                                    <Tooltip
-                                        title={intl.formatMessage({
-                                            id: 'DeleteRows',
-                                        })}
-                                    >
-                                        <IconButton onClick={() => handleRemoveRow(index)}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                )}
-                            </TableCell>
+                            {!readOnly && (
+                                <TableCell>
+                                    {isHover[index] && (
+                                        <Tooltip
+                                            title={intl.formatMessage({
+                                                id: 'DeleteRows',
+                                            })}
+                                        >
+                                            <IconButton onClick={() => handleRemoveRow(index)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    )}
+                                </TableCell>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>

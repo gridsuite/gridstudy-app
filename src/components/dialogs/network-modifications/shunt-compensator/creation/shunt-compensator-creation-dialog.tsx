@@ -155,6 +155,7 @@ export default function ShuntCompensatorCreationDialog({
         <CustomFormProvider
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={shuntCompensatorCreationFormSchema}
+            readOnly={isUpdate}
             {...formMethods}
         >
             <ModificationDialog

@@ -83,6 +83,8 @@ const LineCreationDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<LineCreationDialogProps>) => {
+    const readOnly = isUpdate;
+
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
@@ -248,6 +250,7 @@ const LineCreationDialog = ({
         <CustomFormProvider
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={lineCreationFormSchema(displayConnectivity)}
+            readOnly={readOnly}
             {...formMethods}
         >
             <ModificationDialog
@@ -290,6 +293,7 @@ const LineCreationDialog = ({
                     onClose={handleCloseLineTypesCatalogDialog}
                     onSave={handleLineSegmentsBuildSubmit}
                     editData={editSegmentsData}
+                    isUpdate
                 />
             </ModificationDialog>
         </CustomFormProvider>

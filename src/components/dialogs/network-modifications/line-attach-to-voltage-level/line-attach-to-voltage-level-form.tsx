@@ -29,6 +29,7 @@ import {
     LineCreationDtoWithId,
     GridSection,
     VoltageLevelCreationDto,
+    useCustomFormContext,
 } from '@gridsuite/commons-ui';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';

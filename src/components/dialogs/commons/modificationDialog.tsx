@@ -33,7 +33,6 @@ export type ModificationDialogProps<TFieldValues extends FieldValues> = Omit<
     'closeAndClear' | 'submitButton'
 > & {
     disabledSave?: boolean;
-    readOnly?: boolean;
     onClear: () => void;
     onClose?: () => void;
     onSave: (modificationData: TFieldValues) => void;
@@ -43,7 +42,6 @@ export type ModificationDialogProps<TFieldValues extends FieldValues> = Omit<
 
 export function ModificationDialog<TFieldValues extends FieldValues>({
     disabledSave = false,
-    readOnly = false,
     onClear,
     onClose,
     onSave,
@@ -94,7 +92,7 @@ export function ModificationDialog<TFieldValues extends FieldValues>({
             data-testid="ValidateButton"
             onClick={handleSubmit(handleValidate, handleValidationError)}
             variant="outlined"
-            disabled={disabledSave || readOnly}
+            disabled={disabledSave}
         />
     );
 

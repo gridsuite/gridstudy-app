@@ -195,6 +195,7 @@ export default function StaticVarCompensatorCreationDialog({
         <CustomFormProvider
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={staticVarCompensatorCreationFormSchema}
+            readOnly={isUpdate}
             {...formMethods}
         >
             <ModificationDialog

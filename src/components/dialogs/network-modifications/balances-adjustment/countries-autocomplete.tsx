@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { AutocompleteInputProps, genHelperError } from '@gridsuite/commons-ui';
+import { AutocompleteInputProps, genHelperError, useCustomFormContext } from '@gridsuite/commons-ui';
 
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { styles } from './styles';
@@ -27,6 +27,7 @@ export default function CountriesAutocomplete({
     ...props
 }: CountriesAutocompleteProps) {
     const { countryCodes, translate } = useLocalizedCountries();
+    const { readOnly } = useCustomFormContext();
 
     const {
         field: { onChange, value, ref },
@@ -37,6 +38,8 @@ export default function CountriesAutocomplete({
         onChange(value);
     };
 
+    const hasValue = value !== null;
+
     return (
         <Autocomplete
             data-testid={dataTestId}
@@ -45,6 +48,9 @@ export default function CountriesAutocomplete({
             value={value}
             onChange={handleChange}
             options={countryCodes}
+            readOnly={readOnly}
+            disableClearable={readOnly}
+            popupIcon={readOnly ? null : undefined}
             size={'small'}
             limitTags={2}
             sx={styles.autocomplete}
@@ -55,6 +61,14 @@ export default function CountriesAutocomplete({
                     slotProps={{
                         ...params.slotProps,
                         htmlInput: { ...params.slotProps.htmlInput },
+                        input: {
+                            ...params.slotProps.input,
+                            readOnly: readOnly,
+                            onMouseDown: readOnly && !hasValue ? (event: any) => event.preventDefault() : undefined,
+                        },
+                        inputLabel: {
+                            shrink: readOnly ? hasValue : undefined,
+                        },
                     }}
                     label={label}
                     {...genHelperError(error?.message)}

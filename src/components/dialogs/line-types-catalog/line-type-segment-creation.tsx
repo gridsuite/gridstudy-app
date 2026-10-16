@@ -8,7 +8,13 @@
 import { useCallback, useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
 import EditIcon from '@mui/icons-material/Edit';
-import { ButtonReadOnlyInput, FloatInput, KilometerAdornment, ReadOnlyInput } from '@gridsuite/commons-ui';
+import {
+    ButtonReadOnlyInput,
+    FloatInput,
+    KilometerAdornment,
+    ReadOnlyInput,
+    useCustomFormContext,
+} from '@gridsuite/commons-ui';
 import { IconButton } from '@mui/material';
 import {
     SEGMENT_DISTANCE_VALUE,
@@ -35,6 +41,7 @@ export default function LineTypeSegmentCreation({
     const watchDistance = useWatch({
         name: `${name}.${index}.${SEGMENT_DISTANCE_VALUE}`,
     });
+    const { readOnly } = useCustomFormContext();
 
     const segmentDistanceField = (
         <FloatInput
@@ -58,9 +65,11 @@ export default function LineTypeSegmentCreation({
 
     const segmentTypeField = (
         <ButtonReadOnlyInput name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}>
-            <IconButton onClick={handleEditButtonClick} data-testid="SegmentTypeEditButton">
-                <EditIcon />
-            </IconButton>
+            {!readOnly && (
+                <IconButton onClick={handleEditButtonClick} data-testid="SegmentTypeEditButton">
+                    <EditIcon />
+                </IconButton>
+            )}
         </ButtonReadOnlyInput>
     );
 

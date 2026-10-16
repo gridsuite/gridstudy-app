@@ -95,7 +95,7 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
     });
 
     return (
-        <CustomFormProvider validationSchema={byFilterDeletionFormSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={byFilterDeletionFormSchema} readOnly={isUpdate} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'md'}

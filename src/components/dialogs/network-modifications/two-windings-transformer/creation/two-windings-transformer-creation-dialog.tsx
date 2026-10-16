@@ -83,6 +83,7 @@ const TwoWindingsTransformerCreationDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<TwoWindingsTransformerCreationDialogProps>) => {
+    const readOnly = isUpdate;
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
@@ -259,6 +260,7 @@ const TwoWindingsTransformerCreationDialog = ({
         <CustomFormProvider
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={twoWindingsTransformerCreationFormSchema}
+            readOnly={readOnly}
             {...formMethods}
         >
             <ModificationDialog

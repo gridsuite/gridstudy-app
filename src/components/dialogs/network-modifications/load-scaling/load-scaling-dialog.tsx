@@ -104,7 +104,7 @@ const LoadScalingDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} readOnly={isUpdate} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

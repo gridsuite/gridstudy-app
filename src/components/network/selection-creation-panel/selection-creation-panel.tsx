@@ -126,7 +126,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     };
 
     return (
-        <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider removeOptional={true} validationSchema={formSchema} readOnly={false} {...formMethods}>
             <Box
                 sx={{
                     p: 4,

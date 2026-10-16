@@ -1422,6 +1422,7 @@ const messages_fr = {
     'button.previous': 'Précédent',
     disconnectedLoadActivePower: 'Consommation coupée (MW)',
     disconnectedGenerationActivePower: 'Production coupée (MW)',
+    ReadOnlyForm: 'Ce formulaire est en lecture seule',
 };
 
 export default messages_fr;
