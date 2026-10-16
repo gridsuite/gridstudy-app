@@ -1306,6 +1306,7 @@ const messages_en = {
     deselectModification: 'Deselect modification',
     selectModification: 'Select modification',
     moveModification: 'Move modification',
+    readOnlySharedModification: 'Read-only: you do not have write access to this shared modification',
     'button.next': 'Next',
     'button.previous': 'Previous',
     disconnectedLoadActivePower: 'Load cut off (MW)',
