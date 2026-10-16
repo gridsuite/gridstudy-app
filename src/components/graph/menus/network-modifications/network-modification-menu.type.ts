@@ -9,6 +9,7 @@ import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 import { JSX } from 'react';
+import { ModificationContainer } from '@gridsuite/commons-ui';
 
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
@@ -25,7 +26,7 @@ export interface RootNetworkInfos {
     tag: string;
     description?: string;
     caseInfos: CaseInfos;
-    importParametersRaw: Record<string, any> | null;
+    importParameters: Record<string, any> | null;
 }
 
 export interface CaseInfos {
@@ -33,22 +34,25 @@ export interface CaseInfos {
     caseFormat: string | null;
 }
 
-export interface ExcludedNetworkModifications {
-    rootNetworkUuid: UUID;
-    modificationUuidsToExclude: UUID[];
-}
-
 export enum NetworkModificationCopyType {
     COPY = 'COPY',
     MOVE = 'MOVE',
-    SPLIT_COMPOSITE = 'SPLIT_COMPOSITE',
-    INSERT_COMPOSITE = 'INSERT_COMPOSITE',
+}
+
+export enum CompositeModificationAction {
+    SPLIT = 'SPLIT', // the network modifications contained into the composite modifications are extracted and inserted one by one
+    INSERT = 'INSERT', // the composite modifications are fully inserted as composite modifications
 }
 
 export interface NetworkModificationCopyInfos {
     copyType: NetworkModificationCopyType;
     originStudyUuid?: UUID;
     originNodeUuid?: UUID;
+}
+
+export interface ModificationMoveOrCopyInfos {
+    modificationUuid: UUID;
+    source?: ModificationContainer;
 }
 
 export interface MenuDefinitionSubItem {

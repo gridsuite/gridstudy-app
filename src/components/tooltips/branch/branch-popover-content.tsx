@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentType } from '@gridsuite/commons-ui';
-import { Grid } from '@mui/material';
-import { RunningStatus } from '../../utils/running-status';
+import { EquipmentType, RunningStatus } from '@gridsuite/commons-ui';
+import { Stack } from '@mui/material';
 import { BranchCharacteristicsTable } from './branch-characteristics-table';
 import { TwtTapChangerCharacteristics } from './twt-tap-changer-characteristics';
 import { BranchEquipmentInfos, TwtEquipmentInfos } from '../equipment-popover-type';
@@ -26,14 +25,19 @@ export const BranchPopoverContent: React.FC<BranchPopoverContentProps> = ({
     equipmentType,
 }) => {
     return (
-        <Grid container direction="column" rowSpacing={2} alignItems="center">
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: 'center',
+            }}
+        >
             <BranchCharacteristicsTable equipmentInfos={equipmentInfos} />
             <BranchCharacteristicsByVoltageLevel equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
             {equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER && (
                 <TwtTapChangerCharacteristics equipmentInfos={equipmentInfos as TwtEquipmentInfos} />
             )}
             <BranchLimitsTable equipmentInfos={equipmentInfos} loadFlowStatus={loadFlowStatus} />
-        </Grid>
+        </Stack>
     );
 };
 

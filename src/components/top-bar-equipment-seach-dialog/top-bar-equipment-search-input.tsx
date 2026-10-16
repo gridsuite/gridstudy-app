@@ -56,37 +56,41 @@ export const TopBarEquipmentSearchInput = (props: TopBarEquipmentSearchInputProp
                 label={intl.formatMessage({
                     id: 'equipment_search/label',
                 })}
-                InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                        <>
-                            {params.disabled ? <SearchOff color="disabled" /> : <Search color="disabled" />}
-                            {params.InputProps.startAdornment}
-                        </>
-                    ),
-                    endAdornment: (
-                        <>
-                            {!params.disabled && equipmentType && (
-                                <Chip
-                                    onDelete={() => setEquipmentType(null)}
-                                    label={
-                                        <FormattedMessage
-                                            id={
-                                                Object.values(SEARCH_EQUIPMENTS).find((eq) => eq.id === equipmentType)
-                                                    ?.label
-                                            }
-                                        />
-                                    }
-                                    sx={styles.chip}
-                                />
-                            )}
-                            <IconButton onClick={() => setIsPopoverOpen(true)} disabled={params.disabled}>
-                                <Tune />
-                            </IconButton>
-                        </>
-                    ),
-                }}
                 value={displayedValue}
+                slotProps={{
+                    ...params.slotProps,
+                    input: {
+                        ...params.slotProps.input,
+                        startAdornment: (
+                            <>
+                                {params.disabled ? <SearchOff color="disabled" /> : <Search color="disabled" />}
+                                {params.slotProps.input.startAdornment}
+                            </>
+                        ),
+                        endAdornment: (
+                            <>
+                                {!params.disabled && equipmentType && (
+                                    <Chip
+                                        onDelete={() => setEquipmentType(null)}
+                                        label={
+                                            <FormattedMessage
+                                                id={
+                                                    Object.values(SEARCH_EQUIPMENTS).find(
+                                                        (eq) => eq.id === equipmentType
+                                                    )?.label
+                                                }
+                                            />
+                                        }
+                                        sx={styles.chip}
+                                    />
+                                )}
+                                <IconButton onClick={() => setIsPopoverOpen(true)} disabled={params.disabled}>
+                                    <Tune />
+                                </IconButton>
+                            </>
+                        ),
+                    },
+                }}
             />
             <TopBarEquipmentSearchPopover
                 anchorEl={inputRef.current}

@@ -13,6 +13,7 @@ import { createRoot } from 'react-dom/client';
 
 import '@xyflow/react/dist/base.css';
 import './index.css';
+import './configure-yup-init';
 
 import AppWrapper from './components/app-wrapper';
 

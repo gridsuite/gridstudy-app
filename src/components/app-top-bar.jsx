@@ -22,14 +22,10 @@ import { PARAM_USE_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
-import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { getServersInfos } from '../services/study';
 import { fetchVersion } from '../services/utils';
-import { RunButtonContainer } from './run-button-container';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import StudyNavigationSyncToggle from './study-navigation-sync-toggle';
 import { WorkspaceToolbar } from './workspace/core/workspace-toolbar';
-import { WorkspaceSwitcher } from './workspace/core/workspace-switcher';
 
 const styles = {
     boxContent: (theme) => ({
@@ -39,23 +35,12 @@ const styles = {
         width: '100%',
         marginLeft: theme.spacing(1),
     }),
-    runButtonContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        marginRight: 1.5,
-    },
-    syncToggleContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        marginRight: 1.5,
-    },
 };
 
-const AppTopBar = ({ user, userManager }) => {
+const AppTopBar = ({ userProfile, userManager }) => {
     const dispatch = useDispatch();
     const theme = useSelector((state) => state[PARAM_THEME]);
     const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
@@ -66,12 +51,12 @@ const AppTopBar = ({ user, userManager }) => {
     const [isDeveloperMode, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     useEffect(() => {
-        if (user !== null) {
+        if (userProfile !== null) {
             fetchAppsMetadata().then((res) => {
                 setAppsAndUrls(res);
             });
         }
-    }, [user]);
+    }, [userProfile]);
 
     return (
         <TopBar
@@ -79,7 +64,7 @@ const AppTopBar = ({ user, userManager }) => {
             appColor="#0CA789"
             appLogo={theme === LIGHT_THEME ? <GridStudyLogoLight /> : <GridStudyLogoDark />}
             onLogoutClick={() => logout(dispatch, userManager.instance)}
-            user={user}
+            userProfile={userProfile}
             appsAndUrls={appsAndUrls}
             onThemeClick={handleChangeTheme}
             appVersion={AppPackage.version}
@@ -95,25 +80,9 @@ const AppTopBar = ({ user, userManager }) => {
             language={languageLocal}
             dense
         >
-            {user && studyUuid && currentRootNetworkUuid && (
+            {userProfile && studyUuid && currentRootNetworkUuid && (
                 <Box sx={styles.boxContent}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 1.5, marginRight: 'auto' }}>
-                        <WorkspaceToolbar />
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1.5, marginLeft: 'auto' }}>
-                        <WorkspaceSwitcher />
-                    </Box>
-                    <Box sx={styles.runButtonContainer}>
-                        <RunButtonContainer
-                            studyUuid={studyUuid}
-                            currentNode={currentNode}
-                            currentRootNetworkUuid={currentRootNetworkUuid}
-                            disabled={!isNodeBuilt(currentNode) || isNodeReadOnly(currentNode)}
-                        />
-                    </Box>
-                    <Box sx={styles.syncToggleContainer}>
-                        <StudyNavigationSyncToggle />
-                    </Box>
+                    <WorkspaceToolbar />
                 </Box>
             )}
         </TopBar>
@@ -121,7 +90,7 @@ const AppTopBar = ({ user, userManager }) => {
 };
 
 AppTopBar.propTypes = {
-    user: PropTypes.object,
+    userProfile: PropTypes.object,
     userManager: PropTypes.object.isRequired,
 };
 

@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Table, TableContainer, TableRow } from '@mui/material';
+import { Grid, Stack, Table, TableBody, TableContainer, TableRow } from '@mui/material';
 import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
 import { CellRender } from '../cell-render';
 import { GeneratorEquipmentInfos } from '../equipment-popover-type';
 import { GeneratorActivePowerTable } from './generator-active-power-table';
 import { GeneratorVoltageRegulationTable } from './generator-voltage-regulation-table';
-import RunningStatus from 'components/utils/running-status';
+import { RunningStatus } from '@gridsuite/commons-ui';
 interface GeneratorPopoverContentProps {
     equipmentInfos: GeneratorEquipmentInfos;
     loadFlowStatus?: RunningStatus;
@@ -19,36 +19,47 @@ interface GeneratorPopoverContentProps {
 
 export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = ({ equipmentInfos, loadFlowStatus }) => {
     return (
-        <Grid container direction="column" rowSpacing={2} alignItems="center">
-            <Grid item sx={styles.grid}>
+        <Stack
+            spacing={2}
+            sx={{
+                alignItems: 'center',
+            }}
+        >
+            <Grid sx={styles.grid}>
                 <TableContainer sx={styles.table}>
                     <Table size="small" sx={styles.layout}>
-                        <TableRow>
-                            <CellRender isLabel label="ActivePower" colStyle={{ ...styles.cell, fontWeight: 'bold' }} />
-                            <CellRender
-                                value={formatValue(equipmentInfos.p && Math.round(equipmentInfos.p))}
-                                colStyle={cellWithStatus(loadFlowStatus)}
-                            />
-                        </TableRow>
+                        <TableBody>
+                            <TableRow>
+                                <CellRender
+                                    isLabel
+                                    label="ActivePower"
+                                    colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                                />
+                                <CellRender
+                                    value={formatValue(equipmentInfos.p && Math.round(equipmentInfos.p))}
+                                    colStyle={cellWithStatus(loadFlowStatus)}
+                                />
+                            </TableRow>
 
-                        <TableRow>
-                            <CellRender
-                                isLabel
-                                label="reactivePowerTooltip"
-                                colStyle={{ ...styles.cell, fontWeight: 'bold' }}
-                            />
-                            <CellRender
-                                value={formatValue(equipmentInfos.q && Math.round(equipmentInfos.q))}
-                                colStyle={cellWithStatus(loadFlowStatus)}
-                            />
-                        </TableRow>
+                            <TableRow>
+                                <CellRender
+                                    isLabel
+                                    label="reactivePowerTooltip"
+                                    colStyle={{ ...styles.cell, fontWeight: 'bold' }}
+                                />
+                                <CellRender
+                                    value={formatValue(equipmentInfos.q && Math.round(equipmentInfos.q))}
+                                    colStyle={cellWithStatus(loadFlowStatus)}
+                                />
+                            </TableRow>
+                        </TableBody>
                     </Table>
                 </TableContainer>
             </Grid>
 
             <GeneratorActivePowerTable equipmentInfos={equipmentInfos} />
 
-            <Grid item sx={styles.grid}>
+            <Grid sx={styles.grid}>
                 <TableContainer sx={styles.table}>
                     <Table size="small" sx={styles.layout}>
                         <TableRow>
@@ -67,7 +78,7 @@ export const GeneratorPopoverContent: React.FC<GeneratorPopoverContentProps> = (
             </Grid>
 
             <GeneratorVoltageRegulationTable equipmentInfos={equipmentInfos} />
-        </Grid>
+        </Stack>
     );
 };
 

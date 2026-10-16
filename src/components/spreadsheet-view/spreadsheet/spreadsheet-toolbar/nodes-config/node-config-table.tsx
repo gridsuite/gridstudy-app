@@ -30,7 +30,7 @@ const NodeConfigTable = () => {
         name: `${NODES_ALIASES}`,
     });
 
-    const NODES_ALIASES_COLUMNS_DEFINITIONS: (DndColumn & { initialValue?: string })[] = useMemo(() => {
+    const NODES_ALIASES_COLUMNS_DEFINITIONS = useMemo<DndColumn[]>(() => {
         return [
             {
                 label: intl.formatMessage({ id: 'spreadsheet/parameter_aliases/node_alias' }),
@@ -38,9 +38,8 @@ const NodeConfigTable = () => {
                 type: DndColumnType.TEXT,
                 editable: true,
                 initialValue: '',
-                showErrorMsg: true,
-                width: '30%',
-                maxWidth: '30%',
+                width: '45%',
+                maxWidth: '45%',
             },
             {
                 label: intl.formatMessage({ id: 'spreadsheet/parameter_aliases/node_name' }),
@@ -49,10 +48,10 @@ const NodeConfigTable = () => {
                 editable: true,
                 type: DndColumnType.AUTOCOMPLETE,
                 options: nodeNames,
-                width: '30%',
-                maxWidth: '30%',
+                width: '45%',
+                maxWidth: '45%',
             },
-        ];
+        ] satisfies DndColumn[];
     }, [intl, nodeNames]);
 
     const newAliasRowData = useMemo(() => {
@@ -68,13 +67,11 @@ const NodeConfigTable = () => {
 
     return (
         <DndTable
-            arrayFormName={`${NODES_ALIASES}`}
+            name={`${NODES_ALIASES}`}
             columnsDefinition={NODES_ALIASES_COLUMNS_DEFINITIONS}
             useFieldArrayOutput={useNodesAliasesFieldArrayOutput}
             createRows={createNodeAliasRows}
             withAddRowsDialog={false}
-            disableDragAndDrop={true}
-            showMoveArrow={false}
             maxRows={NODES_ALIASES_MAX_NUMBER}
         />
     );

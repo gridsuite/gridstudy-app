@@ -8,11 +8,10 @@
 import { Box, Button, Dialog, DialogContent, DialogProps, DialogTitle, Tab, Tabs } from '@mui/material';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useLoadflowModifications } from './use-loadflow-modifications';
-import { CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
-import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
 import { GridReadyEvent, RowDataUpdatedEvent, ValueFormatterParams } from 'ag-grid-community';
-import { SortWay } from 'types/custom-aggrid-types';
+import { CustomAGGrid, type MuiStyles, SortWay } from '@gridsuite/commons-ui';
+import { useLoadflowModifications } from './use-loadflow-modifications';
+import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
 
 const styles = {
     container: {
@@ -52,7 +51,9 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
             makeAggridColumnDef('solvedTapPosition', 'loadflowModificationsTapOut'),
             {
                 ...makeAggridColumnDef('type', 'Type'),
-                valueFormatter: (params: ValueFormatterParams) => intl.formatMessage({ id: params.value }),
+                valueFormatter: (params: ValueFormatterParams) => {
+                    return params.value ? intl.formatMessage({ id: params.value }) : '';
+                },
             },
         ];
     }, [intl, makeAggridColumnDef]);
@@ -88,14 +89,16 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
 
     return (
         <Dialog
-            PaperProps={{
-                sx: {
-                    height: '90vh',
-                },
-            }}
             fullWidth
             maxWidth="md"
             open={true}
+            slotProps={{
+                paper: {
+                    sx: {
+                        height: '90vh',
+                    },
+                },
+            }}
         >
             <DialogTitle>
                 {intl.formatMessage({
@@ -111,7 +114,12 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                         </Tabs>
                     </Box>
                 </Box>
-                <Box mt={1} style={{ flexGrow: 1 }}>
+                <Box
+                    style={{ flexGrow: 1 }}
+                    sx={{
+                        mt: 1,
+                    }}
+                >
                     <CustomAGGrid
                         defaultColDef={defaultColDef}
                         rowData={displayedData}
@@ -123,7 +131,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                         onRowDataUpdated={onRowDataUpdated}
                     />
                 </Box>
-                <Button onClick={onClose}>Fermer</Button>
+                <Button onClick={onClose}>{intl.formatMessage({ id: 'close' })}</Button>
             </DialogContent>
         </Dialog>
     );

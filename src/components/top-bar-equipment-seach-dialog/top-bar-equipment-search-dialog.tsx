@@ -17,6 +17,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FunctionComponent, useCallback, useState } from 'react';
+import { Paper } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomSuffixRenderer } from './custom-suffix-renderer';
 import { useDisabledSearchReason } from './use-disabled-search-reason';
@@ -153,6 +154,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
             loadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
             getOptionLabel={(equipment) => equipment.label}
             isOptionEqualToValue={(equipment1, equipment2) => equipment1.id === equipment2.id}
+            PaperComponent={Paper}
             renderInput={(displayedValue, params) => (
                 <TopBarEquipmentSearchInput
                     displayedValue={displayedValue}

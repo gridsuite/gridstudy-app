@@ -8,28 +8,30 @@ import type { UUID } from 'node:crypto';
 import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
+import {
+    getNoRowsMessage,
+    makeAgGridCustomHeaderColumn,
+    TableType,
+    useIntlResultStatusMessages,
+} from '@gridsuite/commons-ui';
 import { ComputingType, CustomAGGrid, DefaultCellRenderer, type MuiStyles } from '@gridsuite/commons-ui';
-import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    TableType,
 } from '../../../types/custom-aggrid-types';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/study/dynamic-simulation';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 const styles = {
@@ -91,7 +93,6 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.NUMBER,
                                 comparators: Object.values(FILTER_NUMBER_COMPARATORS),
                             },
@@ -116,7 +117,6 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
                                 comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },
@@ -140,7 +140,6 @@ const DynamicSimulationResultTimeline = memo(
                             filterParams: {
                                 type: TableType.DynamicSimulation,
                                 tab: TIMELINE,
-                                updateFilterCallback: updateComputationColumnsFilters,
                                 dataType: FILTER_DATA_TYPES.TEXT,
                                 comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },

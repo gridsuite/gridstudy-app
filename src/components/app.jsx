@@ -16,15 +16,19 @@ import {
     COMMON_APP_NAME,
     fetchConfigParameter,
     fetchConfigParameters,
+    fetchStudyMetadata,
     getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
+    isEditingGlobalFilter,
     LAST_SELECTED_DIRECTORY,
     NotificationsUrlKeys,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
     snackWithFallback,
+    SortWay,
+    TableType,
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -36,7 +40,6 @@ import { StudyContainer } from './study-container';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
-    addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
     initOrUpdateGlobalFilters,
     initTableDefinitions,
@@ -49,6 +52,7 @@ import {
     setOptionalServices,
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
+    updateColumnFiltersAction,
     updateTableColumns,
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
@@ -69,17 +73,27 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
-import { SortWay } from '../types/custom-aggrid-types.ts';
 import { useBaseVoltages } from '../hooks/use-base-voltages.ts';
-import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options.ts';
+import { useGlobalFilterOptions } from './results/common/global-filter/hooks/use-global-filter-options.ts';
 import { updateComputationColumnFilters, updateComputationGlobalFilters } from './results/common/utils.ts';
+import { cleanupStaleStudyData } from '../redux/session-storage/local-storage';
 
 const noUserManager = { instance: null, error: null };
 
 const App = () => {
     const { snackError } = useSnackMessage();
 
-    const user = useSelector((state) => state.user);
+    useEffect(() => {
+        fetchStudyMetadata()
+            .then((metadata) => cleanupStaleStudyData(metadata?.localStorageTtlDays))
+            .catch(() => cleanupStaleStudyData());
+    }, []);
+
+    const userProfile = useSelector(
+        (state) => state.user?.profile ?? null,
+        (a, b) =>
+            a === b || (a?.sub === b?.sub && a?.name === b?.name && a?.email === b?.email && a?.profile === b?.profile)
+    );
     const studyUuid = useSelector((state) => state.studyUuid);
     const signInCallbackError = useSelector((state) => state.signInCallbackError);
     const authenticationRouterError = useSelector((state) => state.authenticationRouterError);
@@ -208,8 +222,10 @@ const App = () => {
                     const formattedGlobalFilters = model.globalFilters ?? [];
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
-                    dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
-                    dispatch(initOrUpdateGlobalFilters(tabUuid, formattedGlobalFilters));
+                    dispatch(updateColumnFiltersAction(TableType.Spreadsheet, tabUuid, columnsFilters));
+                    if (!isEditingGlobalFilter(tabUuid)) {
+                        dispatch(initOrUpdateGlobalFilters(tabUuid, formattedGlobalFilters));
+                    }
                     dispatch(
                         addSortForNewSpreadsheet(tabUuid, [
                             {
@@ -331,7 +347,7 @@ const App = () => {
     }, [initialMatchSilentRenewCallbackUrl, dispatch, initialMatchSigninCallbackUrl]);
 
     useEffect(() => {
-        if (user !== null && studyUuid !== null) {
+        if (userProfile !== null && studyUuid !== null) {
             const fetchNetworkVisualizationParametersPromise = getNetworkVisualizationParameters(studyUuid).then(
                 (params) => updateNetworkVisualizationsParams(params)
             );
@@ -374,8 +390,15 @@ const App = () => {
                 })
                 .catch((error) => snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' }));
         }
-    }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams, resetTableDefinitions]);
-
+    }, [
+        userProfile,
+        studyUuid,
+        dispatch,
+        updateParams,
+        snackError,
+        updateNetworkVisualizationsParams,
+        resetTableDefinitions,
+    ]);
     return (
         <div
             className="singlestretch-child"
@@ -384,8 +407,8 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar user={user} userManager={userManager} />
-            <AnnouncementNotification user={user} />
+            <AppTopBar userProfile={userProfile} userManager={userManager} />
+            <AnnouncementNotification userProfile={userProfile} />
             <CardErrorBoundary>
                 <div
                     className="singlestretch-parent"
@@ -402,7 +425,7 @@ const App = () => {
                         overflow: isStudyPane ? 'hidden' : 'auto',
                     }}
                 >
-                    {user !== null ? (
+                    {userProfile !== null ? (
                         <Routes>
                             <Route path="/studies/:studyUuid" element={<StudyContainer />} />
                             <Route

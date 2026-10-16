@@ -37,7 +37,8 @@ export const StateEstimationWeightsParameters: FunctionComponent = () => {
         <CustomVoltageLevelTable
             formName={`${TabValue.WEIGHTS}.${WEIGHTS_PARAMETERS}`}
             columnsDefinition={columnsDefinition}
-            tableHeight={450}
+            tableHeight={500}
+            tableMinWidth={1000}
         />
     );
 };

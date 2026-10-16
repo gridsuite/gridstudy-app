@@ -7,7 +7,7 @@
 
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Alert, Box, Button, Typography } from '@mui/material';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { FormattedMessage } from 'react-intl';
@@ -96,7 +96,7 @@ export default class PanelErrorBoundary extends Component<PanelErrorBoundaryProp
             return (
                 <Box sx={styles.container}>
                     <Box sx={styles.centeredContent}>
-                        <ErrorOutlineIcon fontSize="large" color="error" />
+                        <ErrorOutlinedIcon fontSize="large" color="error" />
                         <Typography>
                             <FormattedMessage id="PanelError" />
                         </Typography>

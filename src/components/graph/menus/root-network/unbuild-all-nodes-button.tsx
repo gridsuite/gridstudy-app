@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CancelButton, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CancelButton, snackWithFallback, useSnackMessage, BuildStatus } from '@gridsuite/commons-ui';
 import { StopCircleOutlined } from '@mui/icons-material';
 import {
     Button,
@@ -21,8 +21,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { unbuildAllStudyNodes } from 'services/study/study';
+import { useIsUnbuildAllBlocked } from 'components/node-activity/hooks/use-node-activity';
 import { NETWORK_MODIFICATION } from '../../../../utils/report/report.constant';
-import { BUILD_STATUS } from '../../../network/constants';
 
 const styles = {
     button: {
@@ -41,6 +41,8 @@ export const UnbuildAllNodesButton = () => {
 
     const [isValidationDialogOpen, setIsValidationDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    const isUnbuildAllBlocked = useIsUnbuildAllBlocked();
 
     const handleCloseDialog = () => {
         setIsValidationDialogOpen(false);
@@ -73,7 +75,7 @@ export const UnbuildAllNodesButton = () => {
             .filter((treeNode) => treeNode.type === NETWORK_MODIFICATION)
             .every(
                 (treeNode) =>
-                    treeNode.data.globalBuildStatus === BUILD_STATUS.NOT_BUILT ||
+                    treeNode.data.globalBuildStatus === BuildStatus.NOT_BUILT ||
                     treeNode.data.globalBuildStatus === undefined
             );
     }, [treeModel]);
@@ -82,8 +84,15 @@ export const UnbuildAllNodesButton = () => {
         <>
             <Tooltip title={intl.formatMessage({ id: 'unbuildAllNodesTooltip' })} disableInteractive>
                 <span style={{ display: 'inline-block' }}>
-                    <Button size="small" sx={styles.button} onClick={handleOpenDialog} disabled={allNodesUnBuilt}>
-                        <StopCircleOutlined sx={allNodesUnBuilt ? undefined : styles.playColor} />
+                    <Button
+                        size="small"
+                        sx={styles.button}
+                        onClick={handleOpenDialog}
+                        disabled={allNodesUnBuilt || isUnbuildAllBlocked}
+                    >
+                        <StopCircleOutlined
+                            sx={allNodesUnBuilt || isUnbuildAllBlocked ? undefined : styles.playColor}
+                        />
                     </Button>
                 </span>
             </Tooltip>

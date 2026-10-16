@@ -27,6 +27,9 @@ declare module '@mui/material/styles' {
             };
             highlightColor: string;
         };
+        agGridBackground: {
+            color: string;
+        };
         networkModificationPanel: {
             backgroundColor: string;
             border: string;
@@ -90,6 +93,7 @@ declare module '@mui/material/styles' {
         searchedText: {
             highlightColor: string;
             currentHighlightColor: string;
+            textColor?: string;
         };
         severityChip: {
             disabledColor: string;

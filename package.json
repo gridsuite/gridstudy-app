@@ -1,6 +1,6 @@
 {
     "name": "gridstudy-app",
-    "version": "2.32.0-SNAPSHOT",
+    "version": "2.43.0-SNAPSHOT",
     "license": "MPL-2.0",
     "private": true,
     "type": "module",
@@ -11,32 +11,32 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@gridsuite/commons-ui": "0.178.0",
+        "@gridsuite/commons-ui": "0.309.0",
         "@hello-pangea/dnd": "^18.0.1",
         "@hookform/resolvers": "^4.1.3",
-        "@mui/icons-material": "^5.18.0",
-        "@mui/lab": "5.0.0-alpha.175",
-        "@mui/material": "^5.18.0",
-        "@mui/x-charts": "^8.21.0",
-        "@mui/x-tree-view": "^8.21.0",
-        "@powsybl/network-viewer": "3.2.0",
+        "@mui/icons-material": "^9.4.0",
+        "@mui/lab": "^9.0.0-beta.9",
+        "@mui/material": "^9.4.0",
+        "@mui/x-charts": "^9.13.0",
+        "@mui/x-tree-view": "^9.13.0",
+        "@powsybl/network-viewer": "3.7.0",
         "@reduxjs/toolkit": "^2.9.0",
         "@svgdotjs/svg.js": "^3.2.4",
         "@tanstack/react-table": "^8.21.3",
         "@tanstack/react-virtual": "^3.13.18",
         "@xyflow/react": "^12.8.4",
-        "ag-grid-community": "^33.1.0",
-        "ag-grid-react": "^33.3.2",
+        "ag-grid-community": "^35.3.1",
+        "ag-grid-react": "^35.3.1",
         "clsx": "^2.1.1",
         "core-js": "^3.45.1",
         "eventemitter3": "^5.0.1",
+        "fflate": "^0.8.3",
         "localized-countries": "^2.0.0",
         "mathjs": "^14.7.0",
         "mui-nested-menu": "^4.0.1",
         "plotly.js-basic-dist-min": "^2.35.3",
         "qs": "^6.14.0",
         "react": "^19.2.0",
-        "react-csv-downloader": "^3.3.0",
         "react-dom": "^19.2.0",
         "react-grid-layout": "^1.5.2",
         "react-hook-form": "^7.62.0",
@@ -58,16 +58,22 @@
     },
     "overrides": {
         "@powsybl/network-viewer": {
-            "react-intl": "$react-intl"
+            "react-intl": "$react-intl",
+            "@mui/icons-material": "$@mui/icons-material",
+            "@mui/material": "$@mui/material"
         },
         "react-plotly.js": {
             "plotly.js": {
                 "esbuild-style-plugin": "npm:dry-uninstall@^0.3.0"
             }
+        },
+        "mui-nested-menu": {
+            "@mui/material": ">=5.0.0"
         }
     },
     "scripts": {
         "start": "vite",
+        "start:checks": "VITE_CHECKER_ENABLED=true vite",
         "start:open": "vite --open",
         "build": "vite build",
         "serve": "vite preview",

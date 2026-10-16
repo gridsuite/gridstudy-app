@@ -20,7 +20,7 @@ import {
     ComputationParametersUpdatedEventData,
     isComputationParametersUpdatedNotification,
     parseEventData,
-    StudyUpdateEventData,
+    CommonStudyEventData,
 } from 'types/notification-types';
 
 export const haveComputationParametersChanged = (
@@ -35,8 +35,8 @@ export const haveComputationParametersChanged = (
 };
 
 export const isComputationParametersUpdated = (type: ComputingType, studyUpdated: MessageEvent) => {
-    const studyUpdatedEventData = parseEventData<StudyUpdateEventData>(studyUpdated);
-    if (isComputationParametersUpdatedNotification(studyUpdatedEventData)) {
+    const studyUpdatedEventData = parseEventData<CommonStudyEventData>(studyUpdated);
+    if (studyUpdatedEventData && isComputationParametersUpdatedNotification(studyUpdatedEventData)) {
         return haveComputationParametersChanged(type, studyUpdatedEventData);
     }
     return false;

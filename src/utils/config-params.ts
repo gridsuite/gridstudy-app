@@ -6,6 +6,8 @@
  */
 
 export const APP_NAME = 'study';
+export const ORGANIZATION_NAME = 'gridsuite';
+export const LOCAL_STORAGE_KEY_PREFIX = `${ORGANIZATION_NAME}:${APP_NAME}`;
 
 // App config names
 export const PARAM_USE_NAME = 'useName';

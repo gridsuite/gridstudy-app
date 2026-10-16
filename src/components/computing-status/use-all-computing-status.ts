@@ -38,9 +38,12 @@ import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic
 import { fetchDynamicMarginCalculationStatus } from '../../services/study/dynamic-margin-calculation';
 import { NotificationType } from 'types/notification-types';
 import { fetchPccMinStatus } from 'services/study/pcc-min';
+import { fetchAllComputationStatus } from '../../services/study/study';
+import { useAllComputingStatusAtOnce } from './use-computing-status-at-once';
+import { useMemo } from 'react';
 
 // status invalidations
-const loadFlowStatusInvalidations = [NotificationType.LOADFLOW_STATUS, NotificationType.LOADFLOW_FAILED];
+export const loadFlowStatusInvalidations = [NotificationType.LOADFLOW_STATUS, NotificationType.LOADFLOW_FAILED];
 const securityAnalysisStatusInvalidations = [
     NotificationType.SECURITY_ANALYSIS_STATUS,
     NotificationType.SECURITY_ANALYSIS_FAILED,
@@ -279,5 +282,22 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         ComputingType.PCC_MIN,
         undefined,
         pccMinAvailability
+    );
+
+    const fetchLoadFlowComputationInfosMap = useMemo(
+        () =>
+            new Map<
+                ComputingType,
+                (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>
+            >([[ComputingType.LOAD_FLOW, fetchLoadFlowComputationInfos]]),
+        []
+    );
+
+    useAllComputingStatusAtOnce(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        fetchAllComputationStatus,
+        fetchLoadFlowComputationInfosMap
     );
 };

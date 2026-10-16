@@ -14,37 +14,53 @@ import {
     textColumnDefinition,
 } from '../common-column-definitions';
 import { isValidationError, validateFormulaResult } from './formula-validator';
+import { computeInvalidColumnIds, SpreadsheetValidity } from './column-validity';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
 import { ErrorCellRenderer, SnackInputs } from '@gridsuite/commons-ui';
 import { COLUMN_TYPES, CustomAggridValue, CustomColDef } from '../../../../types/custom-aggrid-types';
 
+export const SPREADSHEET_INVALID_CELL_CLASS = 'spreadsheet-invalid-cell';
+
 const createValueGetter =
     (colDef: ColumnDefinition) =>
-    (params: ValueGetterParams): CustomAggridValue | undefined => {
+    (params: ValueGetterParams): CustomAggridValue | null => {
         try {
             // Skip formula processing for pinned rows and use raw value
             if (isCalculationRow(params.node?.data?.rowType)) {
-                return params.data[colDef.id];
+                return params.data[colDef.id] ?? null;
             }
             const scope = { ...params.data };
             const colDependencies = colDef.dependencies ?? [];
+
+            // Empty values are assumed to be equal to "undefined" by users, it is then imperative
+            // to keep the nullish coalescing operator leading to undefined otherwise this
+            // type of formula, widespreadly used, which checks for empty value would break :
+            // typeOf(field1) == 'undefined' ? field2 : typeOf(field2) == 'undefined' ? field1 : max(field1, field2)
             colDependencies.forEach((dep) => {
-                scope[dep] = params.getValue(dep);
+                scope[dep] = params.getValue(dep) ?? undefined;
             });
-            const escapedFormula = colDef.formula.replace(/\\/g, '\\\\');
-            const result = limitedEvaluate(escapedFormula, scope);
-            return result == null ? undefined : validateFormulaResult(result, colDef.type);
+            const result = limitedEvaluate(colDef.formula, scope, params.context?.compiledFormulaCache);
+            return result != null ? validateFormulaResult(result, colDef.type) : null;
         } catch (e) {
             if (e instanceof MathJsValidationError) {
                 return { error: e.error };
             }
-            return undefined;
+            return null;
         }
     };
 
-export const mapColumns = (tableDefinition: SpreadsheetTabDefinition, snackError: (snackInputs: SnackInputs) => void) =>
-    tableDefinition?.columns.map((colDef): CustomColDef => {
+export const mapColumns = (
+    tableDefinition: SpreadsheetTabDefinition,
+    snackError: (snackInputs: SnackInputs) => void,
+    validity: SpreadsheetValidity
+) => {
+    if (!tableDefinition) {
+        return [];
+    }
+    const invalidColumnIds = computeInvalidColumnIds(tableDefinition.columns, tableDefinition.type, validity);
+    return tableDefinition.columns.map((colDef): CustomColDef => {
+        const isInvalid = invalidColumnIds.has(colDef.id);
         let baseDefinition: ColDef;
 
         switch (colDef.type) {
@@ -78,7 +94,9 @@ export const mapColumns = (tableDefinition: SpreadsheetTabDefinition, snackError
                         colUuid: colDef.uuid,
                     },
                 },
+                isInvalid,
             },
+            cellClass: isInvalid ? SPREADSHEET_INVALID_CELL_CLASS : undefined,
             valueGetter: createValueGetter(colDef),
             cellRendererSelector: (params) =>
                 isValidationError(params.value) ? { component: ErrorCellRenderer } : undefined, //Returning undefined make it so the originally defined renderer is used
@@ -87,3 +105,4 @@ export const mapColumns = (tableDefinition: SpreadsheetTabDefinition, snackError
             enableCellChangeFlash: true,
         };
     });
+};

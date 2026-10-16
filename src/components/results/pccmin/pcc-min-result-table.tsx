@@ -11,19 +11,26 @@ import { Box, Button, LinearProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
 import { AgGridReact } from 'ag-grid-react';
-import { ComputingType, CustomAGGrid, DefaultCellRenderer, OverflowableText } from '@gridsuite/commons-ui';
-import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
+import {
+    ComputingType,
+    CustomAGGrid,
+    DefaultCellRenderer,
+    getRows,
+    getNoRowsMessage,
+    OverflowableText,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
+    RunningStatus,
+    RESULTS_LOADING_DELAY,
+    TableType,
+} from '@gridsuite/commons-ui';
 import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
-import { RESULTS_LOADING_DELAY } from 'components/network/constants';
-import RunningStatus from 'components/utils/running-status';
-import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
-import { ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
+import { DisplayedColumnsChangedEvent, ICellRendererParams, RowDataUpdatedEvent } from 'ag-grid-community';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
 import { resultsStyles } from '../common/utils';
 import { PanelType } from 'components/workspace/types/workspace.types';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
-import { TableType } from '../../../types/custom-aggrid-types';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
@@ -35,14 +42,13 @@ const styles = {
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     result,
     isFetching,
-    goToFirstPage,
     setCsvHeaders,
     setIsCsvButtonDisabled,
 }) => {
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const filters = useSelector(
-        (state: AppState) => state.tableFilters.columnsFilters?.[TableType.PccMin]?.[PCCMIN_RESULT]?.columns
+        (state: AppState) => state.tableFilters.columnsFilters?.[TableType.PccMin]?.[PCCMIN_RESULT]
     );
     const gridRef = useRef<AgGridReact>(null);
     const { openSLD } = useWorkspacePanelActions();
@@ -67,10 +73,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         [openSLD]
     );
 
-    const columns = useMemo(
-        () => getPccMinColumns(intl, voltageLevelIdRenderer, goToFirstPage),
-        [goToFirstPage, intl, voltageLevelIdRenderer]
-    );
+    const columns = useMemo(() => getPccMinColumns(intl, voltageLevelIdRenderer), [intl, voltageLevelIdRenderer]);
 
     const statusMessage = useIntlResultStatusMessages(intl, true, filters?.length > 0);
 
@@ -88,7 +91,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
     const noRowMessage = getNoRowsMessage(statusMessage, result, pccMinStatus, !isFetching);
 
     const showLoader = useOpenLoaderShortWait({
-        isLoading: pccMinStatus === RunningStatus.RUNNING || isFetching,
+        isLoading: pccMinStatus === RunningStatus.RUNNING || pccMinStatus === RunningStatus.PRELOADING || isFetching,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -105,6 +108,15 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         setCsvHeaders(getColumnHeaderDisplayNames(api))
     );
 
+    const handleDisplayedColumnsChanged = useCallback(
+        (event: DisplayedColumnsChangedEvent) => {
+            if (event?.api) {
+                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
+            }
+        },
+        [setCsvHeaders]
+    );
+
     return (
         <Box sx={styles.gridContainer}>
             {showLoader && <LinearProgress sx={{ height: 4 }} />}
@@ -117,6 +129,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
                     columnDefs={columns}
                     onRowDataUpdated={handleRowDataUpdated}
                     onGridReady={onGridReady}
+                    onDisplayedColumnsChanged={handleDisplayedColumnsChanged}
                     overlayNoRowsTemplate={noRowMessage}
                     overrideLocales={AGGRID_LOCALES}
                     onModelUpdated={({ api }) => {

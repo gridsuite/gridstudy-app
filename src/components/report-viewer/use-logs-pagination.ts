@@ -6,14 +6,14 @@
  */
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { LogType } from '@gridsuite/commons-ui';
 import { setLogsResultPagination } from 'redux/actions';
 import type { AppState } from 'redux/reducer.type';
 import { DEFAULT_LOGS_PAGE_COUNT } from 'redux/reducer';
 import { LogsPaginationConfig } from 'types/custom-aggrid-types';
-import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { LOGS_PAGINATION_STORE_FIELD } from 'utils/store-sort-filter-fields';
 
-export const useLogsPagination = (reportType: ComputingAndNetworkModificationType) => {
+export const useLogsPagination = (reportType: LogType) => {
     const dispatch = useDispatch();
 
     const pagination = useSelector((state: AppState) => state[LOGS_PAGINATION_STORE_FIELD][reportType]);
@@ -36,7 +36,7 @@ export const useLogsPaginationResetByType = () => {
     const allLogsPagination = useSelector((state: AppState) => state[LOGS_PAGINATION_STORE_FIELD]);
 
     return useCallback(
-        (computingType: ComputingAndNetworkModificationType) => {
+        (computingType: LogType) => {
             const currentPagination = allLogsPagination[computingType];
             dispatch(
                 setLogsResultPagination(computingType, {

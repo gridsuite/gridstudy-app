@@ -260,7 +260,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                 name,
                 tag,
                 description: description ?? '',
-                importParametersRaw: caseId ? currentParameters : null,
+                importParameters: caseId ? currentParameters : null,
                 caseInfos:
                     caseId && caseFormat
                         ? {

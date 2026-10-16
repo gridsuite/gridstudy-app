@@ -1,0 +1,131 @@
+/**
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
+
+import { useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
+import { Box, useTheme } from '@mui/material';
+import {
+    ComputingType,
+    DefaultCellRenderer,
+    getNoRowsMessage,
+    RESULTS_LOADING_DELAY,
+    RunningStatus,
+    TableType,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
+} from '@gridsuite/commons-ui';
+import { AppState } from '../../../redux/reducer.type';
+
+import LinearProgress from '@mui/material/LinearProgress';
+import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
+import { AgGridReact } from 'ag-grid-react';
+import { StateEstimationResultTableProps } from './state-estimation-result.type';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
+import { useInitialColumnSort } from './state-estimation-result-utils';
+import { RowClassParams } from 'ag-grid-community';
+import {
+    STATEESTIMATION_MEASUREMENTS,
+    STATEESTIMATION_QUALITY_CRITERION,
+    STATEESTIMATION_QUALITY_PER_REGION,
+} from '../../../utils/store-sort-filter-fields';
+
+const StateEstimationResultTable: FunctionComponent<StateEstimationResultTableProps> = ({
+    result,
+    isLoadingResult,
+    columnDefs,
+    tableName,
+    exportCsvResetKey,
+    filter = false,
+    sortable = false,
+}) => {
+    const theme = useTheme();
+    const intl = useIntl();
+    const gridRef = useRef<AgGridReact>(null);
+    const handleOnGridReady = useInitialColumnSort(tableName, sortable);
+
+    const tableNameFormatted = intl.formatMessage({ id: tableName });
+
+    const stateEstimationStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
+    );
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
+
+    //We give each tab its own loader, so we don't have a loader spinning because another tab is still doing some work
+    const openLoaderTab = useOpenLoaderShortWait({
+        isLoading:
+            stateEstimationStatus === RunningStatus.RUNNING ||
+            stateEstimationStatus === RunningStatus.PRELOADING ||
+            isLoadingResult,
+        delay: RESULTS_LOADING_DELAY,
+    });
+
+    const getRowStyle = useCallback(
+        (params: RowClassParams) => {
+            if (params?.data?.elementId) {
+                return {
+                    backgroundColor: theme.selectedRow.background,
+                };
+            }
+        },
+        [theme.selectedRow.background]
+    );
+
+    const messages = useIntlResultStatusMessages(intl, true);
+
+    const defaultColDef = useMemo(
+        () => ({
+            filter: filter,
+            sortable: sortable,
+            resizable: true,
+            lockPinned: true,
+            suppressMovable: true,
+            wrapHeaderText: true,
+            autoHeaderHeight: true,
+            flex: 1,
+            cellRenderer: DefaultCellRenderer,
+        }),
+        [filter, sortable]
+    );
+
+    const rowsToShow = (() => {
+        switch (tableName) {
+            case STATEESTIMATION_MEASUREMENTS:
+                return result.measurementInformationResults ?? [];
+            case STATEESTIMATION_QUALITY_CRITERION:
+                return result.qualityCriterionResults ?? [];
+            case STATEESTIMATION_QUALITY_PER_REGION:
+                return result.qualityPerRegionResults ?? [];
+            default:
+                return [];
+        }
+    })();
+
+    const message = getNoRowsMessage(messages, rowsToShow, stateEstimationStatus, !isLoadingResult);
+
+    return (
+        <>
+            <Box sx={{ height: '4px', position: 'relative', zIndex: 1 }}>{openLoaderTab && <LinearProgress />}</Box>
+            <RenderTableAndExportCsv
+                gridRef={gridRef}
+                columns={columnDefs}
+                defaultColDef={defaultColDef}
+                tableName={tableNameFormatted}
+                rows={rowsToShow}
+                getRowStyle={getRowStyle}
+                overlayNoRowsTemplate={message}
+                skipColumnHeaders={false}
+                computationType={TableType.StateEstimation}
+                computationSubType={tableName}
+                onGridReady={handleOnGridReady}
+                exportCsvResetKey={exportCsvResetKey}
+                language={language}
+            />
+        </>
+    );
+};
+export default StateEstimationResultTable;

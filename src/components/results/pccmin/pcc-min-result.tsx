@@ -8,23 +8,32 @@
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ComputingType, MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    CustomTablePagination,
+    ManagedExportCsvButton,
+    MuiStyles,
+    RunningStatus,
+    snackWithFallback,
+    useSnackMessage,
+    buildValidGlobalFilters,
+    RESULT_PAGE_OPTIONS,
+    TableType,
+} from '@gridsuite/commons-ui';
+import { downloadZipFile } from '../../../services/utils';
+import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
+import { exportPccMinResultsAsCsv } from 'services/study/pcc-min';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import RunningStatus from 'components/utils/running-status';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
 import { Box } from '@mui/material';
-import { PAGE_OPTIONS } from '../securityanalysis/security-analysis-result-utils';
-import CustomTablePagination from 'components/utils/custom-table-pagination';
 import PccMinResultTable from './pcc-min-result-table';
-import { PaginationType, TableType } from 'types/custom-aggrid-types';
+import { PaginationType } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
 import { UUID } from 'node:crypto';
-import { PccMinExportButton } from './pcc-min-export-button';
-import { buildValidGlobalFilters } from '../common/global-filter/build-valid-global-filters';
-import { useSelectedGlobalFilters } from '../common/global-filter/use-selected-global-filters';
+import { useSelectedGlobalFilters } from '../common/global-filter/hooks/use-selected-global-filters';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 
 interface PccMinResultProps {
@@ -73,12 +82,50 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
     );
 
+    const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
+
     const { filters } = useComputationColumnFilters(TableType.PccMin, PCCMIN_RESULT);
     const globalFiltersFromState = useSelectedGlobalFilters(TableType.PccMin);
     const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
     const { page, rowsPerPage } = pagination;
     const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
+
+    const resetKey = `${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}-${page}-${rowsPerPage}`;
+    const exportCsv = useCallback(async () => {
+        const filter = filters ? mapFieldsToColumnsFilter(filters, FROM_COLUMN_TO_FIELD_PCC_MIN) : null;
+        const globalFilters = buildValidGlobalFilters(globalFiltersFromState);
+
+        const response = await exportPccMinResultsAsCsv(
+            studyUuid,
+            nodeUuid,
+            currentRootNetworkUuid,
+            sortConfig,
+            filter,
+            globalFilters,
+            csvHeaders,
+            language
+        );
+
+        const blob = await response.blob();
+        downloadZipFile(blob, 'pccmin_results.zip');
+    }, [
+        studyUuid,
+        nodeUuid,
+        currentRootNetworkUuid,
+        sortConfig,
+        filters,
+        globalFiltersFromState,
+        csvHeaders,
+        language,
+    ]);
+
+    const handleError = useCallback(
+        (error: unknown) => {
+            snackWithFallback(snackError, error, { headerId: 'csvExportPccMinResultError' });
+        },
+        [snackError]
+    );
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -94,10 +141,6 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         },
         [dispatchPagination]
     );
-
-    const goToFirstPage = useCallback(() => {
-        dispatchPagination({ ...pagination, page: 0 });
-    }, [pagination, dispatchPagination]);
 
     useEffect(() => {
         if (pccMinStatus !== RunningStatus.SUCCEED) {
@@ -160,12 +203,11 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>
                 <Box style={styles.grid}></Box>
-                <PccMinExportButton
-                    studyUuid={studyUuid}
-                    nodeUuid={nodeUuid}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                    csvHeaders={csvHeaders}
+                <ManagedExportCsvButton
+                    exportCsv={exportCsv}
+                    resetKey={resetKey}
                     disabled={isCsvButtonDisabled}
+                    onError={handleError}
                 />
             </Box>
 
@@ -174,10 +216,9 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 isFetching={isFetching}
                 setCsvHeaders={setCsvHeaders}
                 setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                goToFirstPage={goToFirstPage}
             />
             <CustomTablePagination
-                rowsPerPageOptions={PAGE_OPTIONS}
+                rowsPerPageOptions={RESULT_PAGE_OPTIONS}
                 count={count}
                 rowsPerPage={rowsPerPage}
                 page={page}

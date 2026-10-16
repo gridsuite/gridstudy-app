@@ -9,16 +9,16 @@ import { FunctionComponent } from 'react';
 import { IconButton, MenuItem, Select } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
-import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
-import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
-import { BooleanFilterValue } from './utils/aggrid-filters-utils';
+import { SelectChangeEvent } from '@mui/material/Select';
 import {
+    BooleanFilterValue,
+    useCustomAggridColumnFilter,
     CustomAggridFilterParams,
-    FILTER_DATA_TYPES,
-    FILTER_TEXT_COMPARATORS,
-} from '../../../types/custom-aggrid-types';
+    mergeSx,
+    type MuiStyles,
+} from '@gridsuite/commons-ui';
+import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
+import { FILTER_DATA_TYPES } from '../../../types/custom-aggrid-types';
 
 const styles = {
     input: {
@@ -28,20 +28,16 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterParams> = ({
-    api,
-    colId,
-    filterParams,
-}) => {
+export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterParams> = ({ colId, filterParams }) => {
     const intl = useIntl();
 
-    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, colId, filterParams);
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridColumnFilter(colId, filterParams);
 
     const handleValueChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value;
         handleChangeFilterValue({
             value: newValue,
-            type: FILTER_TEXT_COMPARATORS.EQUALS,
+            type: 'booleanMatches',
             dataType: FILTER_DATA_TYPES.BOOLEAN,
         });
     };
@@ -59,7 +55,7 @@ export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterPara
             value={typeof selectedFilterData === 'string' ? selectedFilterData : ''}
             onChange={handleValueChange}
             sx={mergeSx(styles.input, {
-                '& .MuiSelect-iconOutlined': {
+                '& .MuiSelect-outlined ~ .MuiSelect-icon': {
                     display: selectedFilterData ? 'none' : '',
                 },
             })}

@@ -25,11 +25,11 @@ export interface ContingencyList {
     type: string;
 }
 
-function createIdentifiersList(selectedEquipments: EquipmentInfos[]) {
+function createIdentifiersList(selectedEquipments: EquipmentInfos[], equipmentIdAsContingencyName: boolean) {
     const identifierLists = selectedEquipments.map((eq) => {
         return {
             type: 'LIST',
-            contingencyId: eq.name ? eq.name : eq.id,
+            contingencyId: equipmentIdAsContingencyName ? eq.id : (eq.name ?? eq.id),
             identifierList: [
                 {
                     type: 'ID_BASED',
@@ -41,8 +41,12 @@ function createIdentifiersList(selectedEquipments: EquipmentInfos[]) {
     return identifierLists;
 }
 
-export function createIdentifierContingencyList(contingencyListName: string, equipmentList: EquipmentInfos[]) {
-    const identifiersList = createIdentifiersList(equipmentList);
+export function createIdentifierContingencyList(
+    contingencyListName: string,
+    equipmentList: EquipmentInfos[],
+    equipmentIdAsContingencyName: boolean
+) {
+    const identifiersList = createIdentifiersList(equipmentList, equipmentIdAsContingencyName);
     return {
         identifierContingencyList: {
             type: 'identifier',

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import type { UUID } from 'node:crypto';
-import { BUILD_STATUS } from '../network/constants';
+import { BuildStatus } from '@gridsuite/commons-ui';
 import { Node } from '@xyflow/react';
 
 export enum NodeType {
@@ -40,8 +40,8 @@ export type StashedNodeProperties = {
 };
 
 export interface NodeBuildStatus {
-    globalBuildStatus: BUILD_STATUS;
-    localBuildStatus: BUILD_STATUS;
+    globalBuildStatus: BuildStatus;
+    localBuildStatus: BuildStatus;
 }
 
 export type RootNodeData = AbstractNode & {
@@ -51,7 +51,6 @@ export type RootNodeData = AbstractNode & {
 export type NetworkModificationNodeData = AbstractNode & {
     modificationGroupUuid?: UUID;
     variantId?: string;
-    modificationsToExclude?: UUID[];
     loadFlowResultUuid?: UUID;
     shortCircuitAnalysisResultUuid?: UUID;
     oneBusShortCircuitAnalysisResultUuid?: UUID;
@@ -67,12 +66,12 @@ export type NetworkModificationNodeData = AbstractNode & {
 
 export type NodeCommonData = {
     label: string;
-    globalBuildStatus?: BUILD_STATUS;
+    globalBuildStatus?: BuildStatus;
     description?: string;
     readOnly?: boolean;
     nodeType?: NetworkModificationNodeType;
 };
-export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
+export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BuildStatus };
 
 export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETWORK_MODIFICATION> & {
     id: UUID;

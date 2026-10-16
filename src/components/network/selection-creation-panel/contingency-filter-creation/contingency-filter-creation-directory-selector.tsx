@@ -44,8 +44,20 @@ export const SelectionCreationPanelDirectorySelector = (props: { pendingState: b
             <Grid container>
                 {/* icon directory */}
 
-                <Typography m={1} component="span">
-                    <Box fontWeight={'fontWeightBold'} display="flex" justifyContent="center" alignItems="center">
+                <Typography
+                    component="span"
+                    sx={{
+                        m: 1,
+                    }}
+                >
+                    <Box
+                        sx={{
+                            fontWeight: 'fontWeightBold',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
                         <FolderOutlined />
                         <span>
                             &nbsp;{destinationFolderWatcher?.folderName || ''}

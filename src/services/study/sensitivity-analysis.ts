@@ -5,20 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { backendFetch, backendFetchJson, backendFetchText, FilterConfig, GlobalFilters } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import {
     CsvConfig,
     SelectorFilterOptions,
-    SensitivityAnalysisParametersInfos,
     SensitivityResult,
     SensitivityResultFilterOptions,
 } from './sensitivity-analysis.type';
-import { FilterConfig } from '../../types/custom-aggrid-types';
-import { GlobalFilters } from 'components/results/common/global-filter/global-filter-types';
-
-const GET_PARAMETERS_PREFIX = import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';
 
 export function startSensitivityAnalysis(
     studyUuid: UUID,
@@ -116,44 +111,13 @@ export function fetchSensitivityAnalysisFilterOptions(
     return backendFetchJson(url);
 }
 
-export function getSensitivityAnalysisParameters(studyUuid: UUID) {
-    console.info('get sensitivity analysis parameters');
-    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function fetchSensitivityAnalysisParameters(parameterUuid: string) {
-    console.info('get sensitivity analysis parameters');
-    const url = `${GET_PARAMETERS_PREFIX}/${parameterUuid}`;
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function setSensitivityAnalysisParameters(
-    studyUuid: UUID | null,
-    newParams: SensitivityAnalysisParametersInfos | null
-) {
-    console.info('set sensitivity analysis parameters');
-    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newParams ? JSON.stringify(newParams) : null,
-    });
-}
-
 export function exportSensitivityResultsAsCsv(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     csvConfig: CsvConfig,
     selector: any,
-    filters: FilterConfig[],
+    filters: FilterConfig[] | undefined,
     globalFilters: GlobalFilters | undefined
 ) {
     console.info(

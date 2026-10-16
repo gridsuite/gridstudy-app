@@ -9,7 +9,10 @@ import type {
     AuthenticationRouterErrorState,
     BaseVoltage,
     CommonStoreState,
+    ComposedModificationMetadata,
     ComputingType,
+    TableColumnFilter,
+    GlobalFilter,
     GsLang,
     GsLangUser,
     GsTheme,
@@ -18,23 +21,21 @@ import type {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    RecentGlobalFilter,
+    RunningStatus,
+    TableSort,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import type { ValueOf } from 'type-fest';
-import type { ViewBoxLike } from '@svgdotjs/svg.js';
 import type {
-    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PccminTab,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
-    TableSort,
 } from '../types/custom-aggrid-types';
-import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
-import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import type { CopyType } from '../components/network-modification.type';
 import type {
     CurrentTreeNode,
@@ -54,16 +55,16 @@ import type {
 } from '../components/graph/menus/network-modifications/network-modification-menu.type';
 import type { CalculationType } from '../components/spreadsheet-view/types/calculation.type';
 import type { RootNetworkIndexationStatus } from '../types/notification-types';
+import type { NodeActivity } from '../components/node-activity/types/node-activity.type';
 import type { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import type { NodeValidity } from '../components/spreadsheet-view/columns/utils/column-validity';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import {
     LOGS_PAGINATION_STORE_FIELD,
-    LOGS_STORE_FIELD,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
-    SPREADSHEET_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { PARAM_COMPUTED_LANGUAGE, PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
@@ -78,7 +79,7 @@ export enum EquipmentUpdateType {
     GENERATORS = 'generators',
     LOADS = 'loads',
     BATTERIES = 'batteries',
-    DANGLING_LINES = 'danglingLines',
+    BOUNDARY_LINES = 'boundaryLines',
     HVDC_LINES = 'hvdcLines',
     LCC_CONVERTER_STATIONS = 'lccConverterStations',
     VSC_CONVERTER_STATIONS = 'vscConverterStations',
@@ -135,24 +136,19 @@ export type SpreadsheetNetworkState = {
     equipments: Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
 };
 
-export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
-
-export type ComputationResultColumnFilter = {
-    columns: FilterConfig[];
+export type GlobalFiltersState = {
+    selected: string[];
+    recents: RecentGlobalFilter[]; // sorted by unselectedDate descending (most recent first), max 10
 };
 
 export type TableFiltersState = {
-    columnsFilters: Record<string, Record<string, ComputationResultColumnFilter>>;
-    globalFilters: Record<string, string[]>; // filter IDs
+    columnsFilters: TableColumnFilter;
+    globalFilters: Record<string, GlobalFiltersState>;
 };
-
-export type LogsFilterState = Record<string, FilterConfig[]>;
 
 export type LogsPaginationState = Record<string, LogsPaginationConfig>;
 
 // ——— Diagrams ———
-
-export type NadViewBox = Record<UUID, ViewBoxLike | null>;
 
 export type NadNodeMovement = {
     diagramId: UUID;
@@ -171,12 +167,11 @@ export type NadTextMovement = {
     connectionShiftY: number;
 };
 
-export interface OneBusShortCircuitAnalysisDiagram {
-    diagramId: string;
-    studyUuid: UUID;
+export type OneBusShortCircuitAnalysisContext = {
+    equipmentId: string;
     rootNetworkUuid: UUID;
     nodeId: UUID;
-}
+};
 
 // ——— Clipboard ———
 
@@ -192,7 +187,9 @@ export type NodeSelectionForCopy = {
 };
 
 export type CopiedNetworkModifications = {
-    networkModificationUuids: UUID[];
+    // the raw selection snapshot at copy/cut time; doPasteModifications resolves it into
+    // ModificationMoveOrCopyInfos (per-item source container) right before sending the request
+    networkModifications: ComposedModificationMetadata[];
     copyInfos: NetworkModificationCopyInfos | null;
 };
 
@@ -227,8 +224,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     securityAnalysisProgress: { current: number; total: number } | null;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
-    oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
-    notificationIdList: UUID[];
+    oneBusShortCircuitAnalysisContext: OneBusShortCircuitAnalysisContext | null;
     globalFilterOptions: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramDepth: number;
@@ -236,9 +232,11 @@ export interface AppState extends CommonStoreState, AppConfigState {
     tableSort: TableSort;
     tables: TablesState;
     nodeAliases: NodeAlias[];
+    nodeActivities: NodeActivity[];
+    // the current node is not in there, computingStatus covers it
+    aliasedNodesValidity: Record<string, NodeValidity>;
 
     nodeSelectionForCopy: NodeSelectionForCopy;
-    nadViewBox: NadViewBox;
     copiedNetworkModifications: CopiedNetworkModifications;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
@@ -248,7 +246,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nadTextNodeMovements: NadTextMovement[];
     isExplorerDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
-    isModificationsInProgress: boolean;
     isMonoRootStudy: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;
@@ -265,9 +262,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
     [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: Record<PccminTab, PaginationConfig>;
 
-    [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
-
-    [LOGS_STORE_FIELD]: LogsFilterState;
     [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationState;
 
     calculationSelections: Record<UUID, CalculationType[]>;

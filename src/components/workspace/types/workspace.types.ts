@@ -45,6 +45,7 @@ interface BasePanel {
     maximized: boolean;
     pinned: boolean;
     zIndex?: number; // Client-only, not persisted to backend
+    editMode?: boolean; // Client-only, not persisted to backend
     restorePosition?: PanelPosition;
     restoreSize?: PanelSize;
 }
@@ -57,21 +58,14 @@ export interface NADPanel extends BasePanel {
     voltageLevelToOmitIds?: string[];
     currentNadConfigUuid?: UUID;
     navigationHistory?: string[];
-    initialVoltageLevelIds?: string[]; // For initial diagram load
+    initialVoltageLevelIds?: string[]; // Client-only, not persisted to backend
 }
 
-// Persistent NAD fields that sync to Redux and backend
-export const PERSISTENT_NAD_FIELDS = [
-    'title',
-    'voltageLevelToOmitIds',
-    'currentFilterUuid',
-    'currentNadConfigUuid',
-    'nadConfigUuid',
-    'filterUuid',
-    'initialVoltageLevelIds',
-] as const satisfies readonly (keyof NADPanel)[];
-
-export type PersistentNADFields = Pick<NADPanel, (typeof PERSISTENT_NAD_FIELDS)[number]>;
+// Everything that decides which NAD a panel shows, the same set the save endpoint writes
+export type NadPanelFields = Pick<
+    NADPanel,
+    'title' | 'nadConfigUuid' | 'filterUuid' | 'currentNadConfigUuid' | 'currentFilterUuid' | 'voltageLevelToOmitIds'
+>;
 
 export interface SLDVoltageLevelPanel extends BasePanel {
     type: PanelType.SLD_VOLTAGE_LEVEL;

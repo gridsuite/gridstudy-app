@@ -345,9 +345,18 @@ function DynamicSimulationResultChart({
     return (
         <Box sx={mergeSx(styles.root, fullView ? styles.modal : undefined)}>
             <Box>
-                <Grid container sx={styles.toolBar} alignItems="center" justifyContent="center">
+                <Grid
+                    container
+                    sx={[
+                        {
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        },
+                        styles.toolBar,
+                    ]}
+                >
                     {!plotIdScale && (
-                        <Grid item>
+                        <Grid>
                             <Paper elevation={2} sx={styles.paperOptionsGroup}>
                                 <ToggleButton size={'small'} value="sync" selected={sync} onChange={handleSync}>
                                     {sync ? (
@@ -379,10 +388,12 @@ function DynamicSimulationResultChart({
                                     type="number"
                                     value={gridLayout.numColumns}
                                     onChange={handleChangeNumColumns}
-                                    InputProps={{
-                                        inputProps: {
-                                            max: 3,
-                                            min: 1,
+                                    slotProps={{
+                                        input: {
+                                            inputProps: {
+                                                max: 3,
+                                                min: 1,
+                                            },
                                         },
                                     }}
                                 />
@@ -390,7 +401,11 @@ function DynamicSimulationResultChart({
                         </Grid>
                     )}
                     {!plotIdScale && (
-                        <Grid item ml={2}>
+                        <Grid
+                            sx={{
+                                ml: 2,
+                            }}
+                        >
                             <TooltipIconButton
                                 tooltip={intl.formatMessage({
                                     id: 'DynamicSimulationAddGraph',
@@ -402,8 +417,8 @@ function DynamicSimulationResultChart({
                             </TooltipIconButton>
                         </Grid>
                     )}
-                    <Grid item xs />
-                    <Grid item xs={'auto'}>
+                    <Grid size="grow" />
+                    <Grid size={'auto'}>
                         <Paper elevation={2} sx={styles.paperOptionsGroup}>
                             <ToggleButton
                                 sx={styles.fullViewButton}
@@ -466,8 +481,7 @@ function DynamicSimulationResultChart({
             >
                 <Grid container sx={{ height: '100%' }}>
                     <Grid
-                        item
-                        xs
+                        size="grow"
                         sx={{
                             height: '100%',
                         }}
@@ -520,8 +534,7 @@ function DynamicSimulationResultChart({
                         </Box>
                     </Grid>
                     <Grid
-                        item
-                        xs={'auto'}
+                        size={'auto'}
                         sx={{
                             height: '100%',
                         }}

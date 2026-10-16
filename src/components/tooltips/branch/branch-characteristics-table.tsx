@@ -14,9 +14,5 @@ interface BranchCharacteristicsProps {
     equipmentInfos: BranchEquipmentInfos;
 }
 export const BranchCharacteristicsTable: React.FC<BranchCharacteristicsProps> = ({ equipmentInfos }) => {
-    return (
-        <Grid item sx={styles.grid}>
-            {renderCommonCharacteristicsTable(equipmentInfos)}
-        </Grid>
-    );
+    return <Grid sx={styles.grid}>{renderCommonCharacteristicsTable(equipmentInfos)}</Grid>;
 };

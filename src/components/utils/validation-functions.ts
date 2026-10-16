@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { YUP_REQUIRED } from '@gridsuite/commons-ui';
 
 const NO_ERROR = {
     error: false,
@@ -149,7 +150,7 @@ export function validateField(
     const isValueBlankOrEmpty = isBlankOrEmpty(value);
 
     if (toValidate.isFieldRequired && isValueBlankOrEmpty) {
-        return makeErrorRecord('FieldIsRequired');
+        return makeErrorRecord(YUP_REQUIRED);
     }
 
     if (!isValueBlankOrEmpty && toValidate.isFieldNumeric && !validateValueIsANumber(value)) {

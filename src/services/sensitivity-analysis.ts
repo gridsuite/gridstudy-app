@@ -6,11 +6,12 @@
  */
 
 import { backendFetchJson } from '@gridsuite/commons-ui';
+import { PREFIX_STUDY_QUERIES } from './study';
 
-const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis';
+const PREFIX_SENSITIVITY_ANALYSIS_QUERIES = PREFIX_STUDY_QUERIES + '/v1/sensitivity-analysis';
 
 export function getSensiUrl() {
-    return `${PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES}/v1/`;
+    return `${PREFIX_SENSITIVITY_ANALYSIS_QUERIES}/`;
 }
 
 export function fetchSensitivityAnalysisProviders(): Promise<string[]> {

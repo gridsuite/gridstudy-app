@@ -7,20 +7,28 @@
 
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { Identifiable, LANG_FRENCH, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    EquipmentType,
+    getCsvDelimiter,
+    Identifiable,
+    isFieldTypeOk,
+    type PredefinedEquipmentProperties,
+    snackWithFallback,
+    TABULAR_MODIFICATION_FIELDS,
+    TabularFieldConstants,
+    type TabularField,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
-import { EQUIPMENT_ID } from 'components/utils/field-constants';
-import { isFieldTypeOk, PredefinedEquipmentProperties, TabularField } from '../tabular-common';
-import { getNetworkElementsInfosByGlobalFilter } from 'services/study/filter';
+import { getNetworkElementsInfosByFilters } from 'services/study/filter';
 import { fetchNetworkElementsInfos } from 'services/study/network';
 import type { UUID } from 'node:crypto';
 import { getPrefilledColumnGroups } from './prefillable-columns-config';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { mapPrefilledEquipments, PrefilledModelGenerationParams } from './utils';
-import { TABULAR_MODIFICATION_FIELDS } from '../tabular-modification-utils';
 
 export interface UsePrefilledModelGeneratorProps {
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     csvColumns: string[];
     commentLines: string[][];
     predefinedEquipmentProperties: PredefinedEquipmentProperties;
@@ -36,7 +44,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const delimiter = useMemo(() => (language === LANG_FRENCH ? ';' : ','), [language]);
+    const delimiter = useMemo(() => getCsvDelimiter(language), [language]);
 
     /**
      * Fetches all equipments of the given type from the network
@@ -68,22 +76,18 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
      * All filter IDs are passed to genericFilter regardless of their type
      */
     const fetchEquipmentsFromFilters = useCallback(
-        async (filterIds: UUID[]): Promise<Identifiable[]> => {
-            if (!(studyUuid && currentNode?.id && currentRootNetworkUuid) || !filterIds.length) {
+        async (filterUuids: UUID[]): Promise<Identifiable[]> => {
+            if (!(studyUuid && currentNode?.id && currentRootNetworkUuid) || !filterUuids.length) {
                 return [];
             }
 
             try {
-                const globalFilter = {
-                    genericFilter: filterIds,
-                };
-
-                const equipments = await getNetworkElementsInfosByGlobalFilter(
+                const equipments = await getNetworkElementsInfosByFilters(
                     studyUuid,
                     currentNode.id,
                     currentRootNetworkUuid,
                     equipmentType,
-                    globalFilter,
+                    filterUuids,
                     EQUIPMENT_INFOS_TYPES.FORM.type
                 );
 
@@ -128,7 +132,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
      */
     const getFieldDefinition = useCallback(
         (columnName: string): TabularField | undefined => {
-            return TABULAR_MODIFICATION_FIELDS[equipmentType].find((field) => field.id === columnName);
+            return TABULAR_MODIFICATION_FIELDS[equipmentType]?.find((field) => field.id === columnName);
         },
         [equipmentType]
     );
@@ -146,7 +150,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
             // 2. Comment lines
             commentLines.forEach((commentLineArray) => {
                 if (Array.isArray(commentLineArray)) {
-                    csvRows.push(...commentLineArray);
+                    csvRows.push(commentLineArray.join(delimiter));
                 }
             });
 
@@ -160,7 +164,7 @@ export const usePrefilledModelGenerator = (props: UsePrefilledModelGeneratorProp
                 .forEach((equipment) => {
                     const row = csvColumns.map((column) => {
                         // ID is always filled
-                        if (column === EQUIPMENT_ID) {
+                        if (column === TabularFieldConstants.EQUIPMENT_ID) {
                             return equipment.id ?? '';
                         }
 

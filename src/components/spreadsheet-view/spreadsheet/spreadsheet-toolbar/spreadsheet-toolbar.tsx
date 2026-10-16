@@ -49,24 +49,24 @@ export const SpreadsheetToolbar = ({
 }: SpreadsheetToolbarProps) => {
     return (
         <Grid container columnSpacing={2} sx={styles.toolbar}>
-            <Grid item sx={styles.filterContainer}>
+            <Grid sx={styles.filterContainer}>
                 <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
             </Grid>
-            <Grid item>
+            <Grid>
                 <FilteredRowCounter rowCounterInfos={rowCounterInfos} tableDefinition={tableDefinition} />
             </Grid>
-            <Grid item>
+            <Grid>
                 <ColumnsConfig
                     gridRef={gridRef}
                     tableDefinition={tableDefinition}
                     disabled={disabled || tableDefinition?.columns.length === 0}
                 />
             </Grid>
-            <Grid item>
+            <Grid>
                 <ColumnCreationButton tableDefinition={tableDefinition} disabled={disabled} />
             </Grid>
-            <Grid item sx={{ flexGrow: 1 }}></Grid>
-            <Grid item sx={styles.save}>
+            <Grid sx={{ flexGrow: 1 }}></Grid>
+            <Grid sx={styles.save}>
                 <SaveSpreadsheetButton
                     tableDefinition={tableDefinition}
                     gridRef={gridRef}

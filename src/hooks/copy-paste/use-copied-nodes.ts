@@ -125,5 +125,6 @@ export const useCopiedNodes = () => {
         copyNode,
         cutNode,
         cleanClipboard,
+        cleanOtherTabsClipboard,
     };
 };

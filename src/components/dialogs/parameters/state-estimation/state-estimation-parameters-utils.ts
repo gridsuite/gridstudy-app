@@ -4,15 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import yup from '../../../utils/yup-config';
+import * as yup from 'yup';
+import { YUP_REQUIRED } from '@gridsuite/commons-ui';
 import {
     DEFAULT_BOUNDS,
     DEFAULT_FIXED_BOUNDS,
     ESTIM_ALGO_TYPE,
     ESTIM_LOG_LEVEL,
+    FILTER,
+    INVALIDATE,
+    INVALIDATION_TYPE,
     P_MAX,
     P_MIN,
+    AREA_INVALIDATIONS,
     PRINCIPAL_OBSERVABLE_ZONE,
+    UNIQUE_PHASE,
     Q_MAX,
     Q_MIN,
     QUALITY_PER_REGION,
@@ -62,7 +68,16 @@ export enum TabValue {
     WEIGHTS = 'weights',
     QUALITY = 'quality',
     LOADBOUNDS = 'loadBounds',
+    AREA_INVALIDATION = 'areaInvalidation',
 }
+
+export enum InvalidationType {
+    ERRONEOUS_TOPOLOGY_PV = 'ERRONEOUS_TOPOLOGY_PV',
+    ERRONEOUS_TOPOLOGY_PQ = 'ERRONEOUS_TOPOLOGY_PQ',
+    NOT_FULLY_DESCRIBED = 'NOT_FULLY_DESCRIBED',
+}
+
+export const TAB_VALUES = Object.values(TabValue);
 
 enum estimAlgoType {
     GAUSS_NEWTON_L2 = 'GAUSS_NEWTON_L2',
@@ -143,8 +158,7 @@ interface LoadBoundsDetailsParameters extends VoltageLevelCode {
 }
 
 interface LoadBoundsDetailsParametersForm
-    extends VoltageLevelLabel,
-        Omit<LoadBoundsDetailsParameters, 'voltageLevel'> {}
+    extends VoltageLevelLabel, Omit<LoadBoundsDetailsParameters, 'voltageLevel'> {}
 
 interface ThresholdsPerVoltageLevel extends ThresholdVoltageLevelCode {
     thresholdOutBoundsGapV: number;
@@ -159,12 +173,26 @@ interface ThresholdsPerVoltageLevel extends ThresholdVoltageLevelCode {
 }
 
 interface ThresholdsPerVoltageLevelForm
-    extends VoltageLevelLabel,
-        Omit<ThresholdsPerVoltageLevel, 'thresholdVoltageLevel'> {}
+    extends VoltageLevelLabel, Omit<ThresholdsPerVoltageLevel, 'thresholdVoltageLevel'> {}
+
+export interface AreaInvalidationFilterInfos {
+    filterUuid: string;
+    filterName: string | null;
+}
+
+// one entry per row; a row can combine several substation filters (their matching substations are all invalidated
+// the same way). Rows are applied top to bottom, a later "invalidate" entry overrides an earlier one for the same
+// substation (see the Area invalidation tab tooltip, StateEstimationParametersAreaInvalidationTooltip)
+export interface AreaInvalidationInfos {
+    invalidate: boolean;
+    invalidationType: string;
+    filters: AreaInvalidationFilterInfos[];
+}
 
 export interface StateEstimationParameters {
     estimParameters: {
         principalObservableZone: boolean;
+        uniquePhase: boolean;
         estimAlgoType: string;
         estimLogLevel: string;
         weights: {
@@ -188,6 +216,7 @@ export interface StateEstimationParameters {
             defaultFixedBounds: LoadBoundsDetailsParameters[];
         };
     };
+    areaInvalidations: AreaInvalidationInfos[];
 }
 
 const ESTIM_PARAMETERS = 'estimParameters';
@@ -263,6 +292,14 @@ export const fromStateEstimationParametersFormToParamValues = (
             })),
         },
     },
+    [AREA_INVALIDATIONS]: params.areaInvalidation[AREA_INVALIDATIONS]?.map((areaInvalidation) => ({
+        [INVALIDATE]: areaInvalidation.invalidate,
+        [INVALIDATION_TYPE]: areaInvalidation.invalidationType,
+        filters: (areaInvalidation.filter ?? []).map((filter) => ({
+            filterUuid: filter.id,
+            filterName: filter.name ?? null,
+        })),
+    })),
 });
 
 const mapVoltageLevelData = <T extends VoltageLevelCode | ThresholdVoltageLevelCode, U extends VoltageLevelLabel>(
@@ -277,37 +314,53 @@ const mapVoltageLevelData = <T extends VoltageLevelCode | ThresholdVoltageLevelC
     });
 
 export const fromStateEstimationParametersParamToFormValues = (
-    values: StateEstimationParameters['estimParameters']
-): StateEstimationParametersForm => ({
-    [TabValue.GENERAL]: {
-        [PRINCIPAL_OBSERVABLE_ZONE]: values.principalObservableZone,
-        [ESTIM_LOG_LEVEL]: values.estimLogLevel,
-        [ESTIM_ALGO_TYPE]: values.estimAlgoType,
-    },
-    [TabValue.WEIGHTS]: {
-        [WEIGHTS_PARAMETERS]: mapVoltageLevelData<WeightsParameters, WeightParametersForm>(
-            values.weights.weightsParameters
-        ),
-    },
-    [TabValue.QUALITY]: {
-        ...values.quality,
-        [THRESHOLD_PER_VOLTAGE_LEVEL]: mapVoltageLevelData<ThresholdsPerVoltageLevel, ThresholdsPerVoltageLevelForm>(
-            values.quality.thresholdsPerVoltageLevel
-        ),
-    },
-    [TabValue.LOADBOUNDS]: {
-        [DEFAULT_BOUNDS]: mapVoltageLevelData<LoadBoundsDetailsParameters, LoadBoundsDetailsParametersForm>(
-            values.loadBounds.defaultBounds
-        ),
-        [DEFAULT_FIXED_BOUNDS]: mapVoltageLevelData<LoadBoundsDetailsParameters, LoadBoundsDetailsParametersForm>(
-            values.loadBounds.defaultFixedBounds
-        ),
-    },
-});
+    parameters: StateEstimationParameters
+): StateEstimationParametersForm => {
+    const values = parameters.estimParameters;
+    return {
+        [TabValue.GENERAL]: {
+            [PRINCIPAL_OBSERVABLE_ZONE]: values.principalObservableZone,
+            [UNIQUE_PHASE]: values.uniquePhase,
+            [ESTIM_LOG_LEVEL]: values.estimLogLevel,
+            [ESTIM_ALGO_TYPE]: values.estimAlgoType,
+        },
+        [TabValue.WEIGHTS]: {
+            [WEIGHTS_PARAMETERS]: mapVoltageLevelData<WeightsParameters, WeightParametersForm>(
+                values.weights.weightsParameters
+            ),
+        },
+        [TabValue.QUALITY]: {
+            ...values.quality,
+            [THRESHOLD_PER_VOLTAGE_LEVEL]: mapVoltageLevelData<
+                ThresholdsPerVoltageLevel,
+                ThresholdsPerVoltageLevelForm
+            >(values.quality.thresholdsPerVoltageLevel),
+        },
+        [TabValue.LOADBOUNDS]: {
+            [DEFAULT_BOUNDS]: mapVoltageLevelData<LoadBoundsDetailsParameters, LoadBoundsDetailsParametersForm>(
+                values.loadBounds.defaultBounds
+            ),
+            [DEFAULT_FIXED_BOUNDS]: mapVoltageLevelData<LoadBoundsDetailsParameters, LoadBoundsDetailsParametersForm>(
+                values.loadBounds.defaultFixedBounds
+            ),
+        },
+        [TabValue.AREA_INVALIDATION]: {
+            [AREA_INVALIDATIONS]: (parameters.areaInvalidations ?? []).map((areaInvalidation) => ({
+                [INVALIDATE]: areaInvalidation.invalidate,
+                [INVALIDATION_TYPE]: areaInvalidation.invalidationType,
+                [FILTER]: (areaInvalidation.filters ?? []).map((filter) => ({
+                    id: filter.filterUuid,
+                    name: filter.filterName ?? '',
+                })),
+            })),
+        },
+    };
+};
 
 export const stateEstimationParametersFormSchema = yup.object().shape({
     [TabValue.GENERAL]: yup.object().shape({
         [PRINCIPAL_OBSERVABLE_ZONE]: yup.boolean().required(),
+        [UNIQUE_PHASE]: yup.boolean().required(),
         [ESTIM_ALGO_TYPE]: yup.string().required(),
         [ESTIM_LOG_LEVEL]: yup.string().required(),
     }),
@@ -318,11 +371,11 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
                 yup.object().shape({
                     [VOLTAGE_LEVEL]: yup.string().required(),
                     [WEIGHT_V]: yup.number().required().min(0).label(WEIGHT_V),
-                    [WEIGHT_ACT_TRANSIT]: yup.number().required().max(0).label(WEIGHT_ACT_TRANSIT),
+                    [WEIGHT_ACT_TRANSIT]: yup.number().required().min(0).label(WEIGHT_ACT_TRANSIT),
                     [WEIGHT_REA_TRANSIT]: yup.number().required().min(0).label(WEIGHT_REA_TRANSIT),
-                    [WEIGHT_ACT_PROD]: yup.number().required().max(0).label(WEIGHT_ACT_PROD),
+                    [WEIGHT_ACT_PROD]: yup.number().required().min(0).label(WEIGHT_ACT_PROD),
                     [WEIGHT_REA_PROD]: yup.number().required().min(0).label(WEIGHT_REA_PROD),
-                    [WEIGHT_ACT_LOAD]: yup.number().required().max(0).label(WEIGHT_ACT_LOAD),
+                    [WEIGHT_ACT_LOAD]: yup.number().required().min(0).label(WEIGHT_ACT_LOAD),
                     [WEIGHT_REA_LOAD]: yup.number().required().min(0).label(WEIGHT_REA_LOAD),
                     [WEIGHT_IN]: yup.number().required().min(0).label(WEIGHT_IN),
                 })
@@ -380,6 +433,27 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
                     [P_MAX]: yup.number().required().min(0).label(P_MAX),
                     [Q_MIN]: yup.number().required(),
                     [Q_MAX]: yup.number().required(),
+                })
+            )
+            .required(),
+    }),
+    [TabValue.AREA_INVALIDATION]: yup.object().shape({
+        [AREA_INVALIDATIONS]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [INVALIDATE]: yup.boolean().required(),
+                    [FILTER]: yup
+                        .array()
+                        .of(
+                            yup.object().shape({
+                                id: yup.string().required(),
+                                name: yup.string(),
+                            })
+                        )
+                        .min(1, YUP_REQUIRED)
+                        .required(),
+                    [INVALIDATION_TYPE]: yup.string().required(),
                 })
             )
             .required(),

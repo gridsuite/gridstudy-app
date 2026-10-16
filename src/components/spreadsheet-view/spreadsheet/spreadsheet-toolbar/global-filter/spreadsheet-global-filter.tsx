@@ -7,26 +7,24 @@
 
 import { useMemo } from 'react';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
-import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector, {
     type GlobalFilterSelectorProps,
 } from '../../../../results/common/global-filter/global-filter-selector';
-import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
-import { TableType } from '../../../../../types/custom-aggrid-types';
+import { EquipmentType, GlobalFilterType, TableType } from '@gridsuite/commons-ui';
 
 export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;
 };
 
 export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<SpreadsheetGlobalFilterProps>) {
-    const filterTypes: FilterType[] = useMemo(() => {
-        const allFilterTypes = Object.values(FilterType);
+    const filterTypes: GlobalFilterType[] = useMemo(() => {
+        const allFilterTypes = Object.values(GlobalFilterType);
         if (
             tableDefinition.type === SpreadsheetEquipmentType.SUBSTATION ||
             tableDefinition.type === SpreadsheetEquipmentType.HVDC_LINE
         ) {
             // in this case we disable VL filters
-            return allFilterTypes.filter((filterType) => filterType !== FilterType.VOLTAGE_LEVEL);
+            return allFilterTypes.filter((filterType) => filterType !== GlobalFilterType.VOLTAGE_LEVEL);
         }
         return allFilterTypes;
     }, [tableDefinition.type]);
@@ -34,8 +32,8 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
     const equipmentTypes = useMemo<GlobalFilterSelectorProps['filterableEquipmentTypes']>(() => {
         return [
             ...(tableDefinition.type === SpreadsheetEquipmentType.BRANCH
-                ? [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]
-                : [tableDefinition.type as unknown as EQUIPMENT_TYPES]),
+                ? [EquipmentType.LINE, EquipmentType.TWO_WINDINGS_TRANSFORMER]
+                : [tableDefinition.type as unknown as EquipmentType]),
         ];
     }, [tableDefinition.type]);
 

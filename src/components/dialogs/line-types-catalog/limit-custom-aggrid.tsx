@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { AgGridReact } from 'ag-grid-react';
-import { CATEGORIES_TABS, LineTypeInfo } from './line-catalog.type';
 import { ColDef } from 'ag-grid-community';
 import { RefObject, useMemo } from 'react';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CATEGORIES_TABS, CustomAGGrid, LineTypeInfo } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { suppressEventsToPreventEditMode } from '../commons/utils';
 
@@ -29,6 +28,7 @@ interface LimitsCustomAgGridProps {
     undergroundRowData: LineTypeInfo[];
     aerialColumnDefs: ColDef[];
     undergroundColumnDefs: ColDef[];
+    onRowClicked: () => void;
     onSelectionChanged: () => void;
     onGridReady: () => void;
 }
@@ -40,6 +40,7 @@ export default function LimitCustomAgGrid({
     undergroundRowData,
     aerialColumnDefs,
     undergroundColumnDefs,
+    onRowClicked,
     onSelectionChanged,
     onGridReady,
 }: Readonly<LimitsCustomAgGridProps>) {
@@ -57,6 +58,7 @@ export default function LimitCustomAgGrid({
             defaultColDef={defaultColDef}
             columnDefs={columnDefs}
             rowSelection="single"
+            onRowClicked={onRowClicked}
             onSelectionChanged={onSelectionChanged}
             onGridReady={onGridReady}
             overrideLocales={AGGRID_LOCALES}

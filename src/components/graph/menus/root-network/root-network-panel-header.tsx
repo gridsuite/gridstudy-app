@@ -158,7 +158,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
             name,
             tag,
             description,
-            importParametersRaw: currentParameters,
+            importParameters: currentParameters,
             caseInfos: {
                 originalCaseUuid: caseId as UUID,
                 caseFormat: caseFormat ?? null,

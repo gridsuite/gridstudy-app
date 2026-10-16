@@ -15,6 +15,7 @@ import {
     EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
+    LccDeletionDto,
     Identifiable,
     NewFilterType,
 } from '@gridsuite/commons-ui';
@@ -22,14 +23,13 @@ import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
 import type { UUID } from 'node:crypto';
-import { HvdcLccDeletionInfos } from '../../components/dialogs/network-modifications/equipment-deletion/equipement-deletion-dialog.type';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     hvdcLineId: UUID
-): Promise<HvdcLccDeletionInfos> {
+): Promise<LccDeletionDto> {
     console.info(
         `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
@@ -249,13 +249,22 @@ export async function createMapContingencyList(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     selectedEquipments: EquipmentInfos[],
-    nominalVoltages: number[]
+    nominalVoltages: number[],
+    busbarIdAsContingencyName: boolean
 ) {
     let equipmentContingencyList: ContingencyList;
+    // should be in the switch, but TS and eslint do not like fallthrough
+    let equipmentIdAsContingencyName =
+        equipmentType === EquipmentType.BUSBAR_SECTION ? busbarIdAsContingencyName : false;
+
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:
         case EquipmentType.LINE:
-            equipmentContingencyList = createIdentifierContingencyList(elementName, selectedEquipments);
+            equipmentContingencyList = createIdentifierContingencyList(
+                elementName,
+                selectedEquipments,
+                equipmentIdAsContingencyName
+            );
 
             break;
 
@@ -279,7 +288,11 @@ export async function createMapContingencyList(
             if (elementsIds?.length === 0) {
                 throw new Error('EmptySelection');
             }
-            equipmentContingencyList = createIdentifierContingencyList(elementName, elementsIds);
+            equipmentContingencyList = createIdentifierContingencyList(
+                elementName,
+                elementsIds,
+                equipmentIdAsContingencyName
+            );
             break;
     }
     if (

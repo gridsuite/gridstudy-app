@@ -7,6 +7,7 @@
 
 export interface NetworkExportInfos {
     selectedFormat: string;
+    selectedCompression: string;
     fileName: string;
     exportToGridExplore: boolean;
     parentDirectoryUuid?: string;

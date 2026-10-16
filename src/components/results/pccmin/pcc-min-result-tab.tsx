@@ -12,16 +12,19 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
-import { ComputingType } from '@gridsuite/commons-ui';
-import { RunningStatus } from '../../utils/running-status';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import {
+    ComputingType,
+    EquipmentType,
+    RESULTS_LOADING_DELAY,
+    RunningStatus,
+    TableType,
+    useOpenLoaderShortWait,
+} from '@gridsuite/commons-ui';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
-import { useComputationGlobalFilters } from '../common/global-filter/use-computation-global-filters';
-import { PaginationType, TableType } from '../../../types/custom-aggrid-types';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
+import { PaginationType } from '../../../types/custom-aggrid-types';
 import { usePaginationSelector } from '../../../hooks/use-pagination-selector';
 import { PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
 
@@ -51,12 +54,12 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     }, []);
 
     const openLoader = useOpenLoaderShortWait({
-        isLoading: pccMinStatus === RunningStatus.RUNNING,
+        isLoading: pccMinStatus === RunningStatus.RUNNING || pccMinStatus === RunningStatus.PRELOADING,
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
-        return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+    const filterableEquipmentTypes: EquipmentType[] = useMemo(() => {
+        return [EquipmentType.VOLTAGE_LEVEL];
     }, []);
 
     return (

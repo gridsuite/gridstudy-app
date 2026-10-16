@@ -8,12 +8,20 @@
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo, useRef } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
-import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { ComputingType, CustomAGGrid, CustomAGGridProps, DefaultCellRenderer } from '@gridsuite/commons-ui';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RunningStatus } from '../../utils/running-status';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import {
+    ComputingType,
+    CustomAGGrid,
+    CustomAGGridProps,
+    DefaultCellRenderer,
+    getNoRowsMessage,
+    getRows,
+    RESULTS_LOADING_DELAY,
+    RunningStatus,
+    TableType,
+    useIntlResultStatusMessages,
+    useOpenLoaderShortWait,
+} from '@gridsuite/commons-ui';
 import { Box, LinearProgress } from '@mui/material';
 import { mappingTabs, SUFFIX_TYPES } from './sensitivity-analysis-result-utils.js';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
@@ -21,19 +29,15 @@ import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    FilterConfig,
-    TableType,
 } from '../../../types/custom-aggrid-types';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
+import { makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer.type';
-import { GridApi, GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { DisplayedColumnsChangedEvent, GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { CustomAggridComparatorFilter } from '@gridsuite/commons-ui';
 import { getColumnHeaderDisplayNames } from 'components/utils/column-constant';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
-import type { UUID } from 'node:crypto';
 import { useAgGridInitialColumnFilters } from '../common/use-ag-grid-initial-column-filters';
 
 function makeRows(resultRecord: Sensitivity[]) {
@@ -51,7 +55,6 @@ type SensitivityAnalysisResultProps = CustomAGGridProps & {
     sensiKind: SensiKind;
     filtersDef: { field: string; options: string[] }[];
     isLoading: boolean;
-    goToFirstPage: () => void;
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
     computationSubType: string;
@@ -62,7 +65,6 @@ function SensitivityAnalysisResult({
     nOrNkIndex = 0,
     sensiKind = SENSITIVITY_IN_DELTA_MW,
     filtersDef,
-    goToFirstPage,
     isLoading,
     setCsvHeaders,
     setIsCsvButtonDisabled,
@@ -110,23 +112,6 @@ function SensitivityAnalysisResult({
                                 : [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             type: TableType.SensitivityAnalysis,
                             tab: mappingTabs(sensiKind, nOrNkIndex),
-                            updateFilterCallback: (
-                                agGridApi?: GridApi,
-                                filters?: FilterConfig[],
-                                colId?: string,
-                                studyUuid?: UUID,
-                                filterType?: TableType,
-                                filterSubType?: string
-                            ) =>
-                                updateComputationColumnsFilters(
-                                    agGridApi,
-                                    filters,
-                                    colId,
-                                    studyUuid,
-                                    filterType,
-                                    filterSubType,
-                                    goToFirstPage
-                                ),
                         },
                     },
                 },
@@ -136,7 +121,7 @@ function SensitivityAnalysisResult({
                 pinned: pinned,
             });
         },
-        [intl, nOrNkIndex, sensiKind, goToFirstPage]
+        [intl, nOrNkIndex, sensiKind]
     );
 
     const columnsDefs = useMemo(() => {
@@ -234,6 +219,15 @@ function SensitivityAnalysisResult({
         [setCsvHeaders]
     );
 
+    const handleDisplayedColumnsChanged = useCallback(
+        (event: DisplayedColumnsChangedEvent) => {
+            if (event?.api) {
+                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
+            }
+        },
+        [setCsvHeaders]
+    );
+
     const handleRowDataUpdated = useCallback(
         (event: RowDataUpdatedEvent) => {
             if (event?.api) {
@@ -250,7 +244,10 @@ function SensitivityAnalysisResult({
     const message = getNoRowsMessage(messages, rows, sensitivityAnalysisStatus, !isLoading);
 
     const openLoader = useOpenLoaderShortWait({
-        isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING || isLoading,
+        isLoading:
+            sensitivityAnalysisStatus === RunningStatus.RUNNING ||
+            sensitivityAnalysisStatus === RunningStatus.PRELOADING ||
+            isLoading,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -267,6 +264,7 @@ function SensitivityAnalysisResult({
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
                 onGridColumnsChanged={handleGridColumnsChanged}
+                onDisplayedColumnsChanged={handleDisplayedColumnsChanged}
                 onRowDataUpdated={handleRowDataUpdated}
                 overrideLocales={AGGRID_LOCALES}
                 {...props}

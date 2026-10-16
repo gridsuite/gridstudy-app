@@ -33,22 +33,16 @@ export enum NotificationType {
     NODES_UPDATED = 'nodeUpdated',
     NODE_EDITED = 'nodeEdited',
     NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
+    NODE_ACTIVITIES_UPDATED = 'nodeActivitiesUpdated',
     SUBTREE_MOVED = 'subtreeMoved',
     SUBTREE_CREATED = 'subtreeCreated',
     NODES_COLUMN_POSITION_CHANGED = 'nodesColumnPositionsChanged',
     NETWORK_EXPORT_FINISHED = 'networkExportFinished',
     // Modifications
-    MODIFICATIONS_CREATION_IN_PROGRESS = 'creatingInProgress',
-    MODIFICATIONS_UPDATING_IN_PROGRESS = 'updatingInProgress',
-    MODIFICATIONS_STASHING_IN_PROGRESS = 'stashingInProgress',
-    MODIFICATIONS_RESTORING_IN_PROGRESS = 'restoringInProgress',
-    MODIFICATIONS_DELETING_IN_PROGRESS = 'deletingInProgress',
     MODIFICATIONS_UPDATE_FINISHED = 'UPDATE_FINISHED',
     MODIFICATIONS_DELETE_FINISHED = 'DELETE_FINISHED',
+    SHARED_MODIFICATIONS_UPDATED = 'SHARED_MODIFICATIONS_UPDATED',
     // Events
-    EVENT_CREATING_IN_PROGRESS = 'eventCreatingInProgress',
-    EVENT_UPDATING_IN_PROGRESS = 'eventUpdatingInProgress',
-    EVENT_DELETING_IN_PROGRESS = 'eventDeletingInProgress',
     EVENT_CRUD_FINISHED = 'EVENT_CRUD_FINISHED',
 
     // Computations filters
@@ -91,6 +85,8 @@ export enum NotificationType {
     PCC_MIN_RESULT = 'pccMinResult',
     PCC_MIN_FAILED = 'pccMin_failed',
     PCC_MIN_STATUS = 'pccMin_status',
+    ALL_COMPUTATION_STATUS = 'all_computation_status',
+    ALL_COMPUTATION_STATUS_WITHOUT_LOADFLOW = 'all_computation_status_without_loadflow',
 
     // spreadsheets
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
@@ -104,79 +100,6 @@ export enum NotificationType {
     WORKSPACE_PANELS_DELETED = 'workspacePanelsDeleted',
     WORKSPACE_NAD_CONFIG_UPDATED = 'workspaceNadConfigUpdated',
 }
-
-export const PENDING_MODIFICATION_NOTIFICATION_TYPES = [
-    NotificationType.MODIFICATIONS_CREATION_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_UPDATING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_STASHING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_RESTORING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_DELETING_IN_PROGRESS,
-] as NotificationType[];
-
-export const EVENT_CRUD_NOTIFICATION_TYPES = [
-    NotificationType.EVENT_CREATING_IN_PROGRESS,
-    NotificationType.EVENT_UPDATING_IN_PROGRESS,
-    NotificationType.EVENT_DELETING_IN_PROGRESS,
-] as NotificationType[];
-
-export const MODIFYING_NODES_NOTIFICATION_TYPES = [
-    NotificationType.EVENT_CRUD_FINISHED,
-    NotificationType.EVENT_DELETING_IN_PROGRESS,
-    NotificationType.EVENT_UPDATING_IN_PROGRESS,
-    NotificationType.EVENT_CREATING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_DELETE_FINISHED,
-    NotificationType.MODIFICATIONS_UPDATE_FINISHED,
-    NotificationType.MODIFICATIONS_DELETING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_RESTORING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_STASHING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_UPDATING_IN_PROGRESS,
-    NotificationType.MODIFICATIONS_CREATION_IN_PROGRESS,
-    NotificationType.NODES_UPDATED,
-    NotificationType.NODES_DELETED,
-    NotificationType.NODE_BUILD_STATUS_UPDATED,
-] as NotificationType[];
-
-export const MODIFYING_NODE_NOTIFICATION_TYPES = [
-    NotificationType.STUDY, // contains 'node' header
-    NotificationType.STUDY_ALERT,
-    NotificationType.NODE_EDITED, // TODO don not manage this one ?
-    NotificationType.NODE_BUILD_COMPLETED,
-    NotificationType.NODE_BUILD_FAILED,
-] as NotificationType[];
-
-export const COMPUTATION_NOTIFICATION_TYPES = [
-    NotificationType.LOADFLOW_RESULT,
-    NotificationType.LOADFLOW_FAILED,
-    NotificationType.LOADFLOW_STATUS,
-    NotificationType.SECURITY_ANALYSIS_RESULT,
-    NotificationType.SECURITY_ANALYSIS_FAILED,
-    NotificationType.SECURITY_ANALYSIS_STATUS,
-    NotificationType.SENSITIVITY_ANALYSIS_RESULT,
-    NotificationType.SENSITIVITY_ANALYSIS_FAILED,
-    NotificationType.SENSITIVITY_ANALYSIS_STATUS,
-    NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT,
-    NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED,
-    NotificationType.SHORTCIRCUIT_ANALYSIS_STATUS,
-    NotificationType.ONE_BUS_SC_ANALYSIS_RESULT,
-    NotificationType.ONE_BUS_SC_ANALYSIS_FAILED,
-    NotificationType.ONE_BUS_SC_ANALYSIS_STATUS,
-    NotificationType.DYNAMIC_SIMULATION_RESULT,
-    NotificationType.DYNAMIC_SIMULATION_FAILED,
-    NotificationType.DYNAMIC_SIMULATION_STATUS,
-    NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT,
-    NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED,
-    NotificationType.DYNAMIC_SECURITY_ANALYSIS_STATUS,
-    NotificationType.VOLTAGE_INIT_RESULT,
-    NotificationType.VOLTAGE_INIT_FAILED,
-    NotificationType.VOLTAGE_INIT_CANCEL_FAILED,
-    NotificationType.VOLTAGE_INIT_STATUS,
-    NotificationType.STATE_ESTIMATION_RESULT,
-    NotificationType.STATE_ESTIMATION_FAILED,
-    NotificationType.STATE_ESTIMATION_STATUS,
-    NotificationType.PCC_MIN_RESULT,
-    NotificationType.PCC_MIN_FAILED,
-    NotificationType.PCC_MIN_STATUS,
-] as NotificationType[];
 
 export enum RootNetworkIndexationStatus {
     NOT_INDEXED = 'NOT_INDEXED',
@@ -198,8 +121,7 @@ interface StudyEventDataHeaders extends CommonStudyEventDataHeaders {
 
 interface ComputationResultTabUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType:
-        | NotificationType.UPDATE_COMPUTATION_GLOBAL_FILTER_TAB
-        | NotificationType.UPDATE_COMPUTATION_COLUMN_FILTER_TAB;
+        NotificationType.UPDATE_COMPUTATION_GLOBAL_FILTER_TAB | NotificationType.UPDATE_COMPUTATION_COLUMN_FILTER_TAB;
     computationType: ComputingType;
     computationSubtype?: string;
 }
@@ -243,13 +165,6 @@ interface MetadataUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.METADATA_UPDATED;
 }
 
-interface StudyAlertEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.STUDY_ALERT;
-    userId: string;
-    node: UUID;
-    rootNetworkUuid: UUID;
-}
-
 export enum NodeInsertModes {
     After = 'AFTER',
     Before = 'BEFORE',
@@ -282,11 +197,6 @@ interface NodeMovedEventDataHeaders extends CommonStudyEventDataHeaders {
     referenceNodeUuid: UUID;
 }
 
-interface NodesUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.NODES_UPDATED;
-    nodes: UUID[];
-}
-
 interface NodeEditedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.NODE_EDITED;
     node: UUID;
@@ -305,28 +215,26 @@ interface NodeBuildCompletedEventDataHeaders extends CommonStudyEventDataHeaders
     substationsIds: UUID[];
 }
 
-interface NodeBuildFailedEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.NODE_BUILD_FAILED;
-    node: UUID;
-    rootNetworkUuid: UUID;
-    error: string;
-}
-
-interface SubtreeMovedEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.SUBTREE_MOVED;
-    movedNode: UUID;
-    parentNode: UUID;
-}
-
 interface SubtreeCreatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.SUBTREE_CREATED;
     newNode: UUID;
     parentNode: UUID;
 }
 
+interface SubtreeMovedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.SUBTREE_MOVED;
+    parentNode: UUID;
+    movedNode: UUID;
+}
+
 interface NodesColumnPositionsChangedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.NODES_COLUMN_POSITION_CHANGED;
     parentNode: UUID;
+}
+
+interface NodesUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NODES_UPDATED;
+    nodes: UUID[];
 }
 
 interface ModificationProgressionEventDataHeaders extends CommonStudyEventDataHeaders {
@@ -362,26 +270,6 @@ interface WorkspaceNadConfigUpdatedEventDataHeaders extends CommonStudyEventData
     clientId?: UUID;
 }
 
-interface ModificationsCreationInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
-    updateType: NotificationType.MODIFICATIONS_CREATION_IN_PROGRESS;
-}
-
-interface ModificationsUpdatingInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
-    updateType: NotificationType.MODIFICATIONS_UPDATING_IN_PROGRESS;
-}
-
-interface ModificationsStashingInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
-    updateType: NotificationType.MODIFICATIONS_STASHING_IN_PROGRESS;
-}
-
-interface ModificationsRestoringInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
-    updateType: NotificationType.MODIFICATIONS_RESTORING_IN_PROGRESS;
-}
-
-interface ModificationsDeletingInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
-    updateType: NotificationType.MODIFICATIONS_DELETING_IN_PROGRESS;
-}
-
 interface ModificationsUpdateFinishedEventDataHeaders extends ModificationProgressionEventDataHeaders {
     updateType: NotificationType.MODIFICATIONS_UPDATE_FINISHED;
 }
@@ -393,22 +281,10 @@ interface ModificationsDeleteFinishedEventDataHeaders extends CommonStudyEventDa
     nodes: UUID[];
 }
 
-interface EventCreatingInProgressEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.EVENT_CREATING_IN_PROGRESS;
+interface SharedElementUpdateEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.SHARED_MODIFICATIONS_UPDATED;
     parentNode: UUID;
-    nodes: UUID[];
-}
-
-interface EventUpdatingInProgressEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.EVENT_UPDATING_IN_PROGRESS;
-    parentNode: UUID;
-    nodes: UUID[];
-}
-
-interface EventDeletingInProgressEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.EVENT_DELETING_IN_PROGRESS;
-    parentNode: UUID;
-    nodes: UUID[];
+    networkModificationUuids?: UUID[];
 }
 
 interface EventCrudFinishedEventDataHeaders extends CommonStudyEventDataHeaders {
@@ -423,10 +299,6 @@ interface ComputationResultEventDataHeaders extends CommonStudyEventDataHeaders 
     node: UUID;
     rootNetworkUuid: UUID;
 }
-interface ComputationStatusEventDataHeaders extends CommonStudyEventDataHeaders {
-    node: UUID;
-    rootNetworkUuid: UUID;
-}
 
 interface ComputationFailedEventDataHeaders extends CommonStudyEventDataHeaders {
     node: UUID;
@@ -435,18 +307,17 @@ interface ComputationFailedEventDataHeaders extends CommonStudyEventDataHeaders 
     userId: string;
 }
 
+interface ComputationStatusEventDataHeaders extends CommonStudyEventDataHeaders {
+    rootNetworkUuid?: UUID;
+    node?: UUID;
+    nodes?: UUID[];
+}
+
 interface LoadflowResultEventDataHeaders extends ComputationResultEventDataHeaders {
     updateType: NotificationType.LOADFLOW_RESULT;
 }
 
-interface LoadflowFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.LOADFLOW_FAILED;
-}
-
-interface LoadflowStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.LOADFLOW_STATUS;
-}
-
+// TODO to check why this alone now, rest is removed?  like interface SecurityAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
 interface SecurityAnalysisProgressEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.SECURITY_ANALYSIS_PROGRESS;
     node: UUID;
@@ -455,40 +326,8 @@ interface SecurityAnalysisProgressEventDataHeaders extends CommonStudyEventDataH
     progressTotal: number;
 }
 
-interface SecurityAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
-    updateType: NotificationType.SECURITY_ANALYSIS_RESULT;
-}
-
-interface SecurityAnalysisFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.SECURITY_ANALYSIS_FAILED;
-}
-
-interface SecurityAnalysisStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.SECURITY_ANALYSIS_STATUS;
-}
-
-interface SensitivityAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
-    updateType: NotificationType.SENSITIVITY_ANALYSIS_RESULT;
-}
-
-interface SensitivityAnalysisFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.SENSITIVITY_ANALYSIS_FAILED;
-}
-
-interface SensitivityAnalysisStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.SENSITIVITY_ANALYSIS_STATUS;
-}
-
 interface ShortCircuitAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
     updateType: NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT;
-}
-
-interface ShortCircuitAnalysisFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED;
-}
-
-interface ShortCircuitAnalysisStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.SHORTCIRCUIT_ANALYSIS_STATUS;
 }
 
 interface OneBusShortCircuitAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
@@ -499,71 +338,10 @@ interface OneBusShortCircuitAnalysisFailedEventDataHeaders extends ComputationFa
     updateType: NotificationType.ONE_BUS_SC_ANALYSIS_FAILED;
 }
 
-interface OneBusShortCircuitAnalysisStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.ONE_BUS_SC_ANALYSIS_STATUS;
-}
-
-interface DynamicSimulationResultEventDataHeaders extends ComputationResultEventDataHeaders {
-    updateType: NotificationType.DYNAMIC_SIMULATION_RESULT;
-}
-
-interface DynamicSimulationFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.DYNAMIC_SIMULATION_FAILED;
-}
-
-interface DynamicSimulationStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.DYNAMIC_SIMULATION_STATUS;
-}
-
-interface DynamicSecurityAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
-    updateType: NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT;
-}
-
-interface DynamicSecurityAnalysisFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED;
-}
-
-interface DynamicSecurityAnalysisStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.DYNAMIC_SECURITY_ANALYSIS_STATUS;
-}
-
-interface VoltageInitResultEventDataHeaders extends ComputationResultEventDataHeaders {
-    updateType: NotificationType.VOLTAGE_INIT_RESULT;
-}
-
-interface VoltageInitFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.VOLTAGE_INIT_FAILED;
-}
-
-interface VoltageInitCancelFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.VOLTAGE_INIT_CANCEL_FAILED;
-}
-
-interface VoltageInitStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.VOLTAGE_INIT_STATUS;
-}
-
 interface StateEstimationResultEventDataHeaders extends ComputationResultEventDataHeaders {
     updateType: NotificationType.STATE_ESTIMATION_RESULT;
 }
 
-interface StateEstimationFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.STATE_ESTIMATION_FAILED;
-}
-
-interface StateEstimationStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.STATE_ESTIMATION_STATUS;
-}
-interface PccMinStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.PCC_MIN_STATUS;
-}
-interface PccMinResultEventDataHeaders extends ComputationResultEventDataHeaders {
-    updateType: NotificationType.PCC_MIN_RESULT;
-}
-
-interface PccMinFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.PCC_MIN_FAILED;
-}
 interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.NETWORK_EXPORT_FINISHED;
     userId: string;
@@ -591,190 +369,160 @@ export enum AlertLevel {
     INFO = 'INFO',
 }
 
-export interface StudyAlert {
-    alertLevel: AlertLevel;
-    messageId: string;
-    attributes: Record<string, string>;
-}
-
 // EventData
-interface CommonStudyEventData {
+export interface CommonStudyEventData {
     headers: CommonStudyEventDataHeaders;
-    payload: undefined;
+    payload: string | undefined;
 }
 
-export interface StudyEventData {
+export interface StudyEventData extends CommonStudyEventData {
     headers: StudyEventDataHeaders;
     /** @see NetworkImpactsInfos */
     payload: string;
 }
 
-export interface ComputationResultTabUpdatedEventData {
+export interface ComputationResultTabUpdatedEventData extends CommonStudyEventData {
     headers: ComputationResultTabUpdatedEventDataHeaders;
     payload: undefined;
 }
 
-export interface ComputationParametersUpdatedEventData {
+export interface ComputationParametersUpdatedEventData extends CommonStudyEventData {
     headers: ComputationParametersUpdatedEventDataHeaders;
     payload: undefined;
 }
 
-export interface NetworkVisualizationParametersUpdatedEventData {
+export interface NetworkVisualizationParametersUpdatedEventData extends CommonStudyEventData {
     headers: NetworkVisualizationParametersUpdatedEventDataHeaders;
     payload: undefined;
 }
 
-export interface RootNetworkUpdatedEventData {
+export interface RootNetworkUpdatedEventData extends CommonStudyEventData {
     headers: RootNetworkUpdatedEventDataHeaders;
     payload: undefined;
 }
 
-export interface RootNetworkUpdateFailedEventData {
+export interface RootNetworkUpdateFailedEventData extends CommonStudyEventData {
     headers: RootNetworkUpdateFailedEventDataHeaders;
     payload: undefined;
 }
 
-export interface RootNetworkDeletionStartedEventData {
+export interface RootNetworkDeletionStartedEventData extends CommonStudyEventData {
     headers: RootNetworkDeletionStartedEventDataHeaders;
     payload: undefined;
 }
 
-export interface IndexationStatusEventData {
+export interface IndexationStatusEventData extends CommonStudyEventData {
     headers: IndexationStatusEventDataHeaders;
     payload: undefined;
 }
 
-export interface StudyNetworkRecreationEventData {
+export interface StudyNetworkRecreationEventData extends CommonStudyEventData {
     headers: StudyNetworkRecreationEventDataHeaders;
     payload: undefined;
 }
 
-export interface MetadataUpdatedEventData {
+export interface MetadataUpdatedEventData extends CommonStudyEventData {
     headers: MetadataUpdatedEventDataHeaders;
     payload: undefined;
 }
 
-export interface StudyAlertEventData {
-    headers: StudyAlertEventDataHeaders;
-    /** @see StudyAlert */
+interface NodeActivitiesUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NODE_ACTIVITIES_UPDATED;
+}
+
+export interface NodeActivitiesUpdatedEventData extends CommonStudyEventData {
+    headers: NodeActivitiesUpdatedEventDataHeaders;
     payload: string;
 }
 
-export interface NodeCreatedEventData {
+export interface NodeCreatedEventData extends CommonStudyEventData {
     headers: NodeCreatedEventDataHeaders;
     payload: undefined;
 }
 
-export interface NodesDeletedEventData {
+export interface NodesDeletedEventData extends CommonStudyEventData {
     headers: NodesDeletedEventDataHeaders;
     payload: undefined;
 }
 
-export interface NodeMovedEventData {
+export interface NodeMovedEventData extends CommonStudyEventData {
     headers: NodeMovedEventDataHeaders;
     payload: undefined;
 }
 
-export interface NodesUpdatedEventData {
-    headers: NodesUpdatedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface NodeEditedEventData {
+export interface NodeEditedEventData extends CommonStudyEventData {
     headers: NodeEditedEventDataHeaders;
     payload: undefined;
 }
 
-export interface NodesBuildStatusUpdatedEventData {
+export interface NodesBuildStatusUpdatedEventData extends CommonStudyEventData {
     headers: NodesBuildStatusUpdatedEventDataHeaders;
     payload: undefined;
 }
 
-export interface NodeBuildCompletedEventData {
+export interface NodeBuildCompletedEventData extends CommonStudyEventData {
     headers: NodeBuildCompletedEventDataHeaders;
     payload: undefined;
 }
 
-export interface NodeBuildFailedEventData {
-    headers: NodeBuildFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface SubtreeMovedEventData {
-    headers: SubtreeMovedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface SubtreeCreatedEventData {
+export interface SubtreeCreatedEventData extends CommonStudyEventData {
     headers: SubtreeCreatedEventDataHeaders;
     payload: undefined;
 }
 
-export interface NodesColumnPositionsChangedEventData {
+export interface SubtreeMovedEventData extends CommonStudyEventData {
+    headers: SubtreeMovedEventDataHeaders;
+    payload: undefined;
+}
+
+export interface NodesColumnPositionsChangedEventData extends CommonStudyEventData {
     headers: NodesColumnPositionsChangedEventDataHeaders;
-    /** JSON of <code>{@link UUID}[]</code> */
     payload: string;
 }
 
-export interface ModificationsCreationInProgressEventData extends CommonStudyEventData {
-    headers: ModificationsCreationInProgressEventDataHeaders;
+export interface NodesUpdatedEventData extends CommonStudyEventData {
+    headers: NodesUpdatedEventDataHeaders;
+    payload: undefined;
 }
 
-export interface ModificationsUpdatingInProgressEventData extends CommonStudyEventData {
-    headers: ModificationsUpdatingInProgressEventDataHeaders;
-}
+export type TreeModelUpdateEventData =
+    | NodesBuildStatusUpdatedEventData
+    | NodeCreatedEventData
+    | SubtreeCreatedEventData
+    | NodeMovedEventData
+    | SubtreeMovedEventData
+    | NodesColumnPositionsChangedEventData
+    | NodesDeletedEventData
+    | NodesUpdatedEventData
+    | NodeEditedEventData;
 
-export interface ModificationsStashingInProgressEventData extends CommonStudyEventData {
-    headers: ModificationsStashingInProgressEventDataHeaders;
-}
-
-export interface ModificationsRestoringInProgressEventData extends CommonStudyEventData {
-    headers: ModificationsRestoringInProgressEventDataHeaders;
-}
-
-export interface ModificationsDeletingInProgressEventData extends CommonStudyEventData {
-    headers: ModificationsDeletingInProgressEventDataHeaders;
-}
-
-export interface ModificationsUpdateFinishedEventData {
+export interface ModificationsUpdateFinishedEventData extends CommonStudyEventData {
     headers: ModificationsUpdateFinishedEventDataHeaders;
     payload: undefined;
 }
 
-export interface ModificationsDeleteFinishedEventData {
+export interface SharedElementUpdateEventData extends CommonStudyEventData {
+    headers: SharedElementUpdateEventDataHeaders;
+    payload: undefined;
+}
+
+export interface ModificationsDeleteFinishedEventData extends CommonStudyEventData {
     headers: ModificationsDeleteFinishedEventDataHeaders;
     payload: undefined;
 }
 
-export interface EventCreatingInProgressEventData extends CommonStudyEventData {
-    headers: EventCreatingInProgressEventDataHeaders;
-}
-
-export interface EventUpdatingInProgressEventData extends CommonStudyEventData {
-    headers: EventUpdatingInProgressEventDataHeaders;
-}
-
-export interface EventDeletingInProgressEventData extends CommonStudyEventData {
-    headers: EventDeletingInProgressEventDataHeaders;
-}
-
-export interface EventCrudFinishedEventData {
+export interface EventCrudFinishedEventData extends CommonStudyEventData {
     headers: EventCrudFinishedEventDataHeaders;
     payload: undefined;
 }
 
-export interface LoadflowResultEventData {
+export interface LoadflowResultEventData extends CommonStudyEventData {
     headers: LoadflowResultEventDataHeaders;
     payload: undefined;
 }
 
-export interface LoadflowFailedEventData {
-    headers: LoadflowFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface LoadflowStatusEventData {
-    headers: LoadflowStatusEventDataHeaders;
+export interface ComputationStatusEventData extends CommonStudyEventData {
+    headers: ComputationStatusEventDataHeaders;
     payload: undefined;
 }
 
@@ -783,150 +531,32 @@ export interface SecurityAnalysisProgressEventData {
     payload: undefined;
 }
 
-export interface SecurityAnalysisResultEventData {
-    headers: SecurityAnalysisResultEventDataHeaders;
-    payload: undefined;
-}
-
-export interface SecurityAnalysisFailedEventData {
-    headers: SecurityAnalysisFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface SecurityAnalysisStatusEventData {
-    headers: SecurityAnalysisStatusEventDataHeaders;
-    payload: undefined;
-}
-
-export interface SensitivityAnalysisResultEventData {
-    headers: SensitivityAnalysisResultEventDataHeaders;
-    payload: undefined;
-}
-
-export interface SensitivityAnalysisFailedEventData {
-    headers: SensitivityAnalysisFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface SensitivityAnalysisStatusEventData {
-    headers: SensitivityAnalysisStatusEventDataHeaders;
-    payload: undefined;
-}
-
-export interface ShortCircuitAnalysisResultEventData {
+export interface ShortCircuitAnalysisResultEventData extends CommonStudyEventData {
     headers: ShortCircuitAnalysisResultEventDataHeaders;
     payload: undefined;
 }
 
-export interface ShortCircuitAnalysisFailedEventData {
-    headers: ShortCircuitAnalysisFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface ShortCircuitAnalysisStatusEventData {
-    headers: ShortCircuitAnalysisStatusEventDataHeaders;
-    payload: undefined;
-}
-
-export interface OneBusShortCircuitAnalysisResultEventData {
+export interface OneBusShortCircuitAnalysisResultEventData extends CommonStudyEventData {
     headers: OneBusShortCircuitAnalysisResultEventDataHeaders;
     payload: undefined;
 }
 
-export interface OneBusShortCircuitAnalysisFailedEventData {
+export interface OneBusShortCircuitAnalysisFailedEventData extends CommonStudyEventData {
     headers: OneBusShortCircuitAnalysisFailedEventDataHeaders;
     payload: undefined;
 }
 
-export interface OneBusShortCircuitAnalysisStatusEventData {
-    headers: OneBusShortCircuitAnalysisStatusEventDataHeaders;
-    payload: undefined;
-}
-
-export interface DynamicSimulationResultEventData {
-    headers: DynamicSimulationResultEventDataHeaders;
-    payload: undefined;
-}
-
-export interface DynamicSimulationFailedEventData {
-    headers: DynamicSimulationFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface DynamicSimulationStatusEventData {
-    headers: DynamicSimulationStatusEventDataHeaders;
-    payload: undefined;
-}
-
-export interface DynamicSecurityAnalysisResultEventData {
-    headers: DynamicSecurityAnalysisResultEventDataHeaders;
-    payload: undefined;
-}
-
-export interface DynamicSecurityAnalysisFailedEventData {
-    headers: DynamicSecurityAnalysisFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface DynamicSecurityAnalysisStatusEventData {
-    headers: DynamicSecurityAnalysisStatusEventDataHeaders;
-    payload: undefined;
-}
-
-export interface VoltageInitResultEventData {
-    headers: VoltageInitResultEventDataHeaders;
-    payload: undefined;
-}
-
-export interface VoltageInitFailedEventData {
-    headers: VoltageInitFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface VoltageInitCancelFailedEventData {
-    headers: VoltageInitCancelFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface VoltageInitStatusEventData {
-    headers: VoltageInitStatusEventDataHeaders;
-    payload: undefined;
-}
-
-export interface StateEstimationResultEventData {
+export interface StateEstimationResultEventData extends CommonStudyEventData {
     headers: StateEstimationResultEventDataHeaders;
     payload: undefined;
 }
 
-export interface StateEstimationFailedEventData {
-    headers: StateEstimationFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface StateEstimationStatusEventData {
-    headers: StateEstimationStatusEventDataHeaders;
-    payload: undefined;
-}
-
-export interface PccMinResultEventData {
-    headers: PccMinResultEventDataHeaders;
-    payload: undefined;
-}
-export interface PccMinFailedEventData {
-    headers: PccMinFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface PccMinStatusEventData {
-    headers: PccMinStatusEventDataHeaders;
-    payload: undefined;
-}
-export interface ExportNetworkEventData {
+export interface ExportNetworkEventData extends CommonStudyEventData {
     headers: ExportNetworkEventDataHeaders;
     payload: undefined;
 }
 
-export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyEventData, 'payload'> {
+export interface SpreadsheetParametersUpdatedEventData extends CommonStudyEventData {
     headers: SpreadsheetParametersUpdatedDataHeaders;
     /**
      * stringified of <code>PartialDeep<SpreadsheetOptionalLoadingParameters></code>
@@ -935,290 +565,196 @@ export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyE
     payload: string;
 }
 
-export interface WorkspaceRenamedEventData {
+export interface WorkspaceRenamedEventData extends CommonStudyEventData {
     headers: WorkspaceRenamedEventDataHeaders;
     payload: string; // workspace ID
 }
 
-export interface WorkspacePanelsUpdatedEventData {
+export interface WorkspacePanelsUpdatedEventData extends CommonStudyEventData {
     headers: WorkspacePanelsUpdatedEventDataHeaders;
     payload: string; // panel IDs (JSON array)
 }
 
-export interface WorkspacePanelsDeletedEventData {
+export interface WorkspacePanelsDeletedEventData extends CommonStudyEventData {
     headers: WorkspacePanelsDeletedEventDataHeaders;
     payload: string; // panel IDs (JSON array)
 }
 
-export interface WorkspaceNadConfigUpdatedEventData {
+export interface WorkspaceNadConfigUpdatedEventData extends CommonStudyEventData {
     headers: WorkspaceNadConfigUpdatedEventDataHeaders;
-    payload: string; // config UUID
+    payload: string;
 }
 
 export function isComputationResultColumnFilterUpdatedNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is ComputationResultTabUpdatedEventData {
-    return (
-        (notif as ComputationResultTabUpdatedEventData).headers?.updateType ===
-        NotificationType.UPDATE_COMPUTATION_COLUMN_FILTER_TAB
-    );
+    return notif.headers?.updateType === NotificationType.UPDATE_COMPUTATION_COLUMN_FILTER_TAB;
 }
 
 export function isComputationResultGlobalFilterUpdatedNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is ComputationResultTabUpdatedEventData {
-    return (
-        (notif as ComputationResultTabUpdatedEventData).headers?.updateType ===
-        NotificationType.UPDATE_COMPUTATION_GLOBAL_FILTER_TAB
-    );
+    return notif.headers?.updateType === NotificationType.UPDATE_COMPUTATION_GLOBAL_FILTER_TAB;
 }
 
 export function isComputationParametersUpdatedNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is ComputationParametersUpdatedEventData {
-    return (
-        (notif as ComputationParametersUpdatedEventData).headers?.updateType ===
-        NotificationType.COMPUTATION_PARAMETERS_UPDATED
-    );
+    return notif.headers?.updateType === NotificationType.COMPUTATION_PARAMETERS_UPDATED;
 }
 
-export function isStudyNotification(notif: unknown): notif is StudyEventData {
-    return (notif as StudyEventData).headers?.updateType === NotificationType.STUDY;
+export function isStudyNotification(notif: CommonStudyEventData): notif is StudyEventData {
+    return notif.headers?.updateType === NotificationType.STUDY;
 }
 
-export function isLoadflowResultNotification(notif: unknown): notif is LoadflowResultEventData {
-    return (notif as LoadflowResultEventData).headers?.updateType === NotificationType.LOADFLOW_RESULT;
+export function isLoadflowResultNotification(notif: CommonStudyEventData): notif is LoadflowResultEventData {
+    return notif.headers?.updateType === NotificationType.LOADFLOW_RESULT;
 }
 
-export function isStateEstimationResultNotification(notif: unknown): notif is StateEstimationResultEventData {
-    return (notif as StateEstimationResultEventData).headers?.updateType === NotificationType.STATE_ESTIMATION_RESULT;
+export function isStateEstimationResultNotification(
+    notif: CommonStudyEventData
+): notif is StateEstimationResultEventData {
+    return notif.headers?.updateType === NotificationType.STATE_ESTIMATION_RESULT;
 }
 
-export function isPccMinResultNotification(notif: unknown): notif is PccMinResultEventData {
-    return (notif as PccMinResultEventData).headers?.updateType === NotificationType.PCC_MIN_RESULT;
+export function isRootNetworkDeletionStartedNotification(
+    notif: CommonStudyEventData
+): notif is RootNetworkDeletionStartedEventData {
+    return notif.headers?.updateType === NotificationType.ROOT_NETWORKS_DELETION_STARTED;
 }
 
-export function isRootNetworkDeletionStartedNotification(notif: unknown): notif is RootNetworkDeletionStartedEventData {
-    return (
-        (notif as RootNetworkDeletionStartedEventData).headers?.updateType ===
-        NotificationType.ROOT_NETWORKS_DELETION_STARTED
-    );
+export function isRootNetworksUpdatedNotification(notif: CommonStudyEventData): notif is RootNetworkUpdatedEventData {
+    return notif.headers?.updateType === NotificationType.ROOT_NETWORKS_UPDATED;
 }
 
-export function isRootNetworksUpdatedNotification(notif: unknown): notif is RootNetworkUpdatedEventData {
-    return (notif as RootNetworkUpdatedEventData).headers?.updateType === NotificationType.ROOT_NETWORKS_UPDATED;
+export function isRootNetworkUpdateFailedNotification(
+    notif: CommonStudyEventData
+): notif is RootNetworkUpdateFailedEventData {
+    return notif.headers?.updateType === NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
 }
 
-export function isRootNetworkUpdateFailedNotification(notif: unknown): notif is RootNetworkUpdateFailedEventData {
-    return (
-        (notif as RootNetworkUpdateFailedEventData).headers?.updateType === NotificationType.ROOT_NETWORKS_UPDATE_FAILED
-    );
+export function isNodeBuildCompletedNotification(notif: CommonStudyEventData): notif is NodeBuildCompletedEventData {
+    return notif.headers?.updateType === NotificationType.NODE_BUILD_COMPLETED;
 }
 
-export function isNodeBuildCompletedNotification(notif: unknown): notif is NodeBuildCompletedEventData {
-    return (notif as NodeBuildCompletedEventData).headers?.updateType === NotificationType.NODE_BUILD_COMPLETED;
+export function isNodeBuildStatusUpdatedNotification(
+    notif: CommonStudyEventData
+): notif is NodesBuildStatusUpdatedEventData {
+    return notif.headers?.updateType === NotificationType.NODE_BUILD_STATUS_UPDATED;
 }
 
-export function isNodeBuildStatusUpdatedNotification(notif: unknown): notif is NodesBuildStatusUpdatedEventData {
-    return (
-        (notif as NodesBuildStatusUpdatedEventData).headers?.updateType === NotificationType.NODE_BUILD_STATUS_UPDATED
-    );
-}
-
-export function isShortCircuitResultNotification(notif: unknown): notif is ShortCircuitAnalysisResultEventData {
-    return (
-        (notif as ShortCircuitAnalysisResultEventData).headers?.updateType ===
-        NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT
-    );
+export function isShortCircuitResultNotification(
+    notif: CommonStudyEventData
+): notif is ShortCircuitAnalysisResultEventData {
+    return notif.headers?.updateType === NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT;
 }
 
 export function isOneBusShortCircuitResultNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is OneBusShortCircuitAnalysisResultEventData {
-    return (
-        (notif as OneBusShortCircuitAnalysisResultEventData).headers?.updateType ===
-        NotificationType.ONE_BUS_SC_ANALYSIS_RESULT
-    );
+    return notif.headers?.updateType === NotificationType.ONE_BUS_SC_ANALYSIS_RESULT;
 }
 
 export function isOneBusShortCircuitFailedNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is OneBusShortCircuitAnalysisFailedEventData {
-    return (
-        (notif as OneBusShortCircuitAnalysisFailedEventData).headers?.updateType ===
-        NotificationType.ONE_BUS_SC_ANALYSIS_FAILED
-    );
+    return notif.headers?.updateType === NotificationType.ONE_BUS_SC_ANALYSIS_FAILED;
 }
 
 export function isNetworkVisualizationParametersUpdatedNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is NetworkVisualizationParametersUpdatedEventData {
-    return (
-        (notif as NetworkVisualizationParametersUpdatedEventData).headers?.updateType ===
-        NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED
-    );
+    return notif.headers?.updateType === NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED;
 }
 
-export function isEventNotification(
-    notif: unknown
-): notif is EventCreatingInProgressEventData | EventUpdatingInProgressEventData | EventDeletingInProgressEventData {
-    return EVENT_CRUD_NOTIFICATION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
+export function isEventCrudFinishedNotification(notif: CommonStudyEventData): notif is EventCrudFinishedEventData {
+    return notif.headers?.updateType === NotificationType.EVENT_CRUD_FINISHED;
 }
 
-export function isEventCrudFinishedNotification(notif: unknown): notif is EventCrudFinishedEventData {
-    return (notif as EventCrudFinishedEventData).headers?.updateType === NotificationType.EVENT_CRUD_FINISHED;
+export function isNodeDeletedNotification(notif: CommonStudyEventData): notif is NodesDeletedEventData {
+    return notif.headers?.updateType === NotificationType.NODES_DELETED;
+}
+export function isNodeCreatedNotification(notif: CommonStudyEventData): notif is NodeCreatedEventData {
+    return notif.headers?.updateType === NotificationType.NODE_CREATED;
 }
 
-export function isNodeDeletedNotification(notif: unknown): notif is NodesDeletedEventData {
-    return (notif as NodesDeletedEventData).headers?.updateType === NotificationType.NODES_DELETED;
+export function isNodeEditedNotification(notif: CommonStudyEventData): notif is NodeEditedEventData {
+    return notif.headers?.updateType === NotificationType.NODE_EDITED;
 }
-export function isNodeCreatedNotification(notif: unknown): notif is NodeCreatedEventData {
-    return (notif as NodeCreatedEventData).headers?.updateType === NotificationType.NODE_CREATED;
-}
-
-export function isNodeEditedNotification(notif: unknown): notif is NodeEditedEventData {
-    return (notif as NodeEditedEventData).headers?.updateType === NotificationType.NODE_EDITED;
-}
-export function isNodSubTreeCreatedNotification(notif: unknown): notif is SubtreeCreatedEventData {
-    return (notif as SubtreeCreatedEventData).headers?.updateType === NotificationType.SUBTREE_CREATED;
+export function isNodeSubTreeCreatedNotification(notif: CommonStudyEventData): notif is SubtreeCreatedEventData {
+    return notif.headers?.updateType === NotificationType.SUBTREE_CREATED;
 }
 
-export function isExportNetworkNotification(notif: unknown): notif is ExportNetworkEventData {
-    return (notif as ExportNetworkEventData).headers?.updateType === NotificationType.NETWORK_EXPORT_FINISHED;
-}
-
-export function isContainingNodesInformationNotification(notif: unknown): notif is
-    | EventCrudFinishedEventData // contains 'nodes' header
-    | EventDeletingInProgressEventData
-    | EventUpdatingInProgressEventData
-    | EventCreatingInProgressEventData
-    | ModificationsDeleteFinishedEventData
-    | ModificationsUpdateFinishedEventData
-    | ModificationsDeletingInProgressEventData
-    | ModificationsRestoringInProgressEventData
-    | ModificationsStashingInProgressEventData
-    | ModificationsUpdatingInProgressEventData
-    | ModificationsCreationInProgressEventData
-    | NodesUpdatedEventData
-    | NodesDeletedEventData
-    | NodesBuildStatusUpdatedEventData {
-    return MODIFYING_NODES_NOTIFICATION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
-}
-
-export function isContainingNodeInformationNotification(notif: unknown): notif is
-    | StudyEventData // contains 'node' header
-    | StudyAlertEventData
-    | NodeEditedEventData // TODO don not manage this one ?
-    | NodeBuildCompletedEventData
-    | NodeBuildFailedEventData {
-    return MODIFYING_NODE_NOTIFICATION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
-}
-
-export function isPendingModificationNotification(
-    notif: unknown
-): notif is
-    | ModificationsCreationInProgressEventData
-    | ModificationsUpdatingInProgressEventData
-    | ModificationsStashingInProgressEventData
-    | ModificationsRestoringInProgressEventData
-    | ModificationsDeletingInProgressEventData {
-    return PENDING_MODIFICATION_NOTIFICATION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
+export function isExportNetworkNotification(notif: CommonStudyEventData): notif is ExportNetworkEventData {
+    return notif.headers?.updateType === NotificationType.NETWORK_EXPORT_FINISHED;
 }
 
 export function isModificationsUpdateFinishedNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is ModificationsUpdateFinishedEventData {
-    return (
-        (notif as ModificationsUpdateFinishedEventData).headers?.updateType ===
-        NotificationType.MODIFICATIONS_UPDATE_FINISHED
-    );
+    return notif.headers?.updateType === NotificationType.MODIFICATIONS_UPDATE_FINISHED;
 }
 
 export function isModificationsDeleteFinishedNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is ModificationsDeleteFinishedEventData {
-    return (
-        (notif as ModificationsDeleteFinishedEventData).headers?.updateType ===
-        NotificationType.MODIFICATIONS_DELETE_FINISHED
-    );
+    return notif.headers?.updateType === NotificationType.MODIFICATIONS_DELETE_FINISHED;
 }
 
-export type ComputationEventData =
-    | LoadflowResultEventData
-    | LoadflowFailedEventData
-    | LoadflowStatusEventData
-    | SecurityAnalysisResultEventData
-    | SecurityAnalysisFailedEventData
-    | SecurityAnalysisStatusEventData
-    | SensitivityAnalysisResultEventData
-    | SensitivityAnalysisFailedEventData
-    | SensitivityAnalysisStatusEventData
-    | ShortCircuitAnalysisResultEventData
-    | ShortCircuitAnalysisFailedEventData
-    | ShortCircuitAnalysisStatusEventData
-    | OneBusShortCircuitAnalysisResultEventData
-    | OneBusShortCircuitAnalysisFailedEventData
-    | OneBusShortCircuitAnalysisStatusEventData
-    | DynamicSimulationResultEventData
-    | DynamicSimulationFailedEventData
-    | DynamicSimulationStatusEventData
-    | DynamicSecurityAnalysisResultEventData
-    | DynamicSecurityAnalysisFailedEventData
-    | DynamicSecurityAnalysisStatusEventData
-    | VoltageInitResultEventData
-    | VoltageInitFailedEventData
-    | VoltageInitCancelFailedEventData
-    | VoltageInitStatusEventData
-    | StateEstimationResultEventData
-    | StateEstimationFailedEventData
-    | StateEstimationStatusEventData
-    | PccMinResultEventData
-    | PccMinFailedEventData
-    | PccMinStatusEventData;
-
-export function isComputationNotification(notif: unknown): notif is ComputationEventData {
-    return COMPUTATION_NOTIFICATION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
+export function isSharedElementUpdateNotification(notif: CommonStudyEventData): notif is SharedElementUpdateEventData {
+    return notif.headers?.updateType === NotificationType.SHARED_MODIFICATIONS_UPDATED;
 }
 
-export function isIndexationStatusNotification(notif: unknown): notif is IndexationStatusEventData {
-    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.INDEXATION_STATUS;
+export function isIndexationStatusNotification(notif: CommonStudyEventData): notif is IndexationStatusEventData {
+    return notif.headers?.updateType === NotificationType.INDEXATION_STATUS;
 }
 
-export function isStudyNetworkRecreationNotification(notif: unknown): notif is StudyNetworkRecreationEventData {
-    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.STUDY_NETWORK_RECREATION_DONE;
+export function isStudyNetworkRecreationNotification(
+    notif: CommonStudyEventData
+): notif is StudyNetworkRecreationEventData {
+    return notif.headers?.updateType === NotificationType.STUDY_NETWORK_RECREATION_DONE;
 }
 
-export function isMetadataUpdatedNotification(notif: unknown): notif is MetadataUpdatedEventData {
-    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.METADATA_UPDATED;
+export function isMetadataUpdatedNotification(notif: CommonStudyEventData): notif is MetadataUpdatedEventData {
+    return notif.headers?.updateType === NotificationType.METADATA_UPDATED;
 }
 
-export function isSpreadsheetNodeAliasesUpdatedNotification(notif: unknown): notif is CommonStudyEventData {
-    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_NODE_ALIASES_UPDATED;
+export function isNodeActivitiesUpdatedNotification(
+    notif: CommonStudyEventData
+): notif is NodeActivitiesUpdatedEventData {
+    return notif.headers?.updateType === NotificationType.NODE_ACTIVITIES_UPDATED;
+}
+
+export function isSpreadsheetNodeAliasesUpdatedNotification(notif: CommonStudyEventData): boolean {
+    return notif.headers?.updateType === NotificationType.SPREADSHEET_NODE_ALIASES_UPDATED;
 }
 
 export function isSpreadsheetParametersUpdatedNotification(
-    notif: unknown
+    notif: CommonStudyEventData
 ): notif is SpreadsheetParametersUpdatedEventData {
-    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
+    return notif.headers?.updateType === NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
 }
 
-export function isWorkspaceRenamedNotification(notif: unknown): notif is WorkspaceRenamedEventData {
-    return (notif as WorkspaceRenamedEventData).headers?.updateType === NotificationType.WORKSPACE_RENAMED;
+export function isWorkspaceRenamedNotification(notif: CommonStudyEventData): notif is WorkspaceRenamedEventData {
+    return notif.headers?.updateType === NotificationType.WORKSPACE_RENAMED;
 }
 
-export function isWorkspacePanelsUpdatedNotification(notif: unknown): notif is WorkspacePanelsUpdatedEventData {
-    return (notif as WorkspacePanelsUpdatedEventData).headers?.updateType === NotificationType.WORKSPACE_PANELS_UPDATED;
+export function isWorkspacePanelsUpdatedNotification(
+    notif: CommonStudyEventData
+): notif is WorkspacePanelsUpdatedEventData {
+    return notif.headers?.updateType === NotificationType.WORKSPACE_PANELS_UPDATED;
 }
 
-export function isWorkspacePanelsDeletedNotification(notif: unknown): notif is WorkspacePanelsDeletedEventData {
-    return (notif as WorkspacePanelsDeletedEventData).headers?.updateType === NotificationType.WORKSPACE_PANELS_DELETED;
+export function isWorkspacePanelsDeletedNotification(
+    notif: CommonStudyEventData
+): notif is WorkspacePanelsDeletedEventData {
+    return notif.headers?.updateType === NotificationType.WORKSPACE_PANELS_DELETED;
 }
 
-export function isWorkspaceNadConfigUpdatedNotification(notif: unknown): notif is WorkspaceNadConfigUpdatedEventData {
-    return (
-        (notif as WorkspaceNadConfigUpdatedEventData).headers?.updateType ===
-        NotificationType.WORKSPACE_NAD_CONFIG_UPDATED
-    );
+export function isWorkspaceNadConfigUpdatedNotification(
+    notif: CommonStudyEventData
+): notif is WorkspaceNadConfigUpdatedEventData {
+    return notif.headers?.updateType === NotificationType.WORKSPACE_NAD_CONFIG_UPDATED;
 }
 
 export function parseEventData<T>(event: MessageEvent | null): T | null {
@@ -1229,73 +765,10 @@ export function parseEventData<T>(event: MessageEvent | null): T | null {
     }
 }
 
-// Notification types
-export type StudyUpdateEventData =
-    | StudyEventData
-    | ComputationParametersUpdatedEventData
-    | ComputationResultTabUpdatedEventData
-    | RootNetworkUpdatedEventData
-    | RootNetworkUpdateFailedEventData
-    | RootNetworkDeletionStartedEventData
-    | IndexationStatusEventData
-    | StudyNetworkRecreationEventData
-    | MetadataUpdatedEventData
-    | StudyAlertEventData
-    | NodeCreatedEventData
-    | NodesDeletedEventData
-    | NodeMovedEventData
-    | NodesUpdatedEventData
-    | NodeEditedEventData
-    | NodesBuildStatusUpdatedEventData
-    | NodeBuildCompletedEventData
-    | NodeBuildFailedEventData
-    | SubtreeMovedEventData
-    | SubtreeCreatedEventData
-    | NodesColumnPositionsChangedEventData
-    | ModificationsCreationInProgressEventData
-    | ModificationsUpdatingInProgressEventData
-    | ModificationsStashingInProgressEventData
-    | ModificationsRestoringInProgressEventData
-    | ModificationsDeletingInProgressEventData
-    | ModificationsUpdateFinishedEventData
-    | ModificationsDeleteFinishedEventData
-    | EventCreatingInProgressEventData
-    | EventUpdatingInProgressEventData
-    | EventDeletingInProgressEventData
-    | EventCrudFinishedEventData
-    | LoadflowResultEventData
-    | LoadflowFailedEventData
-    | LoadflowStatusEventData
-    | SecurityAnalysisProgressEventData
-    | SecurityAnalysisResultEventData
-    | SecurityAnalysisFailedEventData
-    | SecurityAnalysisStatusEventData
-    | SensitivityAnalysisResultEventData
-    | SensitivityAnalysisFailedEventData
-    | SensitivityAnalysisStatusEventData
-    | ShortCircuitAnalysisResultEventData
-    | ShortCircuitAnalysisFailedEventData
-    | ShortCircuitAnalysisStatusEventData
-    | OneBusShortCircuitAnalysisResultEventData
-    | OneBusShortCircuitAnalysisFailedEventData
-    | OneBusShortCircuitAnalysisStatusEventData
-    | DynamicSimulationResultEventData
-    | DynamicSimulationFailedEventData
-    | DynamicSimulationStatusEventData
-    | DynamicSecurityAnalysisResultEventData
-    | DynamicSecurityAnalysisFailedEventData
-    | DynamicSecurityAnalysisStatusEventData
-    | VoltageInitResultEventData
-    | VoltageInitFailedEventData
-    | VoltageInitCancelFailedEventData
-    | VoltageInitStatusEventData
-    | StateEstimationResultEventData
-    | StateEstimationFailedEventData
-    | StateEstimationStatusEventData
-    | PccMinResultEventData
-    | PccMinFailedEventData
-    | PccMinStatusEventData
-    | ExportNetworkEventData;
+//TODO wtf
+//export type StudyUpdateEventData =
+//    | SecurityAnalysisProgressEventData
+//;
 
 /******************* TO REMOVE LATER ****************/
 // Headers

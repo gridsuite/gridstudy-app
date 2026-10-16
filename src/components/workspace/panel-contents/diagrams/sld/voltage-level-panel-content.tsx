@@ -100,7 +100,6 @@ export const VoltageLevelPanelContent = ({
                         }}
                         showInSpreadsheet={handleShowInSpreadsheet}
                         studyUuid={studyUuid}
-                        panelId={panelId}
                         svg={diagram.svg?.svg ?? undefined}
                         svgMetadata={diagram.svg?.metadata as SLDMetadata}
                         loadingState={loading}

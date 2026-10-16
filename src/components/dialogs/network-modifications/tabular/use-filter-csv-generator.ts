@@ -6,17 +6,18 @@
  */
 import { useCallback, useMemo } from 'react';
 import {
+    EquipmentsFilter,
     fetchElementsInfos,
     FILTER_EQUIPMENTS_ATTRIBUTES,
     FilterType,
-    LANG_FRENCH,
+    getCsvDelimiter,
     snackWithFallback,
+    TabularFieldConstants,
+    TabularModificationType,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { EquipmentsFilter, evaluateFilters } from 'services/study/filter';
-import { EQUIPMENT_ID } from 'components/utils/field-constants';
-import { TabularModificationType } from './tabular-common';
+import { evaluateFilters } from 'services/study/filter';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
@@ -46,7 +47,7 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const delimiter = useMemo(() => (language === LANG_FRENCH ? ';' : ','), [language]);
+    const delimiter = useMemo(() => getCsvDelimiter(language), [language]);
 
     /**
      * Extracts equipment IDs from explicit naming filter
@@ -115,13 +116,15 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
             // 2. Add comment lines
             commentLines.forEach((commentLineArray) => {
                 if (Array.isArray(commentLineArray)) {
-                    csvRows.push(...commentLineArray);
+                    csvRows.push(commentLineArray.join(delimiter));
                 }
             });
 
             // 3. Add data rows
             equipmentIds.forEach((equipmentId) => {
-                const row = csvColumns.map((column) => (column === EQUIPMENT_ID ? equipmentId : ''));
+                const row = csvColumns.map((column) =>
+                    column === TabularFieldConstants.EQUIPMENT_ID ? equipmentId : ''
+                );
                 csvRows.push(row.join(delimiter));
             });
 

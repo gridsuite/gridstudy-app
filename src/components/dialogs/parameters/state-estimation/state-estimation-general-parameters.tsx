@@ -4,48 +4,49 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Grid } from '@mui/material';
-import { ESTIM_ALGO_TYPE, ESTIM_LOG_LEVEL, PRINCIPAL_OBSERVABLE_ZONE } from 'components/utils/field-constants';
+import {
+    ESTIM_ALGO_TYPE,
+    ESTIM_LOG_LEVEL,
+    PRINCIPAL_OBSERVABLE_ZONE,
+    UNIQUE_PHASE,
+} from 'components/utils/field-constants';
 import { estimAlgoTypeValues, estimLogLevelValues, TabValue } from './state-estimation-parameters-utils';
-import { FieldLabel, MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
-import { parametersStyles } from '../util/styles';
+import { ParameterField, ParameterType, SpecificParameterInfos } from '@gridsuite/commons-ui';
+import { memo } from 'react';
 
-export const StateEstimationGeneralParameters = () => {
+const basicParams: SpecificParameterInfos[] = [
+    {
+        name: PRINCIPAL_OBSERVABLE_ZONE,
+        type: ParameterType.BOOLEAN,
+        label: 'StateEstimationParametersPrincipalObservableZoneLabel',
+    },
+    {
+        name: UNIQUE_PHASE,
+        type: ParameterType.BOOLEAN,
+        label: 'StateEstimationParametersUniquePhaseLabel',
+    },
+    {
+        name: ESTIM_LOG_LEVEL,
+        type: ParameterType.STRING,
+        label: 'StateEstimationParametersLogLevelLabel',
+        possibleValues: estimLogLevelValues,
+    },
+    {
+        name: ESTIM_ALGO_TYPE,
+        type: ParameterType.STRING,
+        label: 'StateEstimationParametersAlgoTypeLabel',
+        possibleValues: estimAlgoTypeValues,
+    },
+];
+
+function StateEstimationGeneralParameters() {
     return (
-        <Grid container>
-            <Grid container item alignItems="center" spacing={2} direction={'row'}>
-                <Grid item xs={10} sx={parametersStyles.parameterName}>
-                    <FieldLabel label={'StateEstimationParametersPrincipalObservableZoneLabel'} />
-                </Grid>
-                <Grid item xs={2}>
-                    <SwitchInput name={`${TabValue.GENERAL}.${PRINCIPAL_OBSERVABLE_ZONE}`} />
-                </Grid>
-            </Grid>
-
-            <Grid container item spacing={1} paddingTop={3}>
-                <Grid item xs={8} sx={parametersStyles.parameterName}>
-                    <FieldLabel label={'StateEstimationParametersLogLevelLabel'} />
-                </Grid>
-                <Grid item xs={4}>
-                    <MuiSelectInput
-                        name={`${TabValue.GENERAL}.${ESTIM_LOG_LEVEL}`}
-                        options={estimLogLevelValues}
-                        fullWidth
-                    />
-                </Grid>
-            </Grid>
-            <Grid container item spacing={1} paddingTop={3}>
-                <Grid item xs={8} sx={parametersStyles.parameterName}>
-                    <FieldLabel label={'StateEstimationParametersAlgoTypeLabel'} />
-                </Grid>
-                <Grid item xs={4}>
-                    <MuiSelectInput
-                        name={`${TabValue.GENERAL}.${ESTIM_ALGO_TYPE}`}
-                        options={estimAlgoTypeValues}
-                        fullWidth
-                    />
-                </Grid>
-            </Grid>
-        </Grid>
+        <>
+            {basicParams.map((item) => (
+                <ParameterField id={TabValue.GENERAL} {...item} key={item.name} />
+            ))}
+        </>
     );
-};
+}
+
+export default memo(StateEstimationGeneralParameters);

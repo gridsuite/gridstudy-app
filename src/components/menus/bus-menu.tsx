@@ -8,13 +8,11 @@
 import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import { FunctionComponent, MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
+import { FunctionComponent, MouseEvent as ReactMouseEvent, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
-import { RunningStatus } from 'components/utils/running-status';
-import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { useCanModifyEquipment } from './use-can-modify-equipment';
+import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
@@ -24,9 +22,10 @@ import { tripEquipment } from '../../services/study/network-modifications';
 import {
     ComputingType,
     CustomMenuItem,
-    type EquipmentType,
+    EquipmentType,
     type MuiStyles,
     PARAM_DEVELOPER_MODE,
+    RunningStatus,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -82,18 +81,14 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const isAnyNodeBuilding = useIsAnyNodeBuilding();
-    const isNodeEditable = useMemo(
-        () => isNodeBuilt(currentNode) && !isNodeReadOnly(currentNode) && !isAnyNodeBuilding,
-        [currentNode, isAnyNodeBuilding]
-    );
+    const canModifyEquipment = useCanModifyEquipment();
 
     useEffect(() => {
         fetchNetworkElementInfos(
             studyUuid,
             currentNode?.id,
             currentRootNetworkUuid,
-            EQUIPMENT_TYPES.BUSBAR_SECTION,
+            EquipmentType.BUSBAR_SECTION,
             EQUIPMENT_INFOS_TYPES.OPERATING_STATUS.type,
             busId,
             false
@@ -107,6 +102,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
 
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
+    const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
 
     const oneBusShortcircuitAnalysisState = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
@@ -161,7 +157,8 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     disabled={
                         computationStarting ||
                         oneBusShortcircuitAnalysisState === RunningStatus.RUNNING ||
-                        !isNodeEditable
+                        oneBusShortcircuitAnalysisState === RunningStatus.PRELOADING ||
+                        !canModifyEquipment
                     }
                 >
                     <ListItemIcon>
@@ -177,19 +174,21 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     />
                 </CustomMenuItem>
             )}
-            {isDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
-                <DynamicSimulationEventMenuItem
-                    equipmentId={busId}
-                    equipmentType={convertToEquipmentType(EQUIPMENT_TYPES.BUS)}
-                    onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
-                    disabled={!isNodeEditable}
-                />
-            )}
+            {dynamicSimulationAvailability === OptionalServicesStatus.Up &&
+                isDeveloperMode &&
+                getEventType(EquipmentType.BUS) && (
+                    <DynamicSimulationEventMenuItem
+                        equipmentId={busId}
+                        equipmentType={EquipmentType.BUS}
+                        onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
+                        disabled={!canModifyEquipment}
+                    />
+                )}
             <CustomMenuItem
                 sx={styles.menuItem}
                 onClick={handleClickTrip}
                 selected={false}
-                disabled={!isNodeEditable || equipmentInfos?.operatingStatus === 'FORCED_OUTAGE'}
+                disabled={!canModifyEquipment || equipmentInfos?.operatingStatus === 'FORCED_OUTAGE'}
             >
                 <ListItemIcon>
                     <OfflineBoltOutlinedIcon />

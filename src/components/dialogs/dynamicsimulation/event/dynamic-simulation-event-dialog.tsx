@@ -11,22 +11,21 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
-import { DialogProps } from '@mui/material/Dialog/Dialog';
+import { DialogProps } from '@mui/material/Dialog';
 import { DynamicSimulationEventForm } from './dynamic-simulation-event-form';
 import { Event, EventProperty, EventPropertyName, PrimitiveTypes } from './types/event.type';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
-import { CustomFormProvider, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { fetchDynamicSimulationEvent, saveDynamicSimulationEvent } from '../../../../services/study/dynamic-simulation';
 
 export type DynamicSimulationEventDialogProps = {
     equipmentId: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     onClose: () => void;
     title: string;
     open?: boolean;

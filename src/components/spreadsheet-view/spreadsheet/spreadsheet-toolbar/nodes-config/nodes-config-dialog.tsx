@@ -95,7 +95,7 @@ export default function NodesConfigDialog({
                 onClose={onClose}
                 onSave={onValidate}
                 onClear={() => null}
-                PaperProps={{ sx: styles.dialogContent }}
+                slotProps={{ paper: { sx: styles.dialogContent } }}
                 {...dialogProps}
             >
                 <Grid container>

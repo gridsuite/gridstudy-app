@@ -10,7 +10,7 @@ import { CellContextMenuEvent } from 'ag-grid-community';
 import { Edit, Polyline } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { isCalculationRow } from '../../../utils/calculation-utils';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 export interface EquipmentData {
     id: string;
@@ -77,7 +77,7 @@ export const useEquipmentContextMenu = ({
 
     const getDetailsLabel = useCallback(
         (equipmentType?: string, side?: string): string => {
-            if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
+            if (equipmentType === EquipmentType.SUBSTATION) {
                 return intl.formatMessage({ id: 'openSubstationDiagram' });
             }
 
@@ -105,7 +105,7 @@ export const useEquipmentContextMenu = ({
               const voltageLevels = [];
 
               // For voltage level and substation, use the equipment's own ID
-              if (equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL || equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
+              if (equipmentType === EquipmentType.VOLTAGE_LEVEL || equipmentType === EquipmentType.SUBSTATION) {
                   voltageLevels.push({
                       id: equipmentData.id,
                       label: getDetailsLabel(equipmentType),

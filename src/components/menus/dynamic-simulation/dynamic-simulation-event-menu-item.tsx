@@ -12,8 +12,7 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
-import { type EquipmentType, CustomMenuItem, type MuiStyles } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EquipmentType, CustomMenuItem, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     menuItem: {
@@ -57,11 +56,7 @@ const DynamicSimulationEventMenuItem = (props: DynamicSimulationEventMenuItemPro
                 primary={
                     <Typography noWrap>
                         {intl.formatMessage({
-                            id: `${getEventType(equipmentType)}${
-                                EQUIPMENT_TYPE_LABEL_KEYS[
-                                    EQUIPMENT_TYPES[equipmentType as keyof typeof EQUIPMENT_TYPES]
-                                ]
-                            }`,
+                            id: `${getEventType(equipmentType)}${EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]}`,
                         })}
                         {' ('}
                         {intl.formatMessage({

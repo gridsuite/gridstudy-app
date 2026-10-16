@@ -5,13 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, Key, useCallback, useMemo, useRef, useState } from 'react';
 import { BasicModificationDialog } from '../../commons/basicModificationDialog';
 import {
     BooleanCellRenderer,
     CsvExport,
     CustomAGGrid,
     DefaultCellRenderer,
+    FieldConstants,
     type MuiStyles,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -28,7 +29,6 @@ import {
     SECTION_COUNT,
     TARGET_V,
     V,
-    VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
 import { AgGridReact } from 'ag-grid-react';
 import { FetchStatus } from '../../../../services/utils.type';
@@ -76,16 +76,23 @@ function check(x: number | undefined) {
 
 const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
-    TRANSFORMER_TAB: 1,
-    STATIC_VAR_COMPENSATOR_TAB: 2,
-    VSC_CONVERTER_STATION_TAB: 3,
-    SHUNT_COMPENSATOR_TAB: 4,
-    BUS_TAB: 5,
+    BATTERY_TAB: 1,
+    TRANSFORMER_TAB: 2,
+    STATIC_VAR_COMPENSATOR_TAB: 3,
+    VSC_CONVERTER_STATION_TAB: 4,
+    SHUNT_COMPENSATOR_TAB: 5,
+    BUS_TAB: 6,
 };
 
 interface GeneratorRowData {
     ID: string;
-    [VOLTAGE_SET_POINT]: number | undefined;
+    [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
+    [REACTIVE_POWER_SET_POINT]: number | undefined;
+}
+
+interface BatteryRowData {
+    ID: string;
+    [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
     [REACTIVE_POWER_SET_POINT]: number | undefined;
 }
 
@@ -98,13 +105,13 @@ interface TransformerRowData {
 
 interface StaticVarCompensatorRowData {
     ID: string;
-    [VOLTAGE_SET_POINT]: number | undefined;
+    [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
     [REACTIVE_POWER_SET_POINT]: number | undefined;
 }
 
 interface VscConverterStationRowData {
     ID: string;
-    [VOLTAGE_SET_POINT]: number | undefined;
+    [FieldConstants.VOLTAGE_SET_POINT]: number | undefined;
     [REACTIVE_POWER_SET_POINT]: number | undefined;
 }
 
@@ -123,6 +130,12 @@ interface BusRowData {
 
 interface GeneratorData {
     generatorId: string;
+    targetV: number | undefined;
+    targetQ: number | undefined;
+}
+
+interface BatteryData {
+    batteryId: string;
     targetV: number | undefined;
     targetQ: number | undefined;
 }
@@ -161,6 +174,7 @@ interface BusData {
 
 export interface EditData {
     generators: GeneratorData[];
+    batteries: BatteryData[];
     transformers: TransformerData[];
     staticVarCompensators: StaticVarCompensatorData[];
     vscConverterStations: VscConverterStationData[];
@@ -177,6 +191,7 @@ interface VoltageInitModificationProps {
     onPreviewModeSubmit?: () => void;
     editDataFetchStatus: FetchStatus;
     disabledSave: boolean;
+    exportCsvResetKey: Key;
 }
 
 const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationProps> = ({
@@ -185,6 +200,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
     onPreviewModeSubmit,
     editDataFetchStatus,
     disabledSave,
+    exportCsvResetKey,
     ...dialogProps
 }) => {
     const intl = useIntl();
@@ -199,7 +215,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
 
     const gridRef = useRef<AgGridReact>(null);
 
-    const generatorsColumnDefs = useMemo<ColDef[]>(
+    const voltageInitSetpointColumnDefs = useMemo<ColDef[]>(
         () => [
             {
                 headerName: intl.formatMessage({ id: 'ID' }),
@@ -208,7 +224,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             },
             {
                 headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
-                field: VOLTAGE_SET_POINT,
+                field: FieldConstants.VOLTAGE_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
@@ -250,56 +266,6 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                     id: 'VoltageSetpointKV',
                 }),
                 field: RATIO_TAP_CHANGER_TARGET_V,
-                cellRenderer: DefaultCellRenderer,
-                numeric: true,
-            },
-        ],
-        [intl]
-    );
-
-    const staticVarCompensatorsColumnDefs = useMemo<ColDef[]>(
-        () => [
-            {
-                headerName: intl.formatMessage({ id: 'ID' }),
-                field: 'ID',
-                pinned: true,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
-                field: VOLTAGE_SET_POINT,
-                cellRenderer: DefaultCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'ReactivePowerSetpointMVAR',
-                }),
-                field: REACTIVE_POWER_SET_POINT,
-                cellRenderer: DefaultCellRenderer,
-                numeric: true,
-            },
-        ],
-        [intl]
-    );
-
-    const vscConverterStationsColumnDefs = useMemo<ColDef[]>(
-        () => [
-            {
-                headerName: intl.formatMessage({ id: 'ID' }),
-                field: 'ID',
-                pinned: true,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
-                field: VOLTAGE_SET_POINT,
-                cellRenderer: DefaultCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'ReactivePowerSetpointMVAR',
-                }),
-                field: REACTIVE_POWER_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
@@ -403,6 +369,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             <Grid container>
                 <Tabs value={tabIndex} variant="scrollable" onChange={(event, newValue) => handleTabChange(newValue)}>
                     <Tab label={<FormattedMessage id="Generators" />} />
+                    <Tab label={<FormattedMessage id="Batteries" />} />
                     <Tab label={<FormattedMessage id="Transformers" />} />
                     <Tab label={<FormattedMessage id="StaticVarCompensators" />} />
                     <Tab label={<FormattedMessage id="VscConverterStations" />} />
@@ -421,16 +388,33 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 let tableName: string = '';
                 if (editData) {
                     if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
-                        columnDefs = generatorsColumnDefs;
+                        columnDefs = voltageInitSetpointColumnDefs;
                         tableName = 'Generators';
                         editData.generators.forEach((m: GeneratorData) => {
                             let row: GeneratorRowData = {
                                 ID: m.generatorId,
-                                [VOLTAGE_SET_POINT]: undefined,
+                                [FieldConstants.VOLTAGE_SET_POINT]: undefined,
                                 [REACTIVE_POWER_SET_POINT]: undefined,
                             };
                             if (check(m.targetV)) {
-                                row[VOLTAGE_SET_POINT] = m.targetV;
+                                row[FieldConstants.VOLTAGE_SET_POINT] = m.targetV;
+                            }
+                            if (check(m.targetQ)) {
+                                row[REACTIVE_POWER_SET_POINT] = m.targetQ;
+                            }
+                            rowData.push(row);
+                        });
+                    } else if (currentTab === EquipmentTypeTabs.BATTERY_TAB) {
+                        columnDefs = voltageInitSetpointColumnDefs;
+                        tableName = 'Batteries';
+                        editData.batteries.forEach((m: BatteryData) => {
+                            let row: BatteryRowData = {
+                                ID: m.batteryId,
+                                [FieldConstants.VOLTAGE_SET_POINT]: undefined,
+                                [REACTIVE_POWER_SET_POINT]: undefined,
+                            };
+                            if (check(m.targetV)) {
+                                row[FieldConstants.VOLTAGE_SET_POINT] = m.targetV;
                             }
                             if (check(m.targetQ)) {
                                 row[REACTIVE_POWER_SET_POINT] = m.targetQ;
@@ -459,16 +443,16 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             rowData.push(row);
                         });
                     } else if (currentTab === EquipmentTypeTabs.STATIC_VAR_COMPENSATOR_TAB) {
-                        columnDefs = staticVarCompensatorsColumnDefs;
+                        columnDefs = voltageInitSetpointColumnDefs;
                         tableName = 'StaticVarCompensators';
                         editData.staticVarCompensators.forEach((m: StaticVarCompensatorData) => {
                             let row: StaticVarCompensatorRowData = {
                                 ID: m.staticVarCompensatorId,
-                                [VOLTAGE_SET_POINT]: undefined,
+                                [FieldConstants.VOLTAGE_SET_POINT]: undefined,
                                 [REACTIVE_POWER_SET_POINT]: undefined,
                             };
                             if (check(m.voltageSetpoint)) {
-                                row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
+                                row[FieldConstants.VOLTAGE_SET_POINT] = m.voltageSetpoint;
                             }
                             if (check(m.reactivePowerSetpoint)) {
                                 row[REACTIVE_POWER_SET_POINT] = m.reactivePowerSetpoint;
@@ -476,16 +460,16 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             rowData.push(row);
                         });
                     } else if (currentTab === EquipmentTypeTabs.VSC_CONVERTER_STATION_TAB) {
-                        columnDefs = vscConverterStationsColumnDefs;
+                        columnDefs = voltageInitSetpointColumnDefs;
                         tableName = 'VscConverterStations';
                         editData.vscConverterStations.forEach((m: VscConverterStationData) => {
                             let row: VscConverterStationRowData = {
                                 ID: m.vscConverterStationId,
-                                [VOLTAGE_SET_POINT]: undefined,
+                                [FieldConstants.VOLTAGE_SET_POINT]: undefined,
                                 [REACTIVE_POWER_SET_POINT]: undefined,
                             };
                             if (check(m.voltageSetpoint)) {
-                                row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
+                                row[FieldConstants.VOLTAGE_SET_POINT] = m.voltageSetpoint;
                             }
                             if (check(m.reactivePowerSetpoint)) {
                                 row[REACTIVE_POWER_SET_POINT] = m.reactivePowerSetpoint;
@@ -548,6 +532,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             disabled={rowData.length === 0 || editDataFetchStatus === FetchStatus.RUNNING}
                             language={language}
                             getData={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
+                            resetKey={exportCsvResetKey}
                         />
                     </Box>
                     <Box sx={styles.grid}>
@@ -567,13 +552,12 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
         [
             editData,
             editDataFetchStatus,
-            generatorsColumnDefs,
+            voltageInitSetpointColumnDefs,
             transformersColumnDefs,
-            staticVarCompensatorsColumnDefs,
-            vscConverterStationsColumnDefs,
             shuntCompensatorsColumnDefs,
             busColumnDefs,
             language,
+            exportCsvResetKey,
         ]
     );
 
@@ -592,9 +576,11 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             onClose={onClose}
             onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
             open={open}
-            PaperProps={{
-                sx: {
-                    height: '90vh',
+            slotProps={{
+                paper: {
+                    sx: {
+                        height: '90vh',
+                    },
                 },
             }}
             subtitle={equipmentTabs}

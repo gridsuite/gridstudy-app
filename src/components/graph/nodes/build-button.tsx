@@ -5,20 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BUILD_STATUS } from 'components/network/constants';
 import React, { useCallback, useState } from 'react';
 import { PlayCircleFilled, StopCircleOutlined } from '@mui/icons-material';
-import { Button, CircularProgress } from '@mui/material';
+import { Button } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
 import type { UUID } from 'node:crypto';
-import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, mergeSx, snackWithFallback, BuildStatus, useSnackMessage } from '@gridsuite/commons-ui';
 
 type BuildButtonProps = {
-    buildStatus?: BUILD_STATUS;
+    buildStatus?: BuildStatus;
     studyUuid: UUID | null;
     currentRootNetworkUuid: UUID | null;
     nodeUuid: UUID;
     onClick?: () => void;
+    disabled?: boolean;
 };
 
 const styles = {
@@ -36,9 +36,12 @@ export const BuildButton = ({
     currentRootNetworkUuid,
     nodeUuid,
     onClick,
+    disabled,
 }: BuildButtonProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
+
+    const isNotBuilt = !buildStatus || buildStatus === BuildStatus.NOT_BUILT;
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -50,7 +53,7 @@ export const BuildButton = ({
 
             setIsLoading(true);
 
-            if (!buildStatus || buildStatus === BUILD_STATUS.NOT_BUILT) {
+            if (isNotBuilt) {
                 buildNode(studyUuid, nodeUuid, currentRootNetworkUuid)
                     .catch((error) => snackWithFallback(snackError, error, { headerId: 'NodeBuildingError' }))
                     .finally(() => {
@@ -66,25 +69,19 @@ export const BuildButton = ({
                     });
             }
         },
-        [onClick, studyUuid, currentRootNetworkUuid, isLoading, buildStatus, nodeUuid, snackError]
+        [onClick, studyUuid, currentRootNetworkUuid, isLoading, isNotBuilt, nodeUuid, snackError]
     );
 
-    const getIcon = () => {
-        if (isLoading) {
-            return <CircularProgress size={24} color="primary" />;
-        }
-        return !buildStatus || buildStatus === BUILD_STATUS.NOT_BUILT ? (
-            <PlayCircleFilled sx={styles.playColor} />
-        ) : (
-            <StopCircleOutlined color="primary" />
-        );
-    };
-
-    const isButtonDisabled = isLoading || !studyUuid || !currentRootNetworkUuid;
+    const isButtonDisabled = isLoading || !studyUuid || !currentRootNetworkUuid || disabled;
 
     return (
-        <Button size="small" onClick={handleClick} sx={styles.button} disabled={isButtonDisabled}>
-            {getIcon()}
+        <Button
+            size="small"
+            onClick={handleClick}
+            sx={isNotBuilt ? mergeSx(styles.button, styles.playColor) : styles.button}
+            disabled={isButtonDisabled}
+        >
+            {isNotBuilt ? <PlayCircleFilled /> : <StopCircleOutlined />}
         </Button>
     );
 };

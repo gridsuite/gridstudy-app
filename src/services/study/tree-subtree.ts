@@ -6,17 +6,16 @@
  */
 
 import { getStudyUrl } from './index';
-import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson, BuildStatus } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { AbstractNode, NodeType, StashedNodeProperties } from '../../components/graph/tree-node.type';
-import { BUILD_STATUS } from '../../components/network/constants';
 import { NodeInsertModes } from 'types/notification-types';
 
 interface Node {
     name: string;
     type: NodeType;
-    localBuildStatus: BUILD_STATUS;
-    globalBuildStatus: BUILD_STATUS;
+    localBuildStatus: BuildStatus;
+    globalBuildStatus: BuildStatus;
 }
 export function copySubtree(
     sourceStudyUuid: UUID,

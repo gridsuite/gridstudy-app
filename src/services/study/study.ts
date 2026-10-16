@@ -6,8 +6,9 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { PREFIX_STUDY_QUERIES, getStudyUrl } from '.';
-import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from '.';
+import { backendFetch, backendFetchJson, ComputingType } from '@gridsuite/commons-ui';
+import { fetchLoadFlowComputationInfos } from './loadflow';
 
 interface BasicStudyInfos {
     uniqueId: string;
@@ -96,4 +97,27 @@ export function unbuildAllStudyNodes(studyUuid: UUID) {
     const url = getStudyUrl(studyUuid) + '/nodes/unbuild-all';
     console.debug(url);
     return backendFetch(url, { method: 'post' });
+}
+
+export function getComputingStatusParametersFetcher(
+    computingType: ComputingType
+): ((studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>) | undefined {
+    if (computingType === ComputingType.LOAD_FLOW) {
+        return fetchLoadFlowComputationInfos;
+    } else {
+        return undefined;
+    }
+}
+
+export function fetchAllComputationStatus(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+): Promise<Record<string, string>> {
+    console.info(
+        `Fetching all computation status on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${nodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/computations/status';
+    return backendFetchJson(url);
 }

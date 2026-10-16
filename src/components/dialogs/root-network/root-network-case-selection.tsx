@@ -61,16 +61,35 @@ export const RootNetworkCaseSelection = ({
 
     return (
         <>
-            <Grid container alignItems="center" item>
-                <Grid item display="flex" marginLeft={1}>
+            <Grid
+                container
+                sx={{
+                    alignItems: 'center',
+                }}
+            >
+                <Grid
+                    sx={{
+                        display: 'flex',
+                        marginLeft: 1,
+                    }}
+                >
                     <FolderOutlined />
                 </Grid>
-                <Typography m={1} component="span">
-                    <Box fontWeight="fontWeightBold">
+                <Typography
+                    component="span"
+                    sx={{
+                        m: 1,
+                    }}
+                >
+                    <Box
+                        sx={{
+                            fontWeight: 'fontWeightBold',
+                        }}
+                    >
                         {showMissingCase ? <FormattedMessage id={'rootNetwork.unknownPath'} /> : selectedItem?.path}
                     </Box>
                 </Typography>
-                <Grid item>
+                <Grid>
                     <Button
                         variant={isModification ? 'contained' : undefined}
                         size={isModification ? 'small' : 'medium'}

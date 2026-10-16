@@ -31,8 +31,15 @@ export const styles = {
             fontFamily: theme.typography.fontFamily,
         },
         '& .nad-pst-arrow': {
-            stroke: theme.palette.text.primary,
             strokeWidth: 3,
+        },
+        '& .nad-lock': {
+            strokeWidth: 3,
+            fill: theme.palette.text.primary,
+        },
+        '& .nad-flash': {
+            strokeWidth: 3,
+            fill: theme.palette.text.primary,
         },
     }),
     divSingleLineDiagram: (theme) => ({
@@ -56,6 +63,27 @@ export const styles = {
         },
         '& .sld-pst-arrow': {
             stroke: theme.palette.text.primary,
+        },
+        '& .sld-feeder-info.sld-measurement-valid text': {
+            fill: 'black',
+        },
+        '& .sld-feeder-info.sld-measurement-invalid text': {
+            fill: 'red',
+        },
+        '& .sld-feeder-info.sld-measurement-critical text': {
+            fontWeight: 'bold',
+        },
+        '& .sld-observability-no-information': {
+            stroke: 'gray',
+        },
+        '& .sld-observability-observable': {
+            stroke: 'green',
+        },
+        '& .sld-observability-non-observable': {
+            stroke: 'red',
+        },
+        '& .sld-observability-border': {
+            stroke: 'blue',
         },
         '.legend-root': {
             display: 'inline-flex',
@@ -128,14 +156,15 @@ export const styles = {
             {
                 opacity: INVALID_COMPUTATION_OPACITY,
             },
+        '& .nad-reactive, & text.nad-permanent-limit-percentage, & path.nad-permanent-limit-percentage, & .nad-active':
+            {
+                display: 'none !important',
+            },
         '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
             animation: 'none !important',
         },
-        '& .nad-active': {
-            fill: '#787F81', // Text color of the values and arrows on lines (same color in light and dark mode)
-        },
         '& .nad-bus-descr': {
-            color: '#787F81',
+            display: 'none !important',
         },
         '& .nad-branch-edges .nad-overload .nad-edge-path, & .nad-vl-nodes .nad-overvoltage, & .nad-vl-nodes .nad-undervoltage':
             {
@@ -147,10 +176,9 @@ export const styles = {
             opacity: INVALID_COMPUTATION_OPACITY,
         },
     },
-    hideLabels: {
-        '& .nad-text-nodes': {
-            display: 'none',
-        },
+    // The hover highlight materializes the link between a voltage level name and its bus nodes:
+    // pointless, and distracting while dragging, once the names are hidden.
+    disableBusNodeHighlight: {
         '& .nad-busnode-highlight': {
             filter: 'unset !important',
             transform: 'unset !important',

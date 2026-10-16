@@ -8,8 +8,9 @@
 import { getRequestParamFromList } from './utils';
 import { backendFetchJson, ElementAttributes } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
+import { PREFIX_STUDY_QUERIES } from './study';
 
-const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
+const PREFIX_DIRECTORY_QUERIES = PREFIX_STUDY_QUERIES + '/v1/directory';
 
 export function fetchContingencyAndFiltersLists(listIds: UUID[]): Promise<ElementAttributes[]> {
     console.info('Fetching contingency and filters lists');
@@ -23,7 +24,7 @@ export function fetchContingencyAndFiltersLists(listIds: UUID[]): Promise<Elemen
 
     urlSearchParams.append('strictMode', 'false');
 
-    const url = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/elements?${urlSearchParams}`;
+    const url = `${PREFIX_DIRECTORY_QUERIES}/elements?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
 }

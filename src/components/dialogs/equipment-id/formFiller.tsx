@@ -30,11 +30,9 @@ export function FormFiller({ size = 12, lineHeight, children }: Readonly<FormFil
     return (
         <Grid container spacing={2} sx={{ height: lineHeight ? undefined : 'calc(100% - 32px)' }}>
             <Grid
-                item
-                xs={size}
+                size={size}
                 sx={{
                     marginTop: theme.spacing(2),
-                    align: 'start',
                 }}
             >
                 <Box

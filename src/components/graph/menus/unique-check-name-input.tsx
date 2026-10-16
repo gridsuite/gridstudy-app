@@ -13,7 +13,7 @@ import { useController, useFormContext, useWatch } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import type { UUID } from 'node:crypto';
-import { useCustomFormContext, useDebounce } from '@gridsuite/commons-ui';
+import { useCustomFormContext, useDebounce, YUP_REQUIRED } from '@gridsuite/commons-ui';
 
 export interface UniqueCheckNameInputProps {
     name: string;
@@ -25,7 +25,7 @@ export interface UniqueCheckNameInputProps {
         TextFieldProps,
         'value' | 'onChange' | 'name' | 'label' | 'inputRef' | 'inputProps' | 'InputProps'
     >;
-    inputProps?: TextFieldProps['inputProps'];
+    inputProps?: NonNullable<TextFieldProps['slotProps']>['htmlInput'];
     elementExists: (studyUuid: UUID, elementName: string) => Promise<boolean>;
     errorMessageKey: string;
     catchMessageKey: string;
@@ -126,7 +126,7 @@ export function UniqueCheckNameInput({
             clearErrors('root.isValidating');
             setError(name, {
                 type: 'validate',
-                message: 'FieldIsRequired',
+                message: YUP_REQUIRED,
             });
         }
     }, [debouncedHandleCheckName, setError, clearErrors, name, value, isDirty, defaultFieldValue]);
@@ -151,6 +151,8 @@ export function UniqueCheckNameInput({
 
     const helperText = max_length && `${inputWatch?.length}/${max_length}`;
 
+    const { slotProps, ...otherFormProps } = formProps ?? {};
+
     return (
         <TextField
             onChange={handleManualChange}
@@ -164,9 +166,12 @@ export function UniqueCheckNameInput({
             margin="dense"
             error={!!error}
             helperText={translatedError || <Typography variant="caption">{helperText}</Typography>}
-            InputProps={{ endAdornment }}
-            inputProps={inputProps}
-            {...formProps}
+            slotProps={{
+                input: { endAdornment },
+                htmlInput: inputProps,
+                ...slotProps,
+            }}
+            {...otherFormProps}
         />
     );
 }

@@ -8,9 +8,16 @@
 import { getStudyUrl, getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 
 import { getRequestParamFromList } from '../utils';
-import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    DynamicSimulationParametersEnriched,
+    DynamicSimulationParametersInfos,
+    fetchElementNames,
+    mapDynamicSimulationParameters,
+} from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { DynamicSimulationParametersFetchReturn, DynamicSimulationParametersInfos } from './dynamic-simulation.type';
 import {
     SimpleTimeSeriesMetadata,
     TimelineEvent,
@@ -18,24 +25,15 @@ import {
 } from '../../components/results/dynamicsimulation/types/dynamic-simulation-result.type';
 import { Event } from '../../components/dialogs/dynamicsimulation/event/types/event.type';
 
-export function getDynamicMappings(studyUuid: UUID) {
-    console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
-    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/mappings';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
 export function startDynamicSimulation({
     studyUuid,
     currentNodeUuid,
     currentRootNetworkUuid,
-    dynamicSimulationConfiguration,
     debug,
 }: {
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    dynamicSimulationConfiguration?: DynamicSimulationParametersInfos;
     debug: boolean;
 }): Promise<Response> {
     console.info(
@@ -54,10 +52,7 @@ export function startDynamicSimulation({
         currentRootNetworkUuid
     )}/dynamic-simulation/run?${urlParams}`;
 
-    // add body
-    const body = JSON.stringify(dynamicSimulationConfiguration ?? {});
-
-    console.debug({ startDynamicSimulationUrl, body });
+    console.debug({ startDynamicSimulationUrl });
 
     return backendFetch(startDynamicSimulationUrl, {
         method: 'post',
@@ -65,7 +60,6 @@ export function startDynamicSimulation({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body,
     });
 }
 
@@ -119,13 +113,6 @@ export function fetchDynamicSimulationResultTimeSeries(
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationModels(studyUuid: UUID | null) {
-    console.info(`Fetching dynamic simulation models on study '${studyUuid}' ...`);
-    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/models';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
 export function fetchDynamicSimulationProvider(studyUuid: UUID) {
     console.info(`Fetching dynamic simulation provider on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
@@ -133,17 +120,36 @@ export function fetchDynamicSimulationProvider(studyUuid: UUID) {
     return backendFetchText(url);
 }
 
-export function fetchDynamicSimulationParameters(studyUuid: UUID): Promise<DynamicSimulationParametersFetchReturn> {
+function enrichDynamicSimulationParameters(
+    parameters: DynamicSimulationParametersInfos,
+    elementIdNames: Record<string, string>
+): DynamicSimulationParametersEnriched {
+    const { mappingId, ...rest } = parameters;
+    if (mappingId) {
+        return {
+            ...rest,
+            mapping: {
+                id: mappingId,
+                name: elementIdNames?.[mappingId],
+            },
+        };
+    }
+    return { ...rest, mapping: undefined };
+}
+
+export function fetchDynamicSimulationParameters(studyUuid: UUID): Promise<DynamicSimulationParametersEnriched> {
     console.info(`Fetching dynamic simulation parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
-    const parametersPromise = backendFetchJson(url); // return DynamicSimulationParametersInfos
-    const mappingsPromise = getDynamicMappings(studyUuid); // return mappings
-
-    return Promise.all([parametersPromise, mappingsPromise]).then(([parameters, mappings]) => ({
-        ...parameters,
-        mappings,
-    }));
+    const parametersPromise: Promise<DynamicSimulationParametersInfos> = backendFetchJson(url);
+    return parametersPromise.then((parameters) => {
+        if (parameters.mappingId) {
+            return fetchElementNames(new Set([parameters.mappingId])).then((elementIdNames) => {
+                return enrichDynamicSimulationParameters(parameters, elementIdNames);
+            });
+        }
+        return enrichDynamicSimulationParameters(parameters, {});
+    });
 }
 
 export function updateDynamicSimulationParameters(studyUuid: UUID, newParams: DynamicSimulationParametersInfos | null) {
@@ -157,7 +163,7 @@ export function updateDynamicSimulationParameters(studyUuid: UUID, newParams: Dy
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newParams),
+        body: newParams ? JSON.stringify(mapDynamicSimulationParameters(newParams)) : newParams,
     });
 }
 

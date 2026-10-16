@@ -6,13 +6,11 @@
  */
 
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { TextField, Tooltip, Button, Grid, TextFieldProps } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
+import { TextField, Tooltip, type InputProps } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
-import { useCSVReader } from 'react-papaparse';
-import { LANG_FRENCH } from '@gridsuite/commons-ui';
 
 export const styles = {
     tooltip: {
@@ -25,9 +23,10 @@ interface UseButtonWithTooltipProps {
     handleClick: React.MouseEventHandler<HTMLButtonElement>;
     label: string;
     icon: ReactNode;
+    dataTestId?: string;
 }
 
-export const useButtonWithTooltip = ({ handleClick, label, icon }: UseButtonWithTooltipProps) => {
+export const useButtonWithTooltip = ({ handleClick, label, icon, dataTestId }: UseButtonWithTooltipProps) => {
     return useMemo(() => {
         return (
             <Tooltip
@@ -44,17 +43,17 @@ export const useButtonWithTooltip = ({ handleClick, label, icon }: UseButtonWith
                     },
                 }}
             >
-                <IconButton style={{ padding: '2px' }} onClick={handleClick}>
+                <IconButton style={{ padding: '2px' }} onClick={handleClick} data-testid={dataTestId}>
                     {icon}
                 </IconButton>
             </Tooltip>
         );
-    }, [label, handleClick, icon]);
+    }, [label, handleClick, icon, dataTestId]);
 };
 
 interface UseSimpleTextValueProps {
     defaultValue: string;
-    adornment: TextFieldProps['InputProps'];
+    adornment: InputProps;
     error: boolean;
     triggerReset: boolean;
 }
@@ -71,7 +70,7 @@ export const useSimpleTextValue = ({ defaultValue, adornment, error, triggerRese
             <TextField
                 value={value}
                 onChange={handleChangeValue}
-                {...(adornment && { InputProps: adornment })}
+                {...(adornment && { slotProps: { input: adornment } })}
                 error={error !== undefined}
                 autoFocus={true}
                 fullWidth={true}
@@ -82,91 +81,4 @@ export const useSimpleTextValue = ({ defaultValue, adornment, error, triggerRese
     useEffect(() => setValue(defaultValue), [defaultValue, triggerReset]);
 
     return [value, field] as const;
-};
-
-interface UseCSVPickerProps {
-    label: string;
-    header: string[];
-    resetTrigger: boolean;
-    maxTapNumber?: number;
-    disabled?: boolean;
-    language: string;
-}
-
-export const useCSVPicker = ({
-    label,
-    header,
-    resetTrigger,
-    maxTapNumber,
-    disabled = false,
-    language,
-}: UseCSVPickerProps) => {
-    const intl = useIntl();
-
-    const { CSVReader } = useCSVReader();
-    const [_acceptedFile, setAcceptedFile] = useState<File | undefined>();
-    const [fileError, setFileError] = useState<string | undefined>();
-
-    const equals = (a: string[], b: string[]) => b.every((item) => a.includes(item));
-
-    useEffect(() => {
-        setAcceptedFile(undefined);
-        setFileError(undefined);
-    }, [resetTrigger]);
-
-    // Expose a reset function to allow clearing the file manually
-    const resetFile = useCallback(() => {
-        setAcceptedFile(undefined);
-        setFileError(undefined);
-    }, []);
-
-    const field = useMemo(() => {
-        return (
-            <>
-                <CSVReader
-                    config={{
-                        delimiter: language === LANG_FRENCH ? ';' : ',',
-                    }}
-                    onUploadAccepted={(results: { data: string[][] }, acceptedFile: File) => {
-                        setAcceptedFile(acceptedFile);
-                        if (results?.data.length > 0 && equals(header, results.data[0])) {
-                            setFileError(undefined);
-                        } else {
-                            setFileError(
-                                intl.formatMessage({
-                                    id: 'InvalidRuleHeader',
-                                })
-                            );
-                        }
-
-                        if (maxTapNumber && results.data.length > maxTapNumber) {
-                            setFileError(intl.formatMessage({ id: 'TapPositionValueError' }, { value: maxTapNumber }));
-                        }
-                    }}
-                >
-                    {({ getRootProps }: { getRootProps: () => any }) => (
-                        <Grid item>
-                            <Button {...getRootProps()} variant={'contained'} disabled={disabled}>
-                                <FormattedMessage id={label} />
-                            </Button>
-                            <span
-                                style={{
-                                    marginLeft: '10px',
-                                    fontWeight: 'bold',
-                                }}
-                            >
-                                {_acceptedFile
-                                    ? _acceptedFile.name
-                                    : intl.formatMessage({
-                                          id: 'uploadMessage',
-                                      })}
-                            </span>
-                        </Grid>
-                    )}
-                </CSVReader>
-            </>
-        );
-    }, [_acceptedFile, disabled, header, intl, label, maxTapNumber, CSVReader, language]);
-
-    return [_acceptedFile, field, fileError, setAcceptedFile, resetFile] as const;
 };

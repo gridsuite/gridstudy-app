@@ -15,22 +15,27 @@ import {
     SpreadsheetTabDefinition,
 } from '../../types/spreadsheet.type';
 import { Dispatch } from 'redux';
-import { snackWithFallback, UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import {
-    addFilterForNewSpreadsheet,
+    FilterConfig,
+    GlobalFilter,
+    snackWithFallback,
+    SortConfig,
+    SortWay,
+    TableSortConfig,
+    TableType,
+    UseStateBooleanReturn,
+} from '@gridsuite/commons-ui';
+import {
     addSortForNewSpreadsheet,
     initOrUpdateGlobalFilters,
     setAddedSpreadsheetTab,
+    updateColumnFiltersAction,
     updateTableDefinition,
 } from 'redux/actions';
-import { FilterConfig, SortConfig, SortWay } from 'types/custom-aggrid-types';
 import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
-import { SpreadsheetFilterState } from 'redux/reducer.type';
-import { TableSortConfig } from '../../../../types/custom-aggrid-types';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
-import { GlobalFilter } from '../../../results/common/global-filter/global-filter-types';
 import { ResetNodeAliasCallback } from '../../hooks/use-node-aliases';
 
 const createNewTableDefinition = (
@@ -59,12 +64,14 @@ export const mapColDefToDto = (colDef: ColumnDefinition, colFilter?: FilterConfi
     precision: colDef.precision,
     formula: colDef.formula,
     dependencies: colDef.dependencies?.length ? JSON.stringify(colDef.dependencies) : undefined,
-    columnFilterInfos: {
-        filterDataType: colFilter?.dataType,
-        filterType: colFilter?.type,
-        filterValue: colFilter?.value ? JSON.stringify(colFilter.value) : undefined,
-        filterTolerance: colFilter?.tolerance,
-    },
+    columnFilterInfos: colFilter
+        ? {
+              filterDataType: colFilter.dataType,
+              filterType: colFilter.type,
+              filterValue: colFilter.value ? JSON.stringify(colFilter.value) : undefined,
+              filterTolerance: colFilter.tolerance,
+          }
+        : undefined,
 });
 
 export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
@@ -143,7 +150,7 @@ const handleSuccess = (
             const columnsFilters = extractColumnsFilters(model.columns);
             const formattedGlobalFilters = model.globalFilters ?? [];
             dispatch(updateTableDefinition(newTableDefinition));
-            dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
+            dispatch(updateColumnFiltersAction(TableType.Spreadsheet, uuid, columnsFilters));
             dispatch(initOrUpdateGlobalFilters(uuid, formattedGlobalFilters));
             dispatch(
                 addSortForNewSpreadsheet(uuid, [
@@ -214,7 +221,7 @@ export const addNewSpreadsheet = ({
 
 export interface ProcessedCollectionData {
     tableDefinitions: SpreadsheetTabDefinition[];
-    tablesFilters: SpreadsheetFilterState;
+    tablesFilters: Record<string, FilterConfig[]>;
     tableGlobalFilters: Record<UUID, GlobalFilter[]>;
     tablesSorts: TableSortConfig;
 }

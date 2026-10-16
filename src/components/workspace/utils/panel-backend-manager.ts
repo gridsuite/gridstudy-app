@@ -14,6 +14,7 @@ const DEBOUNCE_DELAY_MS = 700;
 export interface IPanelBackendManager {
     debounceUpdate(studyUuid: UUID, workspaceId: UUID, panels: PanelState[]): void;
     debounceDelete(studyUuid: UUID, workspaceId: UUID, panelIds: UUID[]): void;
+    flush(): void;
 }
 
 export class PanelBackendManager implements IPanelBackendManager {
@@ -28,7 +29,7 @@ export class PanelBackendManager implements IPanelBackendManager {
         this.debounceDelayMs = debounceDelayMs;
     }
 
-    private flush(): void {
+    flush(): void {
         if (!this.currentStudyUuid || !this.currentWorkspaceId) return;
 
         const studyUuid = this.currentStudyUuid;

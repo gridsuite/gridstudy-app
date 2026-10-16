@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RunningStatus } from 'components/utils/running-status';
 import type { UUID } from 'node:crypto';
-import { RefObject, useCallback, useEffect, useRef } from 'react';
+import { RefObject, useCallback, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { ComputingType, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import { ComputingType, NotificationsUrlKeys, RunningStatus, useNotificationsListener } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
@@ -48,8 +47,6 @@ function isWorthUpdate(
     eventData: StudyUpdatedEventData | null,
     computingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
     lastUpdateRef: RefObject<LastUpdateProps | null>,
-    nodeUuidRef: RefObject<UUID | null>,
-    rootNetworkUuidRef: RefObject<UUID | null>,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     invalidations: string[]
@@ -59,12 +56,7 @@ function isWorthUpdate(
     const node = headers?.node;
     const nodes = headers?.nodes;
     const rootNetworkUuidFromNotification = headers?.rootNetworkUuid;
-    if (nodeUuidRef.current !== nodeUuid) {
-        return true;
-    }
-    if (rootNetworkUuidRef.current !== currentRootNetworkUuid) {
-        return true;
-    }
+    // if notification is about a root network that is not the current one, no need to update current node computation status
     if (rootNetworkUuidFromNotification && rootNetworkUuidFromNotification !== currentRootNetworkUuid) {
         return false;
     }
@@ -75,6 +67,15 @@ function isWorthUpdate(
         return false;
     }
     if (!updateType) {
+        return false;
+    }
+    // if node is updated with 'all status' notification it is done in use-computating-status-at-once
+    if (
+        updateType === 'nodeBuildStatusUpdated' ||
+        updateType === 'buildCompleted' ||
+        updateType === 'all_computation_status' ||
+        updateType === 'all_computation_status_without_loadflow'
+    ) {
         return false;
     }
     if (invalidations.indexOf(updateType) <= -1) {
@@ -90,24 +91,14 @@ function isWorthUpdate(
     return false;
 }
 
-const shouldRequestBeCanceled = (
-    canceledRequest: boolean,
-    previousNodeUuid: UUID,
-    currentNodeUuid: UUID,
-    previousRootNetworkUuid: UUID,
-    currentRootNetworkUuid: UUID
-) => {
-    return (
-        canceledRequest || previousNodeUuid !== currentNodeUuid || previousRootNetworkUuid !== currentRootNetworkUuid
-    );
-};
-
 /**
  *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
  * @param studyUuid current study uuid
  * @param nodeUuid current node uuid
+ * @param currentRootNetworkUuid
  * @param computingStatusFetcher method fetching current <computingType> state
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
+ * @param completions
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
  * @param computingStatusParametersFetcher method fetching status infos
@@ -125,10 +116,14 @@ export const useComputingStatus: UseComputingStatusProps = (
     computingStatusParametersFetcher,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
-    const nodeUuidRef = useRef<UUID | null>(null);
-    const rootNetworkUuidRef = useRef<UUID | null>(null);
-    const lastUpdateRef = useRef<LastUpdateProps | null>(null);
+    const lastUpdateRef = useRef<LastUpdateProps>({ eventData: null, computingStatusFetcher });
     const dispatch = useDispatch<AppDispatch>();
+    // Monotonic id identifying the latest in-flight request. A response is only
+    // applied when its id is still the latest one, so an out-of-order response
+    // from a previous fetcher (e.g. another node, another root network, or
+    // another tab with a different result shape) cannot overwrite the current
+    // result and crash consumers.
+    const requestIdRef = useRef<number>(0);
 
     //the callback crosschecks the computation status and the content of the last update reference
     //in order to determine which computation just ended
@@ -144,28 +139,18 @@ export const useComputingStatus: UseComputingStatusProps = (
     );
 
     const handleComputingStatusParameters = useCallback(
-        async (computationStatus: RunningStatus, canceledRequest: boolean) => {
+        async (computationStatus: RunningStatus, isLatestRequest: () => boolean) => {
             if (
                 computingStatusParametersFetcher &&
                 computationStatus !== RunningStatus.IDLE &&
                 isParameterizedComputingType(computingType)
             ) {
-                nodeUuidRef.current = nodeUuid;
-                rootNetworkUuidRef.current = currentRootNetworkUuid;
                 const computingStatusParametersResult = await computingStatusParametersFetcher(
                     studyUuid,
                     nodeUuid,
                     currentRootNetworkUuid
                 );
-                if (
-                    shouldRequestBeCanceled(
-                        canceledRequest,
-                        nodeUuidRef.current,
-                        nodeUuid,
-                        rootNetworkUuidRef.current,
-                        currentRootNetworkUuid
-                    )
-                ) {
+                if (!isLatestRequest()) {
                     return;
                 }
                 dispatch(
@@ -180,15 +165,12 @@ export const useComputingStatus: UseComputingStatusProps = (
     );
 
     const update = useCallback(async () => {
-        // this is used to prevent race conditions from happening
-        // if another request is sent, the previous one won't do anything
-        let canceledRequest = false;
+        const requestId = ++requestIdRef.current;
+        const isLatestRequest = () => requestId === requestIdRef.current;
 
         //upon changing node we reset the last completed computation to prevent results misredirection
         dispatch(setLastCompletedComputation());
 
-        nodeUuidRef.current = nodeUuid;
-        rootNetworkUuidRef.current = currentRootNetworkUuid;
         try {
             // fetch computing status
             const computingStatusResult: string | null = await computingStatusFetcher(
@@ -196,15 +178,7 @@ export const useComputingStatus: UseComputingStatusProps = (
                 nodeUuid,
                 currentRootNetworkUuid
             );
-            if (
-                shouldRequestBeCanceled(
-                    canceledRequest,
-                    nodeUuidRef.current,
-                    nodeUuid,
-                    rootNetworkUuidRef.current,
-                    currentRootNetworkUuid
-                )
-            ) {
+            if (!isLatestRequest()) {
                 return;
             }
             // if request has not been canceled for any reason, fetch if necessary computingStatusParameters
@@ -214,17 +188,13 @@ export const useComputingStatus: UseComputingStatusProps = (
                 dispatch(setLastCompletedComputation(computingType));
             }
 
-            await handleComputingStatusParameters(status, canceledRequest);
+            await handleComputingStatusParameters(status, isLatestRequest);
         } catch (e: any) {
-            if (!canceledRequest) {
+            if (isLatestRequest()) {
                 dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
                 console.error(e?.message);
             }
         }
-
-        return () => {
-            canceledRequest = true;
-        };
     }, [
         dispatch,
         nodeUuid,
@@ -252,8 +222,6 @@ export const useComputingStatus: UseComputingStatusProps = (
                 eventData,
                 computingStatusFetcher,
                 lastUpdateRef,
-                nodeUuidRef,
-                rootNetworkUuidRef,
                 nodeUuid,
                 currentRootNetworkUuid,
                 invalidations
@@ -277,9 +245,4 @@ export const useComputingStatus: UseComputingStatusProps = (
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: evaluateUpdate,
     });
-
-    /* initial fetch and update */
-    useEffect(() => {
-        evaluateUpdate();
-    }, [evaluateUpdate]);
 };

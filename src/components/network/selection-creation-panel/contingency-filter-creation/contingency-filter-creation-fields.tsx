@@ -13,7 +13,7 @@ import {
     UniqueNameInput,
     PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
-import { Grid } from '@mui/material';
+import { Stack } from '@mui/material';
 import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, NAME } from 'components/utils/field-constants';
 import { FC, useMemo } from 'react';
 import { SELECTION_TYPES } from '../selection-types';
@@ -43,7 +43,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
 
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const EQUIPMENTS_EXCLUDED_IN_NON_DEV_MODE = [EquipmentType.DANGLING_LINE, EquipmentType.THREE_WINDINGS_TRANSFORMER];
+    const EQUIPMENTS_EXCLUDED_IN_NON_DEV_MODE = [EquipmentType.BOUNDARY_LINE, EquipmentType.THREE_WINDINGS_TRANSFORMER];
 
     const CONTINGENCY_EQUIPMENTS_FOR_NON_DEV_MODE = Object.fromEntries(
         Object.entries(CONTINGENCY_LIST_EQUIPMENTS).filter(
@@ -66,33 +66,29 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
     }, [filteredContingencyEquipments, selectionType]);
 
     return (
-        <>
-            <Grid container>
-                <SelectInput
-                    name={EQUIPMENT_TYPE_FIELD}
-                    options={equipmentTypesOptions}
-                    label={'EquipmentType'}
-                    fullWidth
-                    size={'medium'}
-                    disableClearable={true}
-                    disabled={pendingState}
-                />
-            </Grid>
+        <Stack spacing={2}>
+            <SelectInput
+                name={EQUIPMENT_TYPE_FIELD}
+                options={equipmentTypesOptions}
+                label={'EquipmentType'}
+                fullWidth
+                size={'medium'}
+                disableClearable={true}
+                disabled={pendingState}
+            />
 
-            <Grid container>
-                <UniqueNameInput
-                    name={NAME}
-                    label={'Name'}
-                    elementType={selectionTypeToElementType(selectionType)}
-                    activeDirectory={destinationFolderWatcher?.folderId}
-                    autoFocus
-                    formProps={{
-                        variant: 'standard',
-                        disabled: pendingState,
-                    }}
-                />
-            </Grid>
+            <UniqueNameInput
+                name={NAME}
+                label={'Name'}
+                elementType={selectionTypeToElementType(selectionType)}
+                activeDirectory={destinationFolderWatcher?.folderId}
+                autoFocus
+                formProps={{
+                    variant: 'standard',
+                    disabled: pendingState,
+                }}
+            />
             <SelectionCreationPanelDirectorySelector pendingState={pendingState} />
-        </>
+        </Stack>
     );
 };

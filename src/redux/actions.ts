@@ -10,50 +10,47 @@ import type { Action } from 'redux';
 import {
     BaseVoltage,
     ComputingType,
+    FilterConfig,
+    GlobalFilter,
     type GsLang,
     type GsLangUser,
     type GsTheme,
     type Identifiable,
+    LogType,
     type NetworkVisualizationParameters,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    RunningStatus,
+    SortConfig,
+    TableSortConfig,
+    TableType,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import type { UnknownArray } from 'type-fest';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
-    AppState,
     ComputingStatusParameters,
     CopiedNetworkModifications,
     NodeSelectionForCopy,
-    OneBusShortCircuitAnalysisDiagram,
-    SpreadsheetFilterState,
+    OneBusShortCircuitAnalysisContext,
 } from './reducer.type';
-import type { TableSortConfig, TableSortKeysType } from '../types/custom-aggrid-types';
+
 import {
-    FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
     PccminTab,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
-    SortConfig,
-    TableType,
 } from '../types/custom-aggrid-types';
-import type { RunningStatus } from '../components/utils/running-status';
 import type { IOptionalService } from '../components/utils/optional-services';
-import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     LOGS_PAGINATION_STORE_FIELD,
-    LOGS_STORE_FIELD,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
-    SPREADSHEET_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
@@ -66,9 +63,9 @@ import {
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus } from 'types/notification-types';
-import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
-import { ViewBoxLike } from '@svgdotjs/svg.js';
+import type { NodeActivity } from '../components/node-activity/types/node-activity.type';
+import type { NodeValidity } from '../components/spreadsheet-view/columns/utils/column-validity';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -102,30 +99,22 @@ export type AppActions =
     | MapEquipmentsInitializedAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
-    | StoreNadViewBoxAction
     | CopiedNetworkModificationsAction
     | SetModificationsDrawerOpenAction
     | CenterOnSubstationAction
-    | AddNotificationAction
-    | RemoveNotificationByNodeAction
-    | SetModificationsInProgressAction
     | SetComputingStatusAction
     | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
     | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
-    | SetOneBusShortcircuitAnalysisDiagramAction
-    | ResetOneBusShortcircuitAnalysisDiagramAction
+    | SetOneBusShortcircuitAnalysisContextAction
     | AddToGlobalFilterOptionsAction
     | RemoveFromGlobalFilterOptionsAction
     | SetLastCompletedComputationAction
-    | SpreadsheetFilterAction
     | UpdateSpreadsheetPartialDataAction
-    | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
-    | AddFilterForNewSpreadsheetAction
     | InitOrUpdateGlobalFilterAction
     | RemoveTableDefinitionAction
     | SetCalculationSelectionsAction
@@ -150,7 +139,9 @@ export type AppActions =
     | UpdateColumnFiltersAction
     | AddGlobalFiltersAction
     | RemoveGlobalFiltersAction
-    | ClearGlobalFiltersAction;
+    | ClearGlobalFiltersAction
+    | SetNodeActivitiesAction
+    | UpdateAliasedNodesValidityAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -749,18 +740,6 @@ export function setNodeSelectionForCopy(
     };
 }
 
-export const STORE_NAD_VIEW_BOX = 'STORE_NAD_VIEW_BOX';
-
-export type StoreNadViewBoxAction = {
-    type: typeof STORE_NAD_VIEW_BOX;
-    nadViewBox: { nadUuid: UUID; viewBox: ViewBoxLike | null };
-};
-
-export const StoreNadViewBox = (nadUuid: UUID, viewBox: ViewBoxLike | null): StoreNadViewBoxAction => ({
-    type: STORE_NAD_VIEW_BOX,
-    nadViewBox: { nadUuid, viewBox },
-});
-
 export const COPIED_NETWORK_MODIFICATIONS = 'COPIED_NETWORK_MODIFICATIONS';
 export type CopiedNetworkModificationsAction = Readonly<Action<typeof COPIED_NETWORK_MODIFICATIONS>> & {
     copiedNetworkModifications: NonNullable<CopiedNetworkModifications>;
@@ -805,42 +784,6 @@ export function centerOnSubstation(substationId: string): CenterOnSubstationActi
     return {
         type: CENTER_ON_SUBSTATION,
         centerOnSubstation: { to: substationId },
-    };
-}
-
-export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
-export type AddNotificationAction = Readonly<Action<typeof ADD_NOTIFICATION>> & {
-    notificationIds: UUID[];
-};
-
-export function addNotification(notificationIds: UUID[]): AddNotificationAction {
-    return {
-        type: ADD_NOTIFICATION,
-        notificationIds: notificationIds,
-    };
-}
-
-export const REMOVE_NOTIFICATION_BY_NODE = 'REMOVE_NOTIFICATION_BY_NODE';
-export type RemoveNotificationByNodeAction = Readonly<Action<typeof REMOVE_NOTIFICATION_BY_NODE>> & {
-    notificationIds: UnknownArray;
-};
-
-export function removeNotificationByNode(notificationIds: UnknownArray): RemoveNotificationByNodeAction {
-    return {
-        type: REMOVE_NOTIFICATION_BY_NODE,
-        notificationIds: notificationIds,
-    };
-}
-
-export const SET_MODIFICATIONS_IN_PROGRESS = 'SET_MODIFICATIONS_IN_PROGRESS';
-export type SetModificationsInProgressAction = Readonly<Action<typeof SET_MODIFICATIONS_IN_PROGRESS>> & {
-    isModificationsInProgress: boolean;
-};
-
-export function setModificationsInProgress(isModificationsInProgress: boolean): SetModificationsInProgressAction {
-    return {
-        type: SET_MODIFICATIONS_IN_PROGRESS,
-        isModificationsInProgress: isModificationsInProgress,
     };
 }
 
@@ -920,35 +863,21 @@ export function setOptionalServices(optionalServices: IOptionalService[]): SetOp
     };
 }
 
-export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type SetOneBusShortcircuitAnalysisDiagramAction = Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM> &
-    OneBusShortCircuitAnalysisDiagram & {
-        [key: string]: any;
-    };
-export function setOneBusShortcircuitAnalysisDiagram(
-    diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'],
-    studyUuid: OneBusShortCircuitAnalysisDiagram['studyUuid'],
-    rootNetworkUuid: OneBusShortCircuitAnalysisDiagram['rootNetworkUuid'],
-    nodeId: OneBusShortCircuitAnalysisDiagram['nodeId']
-): SetOneBusShortcircuitAnalysisDiagramAction {
+export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT = 'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT';
+export type SetOneBusShortcircuitAnalysisContextAction = Readonly<
+    Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT>
+> &
+    OneBusShortCircuitAnalysisContext;
+export function setOneBusShortcircuitAnalysisContext(
+    equipmentId: string,
+    rootNetworkUuid: UUID,
+    nodeId: UUID
+): SetOneBusShortcircuitAnalysisContextAction {
     return {
-        type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-        diagramId: diagramId,
-        studyUuid: studyUuid,
-        rootNetworkUuid: rootNetworkUuid,
-        nodeId: nodeId,
-    };
-}
-
-export const RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
-export type ResetOneBusShortcircuitAnalysisDiagramAction = Action<
-    typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM
-> & {
-    [key: string]: any;
-};
-export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircuitAnalysisDiagramAction {
-    return {
-        type: RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+        type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT,
+        equipmentId,
+        nodeId,
+        rootNetworkUuid,
     };
 }
 
@@ -987,6 +916,28 @@ export function setSaProgress(current: number, total: number): SetSaProgressActi
         type: SET_SA_PROGRESS,
         current,
         total,
+    };
+}
+
+export const MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED = 'MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED';
+export type MarkNotFoundGlobalFiltersAsDeletedAction = Readonly<
+    Action<typeof MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED>
+> & {
+    globalFilters: GlobalFilter[];
+    tableId: string;
+    tableType: TableType;
+};
+
+export function markNotFoundGlobalFiltersAsDeleted(
+    globalFilters: GlobalFilter[],
+    tableId: string,
+    tableType: TableType
+): MarkNotFoundGlobalFiltersAsDeletedAction {
+    return {
+        type: MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+        globalFilters: globalFilters,
+        tableId: tableId,
+        tableType: tableType,
     };
 }
 
@@ -1112,12 +1063,6 @@ export function setPccminAnalysisResultPagination(
     };
 }
 
-export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
-export type SpreadsheetFilterAction = Readonly<Action<typeof SPREADSHEET_FILTER>> & {
-    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD];
-    [SPREADSHEET_STORE_FIELD]: FilterConfig[];
-};
-
 export const UPDATE_COLUMN_FILTERS = 'UPDATE_COLUMN_FILTERS';
 export const ADD_GLOBAL_FILTERS = 'ADD_GLOBAL_FILTERS';
 export const CLEAR_GLOBAL_FILTERS = 'CLEAR_GLOBAL_FILTERS';
@@ -1189,23 +1134,6 @@ export const removeFromSelectedGlobalFilters = (
     filterIds,
 });
 
-export const LOGS_FILTER = 'LOGS_FILTER';
-export type LogsFilterAction = Readonly<Action<typeof LOGS_FILTER>> & {
-    filterTab: keyof AppState[typeof LOGS_STORE_FIELD];
-    [LOGS_STORE_FIELD]: FilterConfig[];
-};
-
-export function setLogsFilter(
-    filterTab: keyof AppState[typeof LOGS_STORE_FIELD],
-    logsFilter: FilterConfig[]
-): LogsFilterAction {
-    return {
-        type: LOGS_FILTER,
-        filterTab: filterTab,
-        [LOGS_STORE_FIELD]: logsFilter,
-    };
-}
-
 export const RESET_LOGS_FILTER = 'RESET_LOGS_FILTER';
 export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
 
@@ -1217,12 +1145,12 @@ export function resetLogsFilter(): ResetLogsFilterAction {
 
 export const LOGS_RESULT_PAGINATION = 'LOGS_RESULT_PAGINATION';
 export type LogsResultPaginationAction = Readonly<Action<typeof LOGS_RESULT_PAGINATION>> & {
-    paginationTab: ComputingAndNetworkModificationType;
+    paginationTab: LogType;
     [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationConfig;
 };
 
 export function setLogsResultPagination(
-    paginationTab: ComputingAndNetworkModificationType,
+    paginationTab: LogType,
     logsPagination: LogsPaginationConfig
 ): LogsResultPaginationAction {
     return {
@@ -1257,28 +1185,17 @@ export function updateSpreadsheetPartialData(
 
 export const TABLE_SORT = 'TABLE_SORT';
 export type TableSortAction = Readonly<Action<typeof TABLE_SORT>> & {
-    table: TableSortKeysType;
+    table: string;
     tab: string; //AppState['tableSort'][T];
     sort: SortConfig[];
 };
 
-export function setTableSort(table: TableSortKeysType, tab: string, sort: SortConfig[]): TableSortAction {
+export function setTableSort(table: string, tab: string, sort: SortConfig[]): TableSortAction {
     return {
         type: TABLE_SORT,
         table,
         tab,
         sort,
-    };
-}
-
-export function setSpreadsheetFilter(
-    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD],
-    spreadsheetFilter: FilterConfig[]
-): SpreadsheetFilterAction {
-    return {
-        type: SPREADSHEET_FILTER,
-        filterTab: filterTab,
-        [SPREADSHEET_STORE_FIELD]: spreadsheetFilter,
     };
 }
 
@@ -1391,7 +1308,7 @@ export type InitTableDefinitionsAction = {
     type: typeof INIT_TABLE_DEFINITIONS;
     collectionUuid: UUID;
     tableDefinitions: SpreadsheetTabDefinition[];
-    tablesFilters?: SpreadsheetFilterState;
+    tablesFilters?: Record<string, FilterConfig[]>;
     globalFilters?: Record<UUID, GlobalFilter[]>;
     tablesSorts?: TableSortConfig;
 };
@@ -1399,7 +1316,7 @@ export type InitTableDefinitionsAction = {
 export const initTableDefinitions = (
     collectionUuid: UUID,
     tableDefinitions: SpreadsheetTabDefinition[],
-    tablesFilters: SpreadsheetFilterState = {},
+    tablesFilters: Record<string, FilterConfig[]> = {},
     globalFilters: Record<UUID, GlobalFilter[]> = {},
     tablesSorts: TableSortConfig = {}
 ): InitTableDefinitionsAction => ({
@@ -1420,21 +1337,6 @@ export type ReorderTableDefinitionsAction = {
 export const reorderTableDefinitions = (definitions: SpreadsheetTabDefinition[]): ReorderTableDefinitionsAction => ({
     type: REORDER_TABLE_DEFINITIONS,
     definitions,
-});
-
-export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
-
-export type AddFilterForNewSpreadsheetAction = {
-    type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
-    payload: { tabUuid: UUID; value: FilterConfig[] };
-};
-
-export const addFilterForNewSpreadsheet = (tabUuid: UUID, value: FilterConfig[]): AddFilterForNewSpreadsheetAction => ({
-    type: ADD_FILTER_FOR_NEW_SPREADSHEET,
-    payload: {
-        tabUuid,
-        value,
-    },
 });
 
 export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
@@ -1492,6 +1394,18 @@ export function selectSyncEnabled(syncEnabled: boolean): SelectSyncEnabledAction
     };
 }
 
+export const SET_NODE_ACTIVITIES = 'SET_NODE_ACTIVITIES';
+export type SetNodeActivitiesAction = Readonly<Action<typeof SET_NODE_ACTIVITIES>> & {
+    nodeActivities: NodeActivity[];
+};
+
+export function setNodeActivities(nodeActivities: NodeActivity[]): SetNodeActivitiesAction {
+    return {
+        type: SET_NODE_ACTIVITIES,
+        nodeActivities,
+    };
+}
+
 export const UPDATE_NODE_ALIASES = 'UPDATE_NODE_ALIASES';
 export type UpdateNodeAliasesAction = Readonly<Action<typeof UPDATE_NODE_ALIASES>> & {
     nodeAliases: NodeAlias[];
@@ -1501,5 +1415,19 @@ export function updateNodeAliases(nodeAliases: NodeAlias[]): UpdateNodeAliasesAc
     return {
         type: UPDATE_NODE_ALIASES,
         nodeAliases,
+    };
+}
+
+export const UPDATE_ALIASED_NODES_VALIDITY = 'UPDATE_ALIASED_NODES_VALIDITY';
+export type UpdateAliasedNodesValidityAction = Readonly<Action<typeof UPDATE_ALIASED_NODES_VALIDITY>> & {
+    aliasedNodesValidity: Record<string, NodeValidity>;
+};
+
+export function updateAliasedNodesValidity(
+    aliasedNodesValidity: Record<string, NodeValidity>
+): UpdateAliasedNodesValidityAction {
+    return {
+        type: UPDATE_ALIASED_NODES_VALIDITY,
+        aliasedNodesValidity,
     };
 }

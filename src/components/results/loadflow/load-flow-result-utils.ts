@@ -16,7 +16,15 @@ import {
 import { IntlShape } from 'react-intl';
 import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
+import {
+    ComputingType,
+    CustomAggridComparatorFilter,
+    FilterConfig,
+    makeAgGridCustomHeaderColumn,
+    RunningStatus,
+    SortParams,
+    TableType,
+} from '@gridsuite/commons-ui';
 import { JSX, useEffect, useState } from 'react';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
@@ -26,26 +34,19 @@ import {
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import RunningStatus from 'components/utils/running-status';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
-    FilterConfig,
     FilterEnumsType,
     numericFilterParams,
-    SortParams,
-    TableType,
     textFilterParams,
 } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
-import { updateComputationColumnsFilters } from '../common/column-filter/update-computation-columns-filters';
 import { createEnumColumn } from '../common/column-filter/utilis';
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string> = {
@@ -206,7 +207,6 @@ interface TableParams {
     filterParams: {
         type: TableType;
         tab: string;
-        updateFilterCallback: typeof updateComputationColumnsFilters;
     };
 }
 
@@ -220,7 +220,6 @@ const createTableParams = (tabIndex: number): TableParams => {
         filterParams: {
             type: TableType.Loadflow,
             tab,
-            updateFilterCallback: updateComputationColumnsFilters,
         },
     };
 };
@@ -460,7 +459,7 @@ export const componentColumnsDefinition = (
             field: 'losses',
             context: {
                 numeric: true,
-                fractionDigits: 2,
+                fractionDigits: 3,
                 ...createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
             },
         }),
@@ -532,7 +531,7 @@ export const countryAdequaciesColumnsDefinition = (intl: IntlShape): ColDef[] =>
             field: 'losses',
             context: {
                 numeric: true,
-                fractionDigits: 2,
+                fractionDigits: 3,
             },
         }),
         makeAgGridCustomHeaderColumn({

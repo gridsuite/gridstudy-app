@@ -174,7 +174,15 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
             <Box>
                 <DiagramHeader diagramTitle={props.diagramTitle} showCloseControl onClose={onCloseHandler} />
             </Box>
-            {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
+            {
+                <Box
+                    sx={{
+                        height: 2,
+                    }}
+                >
+                    {loadingState && <LinearProgress />}
+                </Box>
+            }
             <Box sx={{ position: 'relative', top: '2em', height: '100%' }}>
                 <Box
                     ref={svgRef}

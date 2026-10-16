@@ -6,7 +6,6 @@
  */
 
 import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } from './util/model-functions';
-import { BUILD_STATUS } from '../network/constants';
 import type { UUID } from 'node:crypto';
 import { Edge } from '@xyflow/react';
 import { AbstractNode, CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from './tree-node.type';
@@ -27,8 +26,6 @@ export const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
 export default class NetworkModificationTreeModel {
     treeNodes: CurrentTreeNode[] = [];
     treeEdges: Edge[] = [];
-
-    isAnyNodeBuilding = false;
 
     // Will sort if columnPosition is defined, and not move the nodes if undefined
     childrenNodeSorter(a: AbstractNode, b: AbstractNode) {
@@ -61,6 +58,15 @@ export default class NetworkModificationTreeModel {
      * @returns true if the order was changed
      */
     reorderChildrenNodes(parentNodeId: string, orderedNodeIds: string[]) {
+        // Guard against incoherent notification before reordering
+        const currentChildren = new Set(this.getChildren(parentNodeId).map((c) => c.id));
+        if (
+            orderedNodeIds.length !== currentChildren.size ||
+            !orderedNodeIds.every((id) => currentChildren.has(id as UUID))
+        ) {
+            console.warn('reorderChildrenNodes: orderedNodeIds does not match the current children set, skipping');
+            return false;
+        }
         if (!this.needReorder(parentNodeId, orderedNodeIds)) {
             return false;
         }
@@ -263,16 +269,10 @@ export default class NetworkModificationTreeModel {
         elements.children.forEach((child) => {
             this.addChild(child, elements.id);
         });
-        this.setBuildingStatus();
     }
 
     newSharedForUpdate() {
         /* shallow clone of the network https://stackoverflow.com/a/44782052 */
         return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
-    }
-
-    setBuildingStatus() {
-        this.isAnyNodeBuilding =
-            this.treeNodes.find((node) => node?.data?.globalBuildStatus === BUILD_STATUS.BUILDING) !== undefined;
     }
 }

@@ -9,7 +9,7 @@ import { Table, TableHead, TableRow, TableBody, TableContainer, Grid } from '@mu
 import { CellRender } from '../cell-render';
 import { cellWithStatus, formatValue, styles } from '../generic-equipment-popover-utils';
 import { BranchEquipmentInfos } from '../equipment-popover-type';
-import RunningStatus from 'components/utils/running-status';
+import { RunningStatus } from '@gridsuite/commons-ui';
 
 interface BranchCharacteristicsByVoltageLevelProps {
     equipmentInfos: BranchEquipmentInfos;
@@ -21,7 +21,7 @@ export const BranchCharacteristicsByVoltageLevel: React.FC<BranchCharacteristics
     loadFlowStatus,
 }) => {
     return (
-        <Grid item sx={styles.grid}>
+        <Grid sx={styles.grid}>
             <TableContainer sx={styles.table}>
                 <Table size="small" sx={styles.layout}>
                     <TableHead>

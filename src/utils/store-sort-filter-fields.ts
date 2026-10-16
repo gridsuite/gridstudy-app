@@ -38,11 +38,9 @@ export const DYNAMIC_SIMULATION_RESULT_SORT_STORE = 'dynamicSimulationResult';
 export const TIMELINE = 'timeline';
 
 //spreadsheet store fields
-export const SPREADSHEET_STORE_FIELD = 'spreadsheetFilter';
 export const SPREADSHEET_SORT_STORE = 'spreadsheet';
 
 //logs store fields
-export const LOGS_STORE_FIELD = 'logsFilter';
 export const LOGS_PAGINATION_STORE_FIELD = 'logsPagination';
 
 //table sort store field
@@ -52,7 +50,7 @@ export const TABLE_SORT_STORE = 'tableSort';
 export const STATEESTIMATION_RESULT_SORT_STORE = 'stateEstimationResult';
 export const STATEESTIMATION_QUALITY_CRITERION = 'stateEstimationQualityCriterion';
 export const STATEESTIMATION_QUALITY_PER_REGION = 'stateEstimationQualityPerRegion';
-export const STATEESTIMATION_RESULT = 'stateEstimationResult';
+export const STATEESTIMATION_MEASUREMENTS = 'stateEstimationMeasurements';
 
 //pccMin result store fields
 export const PCCMIN_ANALYSIS_RESULT_SORT_STORE = 'pccminAnalysisResult';

@@ -287,11 +287,16 @@ export default function SpreadsheetTabs({
 
     return (
         <>
-            <Grid container direction="row" wrap="nowrap" item>
-                <Grid item padding={1} xs="auto">
+            <Grid container direction="row" wrap="nowrap">
+                <Grid
+                    size="auto"
+                    sx={{
+                        padding: 1,
+                    }}
+                >
                     <AddSpreadsheetButton disabled={disabled} />
                 </Grid>
-                <Grid item xs sx={{ overflow: 'hidden' }}>
+                <Grid size="grow" sx={{ overflow: 'hidden' }}>
                     <DroppableTabs
                         id="equipment-tabs"
                         value={selectedTabIndex}
@@ -307,7 +312,7 @@ export default function SpreadsheetTabs({
                 </Grid>
                 <SpreadsheetTabsToolbar
                     padding={1}
-                    xs="auto"
+                    size="auto"
                     selectedTabIndex={selectedTabIndex}
                     disabled={disabled}
                     onSaveClick={saveCollectionDialogOpen.setTrue}
@@ -320,6 +325,7 @@ export default function SpreadsheetTabs({
                         { id: 'spreadsheet/remove_spreadsheet_confirmation' },
                         { spreadsheetName: tabActionInProgressName }
                     )}
+                    isTranslationNeeded={false}
                     openConfirmationPopup={confirmationDialogOpen}
                     setOpenConfirmationPopup={setConfirmationDialogOpen}
                     handlePopupConfirmation={handleRemoveTab}

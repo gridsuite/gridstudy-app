@@ -85,7 +85,12 @@ function DynamicSimulationResultSeriesList({
             <ListSubheader>
                 <Grid container>
                     {headers.map((header, index) => (
-                        <Grid item flexGrow={index === 1 ? 1 : 0} key={header}>
+                        <Grid
+                            key={header}
+                            sx={{
+                                flexGrow: index === 1 ? 1 : 0,
+                            }}
+                        >
                             <Typography sx={styles.headerItem} variant={'subtitle1'}>
                                 {header}
                             </Typography>

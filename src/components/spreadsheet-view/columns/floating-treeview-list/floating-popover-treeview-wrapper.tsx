@@ -82,16 +82,20 @@ export function FloatingPopoverTreeviewWrapper({
                 open={open}
                 onClose={() => setAnchorEl(null)}
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                TransitionComponent={Slide}
-                TransitionProps={{
-                    onEntered: () => {
-                        quickSearchRef.current?.focus();
-                    },
-                }}
                 sx={{
                     position: 'absolute',
                     left: '2vh',
                     minHeight: 400,
+                }}
+                slots={{
+                    transition: Slide,
+                }}
+                slotProps={{
+                    transition: {
+                        onEntered: () => {
+                            quickSearchRef.current?.focus();
+                        },
+                    },
                 }}
             >
                 <TreeviewSearchable

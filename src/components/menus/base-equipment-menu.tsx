@@ -12,10 +12,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
-import { isNodeReadOnly } from '../graph/util/model-functions';
 import {
     CustomMenuItem,
     CustomNestedMenuItem,
@@ -24,7 +22,7 @@ import {
     type ExtendedEquipmentType,
     type MuiStyles,
 } from '@gridsuite/commons-ui';
-import { AppState } from 'redux/reducer.type';
+import { useCanModifyEquipment } from './use-can-modify-equipment';
 
 const styles = {
     menuItem: {
@@ -80,7 +78,7 @@ const DeleteEquipmentItem = ({
     itemText: string;
     handleDeleteEquipment: HandleDeleteEquipment;
 }) => {
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const canModifyEquipment = useCanModifyEquipment();
 
     return (
         <CustomMenuItem
@@ -92,7 +90,7 @@ const DeleteEquipmentItem = ({
                 }
             }}
             selected={false}
-            disabled={isNodeReadOnly(currentNode)}
+            disabled={!canModifyEquipment}
         >
             <ListItemIcon>
                 <DeleteIcon />
@@ -115,7 +113,7 @@ const ModifyEquipmentItem = ({
     itemText: string;
     handleOpenModificationDialog: HandleOpenModificationDialog;
 }) => {
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const canModifyEquipment = useCanModifyEquipment();
 
     return (
         <CustomMenuItem
@@ -127,7 +125,7 @@ const ModifyEquipmentItem = ({
                 }
             }}
             selected={false}
-            disabled={isNodeReadOnly(currentNode)}
+            disabled={!canModifyEquipment}
         >
             <ListItemIcon>
                 <EditIcon />
@@ -155,13 +153,13 @@ const ItemViewInForm = ({
         equipmentSubstype: ExtendedEquipmentType | null
     ) => void;
 }) => {
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const canModifyEquipment = useCanModifyEquipment();
 
     return (
         <CustomMenuItem
             sx={styles.menuItem}
             onClick={() => handleOpenModificationDialog(equipmentId, equipmentType, equipmentSubtype)}
-            disabled={isNodeReadOnly(currentNode)}
+            disabled={!canModifyEquipment}
         >
             <ListItemIcon>
                 <EditIcon></EditIcon>

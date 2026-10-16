@@ -18,7 +18,7 @@ import {
 import { FormFiller } from './formFiller.js';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
-import GridItem from '../commons/grid-item';
+import { GridItem } from '../commons/grid-item';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer.type';
 
@@ -103,15 +103,21 @@ export function EquipmentIdSelector({
             onInputChange={(_, data, reason) => handleChange(data, reason)}
             options={equipmentOptions}
             autoHighlight={autoHighlightEnabled}
-            renderInput={({ inputProps, ...rest }) => (
+            renderInput={(params) => (
                 <TextField
                     label={FieldLabel({
                         label: 'ID',
                     })}
-                    inputProps={{ ...inputProps, readOnly: readOnly }}
-                    autoFocus
                     {...filledTextField}
-                    {...rest}
+                    {...params}
+                    autoFocus
+                    slotProps={{
+                        ...params.slotProps,
+                        htmlInput: {
+                            ...params.slotProps.htmlInput,
+                            readOnly,
+                        },
+                    }}
                 />
             )}
         />

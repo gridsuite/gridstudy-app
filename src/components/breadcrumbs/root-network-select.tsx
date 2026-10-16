@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, ListItemText, MenuItem, Select } from '@mui/material';
+import { Box, MenuItem, Select } from '@mui/material';
 import type { UUID } from 'node:crypto';
 import { RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
@@ -15,12 +15,22 @@ import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 const styles = {
     selectRoot: (theme) => ({
         height: theme.spacing(4),
-        width: theme.spacing(15),
+        width: 'fit-content',
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(1),
+        '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+        '& .MuiSelect-select.MuiSelect-select': { paddingLeft: 0, paddingRight: theme.spacing(3.5) },
     }),
-    selectInput: { display: 'flex', gap: 1, alignItems: 'center' },
-    selectItem: { gap: 1 },
+    selectInput: (theme) => ({
+        display: 'flex',
+        gap: 1,
+        alignItems: 'center',
+        fontSize: theme.typography.fontSize,
+    }),
+    selectItem: (theme) => ({
+        gap: 1,
+        fontSize: theme.typography.fontSize,
+    }),
     hiddenItem: { display: 'none' },
 } as const satisfies MuiStyles;
 
@@ -45,8 +55,8 @@ export default function RootNetworkSelect({ currentRootNetworkUuid, rootNetworks
                 const tag = rootNetworks.find((item) => item.rootNetworkUuid === value)?.tag;
                 return (
                     <Box sx={styles.selectInput}>
-                        <RemoveRedEye />
-                        <ListItemText primary={tag} />
+                        {tag}
+                        <RemoveRedEye fontSize="small" />
                     </Box>
                 );
             }}
@@ -60,8 +70,8 @@ export default function RootNetworkSelect({ currentRootNetworkUuid, rootNetworks
                         item.rootNetworkUuid === currentRootNetworkUuid ? styles.hiddenItem : undefined
                     )}
                 >
-                    <VisibilityOff />
-                    <ListItemText primary={item.tag} />
+                    {item.tag}
+                    <VisibilityOff fontSize="small" />
                 </MenuItem>
             ))}
         </Select>

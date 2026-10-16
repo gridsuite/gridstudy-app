@@ -11,7 +11,7 @@ const MyNewPlugin = {
 export default MyNewPlugin;
 ```
 
-Edit index.js to export your new plugin in the corresponding group
+Edit index.ts to export your new plugin in the corresponding group
 
 ```js
 import MyNewPlugin from './myPluginGroup/myNewPlugin';
@@ -28,7 +28,7 @@ Defining and adding a group a group of plugins needs to add some code in the tar
 
 ```js
 // Plugins
-import { MyPluginGroupPlugins } from '../plugins';
+import {MyPluginGroupPlugins} from './index';
 //...
 
 const MyPluggableComponent = () => {
@@ -37,7 +37,7 @@ const MyPluggableComponent = () => {
         <>
             {/*...*/}
             {MyPluginGroupPlugins.map((plugin) => {
-                return <plugin.Component key={plugin.id} />;
+                return <plugin.Component key={plugin.id}/>;
             })}
             {/*...*/}
         </>
@@ -52,7 +52,7 @@ Add your private translations to the following directory to complete or overwrit
 - src/plugins/translations
 
 import your file and export an object messages_plugins for the translation in french or english
-in src/plugins/translations/index.js
+in src/plugins/translations/index.ts
 
 ```diff
 import messages_plugins_fr from '../translations/fr.json';

@@ -6,13 +6,17 @@
  */
 
 import { isAction, Middleware } from '@reduxjs/toolkit';
-import { ADD_GLOBAL_FILTERS, CLEAR_GLOBAL_FILTERS, GlobalFilterAction, REMOVE_GLOBAL_FILTERS } from './actions';
+import {
+    ADD_GLOBAL_FILTERS,
+    CLEAR_GLOBAL_FILTERS,
+    GlobalFilterAction,
+    MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED,
+    REMOVE_GLOBAL_FILTERS,
+} from './actions';
 import { setComputationResultGlobalFilters, setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
-import { TableType } from '../types/custom-aggrid-types';
 import { UUID } from 'node:crypto';
 import type { AppState } from './reducer.type';
-
-const debouncedSyncTimers: Record<string, ReturnType<typeof setTimeout>> = {};
+import { GlobalFilter, notUndefined, syncGlobalFilters, TableType } from '@gridsuite/commons-ui';
 
 /**
  * Redux middleware that synchronizes global filter changes with the backend.
@@ -29,39 +33,47 @@ export const globalFiltersMiddleware: Middleware<{}, AppState> = (store) => (nex
     // Synchronize filter changes with the backend
     switch (action.type) {
         case ADD_GLOBAL_FILTERS:
+        case MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED:
         case REMOVE_GLOBAL_FILTERS:
         case CLEAR_GLOBAL_FILTERS: {
             const { tableType, tableId } = action as GlobalFilterAction;
+
             // State after the action
             const state = store.getState();
             const studyUuid = state.studyUuid;
             if (!studyUuid) {
                 break;
             }
-
             const index = tableId ?? tableType;
-            const globalFiltersIds = state.tableFilters.globalFilters[index] ?? [];
-            const globalFilters =
-                globalFiltersIds.length === 0
-                    ? []
-                    : state.globalFilterOptions.filter((filter) => globalFiltersIds.includes(filter.id));
 
-            // Debounce per table to avoid excessive requests
-            if (debouncedSyncTimers[index]) {
-                clearTimeout(debouncedSyncTimers[index]);
-            }
-            debouncedSyncTimers[index] = setTimeout(() => {
-                if (tableType === TableType.Spreadsheet) {
-                    setGlobalFiltersToSpreadsheetConfig(studyUuid, tableId as UUID, globalFilters).catch((error) =>
-                        console.error('Failed to save spreadsheet global filters: ', error)
-                    );
-                } else {
-                    setComputationResultGlobalFilters(studyUuid, tableType, globalFilters).catch((error) =>
-                        console.error('Failed to save computation global filters: ', error)
-                    );
-                }
-                delete debouncedSyncTimers[index];
-            }, 2000);
+            const tableFiltersState = state.tableFilters.globalFilters[index];
+
+            const selectedFiltersIds = tableFiltersState?.selected ?? [];
+            const selectedGlobalFilters = state.globalFilterOptions.filter((filter) =>
+                selectedFiltersIds.includes(filter.id)
+            );
+
+            const recentFilters = tableFiltersState?.recents ?? [];
+            const recentGlobalFilters: GlobalFilter[] = recentFilters
+                .map((recentFilter) => {
+                    const filterOption = state.globalFilterOptions.find((opt) => opt.id === recentFilter.id);
+                    return filterOption ? { ...filterOption, unselectedDate: recentFilter.unselectedDate } : undefined;
+                })
+                .filter(notUndefined);
+
+            const globalFilters = [...selectedGlobalFilters, ...recentGlobalFilters];
+
+            syncGlobalFilters({
+                index,
+                globalFilters,
+                onError: (error) => {
+                    console.error('Failed to save global filters: ', error);
+                },
+                save: (filters) =>
+                    tableType === TableType.Spreadsheet
+                        ? setGlobalFiltersToSpreadsheetConfig(studyUuid, tableId as UUID, filters)
+                        : setComputationResultGlobalFilters(studyUuid, tableType, filters),
+            });
 
             break;
         }

@@ -13,7 +13,7 @@ import React, { ReactNode } from 'react';
 import { UseFormSearchCopy } from './use-form-search-copy';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton } from '@gridsuite/commons-ui';
-import { DialogProps } from '@mui/material/Dialog/Dialog';
+import { DialogProps } from '@mui/material/Dialog';
 
 /**
  * Common parts for the Modification Dialog
@@ -51,11 +51,13 @@ export function ModificationDialogContent({
         label: 'CatalogButtonTooltip',
         handleClick: onOpenCatalogDialog ?? (() => {}),
         icon: <AutoStoriesOutlinedIcon />,
+        dataTestId: 'OpenCatalog',
     });
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: searchCopy?.handleOpenSearchDialog ?? (() => {}),
         icon: <FindInPageIcon />,
+        dataTestId: 'CopyFromExistingEquipment',
     });
 
     const handleClose = (event_: React.MouseEvent, reason: string) => {
@@ -73,28 +75,29 @@ export function ModificationDialogContent({
         <Dialog onClose={handleClose} aria-labelledby={titleId} {...dialogProps}>
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
-                <Grid container spacing={2} justifyContent={'space-between'}>
-                    <Grid item xs={6}>
+                <Grid
+                    container
+                    spacing={2}
+                    sx={{
+                        justifyContent: 'space-between',
+                    }}
+                >
+                    <Grid size={6}>
                         <FormattedMessage id={titleId} />
                     </Grid>
 
-                    <Grid item xs={6} container spacing={2} justifyContent={'right'}>
-                        {onOpenCatalogDialog && (
-                            <Grid item xs={1}>
-                                {catalogButton}
-                            </Grid>
-                        )}
-                        {searchCopy && (
-                            <Grid item xs={1}>
-                                {copyEquipmentButton}
-                            </Grid>
-                        )}
+                    <Grid
+                        size={6}
+                        container
+                        spacing={2}
+                        sx={{
+                            justifyContent: 'right',
+                        }}
+                    >
+                        {onOpenCatalogDialog && <Grid size={1}>{catalogButton}</Grid>}
+                        {searchCopy && <Grid size={1}>{copyEquipmentButton}</Grid>}
                     </Grid>
-                    {subtitle && (
-                        <Grid item xs={12}>
-                            {subtitle}
-                        </Grid>
-                    )}
+                    {subtitle && <Grid size={12}>{subtitle}</Grid>}
                 </Grid>
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentInfos, Identifiable } from '@gridsuite/commons-ui';
-import { CurrentLimitsData } from '../../services/study/network-map.type';
+import { CurrentLimitsData, EquipmentInfos, Identifiable } from '@gridsuite/commons-ui';
 
 export interface CommonBranchEquipmentInfos extends EquipmentInfos {
     i1: number;
@@ -66,7 +65,4 @@ export interface LoadEquipmentInfos {
 export type BranchEquipmentInfos = LineEquipmentInfos | TwtEquipmentInfos;
 
 export type GenericEquipmentInfos =
-    | BranchEquipmentInfos
-    | GeneratorEquipmentInfos
-    | LoadEquipmentInfos
-    | VoltageLevelTooltipInfos;
+    BranchEquipmentInfos | GeneratorEquipmentInfos | LoadEquipmentInfos | VoltageLevelTooltipInfos;

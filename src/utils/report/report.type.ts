@@ -5,12 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ComputingType } from '@gridsuite/commons-ui';
-import { NETWORK_MODIFICATION } from './report.constant';
-
 export type SeverityLevel = 'UNKNOWN' | 'TRACE' | 'DEBUG' | 'DETAIL' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
-
-export type ComputingAndNetworkModificationType = ComputingType | typeof NETWORK_MODIFICATION;
 
 export type ReportSeverity = {
     name: SeverityLevel;

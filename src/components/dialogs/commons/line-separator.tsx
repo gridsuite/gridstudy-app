@@ -8,7 +8,7 @@ import { Divider, Grid } from '@mui/material';
 
 export default function LineSeparator() {
     return (
-        <Grid item xs={12}>
+        <Grid size={12}>
             <Divider />
         </Grid>
     );

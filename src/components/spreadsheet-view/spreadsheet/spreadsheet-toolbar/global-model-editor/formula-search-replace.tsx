@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 import { useFormContext } from 'react-hook-form';
 import { useButtonWithTooltip } from '../../../../utils/inputs/input-hooks';
 import { COLUMNS_MODEL, COLUMN_FORMULA } from './spreadsheet-model-global-editor.utils';
-import { QuickSearch } from 'components/report-viewer/QuickSearch';
+import { QuickSearch } from '@gridsuite/commons-ui';
 import { useFormulaSearch } from './formula-search-context';
 
 export default function FormulaSearchReplace() {

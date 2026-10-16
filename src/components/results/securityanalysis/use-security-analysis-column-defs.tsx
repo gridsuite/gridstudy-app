@@ -7,16 +7,17 @@
 
 import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { RESULT_TYPE, SecurityAnalysisNmkTableRow } from './security-analysis.type';
+import { RESULT_TYPE } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
-import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
+import { OverflowableText, SecurityAnalysisNmkTableRow, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button } from '@mui/material';
 import {
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
+    securityAnalysisTableNmKCutOffPowerColumnsDefinition,
 } from './security-analysis-result-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
@@ -33,15 +34,13 @@ export interface SecurityAnalysisFilterEnumsType {
 type UseSecurityAnalysisColumnsDefsProps = (
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
-    tabIndex: number,
-    goToFirstPage: () => void
+    tabIndex: number
 ) => ColDef[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
     filterEnums,
     resultType,
-    tabIndex,
-    goToFirstPage
+    tabIndex
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -141,8 +140,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     SubjectIdRenderer,
                     filterEnums.nmk,
                     getEnumLabel,
-                    tabIndex,
-                    goToFirstPage
+                    tabIndex
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -150,19 +148,19 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     SubjectIdRenderer,
                     filterEnums.nmk,
                     getEnumLabel,
-                    tabIndex,
-                    goToFirstPage
+                    tabIndex
+                );
+            case RESULT_TYPE.NMK_CUT_OFF_POWER:
+                return securityAnalysisTableNmKCutOffPowerColumnsDefinition(
+                    intl,
+                    filterEnums.nmk,
+                    getEnumLabel,
+                    tabIndex
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(
-                    intl,
-                    filterEnums.n,
-                    getEnumLabel,
-                    tabIndex,
-                    goToFirstPage
-                );
+                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex);
         }
-    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, goToFirstPage]);
+    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex]);
 
     return columnDefs;
 };

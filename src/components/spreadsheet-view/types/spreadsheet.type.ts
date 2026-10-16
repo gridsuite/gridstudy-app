@@ -6,9 +6,8 @@
  */
 
 import type { UUID } from 'node:crypto';
-import type { Identifiable } from '@gridsuite/commons-ui';
-import type { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
-import { COLUMN_TYPES, SortConfig } from '../../../types/custom-aggrid-types';
+import type { GlobalFilter, Identifiable, SortConfig } from '@gridsuite/commons-ui';
+import { COLUMN_TYPES } from '../../../types/custom-aggrid-types';
 
 // The order of the enum values is important, do not change it without checking the usage (e.g. in select options in AddEmptySpreadsheetDialog)
 export enum SpreadsheetEquipmentType {
@@ -27,7 +26,7 @@ export enum SpreadsheetEquipmentType {
     LCC_CONVERTER_STATION = 'LCC_CONVERTER_STATION',
     VSC_CONVERTER_STATION = 'VSC_CONVERTER_STATION',
     TIE_LINE = 'TIE_LINE',
-    DANGLING_LINE = 'DANGLING_LINE',
+    BOUNDARY_LINE = 'BOUNDARY_LINE',
     BUS = 'BUS',
     BUSBAR_SECTION = 'BUSBAR_SECTION',
 }
@@ -86,6 +85,7 @@ export type ColumnStateDto = {
 export type SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: Record<UUID, Record<string, Identifiable>>;
     isFetching: boolean;
+    isInitialized: boolean;
 };
 
 export type SpreadsheetConfig = {
@@ -123,6 +123,9 @@ export type SpreadsheetOptionalLoadingParameters = {
     [SpreadsheetEquipmentType.LINE]: BranchOptionalLoadingParameters;
     [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: BranchOptionalLoadingParameters;
     [SpreadsheetEquipmentType.GENERATOR]: {
+        regulatingTerminal: boolean;
+    };
+    [SpreadsheetEquipmentType.BATTERY]: {
         regulatingTerminal: boolean;
     };
     [SpreadsheetEquipmentType.BUS]: {

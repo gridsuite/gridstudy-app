@@ -6,9 +6,18 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { CustomFormProvider, DeepNullable, Option, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    AreaTemperatureShapeFactorInfo,
+    CATEGORIES_TABS,
+    CurrentLimitsInfo,
+    CustomFormProvider,
+    DeepNullable,
+    LineTypeInfo,
+    Option,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { AreaTemperatureShapeFactorInfo, CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import {
     AERIAL_AREAS,
     AERIAL_TEMPERATURES,
@@ -20,9 +29,9 @@ import {
 import { useForm } from 'react-hook-form';
 import { getLineTypeWithAreaAndTemperature } from '../../../services/network-modification';
 import { ModificationDialog } from '../commons/modificationDialog';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import LineTypesCatalogSelectorForm from './line-types-catalog-selector-form';
+import LineTypesCatalogSelectorForm, { LineCatalogParams } from './line-types-catalog-selector-form';
 
 const formSchema = yup
     .object()
@@ -83,16 +92,16 @@ export type LineTypesCatalogSelectorDialogSchemaForm = yup.InferType<typeof form
 
 export type LineTypesCatalogSelectorDialogProps = {
     onSelectLine: (selectedLine: LineTypeInfo, selectedAreaAndTemperature: AreaTemperatureShapeFactorInfo) => void;
-    preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
+    getPreselectedParams?: () => LineCatalogParams;
 };
 
 export default function LineTypesCatalogSelectorDialog({
     onSelectLine,
-    preselectedRowId,
     rowData,
     onClose,
+    getPreselectedParams,
     ...dialogProps
 }: Readonly<LineTypesCatalogSelectorDialogProps>) {
     const { snackError } = useSnackMessage();
@@ -119,7 +128,8 @@ export default function LineTypesCatalogSelectorDialog({
         const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
         const areaId = selectedArea?.id;
         const shapeFactorId = selectedShapeFactor?.id;
-        return { area: areaId, shapeFactor: shapeFactorId } as AreaTemperatureShapeFactorInfo;
+        const numericShapeFactor = shapeFactorId ? Number(shapeFactorId) : null;
+        return { area: areaId, shapeFactor: numericShapeFactor } as AreaTemperatureShapeFactorInfo;
     }, [getValues]);
 
     const onSubmit = useCallback(() => {
@@ -187,16 +197,22 @@ export default function LineTypesCatalogSelectorDialog({
         [setValue, snackError]
     );
 
-    const onSelectionChanged = useCallback(() => {
+    const onRowClicked = useCallback(() => {
         const selectedRows = gridRef.current?.api?.getSelectedRows();
         if (selectedRows?.length) {
             setValue(AERIAL_AREAS, null);
             setValue(AERIAL_TEMPERATURES, null);
             setValue(UNDERGROUND_AREAS, null);
             setValue(UNDERGROUND_SHAPE_FACTORS, null);
+        }
+    }, [setValue]);
+
+    const onSelectionChanged = useCallback(() => {
+        const selectedRows = gridRef.current?.api?.getSelectedRows();
+        if (selectedRows?.length) {
             handleSelectedRowData(selectedRows[0]).then();
         }
-    }, [handleSelectedRowData, setValue]);
+    }, [handleSelectedRowData]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -207,8 +223,8 @@ export default function LineTypesCatalogSelectorDialog({
                 onClose={onClose}
                 onSave={onSubmit}
                 open={true}
-                PaperProps={{
-                    sx: { height: '95vh' },
+                slotProps={{
+                    paper: { sx: { height: '95vh' } },
                 }}
                 titleId="SelectType"
                 {...dialogProps}
@@ -216,12 +232,13 @@ export default function LineTypesCatalogSelectorDialog({
                 <LineTypesCatalogSelectorForm
                     gridRef={gridRef}
                     selectedRow={selectedRow}
-                    preselectedRowId={preselectedRowId}
                     rowData={rowData}
+                    onRowClicked={onRowClicked}
                     onSelectionChanged={onSelectionChanged}
                     areasOptions={areasOptions}
                     aerialTemperatures={aerialTemperatures}
                     undergroundShapeFactor={undergroundShapeFactors}
+                    getPreselectedRowData={getPreselectedParams}
                 />
             </ModificationDialog>
         </CustomFormProvider>

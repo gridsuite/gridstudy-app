@@ -23,10 +23,13 @@ import { useSelector } from 'react-redux';
 import {
     ElementSaveDialog,
     ElementType,
+    GlobalFilter,
     type IElementCreationDialog,
     type IElementUpdateDialog,
     type MuiStyles,
     snackWithFallback,
+    SortConfig,
+    TableType,
     useSnackMessage,
     type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
@@ -40,10 +43,8 @@ import {
 } from '../../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
-import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
-import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useNodeAliases } from '../../../hooks/use-node-aliases';
-import { SortConfig } from '../../../../../types/custom-aggrid-types';
 
 interface SaveSpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
@@ -81,7 +82,9 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     const { nodeAliases } = useNodeAliases();
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
-    const tablesFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD]);
+    const tablesFilters = useSelector(
+        (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet] ?? {}
+    );
     const tablesGlobalFilterIds = useSelector((state: AppState) => state.tableFilters.globalFilters);
     const globalFilterOptions = useSelector((state: AppState) => state.globalFilterOptions);
     const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]);
@@ -199,7 +202,7 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     const getTableGlobalFilters = useCallback(
         (tableIndex: number): GlobalFilter[] => {
             const tableUuid = tables[tableIndex].uuid;
-            const ids = tablesGlobalFilterIds[tableUuid] ?? [];
+            const ids = tablesGlobalFilterIds[tableUuid]?.selected ?? [];
             return ids.map((id) => globalFilterOptions.find((opt) => opt.id === id)).filter((f) => f !== undefined);
         },
         [tablesGlobalFilterIds, globalFilterOptions, tables]

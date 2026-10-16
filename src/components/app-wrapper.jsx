@@ -26,6 +26,8 @@ import {
     commonButtonFr,
     componentsEn,
     componentsFr,
+    csvEn,
+    csvFr,
     directoryItemsInputEn,
     directoryItemsInputFr,
     dndTableEn,
@@ -40,6 +42,8 @@ import {
     equipmentShortFr,
     equipmentTagEn,
     equipmentTagFr,
+    equipmentTypesEn,
+    equipmentTypesFr,
     errorsEn,
     errorsFr,
     exportParamsEn,
@@ -50,6 +54,8 @@ import {
     filterFr,
     flatParametersEn,
     flatParametersFr,
+    genericValidationEn,
+    genericValidationFr,
     importParamsEn,
     importParamsFr,
     LANG_FRENCH,
@@ -64,11 +70,15 @@ import {
     descriptionFr,
     descriptionEn,
     networkModificationsEn,
+    networkModificationValidationEn,
     networkModificationsFr,
+    networkModificationValidationFr,
     NotificationsProvider,
     PARAM_THEME,
     parametersEn,
     parametersFr,
+    specificParametersEn,
+    specificParametersFr,
     reportViewerEn,
     reportViewerFr,
     SnackbarProvider,
@@ -85,17 +95,15 @@ import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../redux/store';
-import messages_en from '../translations/en.json';
-import messages_fr from '../translations/fr.json';
-import messages_plugins from '../plugins/translations';
+import messages_en from '../translations/messages-en.ts';
+import messages_fr from '../translations/messages-fr.ts';
+import messages_plugins from '../plugins/translations/index.ts';
 import { grid_en } from '../translations/grid-en';
 import { grid_fr } from '../translations/grid-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
 import dynamic_mapping_models_en from '../translations/external/dynamic-mapping-models-en';
 import dynamic_mapping_models_fr from '../translations/external/dynamic-mapping-models-fr';
-import csv_locale_en from '../translations/dynamic/csv-locale-en';
-import csv_locale_fr from '../translations/dynamic/csv-locale-fr';
 import filter_locale_en from '../translations/dynamic/filter-locale-en';
 import filter_locale_fr from '../translations/dynamic/filter-locale-fr';
 import menu_locale_en from '../translations/dynamic/menu-locale-en';
@@ -116,6 +124,7 @@ import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag
 import { getBaseVoltagesCssVars } from '../utils/colors.ts';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars.ts';
 import { darkThemeCssVars } from '../styles/dark-theme-css-vars.ts';
+import { amber, common, teal } from '@mui/material/colors';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -200,8 +209,8 @@ const lightTheme = createTheme({
         background: '#e6e6e6',
     },
     searchedText: {
-        highlightColor: '#53AAFF',
-        currentHighlightColor: '#FFA853',
+        highlightColor: amber[200],
+        currentHighlightColor: teal[100],
     },
     severityChip: {
         disabledColor: '#EAECED',
@@ -216,6 +225,9 @@ const lightTheme = createTheme({
             background: '#e6e6e6',
         },
         highlightColor: '#1976D214',
+    },
+    agGridBackground: {
+        color: 'white',
     },
     networkModificationPanel: {
         backgroundColor: 'white',
@@ -316,8 +328,9 @@ const darkTheme = createTheme({
         background: '#2C2C2C',
     },
     searchedText: {
-        highlightColor: '#123FBB',
-        currentHighlightColor: '#BB8E12',
+        highlightColor: amber[200],
+        currentHighlightColor: teal[100],
+        textColor: common.black,
     },
     severityChip: {
         disabledColor: '#3B434A',
@@ -332,6 +345,9 @@ const darkTheme = createTheme({
             background: '#121212',
         },
         highlightColor: '#90CAF929',
+    },
+    agGridBackground: {
+        color: '#383838',
     },
     networkModificationPanel: {
         backgroundColor: '#252525',
@@ -405,19 +421,20 @@ const messages = {
         ...equipmentSearchEn,
         ...equipmentShortEn,
         ...equipmentTagEn,
+        ...equipmentTypesEn,
         ...directoryItemsInputEn,
         ...cardErrorBoundaryEn,
         ...flatParametersEn,
         ...multipleSelectionDialogEn,
         ...commonButtonEn,
         ...componentsEn,
+        ...csvEn,
         ...descriptionEn,
         ...dndTableEn,
         ...equipmentsEn,
         ...grid_en,
         ...backend_locale_en,
         ...dynamic_mapping_models_en,
-        ...csv_locale_en,
         ...filter_locale_en,
         ...menu_locale_en,
         ...table_locale_en,
@@ -426,10 +443,13 @@ const messages = {
         ...spreadsheet_locale_en,
         ...base_voltages_en,
         ...parametersEn,
+        ...specificParametersEn,
         ...useUniqueNameValidationEn,
         ...filterEn,
         ...businessErrorsEn,
         ...errorsEn,
+        ...genericValidationEn,
+        ...networkModificationValidationEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -447,19 +467,20 @@ const messages = {
         ...equipmentSearchFr,
         ...equipmentShortFr,
         ...equipmentTagFr,
+        ...equipmentTypesFr,
         ...directoryItemsInputFr,
         ...cardErrorBoundaryFr,
         ...flatParametersFr,
         ...multipleSelectionDialogFr,
         ...commonButtonFr,
         ...componentsFr,
+        ...csvFr,
         ...dndTableFr,
         ...equipmentsFr,
         ...descriptionFr,
         ...grid_fr,
         ...backend_locale_fr,
         ...dynamic_mapping_models_fr,
-        ...csv_locale_fr,
         ...filter_locale_fr,
         ...menu_locale_fr,
         ...table_locale_fr,
@@ -468,10 +489,13 @@ const messages = {
         ...spreadsheet_locale_fr,
         ...base_voltages_fr,
         ...parametersFr,
+        ...specificParametersFr,
         ...useUniqueNameValidationFr,
         ...filterFr,
         ...businessErrorsFr,
         ...errorsFr,
+        ...genericValidationFr,
+        ...networkModificationValidationFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

@@ -14,6 +14,7 @@ import PartialLoadingMenuButton from './toolbar/PartialLoadingMenuButton';
 import { spreadsheetStyles } from '../spreadsheet.style';
 
 export type SpreadsheetTabsToolbarProps = Omit<GridProps, 'item' | 'container'> & {
+    padding?: number;
     selectedTabIndex: number;
     disabled: boolean;
     onSaveClick: () => void;
@@ -29,14 +30,26 @@ export default function SpreadsheetTabsToolbar({
     ...props
 }: Readonly<SpreadsheetTabsToolbarProps>) {
     return (
-        <Grid item container {...props}>
-            <Grid item padding={padding}>
+        <Grid container {...props}>
+            <Grid
+                sx={{
+                    padding: padding,
+                }}
+            >
                 <NodesConfigButton disabled={disabled} />
             </Grid>
-            <Grid item padding={padding}>
+            <Grid
+                sx={{
+                    padding: padding,
+                }}
+            >
                 <PartialLoadingMenuButton disabled={disabled} />
             </Grid>
-            <Grid item padding={padding}>
+            <Grid
+                sx={{
+                    padding: padding,
+                }}
+            >
                 <TooltipIconButton
                     tooltip={<FormattedMessage id="spreadsheet/collection/save/button_tooltip" />}
                     sx={spreadsheetStyles.toolbarButton}
@@ -47,7 +60,11 @@ export default function SpreadsheetTabsToolbar({
                     <SaveIcon />
                 </TooltipIconButton>
             </Grid>
-            <Grid item padding={padding}>
+            <Grid
+                sx={{
+                    padding: padding,
+                }}
+            >
                 <TooltipIconButton
                     tooltip={<FormattedMessage id="spreadsheet/reset_spreadsheet_collection/button_tooltip" />}
                     sx={spreadsheetStyles.toolbarButton}

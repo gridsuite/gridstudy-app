@@ -151,6 +151,7 @@ export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
                         },
                         { columnName: columnDefinition?.name }
                     )}
+                    isTranslationNeeded={false}
                     openConfirmationPopup={confirmationDialogOpen}
                     setOpenConfirmationPopup={setConfirmationDialogOpen}
                     handlePopupConfirmation={handleValidate}

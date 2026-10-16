@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import type { UUID } from 'node:crypto';
+import { IdName } from '@gridsuite/commons-ui';
 
 export type DynamicSecurityAnalysisParametersInfos = {
     provider?: string;
@@ -17,5 +18,5 @@ export type DynamicSecurityAnalysisParametersFetchReturn = Exclude<
     DynamicSecurityAnalysisParametersInfos,
     'contingencyListIds'
 > & {
-    contingencyListInfos?: { id: string; name: string }[];
+    contingencyListInfos?: IdName[];
 };

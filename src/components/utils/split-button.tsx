@@ -24,13 +24,12 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import StopIcon from '@mui/icons-material/Stop';
 import LoopIcon from '@mui/icons-material/Loop';
 import DoneIcon from '@mui/icons-material/Done';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import PlayIcon from '@mui/icons-material/PlayArrow';
-import RunningStatus from './running-status';
 import { useSelector } from 'react-redux';
 import { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
 import { AppState } from 'redux/reducer.type';
-import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles, RunningStatus } from '@gridsuite/commons-ui';
 
 const styles = {
     expand: (theme) => ({
@@ -194,6 +193,7 @@ const SplitButton = ({
 
     const getRunningIcon = (status: RunningStatus) => {
         switch (status) {
+            case RunningStatus.PRELOADING:
             case RunningStatus.RUNNING:
                 if (progress && progress.total > 0) {
                     const pct = Math.round((progress.current / progress.total) * 100);
@@ -209,7 +209,7 @@ const SplitButton = ({
             case RunningStatus.SUCCEED:
                 return <DoneIcon data-testid="ModelExecutionDone" />;
             case RunningStatus.FAILED:
-                return <ErrorOutlineIcon data-testid="ModelExecutionFail" />;
+                return <ErrorOutlinedIcon data-testid="ModelExecutionFail" />;
             case RunningStatus.IDLE:
             default:
                 return <PlayIcon />;
@@ -223,6 +223,7 @@ const SplitButton = ({
             case RunningStatus.FAILED:
                 return styles.failed;
             case RunningStatus.RUNNING:
+            case RunningStatus.PRELOADING:
                 return styles.running;
             case RunningStatus.IDLE:
             default:
@@ -236,11 +237,11 @@ const SplitButton = ({
 
     const disabledOption =
         computationStarting || // disable if fetch starting a computation is pending
-        (runningStatus === RunningStatus.RUNNING && computationStopped); // disable if already stopped once
+        ((runningStatus === RunningStatus.RUNNING || runningStatus === RunningStatus.PRELOADING) && computationStopped); // disable if already stopped once
 
     return (
         <>
-            <ButtonGroup sx={getStyle(runningStatus)} ref={anchorRef}>
+            <ButtonGroup ref={anchorRef}>
                 <Button
                     variant="outlined"
                     startIcon={getRunningIcon(runningStatus)}

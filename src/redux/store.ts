@@ -8,7 +8,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
-import { setUserStore } from './user-store';
 import workspacesReducer from './slices/workspace-slice';
 import { globalFiltersMiddleware } from './globalFiltersMiddleware';
 
@@ -35,7 +34,6 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 setCommonStore(store);
-setUserStore(store);
 
 // to avoid to reset the state with HMR
 // https://redux.js.org/usage/configuring-your-store#hot-reloading

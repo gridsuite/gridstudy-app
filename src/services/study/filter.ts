@@ -6,40 +6,18 @@
  */
 
 import type { NonEmptyTuple } from 'type-fest';
-import { backendFetchJson, Identifiable } from '@gridsuite/commons-ui';
+import {
+    backendFetchJson,
+    ExpertFilter,
+    FilterEquipments,
+    Identifiable,
+    IdentifiableAttributes,
+    GlobalFilters,
+} from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { getRequestParamFromList } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import type { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
 import type { FilterEquipmentType } from '../../types/filter-lib/filter';
-
-export interface ExpertFilter {
-    id?: UUID;
-    name?: string;
-    type: 'EXPERT';
-    equipmentType: string; // TODO must be EquipmentType enum
-    rules: RuleGroupTypeExport;
-    topologyKind?: string; // TODO must be TopologyKind enum
-}
-
-export type EquipmentsFilter = {
-    equipmentID: string;
-    distributionKey?: number;
-};
-
-export interface FilterEquipments {
-    filterId: UUID;
-    identifiableAttributes: IdentifiableAttributes[];
-    notFoundEquipments: string[];
-}
-
-export interface IdentifiableAttributes {
-    id: string;
-    type: EQUIPMENT_TYPES;
-    distributionKey: number;
-}
 
 /**
  * Evaluate a {@link GlobalFilter} on a network
@@ -75,16 +53,16 @@ export async function evaluateGlobalFilter(
  * @param currentNodeUuid the current node to get the variant
  * @param currentRootNetworkUuid the root network to work on to get the variant
  * @param equipmentType The type of equipment to filter and return
- * @param filter the GlobalFilter description
+ * @param filterUuids
  * @param infoType The info type (LIST, TAB, MAP, FORM) - defaults to LIST
  * @return The network elements infos matching the filter
  */
-export async function getNetworkElementsInfosByGlobalFilter<T extends Identifiable>(
+export async function getNetworkElementsInfosByFilters<T extends Identifiable>(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     equipmentType: string,
-    filter: GlobalFilters,
+    filterUuids: UUID[],
     infoType: string = 'LIST'
 ): Promise<T[]> {
     console.info(
@@ -96,13 +74,13 @@ export async function getNetworkElementsInfosByGlobalFilter<T extends Identifiab
         infoType,
     });
 
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/network/elements-by-global-filter?${urlSearchParams}`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/network/elements-from-filters?${urlSearchParams}`;
     console.debug(url);
 
     return backendFetchJson(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(filter),
+        body: JSON.stringify(filterUuids),
     });
 }
 

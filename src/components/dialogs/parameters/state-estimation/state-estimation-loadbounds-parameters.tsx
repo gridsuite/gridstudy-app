@@ -10,8 +10,7 @@ import { loadboundsParametersFields, TabValue } from './state-estimation-paramet
 import { useIntl } from 'react-intl';
 import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
-import GridSection from '../../commons/grid-section';
-import { CustomVoltageLevelTable, type LimitReductionIColumnsDef } from '@gridsuite/commons-ui';
+import { CustomVoltageLevelTable, GridSection, type LimitReductionIColumnsDef } from '@gridsuite/commons-ui';
 
 export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
     const intl = useIntl();
@@ -43,10 +42,15 @@ export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
             <CustomVoltageLevelTable
                 formName={`${TabValue.LOADBOUNDS}.${DEFAULT_BOUNDS}`}
                 columnsDefinition={columnsDefinition}
-                tableHeight={450}
+                tableHeight={480}
+                tableMinWidth={400}
             />
 
-            <Box my={2}>
+            <Box
+                sx={{
+                    my: 2,
+                }}
+            >
                 <LineSeparator />
             </Box>
             <GridSection title="StateEstimationParametersDefaultFixedBoundsSection" heading={4} />
@@ -54,7 +58,8 @@ export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
             <CustomVoltageLevelTable
                 formName={`${TabValue.LOADBOUNDS}.${DEFAULT_FIXED_BOUNDS}`}
                 columnsDefinition={columnsDefinition}
-                tableHeight={450}
+                tableHeight={480}
+                tableMinWidth={400}
             />
         </Grid>
     );

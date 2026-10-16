@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback, useEffect } from 'react';
-import { Box, Button } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import { Box, Button, Grid } from '@mui/material';
 import {
     CustomFormProvider,
     Equipment,
@@ -128,15 +127,32 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
 
     return (
         <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
-            <Box p={4} display="flex" justifyContent="space-between" flexDirection="column" height="100%">
+            <Box
+                sx={{
+                    p: 4,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    flexDirection: 'column',
+                    height: '100%',
+                }}
+            >
                 <SelectionCreationPanelForm pendingState={pendingState} />
-                <Grid container justifyContent="flex-end">
+                <Grid
+                    container
+                    sx={{
+                        justifyContent: 'flex-end',
+                    }}
+                >
                     <Button onClick={onCancel} size={'large'}>
                         {intl.formatMessage({
                             id: 'cancel',
                         })}
                     </Button>
-                    <Box m={1} />
+                    <Box
+                        sx={{
+                            m: 1,
+                        }}
+                    />
                     <SelectionCreationPanelSubmitButton handleValidate={handleValidate} pendingState={pendingState} />
                 </Grid>
             </Box>

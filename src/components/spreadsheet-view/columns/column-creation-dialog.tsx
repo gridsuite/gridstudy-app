@@ -7,14 +7,24 @@
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Tooltip, Typography } from '@mui/material';
+import {
+    Box,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    Link,
+    Stack,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 import {
     AutocompleteInput,
     CancelButton,
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
-    mergeSx,
     type MuiStyles,
     MultipleAutocompleteInput,
     snackWithFallback,
@@ -25,12 +35,9 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm, UseFormSetError, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from 'redux/store';
-import { setUpdateColumnsDefinitions } from 'redux/actions';
+import { useSelector } from 'react-redux';
 import { hasCyclicDependencies, Item } from './utils/cyclic-dependencies';
-import { useFilterSelector } from 'hooks/use-filter-selector';
-import { COLUMN_TYPES, TableType } from 'types/custom-aggrid-types';
+import { COLUMN_TYPES } from 'types/custom-aggrid-types';
 import type { UUID } from 'node:crypto';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import {
@@ -104,7 +111,6 @@ export default function ColumnCreationDialog({
     );
 
     const { handleSubmit, reset } = formMethods;
-    const dispatch = useDispatch<AppDispatch>();
 
     const intl = useIntl();
 
@@ -128,8 +134,15 @@ export default function ColumnCreationDialog({
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
 
     const dialogTitle = (
-        <Grid container spacing={2} justifyContent={'space-between'} alignItems="center">
-            <Grid item xs={6}>
+        <Grid
+            container
+            spacing={2}
+            sx={{
+                justifyContent: 'space-between',
+                alignItems: 'center',
+            }}
+        >
+            <Grid size={6}>
                 <Typography variant="h6">
                     <FormattedMessage
                         id={
@@ -140,8 +153,15 @@ export default function ColumnCreationDialog({
                     />
                 </Typography>
             </Grid>
-            <Grid item xs={6} container spacing={2} justifyContent={'right'}>
-                <Grid item>
+            <Grid
+                size={6}
+                container
+                spacing={2}
+                sx={{
+                    justifyContent: 'right',
+                }}
+            >
+                <Grid>
                     <Tooltip
                         title={
                             <FormattedMessage
@@ -163,7 +183,7 @@ export default function ColumnCreationDialog({
                         }
                         color="primary"
                         placement="left-end"
-                        componentsProps={{
+                        slotProps={{
                             tooltip: {
                                 sx: {
                                     maxWidth: 500,
@@ -225,8 +245,6 @@ export default function ColumnCreationDialog({
         />
     );
 
-    const { filters, dispatchFilters } = useFilterSelector(TableType.Spreadsheet, spreadsheetConfigUuid);
-
     const validateParams = (
         columnsDefinitions: ColumnDefinition[],
         newParams: ColumnCreationForm,
@@ -282,53 +300,24 @@ export default function ColumnCreationDialog({
                 return;
             }
 
-            const existingColumn = columnsDefinitions?.find((column) => column.uuid === colUuid);
-            let isUpdate = false;
-
-            if (existingColumn) {
-                isUpdate = true;
-                const updatedFilters = filters?.filter((filter) => filter.column !== existingColumn.id);
-                dispatchFilters(updatedFilters);
-            }
-
+            // We don't include the column filter, so it will be removed when we update the column.
             const formattedParams = {
                 ...newParams,
                 dependencies: newParams.dependencies?.length ? JSON.stringify(newParams.dependencies) : undefined,
             };
 
-            const updateOrCreateColumn =
-                isUpdate && columnDefinition
-                    ? updateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
-                    : createSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, formattedParams);
-
             // we reset and close the dialog to avoid multiple submissions
             reset(initialColumnCreationForm);
             open.setFalse();
 
-            updateOrCreateColumn
-                .then((uuid) => {
-                    dispatch(
-                        setUpdateColumnsDefinitions({
-                            uuid: tableDefinition.uuid,
-                            value: {
-                                uuid: columnDefinition?.uuid ?? uuid,
-                                id: newParams.id,
-                                name: newParams.name,
-                                type: COLUMN_TYPES[newParams.type],
-                                precision: newParams.precision,
-                                formula: newParams.formula,
-                                dependencies: newParams.dependencies,
-                                visible: true,
-                                locked: existingColumn?.locked,
-                            },
-                        })
-                    );
-                })
-                .catch((error) => {
-                    snackWithFallback(snackError, error, {
-                        headerId: 'spreadsheet/custom_column/error_saving_or_updating_column',
-                    });
+            (columnDefinition
+                ? updateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
+                : createSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, formattedParams)
+            ).catch((error) => {
+                snackWithFallback(snackError, error, {
+                    headerId: 'spreadsheet/custom_column/error_saving_or_updating_column',
                 });
+            });
         },
         [
             studyUuid,
@@ -339,10 +328,6 @@ export default function ColumnCreationDialog({
             spreadsheetConfigUuid,
             reset,
             open,
-            filters,
-            dispatchFilters,
-            dispatch,
-            tableDefinition,
             snackError,
         ]
     );
@@ -370,36 +355,30 @@ export default function ColumnCreationDialog({
                 open={open.value}
                 onClose={onClose}
                 aria-labelledby="custom-column-dialog-edit-title"
-                PaperProps={{ sx: styles.dialogContent }}
+                slotProps={{
+                    paper: { sx: styles.dialogContent },
+                }}
             >
                 <DialogTitle id="custom-column-dialog-edit-title">{dialogTitle}</DialogTitle>
                 <DialogContent data-popover-anchor>
-                    <Grid container spacing={2} direction="column" alignItems="center">
-                        <Grid item sx={mergeSx(styles.field, { marginTop: '5px' })}>
-                            {columnNameField}
-                        </Grid>
-                        <Grid item sx={styles.field}>
-                            {columnIdField}
-                        </Grid>
-                        <Grid item sx={styles.field}>
-                            {columnType}
-                        </Grid>
-                        {watchColumnType === COLUMN_TYPES.NUMBER && (
-                            <Grid item sx={styles.field}>
-                                {precisionField}
-                            </Grid>
-                        )}
-                        <Grid item sx={styles.field}>
-                            {formulaField}
-                        </Grid>
-                        <Grid item sx={styles.field}>
-                            {dependenciesField}
-                        </Grid>
-                    </Grid>
+                    <Stack
+                        spacing={2}
+                        sx={{
+                            mt: '5px',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Grid sx={styles.field}>{columnNameField}</Grid>
+                        <Grid sx={styles.field}>{columnIdField}</Grid>
+                        <Grid sx={styles.field}>{columnType}</Grid>
+                        {watchColumnType === COLUMN_TYPES.NUMBER && <Grid sx={styles.field}>{precisionField}</Grid>}
+                        <Grid sx={styles.field}>{formulaField}</Grid>
+                        <Grid sx={styles.field}>{dependenciesField}</Grid>
+                    </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Grid container spacing={0.5}>
-                        <Grid item xs>
+                        <Grid size="grow">
                             <Box sx={styles.actionButtons}>
                                 <CancelButton onClick={open.setFalse} />
                                 <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined" />
