@@ -133,3 +133,19 @@ export function fetchLogicalControlsStatus(studyUuid: UUID, currentNodeUuid: UUI
     console.debug(url);
     return backendFetchText(url);
 }
+export function fetchLogicalControlsResult(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+): Promise<LogicalControlsResultDto | null> {
+    console.info(
+        `Fetching logical controls result on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/logical-controls/result`;
+    console.debug(url);
+    return backendFetchJson(url);
+}
