@@ -6,8 +6,8 @@
  */
 
 import { useDispatch, useSelector } from 'react-redux';
-import { ToggleButton, Tooltip } from '@mui/material';
-import { Sync, SyncDisabled } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
+import { Sync } from '@mui/icons-material';
 import { selectSyncEnabled } from '../redux/actions';
 import { AppState } from 'redux/reducer.type';
 import { useIntl } from 'react-intl';
@@ -45,9 +45,9 @@ const StudyNavigationSyncToggle = () => {
                     : intl.formatMessage({ id: 'enableNavigationSync' })
             }
         >
-            <ToggleButton value={'sync'} selected={syncEnabled} onChange={handleToggle} size="small">
-                {syncEnabled ? <Sync /> : <SyncDisabled />}
-            </ToggleButton>
+            <IconButton size="small" color={syncEnabled ? 'primary' : 'default'} onClick={handleToggle}>
+                <Sync fontSize="small" />
+            </IconButton>
         </Tooltip>
     );
 };
