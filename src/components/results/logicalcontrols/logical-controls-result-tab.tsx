@@ -13,7 +13,7 @@ import { AppState } from 'redux/reducer.type';
 import { useNodeData } from 'components/use-node-data';
 import { fetchLogicalControlsResult } from '../../../services/study/state-estimation';
 import { logicalControlsResultInvalidations } from '../../computing-status/use-all-computing-status';
-import { LogicalControlsResult } from '../stateestimation/logicalcontrols/logical-controls-result';
+import { LogicalControlsResult } from './logical-controls-result';
 
 interface LogicalControlsResultTabProps {
     studyUuid: UUID;
