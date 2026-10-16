@@ -51,7 +51,7 @@ export default function SaveNetworkModificationsDialog({
     const isSelectedCompositeShareable =
         selectedModifications.length === 1 &&
         selectedModifications[0].type === ModificationType.COMPOSITE_MODIFICATION &&
-        !selectedModifications[0].childFromShared;
+        !selectedModifications[0].parentSharedUuid;
 
     const isSharingAvailable = isDeveloperMode && isSelectedCompositeShareable && !hasReference;
 
