@@ -317,7 +317,6 @@ interface LoadflowResultEventDataHeaders extends ComputationResultEventDataHeade
     updateType: NotificationType.LOADFLOW_RESULT;
 }
 
-// TODO to check why this alone now, rest is removed?  like interface SecurityAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
 interface SecurityAnalysisProgressEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.SECURITY_ANALYSIS_PROGRESS;
     node: UUID;
@@ -764,11 +763,6 @@ export function parseEventData<T>(event: MessageEvent | null): T | null {
         return null;
     }
 }
-
-//TODO wtf
-//export type StudyUpdateEventData =
-//    | SecurityAnalysisProgressEventData
-//;
 
 /******************* TO REMOVE LATER ****************/
 // Headers

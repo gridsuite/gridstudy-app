@@ -11,12 +11,7 @@ import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commo
 import type { UUID } from 'node:crypto';
 import { setSaProgress } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
-import {
-    NotificationType,
-    parseEventData,
-    SecurityAnalysisProgressEventData,
-    StudyUpdateEventData,
-} from '../../types/notification-types';
+import { NotificationType, parseEventData, SecurityAnalysisProgressEventData } from '../../types/notification-types';
 
 function isSecurityAnalysisProgressNotification(notif: unknown): notif is SecurityAnalysisProgressEventData {
     return (
@@ -32,7 +27,7 @@ export function useSecurityAnalysisProgress(studyUuid: UUID, nodeUuid: UUID, cur
             if (!studyUuid || !nodeUuid || !currentRootNetworkUuid) {
                 return;
             }
-            const eventData = parseEventData<StudyUpdateEventData>(event ?? null);
+            const eventData = parseEventData<unknown>(event ?? null);
             if (!isSecurityAnalysisProgressNotification(eventData)) {
                 return;
             }
