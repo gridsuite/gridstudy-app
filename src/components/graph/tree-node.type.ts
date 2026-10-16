@@ -62,6 +62,7 @@ export type NetworkModificationNodeData = AbstractNode & {
     pccMinResultUuid?: UUID;
     nodeBuildStatus?: NodeBuildStatus;
     nodeType?: NetworkModificationNodeType;
+    hasReferencedModifications?: boolean;
 };
 
 export type NodeCommonData = {
@@ -71,7 +72,10 @@ export type NodeCommonData = {
     readOnly?: boolean;
     nodeType?: NetworkModificationNodeType;
 };
-export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BuildStatus };
+export type ReactFlowModificationNodeData = NodeCommonData & {
+    localBuildStatus?: BuildStatus;
+    hasReferencedModifications?: boolean;
+};
 
 export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETWORK_MODIFICATION> & {
     id: UUID;

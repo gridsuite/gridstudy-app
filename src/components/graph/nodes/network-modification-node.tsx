@@ -21,7 +21,6 @@ import { BlockingActivitySpinner } from 'components/node-activity/components/blo
 import { useIsBuildBlocked, useNodeActivity } from 'components/node-activity/hooks/use-node-activity';
 
 import { BuildButton } from './build-button';
-import { useNodeHasSharedModifications } from './use-node-has-shared-modifications';
 import { Divider, Tooltip, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
@@ -123,7 +122,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
 
     const activity = useNodeActivity(props.id);
     const isBuildBlocked = useIsBuildBlocked(props.id, props.data);
-    const hasSharedModifications = useNodeHasSharedModifications(studyUuid, props.id);
+    const hasReferencedModifications = props.data.hasReferencedModifications ?? false;
 
     const onClipboardCopy = useCallback(() => {
         snackInfo({ headerId: 'uuidCopiedToClipboard' });
@@ -158,7 +157,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 <Box>
                     {intl.formatMessage({ id: 'nodeType' })} : {intl.formatMessage({ id: props.data.nodeType })}
                 </Box>
-                {hasSharedModifications && (
+                {hasReferencedModifications && (
                     <>
                         <Divider sx={styles.tooltipDivider} />
                         <Box>{intl.formatMessage({ id: 'nodeContainsSharedModifications' })}</Box>
@@ -180,7 +179,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 </Box>
             </Box>
         );
-    }, [props.data, props.id, intl, onClipboardCopy, onClipboardError, hasSharedModifications]);
+    }, [props.data, props.id, intl, onClipboardCopy, onClipboardError, hasReferencedModifications]);
 
     const getNodeOpacity = () => {
         return isSelectedForCut() ? (getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6) : 'unset';
@@ -213,7 +212,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 <ForwardRefBox
                     sx={[
                         isSelectedNode() ? styles.networkModificationSelected : styles.networkModification,
-                        hasSharedModifications &&
+                        hasReferencedModifications &&
                             (isSelectedNode()
                                 ? styles.containsSharedModificationsSelected
                                 : styles.containsSharedModifications),
