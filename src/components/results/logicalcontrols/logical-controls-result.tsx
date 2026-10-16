@@ -93,7 +93,6 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
 
             {subTabIndex === BALANCES_TAB_INDEX && (
                 <LogicalControlsTable
-                    resultAvailable={!!result}
                     rows={balances}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
@@ -103,7 +102,6 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
             )}
             {subTabIndex === NON_ZERO_MEASUREMENTS_ON_DISCONNECTED_TAB_INDEX && (
                 <LogicalControlsTable
-                    resultAvailable={!!result}
                     rows={nonZeroMeasurementsOnDisconnected}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
@@ -113,7 +111,6 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
             )}
             {subTabIndex === ZERO_MEASUREMENTS_ON_CONNECTED_TAB_INDEX && (
                 <LogicalControlsTable
-                    resultAvailable={!!result}
                     rows={zeroMeasurementsOnConnected}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
@@ -123,7 +120,6 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
             )}
             {subTabIndex === ORIGIN_EXTREMITY_DEVIATIONS_TAB_INDEX && (
                 <LogicalControlsTable
-                    resultAvailable={!!result}
                     rows={originExtremityDeviations}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
@@ -133,7 +129,6 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
             )}
             {subTabIndex === OUT_OF_BOUNDS_MEASUREMENTS_TAB_INDEX && (
                 <LogicalControlsTable
-                    resultAvailable={!!result}
                     rows={outOfBoundsMeasurements}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
@@ -143,7 +138,6 @@ export const LogicalControlsResult: FunctionComponent<LogicalControlsResultProps
             )}
             {subTabIndex === VOLTAGE_DEVIATIONS_TAB_INDEX && (
                 <LogicalControlsTable
-                    resultAvailable={!!result}
                     rows={voltageDeviations}
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
