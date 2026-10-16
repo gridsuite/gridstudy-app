@@ -1051,7 +1051,7 @@ const messages_fr = {
     sharedModificationsApplicabilitiesOverwritten:
         "L'étude contient des modifications partagées, qui peuvent avoir des applicabilités déjà définies pour cette balise de réseau : celles-ci seront écrasées par les applicabilités existantes sur le réseau.",
     sharedModificationsNotWritableTagRenaming:
-        "L'étude contient au moins une modification partagée pour laquelle vous n'avez pas les droits de modification : le renommage de la balise pourra être refusé si la nouvelle balise n'est pas déjà définie sur ces modifications.",
+        "L'étude contient au moins une modification partagée pour laquelle vous n'avez pas les droits de modification : le renommage de la balise pourra être refusé si la nouvelle balise n'est pas déjà utilisée par ces modifications.",
     rootNetworksCount: '{count, plural, =1 {# réseau} other {# réseaux}}',
     deletingRootNetwork: 'Suppression du réseau racine en cours ...',
     creatingRootNetwork: 'Création du réseau racine en cours ...',

@@ -261,9 +261,9 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                                     <FormattedMessage
                                         id={
                                             sharedModificationsWriteAccess ===
-                                            SharedModificationsWriteAccess.ALL_WRITABLE
-                                                ? 'sharedModificationsApplicabilitiesOverwritten'
-                                                : 'sharedModificationsNotWritableTagRenaming'
+                                            SharedModificationsWriteAccess.NONE_WRITABLE
+                                                ? 'sharedModificationsNotWritableTagRenaming'
+                                                : 'sharedModificationsApplicabilitiesOverwritten'
                                         }
                                     />
                                 </Alert>

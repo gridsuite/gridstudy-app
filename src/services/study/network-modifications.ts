@@ -1503,7 +1503,8 @@ export function hasModificationReferences(containerUuids: UUID[]): Promise<boole
 export enum SharedModificationsWriteAccess {
     NO_SHARED_MODIFICATION = 'NO_SHARED_MODIFICATION',
     ALL_WRITABLE = 'ALL_WRITABLE',
-    SOME_NOT_WRITABLE = 'SOME_NOT_WRITABLE',
+    SOME_WRITABLE = 'SOME_WRITABLE',
+    NONE_WRITABLE = 'NONE_WRITABLE',
 }
 
 export function getSharedModificationsWriteAccess(studyUuid: UUID): Promise<SharedModificationsWriteAccess> {

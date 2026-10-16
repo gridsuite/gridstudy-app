@@ -1035,7 +1035,7 @@ const messages_en = {
     sharedModificationsApplicabilitiesOverwritten:
         'This study contains shared modifications, which might have already defined applicability for this network tag: they will be overwritten with the current applicability for this network.',
     sharedModificationsNotWritableTagRenaming:
-        'This study contains at least one shared modification you are not allowed to modify: renaming the tag may be refused if the new tag is not already defined on these modifications.',
+        'This study contains at least one shared modification you are not allowed to modify: renaming the tag may be refused if the new tag is not already used by these modifications.',
     rootNetworksCount: '{count, plural, =1 {# network} other {# networks}}',
     deletingRootNetwork: 'Deleting root network ...',
     creatingRootNetwork: 'Creating root network ...',
