@@ -5,17 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, Key, useEffect, useMemo, useRef } from 'react';
+import { FunctionComponent, Key, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box } from '@mui/material';
 import LinearProgress from '@mui/material/LinearProgress';
 import { AgGridReact } from 'ag-grid-react';
 import {
+    ComputingType,
     DefaultCellRenderer,
     getNoRowsMessage,
     RESULTS_LOADING_DELAY,
-    RunningStatus,
     TableType,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
@@ -26,7 +26,6 @@ import { AppState } from 'redux/reducer.type';
 import { ColDef } from 'ag-grid-community';
 
 interface LogicalControlsTableProps {
-    resultAvailable: boolean;
     rows: unknown[];
     isLoadingResult: boolean;
     columnDefs: ColDef[];
@@ -35,7 +34,6 @@ interface LogicalControlsTableProps {
 }
 
 export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> = ({
-    resultAvailable,
     rows,
     isLoadingResult,
     columnDefs,
@@ -45,6 +43,7 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
     const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
+    const computationStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOGICAL_CONTROLS]);
 
     const tableNameFormatted = intl.formatMessage({ id: tableName });
 
@@ -52,8 +51,6 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
         isLoading: isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
-
-    const messages = useIntlResultStatusMessages(intl, true);
 
     const defaultColDef = useMemo(
         () => ({
@@ -70,22 +67,8 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
         []
     );
 
-    let status = RunningStatus.IDLE;
-    if (isLoadingResult) {
-        status = RunningStatus.RUNNING;
-    } else if (resultAvailable) {
-        status = RunningStatus.SUCCEED;
-    }
-    const overlayNoRowsTemplate = getNoRowsMessage(messages, rows, status, !isLoadingResult);
-
-    // The grid only re-evaluates the no-rows overlay on row data changes. Let's force it
-    // to have a correct updated msg on the tab where the computation starts.
-    useEffect(() => {
-        const api = gridRef.current?.api;
-        if (api?.getDisplayedRowCount() === 0) {
-            api.showNoRowsOverlay();
-        }
-    }, [overlayNoRowsTemplate]);
+    const messages = useIntlResultStatusMessages(intl, true);
+    const overlayNoRowsTemplate = getNoRowsMessage(messages, rows, computationStatus, !isLoadingResult);
 
     return (
         <>
