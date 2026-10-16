@@ -125,6 +125,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const isEditNadMode = useSelector((state: RootState) => selectPanelEditMode(state, nadPanelId));
+    const panelTitle = useSelector((state: RootState) => selectPanel(state, nadPanelId)?.title);
     const { setPanelEditMode } = useWorkspacePanelActions();
     const workspaceId = useSelector(selectActiveWorkspaceId);
 
@@ -241,6 +242,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
             })
             .catch((error) => snackWithFallback(snackError, error, { headerId: 'diagramConfigUpdateError' }));
     };
+
+    const getPositions = () => (svgMetadata ? buildPositionsFromNadMetadata(svgMetadata) : []);
 
     const {
         handleOpenModificationDialog,
@@ -555,6 +558,8 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 onSave={handleSaveNadConfig}
                 onUpdate={handleUpdateNadConfig}
                 onLoad={handleReplaceNadConfig}
+                getPositions={getPositions}
+                panelTitle={panelTitle}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={handleToggleEditNadMode}
                 onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
