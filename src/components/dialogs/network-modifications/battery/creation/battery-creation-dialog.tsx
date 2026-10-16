@@ -166,6 +166,7 @@ export default function BatteryCreationDialog({
         <CustomFormProvider
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={batteryCreationFormSchema}
+            readOnly={isUpdate}
             {...formMethods}
         >
             <ModificationDialog

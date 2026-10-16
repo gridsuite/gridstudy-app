@@ -120,7 +120,7 @@ export function TabularDialog({
     );
 
     return (
-        <CustomFormProvider validationSchema={tabularFormSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={tabularFormSchema} readOnly={isUpdate} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}

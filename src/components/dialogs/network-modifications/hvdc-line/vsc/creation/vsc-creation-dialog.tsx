@@ -129,6 +129,7 @@ export default function VscCreationDialog({
         <CustomFormProvider
             {...formMethods}
             validationSchema={vscHvdcLineCreationFormSchema}
+            readOnly={isUpdate}
             isNodeBuilt={isNodeBuilt(currentNode)}
         >
             <ModificationDialog
