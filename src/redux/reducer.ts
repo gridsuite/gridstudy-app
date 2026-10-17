@@ -173,6 +173,8 @@ import {
     SET_COMPUTING_STATUS_INFOS,
     SET_DIRTY_COMPUTATION_PARAMETERS,
     SET_LAST_COMPLETED_COMPUTATION,
+    SET_SA_PROGRESS,
+    type SetSaProgressAction,
     SET_MONO_ROOT_STUDY,
     SET_NODE_ACTIVITIES,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_CONTEXT,
@@ -553,6 +555,7 @@ const initialState: AppState = {
     computingStatusParameters: {
         [ComputingType.LOAD_FLOW]: null,
     },
+    securityAnalysisProgress: null,
     computationStarting: false,
     optionalServices: (Object.keys(OptionalServicesNames) as OptionalServicesNames[]).map((key) => ({
         name: key,
@@ -1368,6 +1371,16 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_COMPUTING_STATUS, (state, action: SetComputingStatusAction) => {
         state.computingStatus[action.computingType] = action.runningStatus;
+        if (
+            action.computingType === ComputingType.SECURITY_ANALYSIS &&
+            action.runningStatus !== RunningStatus.RUNNING
+        ) {
+            state.securityAnalysisProgress = null;
+        }
+    });
+
+    builder.addCase(SET_SA_PROGRESS, (state, action: SetSaProgressAction) => {
+        state.securityAnalysisProgress = { current: action.current, total: action.total };
     });
 
     builder.addCase(

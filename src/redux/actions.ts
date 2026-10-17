@@ -905,6 +905,20 @@ export function removeFromGlobalFilterOptions(id: string): RemoveFromGlobalFilte
     };
 }
 
+export const SET_SA_PROGRESS = 'SET_SA_PROGRESS';
+export type SetSaProgressAction = Readonly<Action<typeof SET_SA_PROGRESS>> & {
+    current: number;
+    total: number;
+};
+
+export function setSaProgress(current: number, total: number): SetSaProgressAction {
+    return {
+        type: SET_SA_PROGRESS,
+        current,
+        total,
+    };
+}
+
 export const MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED = 'MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED';
 export type MarkNotFoundGlobalFiltersAsDeletedAction = Readonly<
     Action<typeof MARK_NOT_FOUND_GLOBAL_FILTERS_AS_DELETED>

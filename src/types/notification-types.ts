@@ -56,6 +56,7 @@ export enum NotificationType {
     SECURITY_ANALYSIS_RESULT = 'securityAnalysisResult',
     SECURITY_ANALYSIS_FAILED = 'securityAnalysis_failed',
     SECURITY_ANALYSIS_STATUS = 'securityAnalysis_status',
+    SECURITY_ANALYSIS_PROGRESS = 'securityAnalysis_progress',
     SENSITIVITY_ANALYSIS_RESULT = 'sensitivityAnalysisResult',
     SENSITIVITY_ANALYSIS_FAILED = 'sensitivityAnalysis_failed',
     SENSITIVITY_ANALYSIS_STATUS = 'sensitivityAnalysis_status',
@@ -316,6 +317,14 @@ interface LoadflowResultEventDataHeaders extends ComputationResultEventDataHeade
     updateType: NotificationType.LOADFLOW_RESULT;
 }
 
+interface SecurityAnalysisProgressEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.SECURITY_ANALYSIS_PROGRESS;
+    node: UUID;
+    rootNetworkUuid: UUID;
+    progressCurrent: number;
+    progressTotal: number;
+}
+
 interface ShortCircuitAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
     updateType: NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT;
 }
@@ -513,6 +522,11 @@ export interface LoadflowResultEventData extends CommonStudyEventData {
 
 export interface ComputationStatusEventData extends CommonStudyEventData {
     headers: ComputationStatusEventDataHeaders;
+    payload: undefined;
+}
+
+export interface SecurityAnalysisProgressEventData {
+    headers: SecurityAnalysisProgressEventDataHeaders;
     payload: undefined;
 }
 
