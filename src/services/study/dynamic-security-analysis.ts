@@ -113,20 +113,17 @@ export function fetchDynamicSecurityAnalysisParameters(
 
 export function updateDynamicSecurityAnalysisParameters(
     studyUuid: UUID,
-    newParams: DynamicSecurityAnalysisParametersFetchReturn | null
+    newParams: DynamicSecurityAnalysisParametersFetchReturn
 ): Promise<Response> {
     console.info(`Setting dynamic security analysis parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/parameters';
     console.debug(url);
 
     // send to back contingency list uuids instead of contingency list infos
-    const newParameters =
-        newParams != null
-            ? {
-                  ...newParams,
-                  contingencyListIds: newParams?.contingencyListInfos?.map((info) => info.id),
-              }
-            : newParams;
+    const newParameters = {
+        ...newParams,
+        contingencyListIds: newParams?.contingencyListInfos?.map((info) => info.id),
+    };
 
     delete newParameters?.contingencyListInfos;
 
@@ -137,5 +134,15 @@ export function updateDynamicSecurityAnalysisParameters(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newParameters),
+    });
+}
+
+export function resetDynamicSecurityAnalysisParameters(studyUuid: UUID): Promise<Response> {
+    console.info(`Resetting dynamic security analysis parameters on study '${studyUuid}' ...`);
+    const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/parameters/reset';
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'POST',
     });
 }

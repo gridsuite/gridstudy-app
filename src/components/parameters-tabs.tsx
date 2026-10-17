@@ -17,7 +17,7 @@ import {
     getLoadFlowProviders,
     getLoadFlowSpecificParametersDescription,
 } from 'services/loadflow';
-import { getLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
+import { getLoadFlowParameters, resetLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import GlassPane from './results/common/glass-pane';
@@ -46,6 +46,7 @@ import {
     PARAM_LANGUAGE,
     ParameterLayoutProvider,
     PccMinParametersInLine,
+    resetSecurityAnalysisParameters,
     RunningStatus,
     SecurityAnalysisParametersInline,
     SensitivityAnalysisParametersInline,
@@ -60,21 +61,25 @@ import {
     getShortCircuitParameters,
     getShortCircuitSpecificParametersDescription,
     setShortCircuitParameters,
+    resetShortCircuitParameters,
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 import { fetchContingencyCount } from '../services/study';
 import { useIsNodeUpdating } from 'components/node-activity/hooks/use-node-activity';
 import {
     fetchDynamicMarginCalculationParameters,
+    resetDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
 } from '../services/study/dynamic-margin-calculation';
 import {
     fetchDynamicSecurityAnalysisParameters,
+    resetDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisParameters,
 } from '../services/study/dynamic-security-analysis';
 import { NodeType } from './graph/tree-node.type';
 import {
     fetchDynamicSimulationParameters,
+    resetDynamicSimulationParameters,
     updateDynamicSimulationParameters,
 } from '../services/study/dynamic-simulation';
 import { fetchVoltageLevelsMapInfos } from '../services/study/network';
@@ -165,6 +170,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchProviders: getLoadFlowProviders,
             backendFetchParameters: getLoadFlowParameters,
             backendUpdateParameters: setLoadFlowParameters,
+            backendResetParameters: resetLoadFlowParameters,
             backendFetchSpecificParametersDescription: getLoadFlowSpecificParametersDescription,
             backendFetchDefaultLimitReductions: getLoadFlowDefaultLimitReductions,
         }
@@ -180,6 +186,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchProviders: fetchSecurityAnalysisProviders,
             backendFetchParameters: getSecurityAnalysisParameters,
             backendUpdateParameters: setSecurityAnalysisParameters,
+            backendResetParameters: resetSecurityAnalysisParameters,
             backendFetchDefaultLimitReductions: getSecurityAnalysisDefaultLimitReductions,
         }
     );
@@ -225,6 +232,7 @@ const ParametersTabs: FunctionComponent = () => {
         {
             backendFetchParameters: getShortCircuitParameters,
             backendUpdateParameters: setShortCircuitParameters,
+            backendResetParameters: resetShortCircuitParameters,
             backendFetchSpecificParametersDescription: getShortCircuitSpecificParametersDescription,
         }
     );
@@ -239,6 +247,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchProviders: fetchDynamicSimulationProviders,
             backendFetchParameters: fetchDynamicSimulationParameters,
             backendUpdateParameters: updateDynamicSimulationParameters,
+            backendResetParameters: resetDynamicSimulationParameters,
         }
     );
     useParametersNotification(
@@ -256,6 +265,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchProviders: fetchDynamicSecurityAnalysisProviders,
             backendFetchParameters: fetchDynamicSecurityAnalysisParameters,
             backendUpdateParameters: updateDynamicSecurityAnalysisParameters,
+            backendResetParameters: resetDynamicSecurityAnalysisParameters,
         }
     );
     useParametersNotification(
@@ -273,6 +283,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchProviders: fetchDynamicMarginCalculationProviders,
             backendFetchParameters: fetchDynamicMarginCalculationParameters,
             backendUpdateParameters: updateDynamicMarginCalculationParameters,
+            backendResetParameters: resetDynamicMarginCalculationParameters,
         }
     );
     useParametersNotification(
