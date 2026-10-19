@@ -16,6 +16,7 @@ import {
     ElementType,
     type EquipmentInfos,
     EquipmentType,
+    getCsvDelimiter,
     type IElementCreationDialog,
     type IElementUpdateDialog,
     type MuiStyles,
@@ -28,12 +29,15 @@ import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import { FormControlLabel, Switch, type Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer.type';
 import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { AddLocationOutlined } from '@mui/icons-material';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
+import { useCSVDownloader } from 'react-papaparse';
+import type { DiagramConfigPosition } from 'services/explore';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import VoltageLevelSearchMenu from './voltage-level-search-menu';
@@ -84,6 +88,8 @@ interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
     onUpdate?: (data: IElementUpdateDialog) => void;
     onLoad?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    getPositions: () => DiagramConfigPosition[];
+    panelTitle?: string;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     onEdit: (edit: NadEdit) => void;
@@ -102,6 +108,8 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     onSave,
     onUpdate,
     onLoad,
+    getPositions,
+    panelTitle,
     isEditNadMode,
     onToggleEditNadMode,
     onEdit,
@@ -134,6 +142,8 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const language = useSelector((state: AppState) => state.computedLanguage);
+    const { CSVDownloader } = useCSVDownloader();
 
     const handleCloseSaveDialog = () => {
         setIsSaveDialogOpen(false);
@@ -299,6 +309,19 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         <IconButton sx={styles.actionIcon} onClick={handleClickLoadIcon}>
                             <UploadIcon sx={styles.icon} />
                         </IconButton>
+                    </Tooltip>
+                    <Tooltip title={<FormattedMessage id={'exportNadPositions'} />}>
+                        <span>
+                            <CSVDownloader
+                                data={getPositions}
+                                filename={`nad-${panelTitle}-positions`}
+                                config={{ delimiter: getCsvDelimiter(language) }}
+                            >
+                                <IconButton sx={styles.actionIcon}>
+                                    <GetAppIcon sx={styles.icon} />
+                                </IconButton>
+                            </CSVDownloader>
+                        </span>
                     </Tooltip>
                     <Tooltip title={<FormattedMessage id={'searchVoltageLevelInNad'} />}>
                         <span>
