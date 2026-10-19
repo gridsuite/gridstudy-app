@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import { rowIndexColumnDefinition } from '../columns/common-column-definitions';
 import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import { CurrentTreeNode, isSecurityModificationNode } from 'components/graph/tree-node.type';
@@ -47,11 +47,6 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
             }),
         [tableDefinition, snackError, loadFlowStatus, isSecurityNode, nodesByAlias]
     );
-
-    // Refresh cells to apply styles when column definitions change (e.g. formula edit, load flow status)
-    useEffect(() => {
-        gridRef.current?.api?.refreshCells({ force: true, suppressFlash: true });
-    }, [columnsDefinitions]);
 
     const { isExternalFilterPresent, doesFormulaFilteringPass, isGlobalFilterPending } = useSpreadsheetGlobalFilter(
         gridRef,
