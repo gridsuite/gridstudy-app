@@ -250,9 +250,9 @@ export function setShortCircuitParameters(studyUuid: UUID, newParams: any) {
 
 export function resetShortCircuitParameters(studyUuid: UUID) {
     console.info('reset short circuit parameters');
-    const setShortCircuitParametersUrl = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters/reset';
-    console.debug(setShortCircuitParametersUrl);
-    return backendFetch(setShortCircuitParametersUrl, {
+    const resetShortCircuitParametersUrl = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters/reset';
+    console.debug(resetShortCircuitParametersUrl);
+    return backendFetch(resetShortCircuitParametersUrl, {
         method: 'POST',
     });
 }

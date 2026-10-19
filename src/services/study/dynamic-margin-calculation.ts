@@ -105,9 +105,7 @@ export function updateDynamicMarginCalculationParameters(
     });
 }
 
-export function resetDynamicMarginCalculationParameters(
-    studyUuid: UUID
-): Promise<Response> {
+export function resetDynamicMarginCalculationParameters(studyUuid: UUID): Promise<Response> {
     console.info(`Resetting dynamic margin calculation parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-margin-calculation/parameters/reset';
     console.debug(url);

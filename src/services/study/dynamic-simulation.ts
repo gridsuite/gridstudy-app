@@ -163,7 +163,7 @@ export function updateDynamicSimulationParameters(studyUuid: UUID, newParams: Dy
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: newParams ? JSON.stringify(mapDynamicSimulationParameters(newParams)) : newParams,
+        body: JSON.stringify(mapDynamicSimulationParameters(newParams)),
     });
 }
 

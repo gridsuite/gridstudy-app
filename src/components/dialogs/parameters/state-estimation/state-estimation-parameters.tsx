@@ -27,8 +27,10 @@ import {
     TabValue,
 } from './state-estimation-parameters-utils';
 import { StateEstimationParametersForm } from './state-estimation-parameters-form';
-import { updateStateEstimationParameters,
-resetStateEstimationParameters} from '../../../../services/study/state-estimation';
+import {
+    updateStateEstimationParameters,
+    resetStateEstimationParameters,
+} from '../../../../services/study/state-estimation';
 import { UseGetStateEstimationParametersProps } from './use-get-state-estimation-parameters';
 
 export const StateEstimationParameters = ({
