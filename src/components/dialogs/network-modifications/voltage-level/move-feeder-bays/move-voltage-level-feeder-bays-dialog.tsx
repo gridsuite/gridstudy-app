@@ -64,6 +64,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
     editData,
     defaultIdValue,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<MoveVoltageLevelFeederBaysDialogProps>) {
@@ -296,6 +297,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={moveVoltageLevelFeederBaysFormSchema}
             removeOptional={true}
             {...formMethods}

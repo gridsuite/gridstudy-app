@@ -252,6 +252,7 @@ const NetworkModificationNodeEditor = () => {
                 currentRootNetworkUuid={currentRootNetworkUuid}
                 editData={editData}
                 isUpdate={isUpdate}
+                isReadOnly={isReadOnly}
                 editDataFetchStatus={editDataFetchStatus}
                 dialogMode={dialogMode}
             />
@@ -269,6 +270,7 @@ const NetworkModificationNodeEditor = () => {
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     editData={editData as EquipmentDeletionDtoWithId}
                     isUpdate={isUpdate}
+                    isReadOnly={isReadOnly}
                     editDataFetchStatus={editDataFetchStatus}
                     equipmentType={equipmentType}
                 />
