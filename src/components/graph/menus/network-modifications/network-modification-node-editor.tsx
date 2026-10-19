@@ -223,6 +223,7 @@ const NetworkModificationNodeEditor = () => {
     const handleCloseDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
+        setIsReadOnly(false);
     };
 
     function withDefaultParams(Dialog: React.FC<any>) {
