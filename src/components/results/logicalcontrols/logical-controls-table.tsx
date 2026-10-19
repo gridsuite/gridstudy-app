@@ -81,7 +81,7 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
                 rows={rows}
                 overlayNoRowsTemplate={overlayNoRowsTemplate}
                 skipColumnHeaders={false}
-                computationType={TableType.StateEstimation}
+                computationType={TableType.LogicalControls}
                 computationSubType={tableName}
                 exportCsvResetKey={exportCsvResetKey}
                 language={language}
