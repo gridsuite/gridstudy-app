@@ -36,6 +36,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { AddLocationOutlined } from '@mui/icons-material';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
+import TooltipIconButton from 'components/common/tooltip-icon-button';
 import { useCSVDownloader } from 'react-papaparse';
 import type { DiagramConfigPosition } from 'services/explore';
 import { fetchNetworkElementInfos } from 'services/study/network';
@@ -277,6 +278,52 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         );
     }
 
+    function renderEditActions() {
+        return (
+            <>
+                <Divider orientation="vertical" flexItem sx={styles.divider} />
+                {!isFilterMode && (
+                    <>
+                        <TooltipIconButton
+                            tooltip={<FormattedMessage id={'nadReplaceWithFilter'} />}
+                            sx={styles.actionIcon}
+                            onClick={() => setFilterSelectorEdit(NadEditType.APPLY_FILTER)}
+                            disabled={isDiagramLoading}
+                        >
+                            <FilterAltIcon sx={styles.icon} />
+                        </TooltipIconButton>
+                        <TooltipIconButton
+                            tooltip={<FormattedMessage id={'addVoltageLevelsFromFilter'} />}
+                            sx={styles.actionIcon}
+                            onClick={() => setFilterSelectorEdit(NadEditType.ADD_FROM_FILTER)}
+                            disabled={isDiagramLoading}
+                        >
+                            <AddLocationAltOutlinedIcon sx={styles.icon} />
+                        </TooltipIconButton>
+                    </>
+                )}
+                <TooltipIconButton
+                    tooltip={<FormattedMessage id={'expandAllVoltageLevels'} />}
+                    sx={styles.actionIcon}
+                    onClick={handleClickExpandAllVoltageLevelsIcon}
+                    disabled={isDiagramLoading || !canExpandAll}
+                >
+                    <ArrowsOutputIcon sx={styles.icon} />
+                </TooltipIconButton>
+                {!isFilterMode && (
+                    <TooltipIconButton
+                        tooltip={<FormattedMessage id={'addVoltageLevel'} />}
+                        sx={styles.actionIcon}
+                        onClick={handleClickAddVoltageLevelIcon}
+                        disabled={isDiagramLoading}
+                    >
+                        <AddLocationOutlined sx={styles.icon} />
+                    </TooltipIconButton>
+                )}
+            </>
+        );
+    }
+
     /**
      * RENDER
      */
@@ -300,16 +347,20 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             <Divider orientation="vertical" flexItem sx={styles.divider} />
                         </>
                     )}
-                    <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
-                        <IconButton sx={styles.actionIcon} onClick={handleClickSaveIcon}>
-                            <SaveIcon sx={styles.icon} />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={<FormattedMessage id={'importAndReplaceFromGridExplore'} />}>
-                        <IconButton sx={styles.actionIcon} onClick={handleClickLoadIcon}>
-                            <UploadIcon sx={styles.icon} />
-                        </IconButton>
-                    </Tooltip>
+                    <TooltipIconButton
+                        tooltip={<FormattedMessage id={'SaveToGridexplore'} />}
+                        sx={styles.actionIcon}
+                        onClick={handleClickSaveIcon}
+                    >
+                        <SaveIcon sx={styles.icon} />
+                    </TooltipIconButton>
+                    <TooltipIconButton
+                        tooltip={<FormattedMessage id={'importAndReplaceFromGridExplore'} />}
+                        sx={styles.actionIcon}
+                        onClick={handleClickLoadIcon}
+                    >
+                        <UploadIcon sx={styles.icon} />
+                    </TooltipIconButton>
                     <Tooltip title={<FormattedMessage id={'exportNadPositions'} />}>
                         <span>
                             <CSVDownloader
@@ -323,17 +374,14 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             </CSVDownloader>
                         </span>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id={'searchVoltageLevelInNad'} />}>
-                        <span>
-                            <IconButton
-                                sx={styles.actionIcon}
-                                onClick={handleClickSearchVoltageLevelIcon}
-                                disabled={isDiagramLoading || !svgVoltageLevels || svgVoltageLevels.length === 0}
-                            >
-                                <SearchIcon sx={styles.icon} />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
+                    <TooltipIconButton
+                        tooltip={<FormattedMessage id={'searchVoltageLevelInNad'} />}
+                        sx={styles.actionIcon}
+                        onClick={handleClickSearchVoltageLevelIcon}
+                        disabled={isDiagramLoading || !svgVoltageLevels || svgVoltageLevels.length === 0}
+                    >
+                        <SearchIcon sx={styles.icon} />
+                    </TooltipIconButton>
                     {isFilterMode && (
                         <>
                             <Divider orientation="vertical" flexItem sx={styles.divider} />
@@ -347,61 +395,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             />
                         </>
                     )}
-                    {isEditNadMode && (
-                        <>
-                            <Divider orientation="vertical" flexItem sx={styles.divider} />
-                            {!isFilterMode && (
-                                <>
-                                    <Tooltip title={<FormattedMessage id={'nadReplaceWithFilter'} />}>
-                                        <span>
-                                            <IconButton
-                                                sx={styles.actionIcon}
-                                                onClick={() => setFilterSelectorEdit(NadEditType.APPLY_FILTER)}
-                                                disabled={isDiagramLoading}
-                                            >
-                                                <FilterAltIcon sx={styles.icon} />
-                                            </IconButton>
-                                        </span>
-                                    </Tooltip>
-                                    <Tooltip title={<FormattedMessage id={'addVoltageLevelsFromFilter'} />}>
-                                        <span>
-                                            <IconButton
-                                                sx={styles.actionIcon}
-                                                onClick={() => setFilterSelectorEdit(NadEditType.ADD_FROM_FILTER)}
-                                                disabled={isDiagramLoading}
-                                            >
-                                                <AddLocationAltOutlinedIcon sx={styles.icon} />
-                                            </IconButton>
-                                        </span>
-                                    </Tooltip>
-                                </>
-                            )}
-                            <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
-                                <span>
-                                    <IconButton
-                                        sx={styles.actionIcon}
-                                        onClick={handleClickExpandAllVoltageLevelsIcon}
-                                        disabled={isDiagramLoading || !canExpandAll}
-                                    >
-                                        <ArrowsOutputIcon sx={styles.icon} />
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
-                            {!isFilterMode && (
-                                <Tooltip title={<FormattedMessage id={'addVoltageLevel'} />}>
-                                    <span>
-                                        <IconButton
-                                            sx={styles.actionIcon}
-                                            onClick={handleClickAddVoltageLevelIcon}
-                                            disabled={isDiagramLoading}
-                                        >
-                                            <AddLocationOutlined sx={styles.icon} />
-                                        </IconButton>
-                                    </span>
-                                </Tooltip>
-                            )}
-                        </>
-                    )}
+                    {isEditNadMode && renderEditActions()}
                 </Box>
             </Box>
             <FormControlLabel
