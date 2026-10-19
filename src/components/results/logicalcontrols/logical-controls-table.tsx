@@ -85,6 +85,7 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
                 computationSubType={tableName}
                 exportCsvResetKey={exportCsvResetKey}
                 language={language}
+                withTooltip
             />
         </>
     );
