@@ -350,34 +350,20 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         [onRestoreHistoryState]
     );
 
-    // When the NAD shows other voltage levels, we ditch the previous diagram viewer reference and viewbox
-    // because we do not want to use an obsolete viewbox on the new NAD.
-    const resetViewBox = useCallback(() => {
-        diagramViewerRef.current = null;
-        initialLocalStorageViewBox.current = null;
-        saveNadPanelLocalState(studyUuid, workspaceId, nadPanelId, { viewBox: undefined });
-    }, [studyUuid, workspaceId, nadPanelId]);
-
     const handleReplaceNadConfig = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
-            resetViewBox();
+            // Since we want to replace the NAD with a new one, we ditch the previous diagram
+            // viewer reference and viewbox because we do not want to use an obsolete viewbox on the new NAD.
+            diagramViewerRef.current = null;
+            initialLocalStorageViewBox.current = null;
+            saveNadPanelLocalState(studyUuid, workspaceId, nadPanelId, { viewBox: undefined });
             onReplaceNad(
                 elementName,
                 elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
                 elementType === ElementType.FILTER ? elementUuid : undefined
             );
         },
-        [onReplaceNad, resetViewBox]
-    );
-
-    const handleEdit = useCallback(
-        (edit: NadEdit) => {
-            if (edit.type === NadEditType.APPLY_FILTER) {
-                resetViewBox();
-            }
-            onEdit(edit);
-        },
-        [onEdit, resetViewBox]
+        [onReplaceNad, studyUuid, workspaceId, nadPanelId]
     );
 
     const handleFocusVoltageLevel = useCallback(
@@ -574,7 +560,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 panelTitle={panelTitle}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={handleToggleEditNadMode}
-                onEdit={handleEdit}
+                onEdit={onEdit}
                 isDiagramLoading={loadingState}
                 filterUuid={filterUuid}
                 filterName={filterName}
