@@ -8,15 +8,14 @@
 import { IntlShape } from 'react-intl';
 import { ColDef, ValueGetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
+import { LogicalControlsResultRow } from './logical-controls-result.type';
 
-// convert a Records array as values array, including the Record index (equipmentIdentifier)
-export const flattenRecord = <T extends object>(record?: Record<string, T>): (T & { equipmentIdentifier: string })[] =>
+// Convert a record to rows, including its key as the equipment identifier.
+export const flattenRecord = <T extends object>(record?: Record<string, T>): LogicalControlsResultRow<T>[] =>
     record ? Object.entries(record).map(([equipmentIdentifier, props]) => ({ equipmentIdentifier, ...props })) : [];
 
-// same for array version
-export const flattenRecordOfArrays = <T extends object>(
-    record?: Record<string, T[]>
-): (T & { equipmentIdentifier: string })[] =>
+// Flatten records of arrays while preserving the equipment identifier on each row.
+export const flattenRecordOfArrays = <T extends object>(record?: Record<string, T[]>): LogicalControlsResultRow<T>[] =>
     record
         ? Object.entries(record).flatMap(([equipmentIdentifier, props]) =>
               props.map((value) => ({ equipmentIdentifier, ...value }))

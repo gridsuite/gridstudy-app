@@ -9,7 +9,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index'
 import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { StateEstimationParameters } from '../../components/dialogs/parameters/state-estimation/state-estimation-parameters-utils';
-import { LogicalControlsResultDto } from '../../components/results/logicalcontrols/logicalControls.types';
+import { LogicalControlsResultDto } from '../../components/results/logicalcontrols/logical-controls-result.type';
 
 export function startStateEstimation(
     studyUuid: UUID,

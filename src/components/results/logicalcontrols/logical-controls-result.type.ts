@@ -5,6 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ColDef } from 'ag-grid-community';
+import type { UUID } from 'node:crypto';
+import { Key } from 'react';
+
 export enum MeasurementType {
     ACTIVE_TRANSIT = 'ACTIVE_TRANSIT',
     ACTIVE_TRANSIT_ORIGIN = 'ACTIVE_TRANSIT_ORIGIN',
@@ -79,8 +83,8 @@ export interface VoltageDeviation {
 }
 
 // Maps the back-end DTO.
-// The record key is busId for balances and voltageDeviations ; an equipmentId for the others.
-// There may is a single result for an id (like balances) or a result array (like nonZeroMeasurementsOnDisconnected).
+// The record key is a busId for balances and voltageDeviations, and an equipmentId for the others.
+// Each id maps to either a single result or an array of results.
 export interface LogicalControlsResultDto {
     balances: Record<string, BoucherotBalance>;
     nonZeroMeasurementsOnDisconnected: Record<string, InvalidMeasurement[]>;
@@ -88,4 +92,35 @@ export interface LogicalControlsResultDto {
     originExtremityDeviations: Record<string, OriginExtremityDeviation[]>;
     outOfBoundsMeasurements: Record<string, OutOfBoundsMeasurement[]>;
     voltageDeviations: Record<string, VoltageDeviation>;
+}
+
+export type LogicalControlsResultRow<T> = T & { equipmentIdentifier: string };
+
+export interface LogicalControlsResult {
+    balances: LogicalControlsResultRow<BoucherotBalance>[];
+    nonZeroMeasurementsOnDisconnected: LogicalControlsResultRow<InvalidMeasurement>[];
+    zeroMeasurementsOnConnected: LogicalControlsResultRow<NullMeasurement>[];
+    originExtremityDeviations: LogicalControlsResultRow<OriginExtremityDeviation>[];
+    outOfBoundsMeasurements: LogicalControlsResultRow<OutOfBoundsMeasurement>[];
+    voltageDeviations: LogicalControlsResultRow<VoltageDeviation>[];
+}
+
+export interface LogicalControlsTabProps {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+}
+
+export interface LogicalControlsResultTableProps {
+    result: Partial<LogicalControlsResult>;
+    isLoadingResult: boolean;
+    columnDefs: ColDef[];
+    tableName:
+        | 'CsvNameBalances'
+        | 'CsvNameNonZeroMeasurementsOnDisconnected'
+        | 'CsvNameZeroMeasurementsOnConnected'
+        | 'CsvNameOriginExtremityDeviations'
+        | 'CsvNameOutOfBoundsMeasurements'
+        | 'CsvNameVoltageDeviations';
+    exportCsvResetKey: Key;
 }

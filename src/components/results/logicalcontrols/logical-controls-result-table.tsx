@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, Key, useMemo, useRef } from 'react';
+import { FunctionComponent, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box } from '@mui/material';
@@ -16,6 +16,7 @@ import {
     DefaultCellRenderer,
     getNoRowsMessage,
     RESULTS_LOADING_DELAY,
+    RunningStatus,
     TableType,
     useIntlResultStatusMessages,
     useOpenLoaderShortWait,
@@ -23,18 +24,10 @@ import {
 import { RenderTableAndExportCsv } from 'components/utils/renderTable-ExportCsv';
 import { PARAM_COMPUTED_LANGUAGE } from 'utils/config-params';
 import { AppState } from 'redux/reducer.type';
-import { ColDef } from 'ag-grid-community';
+import { LogicalControlsResultTableProps } from './logical-controls-result.type';
 
-interface LogicalControlsTableProps {
-    rows: unknown[];
-    isLoadingResult: boolean;
-    columnDefs: ColDef[];
-    tableName: string;
-    exportCsvResetKey: Key;
-}
-
-export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> = ({
-    rows,
+const LogicalControlsResultTable: FunctionComponent<LogicalControlsResultTableProps> = ({
+    result,
     isLoadingResult,
     columnDefs,
     tableName,
@@ -43,12 +36,17 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
     const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
-    const computationStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOGICAL_CONTROLS]);
+    const logicalControlsStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.LOGICAL_CONTROLS]
+    );
 
     const tableNameFormatted = intl.formatMessage({ id: tableName });
 
     const openLoaderTab = useOpenLoaderShortWait({
-        isLoading: isLoadingResult,
+        isLoading:
+            logicalControlsStatus === RunningStatus.RUNNING ||
+            logicalControlsStatus === RunningStatus.PRELOADING ||
+            isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -68,7 +66,26 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
     );
 
     const messages = useIntlResultStatusMessages(intl, true);
-    const overlayNoRowsTemplate = getNoRowsMessage(messages, rows, computationStatus, !isLoadingResult);
+    const rowsToShow = (() => {
+        switch (tableName) {
+            case 'CsvNameBalances':
+                return result.balances ?? [];
+            case 'CsvNameNonZeroMeasurementsOnDisconnected':
+                return result.nonZeroMeasurementsOnDisconnected ?? [];
+            case 'CsvNameZeroMeasurementsOnConnected':
+                return result.zeroMeasurementsOnConnected ?? [];
+            case 'CsvNameOriginExtremityDeviations':
+                return result.originExtremityDeviations ?? [];
+            case 'CsvNameOutOfBoundsMeasurements':
+                return result.outOfBoundsMeasurements ?? [];
+            case 'CsvNameVoltageDeviations':
+                return result.voltageDeviations ?? [];
+            default:
+                return [];
+        }
+    })();
+
+    const message = getNoRowsMessage(messages, rowsToShow, logicalControlsStatus, !isLoadingResult);
 
     return (
         <>
@@ -78,8 +95,8 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
                 columns={columnDefs}
                 defaultColDef={defaultColDef}
                 tableName={tableNameFormatted}
-                rows={rows}
-                overlayNoRowsTemplate={overlayNoRowsTemplate}
+                rows={rowsToShow}
+                overlayNoRowsTemplate={message}
                 skipColumnHeaders={false}
                 computationType={TableType.LogicalControls}
                 computationSubType={tableName}
@@ -90,3 +107,5 @@ export const LogicalControlsTable: FunctionComponent<LogicalControlsTableProps> 
         </>
     );
 };
+
+export default LogicalControlsResultTable;
