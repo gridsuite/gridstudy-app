@@ -107,6 +107,19 @@ export function startLogicalControls(
     return backendFetch(url, { method: 'post' });
 }
 
+export function stopLogicalControls(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Stopping logical controls on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/logical-controls/stop`;
+    console.debug(url);
+    return backendFetch(url, { method: 'put' });
+}
+
 export function fetchLogicalControlsStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         `Fetching logical controls status on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`

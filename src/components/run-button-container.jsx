@@ -41,7 +41,12 @@ import { getLoadFlowProvider, startLoadFlow, stopLoadFlow } from '../services/st
 import { startSecurityAnalysis, stopSecurityAnalysis } from '../services/study/security-analysis';
 import { startShortCircuitAnalysis, stopShortCircuitAnalysis } from '../services/study/short-circuit-analysis';
 import { startVoltageInit, stopVoltageInit } from '../services/study/voltage-init';
-import { startLogicalControls, startStateEstimation, stopStateEstimation } from '../services/study/state-estimation';
+import {
+    startLogicalControls,
+    startStateEstimation,
+    stopLogicalControls,
+    stopStateEstimation,
+} from '../services/study/state-estimation';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import {
@@ -510,7 +515,11 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                         'startLogicalControlsError'
                     );
                 },
-                // logical controls cannot be stopped: no actionOnRunnable
+                actionOnRunnable() {
+                    actionOnRunnables(ComputingType.LOGICAL_CONTROLS, () =>
+                        stopLogicalControls(studyUuid, currentNode?.id, currentRootNetworkUuid)
+                    );
+                },
             },
 
             [ComputingType.PCC_MIN]: {

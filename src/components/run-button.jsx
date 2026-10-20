@@ -37,7 +37,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             case RunningStatus.IDLE:
                 return Object.values(runnablesText);
             case RunningStatus.RUNNING:
-                // some computations cannot be stopped (ex: logical controls)
+                // only offer stopping when the computation provides a stop action
                 return runnables[selectedRunnable].actionOnRunnable
                     ? Array.of(intl.formatMessage({ id: 'StopComputation' }))
                     : [];
