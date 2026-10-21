@@ -10,6 +10,7 @@ import { IntlShape } from 'react-intl';
 import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { useSelector } from 'react-redux';
 import {
+    BooleanCellRenderer,
     CustomAggridComparatorFilter,
     makeAgGridCustomHeaderColumn,
     SortParams,
@@ -20,7 +21,6 @@ import {
     MeasurementInformationResult,
     MeasurementInformationResultDto,
     MeasurementType,
-    Bounds,
     QualityCriterionResult,
     ValidityType,
 } from './state-estimation-result.type';
@@ -145,15 +145,12 @@ export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): Co
             field: 'differenceValue',
             context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
         }),
-        createEnumColumn(
-            'outOfBound',
-            'OutOfBound',
-            Object.values(Bounds),
-            getEnumLabel,
-            intl,
-            sortParams,
-            filterParams
-        ),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'OutOfBound' }),
+            colId: 'outOfBound',
+            field: 'outOfBound',
+            cellRenderer: BooleanCellRenderer,
+        }),
     ];
 };
 
@@ -238,7 +235,7 @@ export function mapMeasurementResults(
             currentValue: measurementInformationResult.currentValue,
             estimatedValue: measurementInformationResult.estimatedValue,
             differenceValue: measurementInformationResult.differenceValue,
-            outOfBound: measurementInformationResult.outOfBound ? Bounds.OUT_OF_BOUNDS : Bounds.IN_BOUNDS,
+            outOfBound: measurementInformationResult.outOfBound,
         };
     });
 }
