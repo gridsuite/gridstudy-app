@@ -1153,6 +1153,7 @@ const messages_fr = {
     addVoltageLevelsFromFilter: 'Ajouter un filtre complémentaire',
     addVoltageLevel: 'Ajouter un poste',
     searchVoltageLevelInNad: 'Rechercher un poste',
+    exportNadPositions: 'Exporter les positions en CSV',
     noResultsFound: 'Aucun résultat trouvé',
     hide: 'Masquer',
     hideAll: 'Tout masquer',
