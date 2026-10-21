@@ -11,14 +11,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import SplitButton from './utils/split-button';
 import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
-import { LOAD_FLOW_RUNNABLES } from './run-button.constant';
-import { DialogContentText } from '@mui/material';
-import { SelectOptionsDialog } from '../utils/dialogs.tsx';
 import { useSelector } from 'react-redux';
+import { SelectOptionsDialog } from '../utils/dialogs';
+import { DialogContentText } from '@mui/material';
+import { LOAD_FLOW_RUNNABLES } from './run-button.constant';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled, canRun = () => true }) => {
     const intl = useIntl();
-
     const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
     const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
 
@@ -146,7 +145,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                 computationStopped={computationStopped}
             />
             <SelectOptionsDialog
-                title=""
+                title={''}
                 open={isLaunchingPopupOpen}
                 onClose={handleLaunchingPopupClose}
                 onClick={handleLaunchingPopup}
@@ -155,7 +154,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                         <FormattedMessage id="launchComputationConfirmQuestion" />
                     </DialogContentText>
                 }
-                validateKey="dialog.button.launch"
+                validateKey={'dialog.button.launch'}
             />
         </>
     );
