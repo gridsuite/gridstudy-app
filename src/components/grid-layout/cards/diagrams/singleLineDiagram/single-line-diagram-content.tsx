@@ -98,6 +98,11 @@ type BusMenuState = {
     display: boolean;
 };
 
+type PendingShortCircuitAnalysis = {
+    context: { busId: string };
+    debug: boolean;
+};
+
 const defaultBusMenuState: BusMenuState = {
     position: [-1, -1],
     busId: null,
@@ -125,12 +130,11 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const busIdRef = useRef<string | null>(null);
 
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
-    const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
-    // a transient state which is used only for a run with popup dialog
-    const [runWithDebug, setRunWithDebug] = useState(false);
+    const [pendingShortCircuitAnalysis, setPendingShortCircuitAnalysis] = useState<PendingShortCircuitAnalysis | null>(
+        null
+    );
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isEditBlocked = useIsEditBlocked(currentNode?.id);
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
@@ -279,9 +283,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const handleRunShortcircuitAnalysisWithConfirmation = useCallback(
         (busId: string, debug: boolean) => {
             if (isDirtyComputationParameters) {
-                setIsLaunchingPopupOpen(true);
-                setRunWithDebug(debug);
-                busIdRef.current = busId;
+                setPendingShortCircuitAnalysis({ context: { busId }, debug });
             } else {
                 handleRunShortcircuitAnalysis(busId, debug);
             }
@@ -477,14 +479,15 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     ]);
 
     const handleLaunchingPopupClose = useCallback(() => {
-        setIsLaunchingPopupOpen(false);
+        setPendingShortCircuitAnalysis(null);
     }, []);
 
     const handleLaunchingPopup = useCallback(() => {
-        setIsLaunchingPopupOpen(false);
-        handleRunShortcircuitAnalysis(busIdRef.current ?? '', runWithDebug);
-        busIdRef.current = null;
-    }, [handleRunShortcircuitAnalysis, runWithDebug]);
+        if (pendingShortCircuitAnalysis) {
+            setPendingShortCircuitAnalysis(null);
+            handleRunShortcircuitAnalysis(pendingShortCircuitAnalysis.context.busId, pendingShortCircuitAnalysis.debug);
+        }
+    }, [handleRunShortcircuitAnalysis, pendingShortCircuitAnalysis]);
 
     /**
      * RENDER
@@ -493,7 +496,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         <>
             <SelectOptionsDialog
                 title=""
-                open={isLaunchingPopupOpen}
+                open={pendingShortCircuitAnalysis !== null}
                 onClose={handleLaunchingPopupClose}
                 onClick={handleLaunchingPopup}
                 child={
