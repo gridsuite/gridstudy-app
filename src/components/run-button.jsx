@@ -16,13 +16,14 @@ import { SelectOptionsDialog } from '../utils/dialogs';
 import { DialogContentText } from '@mui/material';
 import { LOAD_FLOW_RUNNABLES } from './run-button.constant';
 
+/** @typedef {{ context: { runnable: string }, debug: boolean }} PendingRunButtonComputation */
+
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled, canRun = () => true }) => {
     const intl = useIntl();
     const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
-    const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
-
-    // a transient state which is used only for a run with popup dialog
-    const [runWithDebug, setRunWithDebug] = useState(false);
+    const [pendingComputation, setPendingComputation] = useState(
+        /** @type {PendingRunButtonComputation | null} */ (null)
+    );
 
     const runnablesText = useMemo(
         () => Object.fromEntries(activeRunnables.map((k) => [k, intl.formatMessage({ id: runnables[k].messageId })])),
@@ -115,8 +116,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     const attemptStartComputation = useCallback(
         (debug) => {
             if (isDirtyComputationParameters) {
-                setIsLaunchingPopupOpen(true);
-                setRunWithDebug(debug);
+                setPendingComputation({ context: { runnable: selectedRunnable }, debug });
             } else {
                 runnables[selectedRunnable].startComputation(debug);
             }
@@ -125,13 +125,15 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     );
 
     const handleLaunchingPopupClose = useCallback(() => {
-        setIsLaunchingPopupOpen(false);
+        setPendingComputation(null);
     }, []);
 
     const handleLaunchingPopup = useCallback(() => {
-        setIsLaunchingPopupOpen(false);
-        runnables[selectedRunnable].startComputation(runWithDebug);
-    }, [runnables, selectedRunnable, runWithDebug]);
+        if (pendingComputation) {
+            setPendingComputation(null);
+            runnables[pendingComputation.context.runnable].startComputation(pendingComputation.debug);
+        }
+    }, [runnables, pendingComputation]);
 
     return (
         <>
@@ -149,7 +151,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             />
             <SelectOptionsDialog
                 title={''}
-                open={isLaunchingPopupOpen}
+                open={pendingComputation !== null}
                 onClose={handleLaunchingPopupClose}
                 onClick={handleLaunchingPopup}
                 child={
