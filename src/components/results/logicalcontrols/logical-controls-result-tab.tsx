@@ -29,12 +29,38 @@ import {
     logicalControlsVoltageDeviationsColumnsDefinition,
 } from './logical-controls-result-utils';
 
-const BALANCES_TAB_INDEX = 0;
-const NON_ZERO_MEASUREMENTS_ON_DISCONNECTED_TAB_INDEX = 1;
-const ZERO_MEASUREMENTS_ON_CONNECTED_TAB_INDEX = 2;
-const ORIGIN_EXTREMITY_DEVIATIONS_TAB_INDEX = 3;
-const OUT_OF_BOUNDS_MEASUREMENTS_TAB_INDEX = 4;
-const VOLTAGE_DEVIATIONS_TAB_INDEX = 5;
+const LOGICAL_CONTROLS_TABS = [
+    {
+        label: 'LogicalControlsBalances',
+        tableName: 'CsvNameBalances',
+        columnsDefinition: logicalControlsBalancesColumnsDefinition,
+    },
+    {
+        label: 'LogicalControlsNonZeroMeasurementsOnDisconnected',
+        tableName: 'CsvNameNonZeroMeasurementsOnDisconnected',
+        columnsDefinition: logicalControlsInvalidMeasurementsColumnsDefinition,
+    },
+    {
+        label: 'LogicalControlsZeroMeasurementsOnConnected',
+        tableName: 'CsvNameZeroMeasurementsOnConnected',
+        columnsDefinition: logicalControlsNullMeasurementsColumnsDefinition,
+    },
+    {
+        label: 'LogicalControlsOriginExtremityDeviations',
+        tableName: 'CsvNameOriginExtremityDeviations',
+        columnsDefinition: logicalControlsOriginExtremityDeviationsColumnsDefinition,
+    },
+    {
+        label: 'LogicalControlsOutOfBoundsMeasurements',
+        tableName: 'CsvNameOutOfBoundsMeasurements',
+        columnsDefinition: logicalControlsOutOfBoundsMeasurementsColumnsDefinition,
+    },
+    {
+        label: 'LogicalControlsVoltageDeviations',
+        tableName: 'CsvNameVoltageDeviations',
+        columnsDefinition: logicalControlsVoltageDeviationsColumnsDefinition,
+    },
+] as const;
 
 export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps> = ({
     studyUuid,
@@ -42,7 +68,7 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
     currentRootNetworkUuid,
 }) => {
     const intl = useIntl();
-    const [tabIndex, setTabIndex] = useState(BALANCES_TAB_INDEX);
+    const [tabIndex, setTabIndex] = useState(0);
     const logicalControlsStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.LOGICAL_CONTROLS]
     );
@@ -55,24 +81,8 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
         invalidations: logicalControlsResultInvalidations,
     });
 
-    const columnDefs = useMemo(() => {
-        switch (tabIndex) {
-            case BALANCES_TAB_INDEX:
-                return logicalControlsBalancesColumnsDefinition(intl);
-            case NON_ZERO_MEASUREMENTS_ON_DISCONNECTED_TAB_INDEX:
-                return logicalControlsInvalidMeasurementsColumnsDefinition(intl);
-            case ZERO_MEASUREMENTS_ON_CONNECTED_TAB_INDEX:
-                return logicalControlsNullMeasurementsColumnsDefinition(intl);
-            case ORIGIN_EXTREMITY_DEVIATIONS_TAB_INDEX:
-                return logicalControlsOriginExtremityDeviationsColumnsDefinition(intl);
-            case OUT_OF_BOUNDS_MEASUREMENTS_TAB_INDEX:
-                return logicalControlsOutOfBoundsMeasurementsColumnsDefinition(intl);
-            case VOLTAGE_DEVIATIONS_TAB_INDEX:
-                return logicalControlsVoltageDeviationsColumnsDefinition(intl);
-            default:
-                return [];
-        }
-    }, [intl, tabIndex]);
+    const selectedTab = LOGICAL_CONTROLS_TABS[tabIndex];
+    const columnDefs = useMemo(() => selectedTab.columnsDefinition(intl), [intl, selectedTab]);
 
     const handleTabChange = (_event: SyntheticEvent, newTabIndex: number) => {
         setTabIndex(newTabIndex);
@@ -99,68 +109,19 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Tabs value={tabIndex} onChange={handleTabChange}>
-                <Tab label={<FormattedMessage id="LogicalControlsBalances" />} />
-                <Tab label={<FormattedMessage id="LogicalControlsNonZeroMeasurementsOnDisconnected" />} />
-                <Tab label={<FormattedMessage id="LogicalControlsZeroMeasurementsOnConnected" />} />
-                <Tab label={<FormattedMessage id="LogicalControlsOriginExtremityDeviations" />} />
-                <Tab label={<FormattedMessage id="LogicalControlsOutOfBoundsMeasurements" />} />
-                <Tab label={<FormattedMessage id="LogicalControlsVoltageDeviations" />} />
+                {LOGICAL_CONTROLS_TABS.map(({ label }) => (
+                    <Tab key={label} label={<FormattedMessage id={label} />} />
+                ))}
             </Tabs>
 
-            {tabIndex === BALANCES_TAB_INDEX && (
-                <LogicalControlsResultTable
-                    result={result}
-                    columnDefs={columnDefs}
-                    isLoadingResult={isLoadingResult}
-                    tableName="CsvNameBalances"
-                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                />
-            )}
-            {tabIndex === NON_ZERO_MEASUREMENTS_ON_DISCONNECTED_TAB_INDEX && (
-                <LogicalControlsResultTable
-                    result={result}
-                    columnDefs={columnDefs}
-                    isLoadingResult={isLoadingResult}
-                    tableName="CsvNameNonZeroMeasurementsOnDisconnected"
-                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                />
-            )}
-            {tabIndex === ZERO_MEASUREMENTS_ON_CONNECTED_TAB_INDEX && (
-                <LogicalControlsResultTable
-                    result={result}
-                    columnDefs={columnDefs}
-                    isLoadingResult={isLoadingResult}
-                    tableName="CsvNameZeroMeasurementsOnConnected"
-                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                />
-            )}
-            {tabIndex === ORIGIN_EXTREMITY_DEVIATIONS_TAB_INDEX && (
-                <LogicalControlsResultTable
-                    result={result}
-                    columnDefs={columnDefs}
-                    isLoadingResult={isLoadingResult}
-                    tableName="CsvNameOriginExtremityDeviations"
-                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                />
-            )}
-            {tabIndex === OUT_OF_BOUNDS_MEASUREMENTS_TAB_INDEX && (
-                <LogicalControlsResultTable
-                    result={result}
-                    columnDefs={columnDefs}
-                    isLoadingResult={isLoadingResult}
-                    tableName="CsvNameOutOfBoundsMeasurements"
-                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                />
-            )}
-            {tabIndex === VOLTAGE_DEVIATIONS_TAB_INDEX && (
-                <LogicalControlsResultTable
-                    result={result}
-                    columnDefs={columnDefs}
-                    isLoadingResult={isLoadingResult}
-                    tableName="CsvNameVoltageDeviations"
-                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                />
-            )}
+            <LogicalControlsResultTable
+                key={selectedTab.tableName}
+                result={result}
+                columnDefs={columnDefs}
+                isLoadingResult={isLoadingResult}
+                tableName={selectedTab.tableName}
+                exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+            />
         </Box>
     );
 };
