@@ -64,7 +64,8 @@ import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popov
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import useDebugSubscription from '../../../../../hooks/computation-debug/use-debug-subscription';
-import { useLaunchComputationDialog } from 'hooks/use-launch-computation-dialog';
+import { DialogContentText } from '@mui/material';
+import { SelectOptionsDialog } from '../../../../../utils/dialogs';
 
 const oneBusLoaderStyle = (theme: Theme) => ({
     display: 'flex',
@@ -124,9 +125,12 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const busIdRef = useRef<string | null>(null);
 
-    const { launchComputationWithConfirmation, renderComputationLaunchConfirmationDialog } =
-        useLaunchComputationDialog();
+    const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
+    const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
+    // a transient state which is used only for a run with popup dialog
+    const [runWithDebug, setRunWithDebug] = useState(false);
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isEditBlocked = useIsEditBlocked(currentNode?.id);
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
@@ -274,9 +278,15 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
 
     const handleRunShortcircuitAnalysisWithConfirmation = useCallback(
         (busId: string, debug: boolean) => {
-            launchComputationWithConfirmation(() => handleRunShortcircuitAnalysis(busId, debug));
+            if (isDirtyComputationParameters) {
+                setIsLaunchingPopupOpen(true);
+                setRunWithDebug(debug);
+                busIdRef.current = busId;
+            } else {
+                handleRunShortcircuitAnalysis(busId, debug);
+            }
         },
-        [launchComputationWithConfirmation, handleRunShortcircuitAnalysis]
+        [handleRunShortcircuitAnalysis, isDirtyComputationParameters]
     );
 
     const displayBusMenu = () => {
@@ -466,13 +476,33 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         setLocallySwitchedBreaker,
     ]);
 
+    const handleLaunchingPopupClose = useCallback(() => {
+        setIsLaunchingPopupOpen(false);
+    }, []);
+
+    const handleLaunchingPopup = useCallback(() => {
+        setIsLaunchingPopupOpen(false);
+        handleRunShortcircuitAnalysis(busIdRef.current ?? '', runWithDebug);
+        busIdRef.current = null;
+    }, [handleRunShortcircuitAnalysis, runWithDebug]);
+
     /**
      * RENDER
      */
-
     return (
         <>
-            {renderComputationLaunchConfirmationDialog()}
+            <SelectOptionsDialog
+                title=""
+                open={isLaunchingPopupOpen}
+                onClose={handleLaunchingPopupClose}
+                onClick={handleLaunchingPopup}
+                child={
+                    <DialogContentText>
+                        <FormattedMessage id="launchComputationConfirmQuestion" />
+                    </DialogContentText>
+                }
+                validateKey="dialog.button.launch"
+            />
             <Box
                 sx={{
                     height: 2,
