@@ -12,7 +12,8 @@ import {
     ErrorMessage,
     fetchNetworkModification,
     IElementCreationDialog,
-    IElementUpdateDialog, isReferenceModification,
+    IElementUpdateDialog,
+    isReferenceModification,
     MAX_COMPOSITE_NESTING_DEPTH,
     MODIFICATION_TYPES,
     ModificationMoveInfos,
@@ -24,7 +25,8 @@ import {
     removeNullFields,
     setModificationNameAndDescription,
     snackWithFallback,
-    TabularModificationType, updateElement,
+    TabularModificationType,
+    updateElement,
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
@@ -730,14 +732,22 @@ const NetworkModificationNodeEditor = () => {
         modifications,
     ]);
 
-    const handleNameChange = useCallback((modification: ComposedModificationMetadata, newName: string) => {
-        console.log("Modification name change", modification, newName);
-        if (isReferenceModification(modification)) {
-            updateElement(modification.referencedId, { elementUuid: modification.referencedId, elementName: newName });
-        } else {
-            setModificationNameAndDescription(studyUuid, currentNode?.id, modification.uuid, { name: newName, type: modification.type });
-        }
-    }, []);
+    const handleNameChange = useCallback(
+        (modification: ComposedModificationMetadata, newName: string) => {
+            if (isReferenceModification(modification)) {
+                updateElement(modification.referencedId, {
+                    elementUuid: modification.referencedId,
+                    elementName: newName,
+                });
+            } else {
+                setModificationNameAndDescription(studyUuid, currentNode?.id, modification.uuid, {
+                    name: newName,
+                    type: modification.type,
+                });
+            }
+        },
+        [studyUuid, currentNode?.id]
+    );
 
     const handleEvent = useCallback(
         (event: MessageEvent) => {
