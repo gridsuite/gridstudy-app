@@ -49,11 +49,6 @@ const messages_en = {
 
     exportNetwork: 'Export the network',
     export: 'Export',
-    'download.fileName': 'File name',
-    exportFormat: 'Format of the export',
-    exportStudyErrorMsg: 'No export format specified',
-    exportCompression: 'Compression',
-    exportCompressionErrorMsg: 'No export compression specified',
 
     modifyAccessRights: 'Modify the access rights',
     modifyAccessRightsError: "You cannot modify the access rights of a study you don't own",
@@ -202,7 +197,6 @@ const messages_en = {
     VoltageinitNodeName: 'Node : {nodeName}',
     VoltageinitDate: 'Computation date : {computationDate}',
 
-    Select: 'Select',
     SelectAll: 'All',
     UnselectAll: 'None',
 
@@ -948,7 +942,6 @@ const messages_en = {
     pccMinError: 'An error occurred when executing the pcc min',
     PccMinResultsError: 'An error occurred when exporting pcc min N-1 results',
     NoFilter: 'No filter',
-    NoFolder: 'No folder',
     searchPlaceholder: 'Search',
     reportLogsPerPage: 'Logs per page',
     GeneratedModification: 'Generated-modification',
@@ -1286,10 +1279,6 @@ const messages_en = {
     nadInfoReactivePowerArrow: 'Q arrows',
     nadInfoVoltageLevelVoltage: 'Voltage level voltages',
 
-    gridExplore: 'GridExplore',
-    myComputer: 'My computer',
-    destination: 'Destination',
-
     ActivePower: 'P (MW)',
     reactivePowerTooltip: 'Q (Mvar)',
     'tooltip.u': 'U (kV)',
@@ -1328,7 +1317,6 @@ const messages_en = {
     downloadNetworkModifications: 'Download modifications',
     moveToTrash: 'Move to trash',
     visualizedRootNetwork: 'Visualized root network : {tag}',
-    addDescription: 'Add description',
     activateModification: 'Activate network modification',
     deactivateModification: 'Deactivate network modification',
     deselectModification: 'Deselect modification',
