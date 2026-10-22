@@ -488,6 +488,7 @@ const messages_fr = {
     removeNode: 'Supprimer',
     unbuildNode: 'Déréaliser',
     exportCaseOnNode: 'Exporter',
+    unshareReferencesInStudy: "Départager toute l'étude",
     ConstructionNode: 'Créer un nœud de construction',
     SecurityNode: 'Créer un nœud de sécurité',
     NetworkModificationTreeLoadError:

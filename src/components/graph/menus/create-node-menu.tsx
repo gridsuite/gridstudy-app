@@ -55,6 +55,7 @@ interface CreateNodeMenuProps {
     handleSecuritySequenceCreation: (element: CurrentTreeNode) => void;
     handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
     handleClose: () => void;
+    handleUnshareAllReferencesInStudy: () => void;
     handleBuildNode: (element: CurrentTreeNode) => void;
     handleUnbuildNode: (element: CurrentTreeNode) => void;
     handleExportCaseOnNode: (node: CurrentTreeNode) => void;
@@ -119,6 +120,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     handleSecuritySequenceCreation,
     handleNodeRemoval,
     handleExportCaseOnNode,
+    handleUnshareAllReferencesInStudy,
     handleExportNodeInfos,
     activeNode,
     nodeSelectionForCopy,
@@ -197,6 +199,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
 
     function exportCaseOnNode() {
         handleExportCaseOnNode(activeNode);
+        handleClose();
+    }
+
+    function unshareAllReferencesInStudy() {
+        handleUnshareAllReferencesInStudy();
         handleClose();
     }
 
@@ -533,6 +540,13 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             action: () => exportCaseOnNode(),
             id: 'exportCaseOnNode',
             disabled: activeNode?.type !== NodeType.ROOT && !isStatusBuilt(activeNode?.data?.globalBuildStatus),
+        },
+        UNSHARE: {
+            onRoot: true,
+            action: () => unshareAllReferencesInStudy(),
+            id: 'unshareReferencesInStudy',
+            disabled: activeNode?.type !== NodeType.ROOT, // TODO désactiver si pas de réf dans l'étude
+            hidden: activeNode?.type !== NodeType.ROOT,
         },
     };
 
