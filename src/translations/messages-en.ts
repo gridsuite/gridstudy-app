@@ -481,6 +481,7 @@ const messages_en = {
     removeNode: 'Remove',
     unbuildNode: 'Unbuild',
     exportCaseOnNode: 'Export',
+    unshareReferencesInStudy: 'Unshare the whole study',
     ConstructionNode: 'Create a construction node',
     SecurityNode: 'Create a security node',
     NetworkModificationTreeLoadError: 'An error occurred while loading network modification tree',
