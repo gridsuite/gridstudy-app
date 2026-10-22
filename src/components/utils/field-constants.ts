@@ -30,11 +30,6 @@ export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
 export const CONNECTED = 'terminalConnected';
 export const IS_REMOVED = 'isRemoved';
 export const IS_SEPARATOR = 'isSeparator';
-export const FILE_NAME = 'fileName';
-export const EXPORT_FORMAT = 'exportFormat';
-export const EXPORT_COMPRESSION = 'exportCompression';
-export const EXPORT_PARAMETERS = 'exportParameters';
-export const EXPORT_DESTINATION = 'exportDestination';
 
 export const TYPE = 'type';
 
