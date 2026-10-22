@@ -38,10 +38,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             case RunningStatus.IDLE:
                 return Object.values(runnablesText);
             case RunningStatus.RUNNING:
-                // only offer stopping when the computation provides a stop action
-                return runnables[selectedRunnable].actionOnRunnable
-                    ? Array.of(intl.formatMessage({ id: 'StopComputation' }))
-                    : [];
+                return Array.of(intl.formatMessage({ id: 'StopComputation' }));
             case RunningStatus.PRELOADING:
             default:
                 return [];
@@ -170,7 +167,7 @@ RunButton.propTypes = {
         PropTypes.exact({
             messageId: PropTypes.string.isRequired,
             startComputation: PropTypes.func,
-            actionOnRunnable: PropTypes.func,
+            actionOnRunnable: PropTypes.func.isRequired,
         }).isRequired
     ).isRequired,
     activeRunnables: PropTypes.arrayOf(PropTypes.string).isRequired,

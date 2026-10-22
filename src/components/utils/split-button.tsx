@@ -138,7 +138,7 @@ interface SplitButtonProps {
     options: string[];
     selectedIndex: number;
     onClick: (debug?: boolean) => void;
-    actionOnRunnable?: () => void;
+    actionOnRunnable: () => void;
     onSelectionChange: (index: number) => void;
 }
 
@@ -167,7 +167,7 @@ const SplitButton = ({
 
     const handleMenuItemClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
         if (runningStatus === RunningStatus.RUNNING) {
-            actionOnRunnable?.();
+            actionOnRunnable();
         } else {
             onSelectionChange(index);
         }
