@@ -5,61 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import {
     CustomMuiDialog,
-    DescriptionField,
-    DIRECTORY_ITEM,
-    DIRECTORY_ITEM_ID,
-    DirectoryItemInput,
-    DirectoryItemSchema,
-    ElementType,
     fetchDirectoryElementPath,
     isDisabledValidationButton,
     PARAM_DEVELOPER_MODE,
-    Parameter,
-    SelectInput,
     snackWithFallback,
-    UniqueNameInput,
     useSnackMessage,
+    exportNetworkFormSchema,
+    emptyExportNetworkFormData,
+    NetworkExportInfos,
+    exportNetworkFormToDto,
+    ExportNetworkForm,
+    FILE_NAME,
+    EXPORT_PARAMETERS,
+    ExportNetworkFormData,
 } from '@gridsuite/commons-ui';
-import { ExportFormatProperties, getAvailableExportFormats } from '../../../services/study';
 import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import { useParameterState } from '../parameters/use-parameters-state';
 import { AppState } from '../../../redux/reducer.type';
 
-import {
-    DESCRIPTION,
-    EXPORT_DESTINATION,
-    EXPORT_FORMAT,
-    EXPORT_COMPRESSION,
-    EXPORT_PARAMETERS,
-    FILE_NAME,
-} from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FlatParametersInput } from './flat-parameters-input';
-import {
-    CompressionType,
-    emptyData,
-    emptyObj,
-    ExportDestinationType,
-    ExportNetworkFormData,
-    getDefaultValuesForExtensionsParameter,
-    schema,
-} from './export-network-utils';
-import { useIntl } from 'react-intl';
-import { NetworkExportInfos } from '../../../services/study-types';
-
-const compressions = [CompressionType.ZIP, CompressionType.GZIP];
-const onlyZipCompression = [CompressionType.ZIP];
-const CGMES_FORMAT = 'CGMES';
-const XIIDM_FORMAT = 'XIIDM';
-const BIIDM_FORMAT = 'BIIDM';
-const JIIDM_FORMAT = 'JIIDM';
-const defaultGzipFormats = [XIIDM_FORMAT, BIIDM_FORMAT, JIIDM_FORMAT];
 
 /**
  * Dialog to export the network case
@@ -84,9 +53,6 @@ export function ExportNetworkDialog({
     studyUuid,
     nodeUuid,
 }: Readonly<ExportNetworkDialogProps>) {
-    const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
-    const [parameters, setParameters] = useState<Parameter[]>();
-    const [availableCompressions, setAvailableCompressions] = useState<CompressionType[]>(compressions);
     const { snackError } = useSnackMessage();
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -94,20 +60,14 @@ export function ExportNetworkDialog({
     const nodeName = useMemo(() => treeNodes?.find((node) => node.id === nodeUuid)?.data.label, [treeNodes, nodeUuid]);
 
     const methods = useForm<ExportNetworkFormData>({
-        defaultValues: emptyData,
-        resolver: yupResolver(schema),
+        defaultValues: emptyExportNetworkFormData,
+        resolver: yupResolver(exportNetworkFormSchema),
     });
 
     const {
         reset,
-        subscribe,
-        setValue,
-        getValues,
-        watch,
         formState: { errors },
     } = methods;
-    const intl = useIntl();
-
     // fetch study name to build the default file name
     useEffect(() => {
         if (studyUuid) {
@@ -128,62 +88,13 @@ export function ExportNetworkDialog({
         }
     }, [studyUuid, nodeName, snackError, reset]);
 
-    useEffect(() => {
-        if (open) {
-            getAvailableExportFormats().then((formats) => {
-                const availableFormats = isDeveloperMode
-                    ? formats
-                    : Object.fromEntries(Object.entries(formats).filter(([key]) => key === XIIDM_FORMAT));
-
-                Object.values(availableFormats).forEach((format) => {
-                    format.parameters = getDefaultValuesForExtensionsParameter(format.parameters);
-                });
-                setFormatsWithParameters(availableFormats);
-            });
-        }
-    }, [open, isDeveloperMode]);
-
     const onSubmit = useCallback(
         (data: ExportNetworkFormData) => {
-            const exportToGridExplore = data[EXPORT_DESTINATION] !== ExportDestinationType.MY_COMPUTER;
-            onClick(nodeUuid, data[EXPORT_PARAMETERS], {
-                selectedFormat: data[EXPORT_FORMAT],
-                selectedCompression: data[EXPORT_COMPRESSION].toUpperCase(),
-                fileName: data[FILE_NAME],
-                exportToGridExplore: exportToGridExplore,
-                parentDirectoryUuid: exportToGridExplore ? data[DIRECTORY_ITEM]?.[DIRECTORY_ITEM_ID] : undefined,
-                description: data[DESCRIPTION],
-            });
+            const dto = exportNetworkFormToDto(data);
+            onClick(nodeUuid, data[EXPORT_PARAMETERS], dto);
         },
         [nodeUuid, onClick]
     );
-
-    useEffect(() => {
-        const unsubscribe = subscribe({
-            name: [`${EXPORT_FORMAT}`],
-            formState: {
-                values: true, // Subscribe to field value changes
-            },
-            callback: () => {
-                //When an export format changes, reset export parameters
-                setValue(EXPORT_PARAMETERS, emptyObj);
-                const exportFormat = getValues(EXPORT_FORMAT);
-                // get corresponding parameters of the selected format
-                setParameters(formatsWithParameters[exportFormat]?.parameters);
-                // update compression
-                setAvailableCompressions(exportFormat === CGMES_FORMAT ? onlyZipCompression : compressions);
-                if (defaultGzipFormats.includes(exportFormat)) {
-                    setValue(EXPORT_COMPRESSION, CompressionType.GZIP);
-                } else {
-                    setValue(EXPORT_COMPRESSION, CompressionType.ZIP);
-                }
-            },
-        });
-        return () => unsubscribe();
-    }, [setValue, subscribe, getValues, formatsWithParameters]);
-
-    const exportDestination = watch(EXPORT_DESTINATION);
-    const folderItem = watch(DIRECTORY_ITEM) as DirectoryItemSchema;
 
     return (
         <CustomMuiDialog
@@ -191,7 +102,7 @@ export function ExportNetworkDialog({
             open={open}
             formContext={{
                 ...methods,
-                validationSchema: schema,
+                validationSchema: exportNetworkFormSchema,
             }}
             disabledSave={isDisabledValidationButton(errors, FILE_NAME)}
             onSave={onSubmit}
@@ -202,60 +113,7 @@ export function ExportNetworkDialog({
                 },
             }}
         >
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1 }}>
-                <UniqueNameInput
-                    name={FILE_NAME}
-                    label="download.fileName"
-                    elementType={ElementType.CASE}
-                    activeDirectory={
-                        exportDestination === ExportDestinationType.GRID_EXPLORE
-                            ? (folderItem?.[DIRECTORY_ITEM_ID] as UUID)
-                            : undefined
-                    }
-                    formProps={{
-                        size: 'small',
-                    }}
-                />
-                <SelectInput
-                    name={EXPORT_DESTINATION}
-                    options={Object.values(ExportDestinationType).map((item) => {
-                        return { id: item, label: item };
-                    })}
-                    size="small"
-                    label="destination"
-                />
-                {exportDestination === ExportDestinationType.GRID_EXPLORE && (
-                    <Box>
-                        <DescriptionField />
-                        <DirectoryItemInput
-                            name={DIRECTORY_ITEM}
-                            types={[ElementType.DIRECTORY]}
-                            multiSelect={false}
-                            onlyLeaves={false}
-                            title={intl.formatMessage({
-                                id: 'showSelectDirectoryDialog',
-                            })}
-                        />
-                    </Box>
-                )}
-                <SelectInput
-                    sx={{ marginTop: 1 }}
-                    name={EXPORT_FORMAT}
-                    label="exportFormat"
-                    options={Object.keys(formatsWithParameters)}
-                    size="small"
-                    disableClearable
-                />
-                <SelectInput
-                    sx={{ marginTop: 1 }}
-                    name={EXPORT_COMPRESSION}
-                    label="exportCompression"
-                    options={availableCompressions}
-                    size="small"
-                    disableClearable
-                />
-                <FlatParametersInput name={EXPORT_PARAMETERS} parameters={parameters} />
-            </Box>
+            <ExportNetworkForm open={open} isDeveloperMode={isDeveloperMode} />
         </CustomMuiDialog>
     );
 }

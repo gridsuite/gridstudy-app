@@ -53,11 +53,6 @@ const messages_fr = {
 
     exportNetwork: 'Exporter le réseau',
     export: 'Exporter',
-    'download.fileName': 'Nom de fichier',
-    exportFormat: "Format de l'export",
-    exportStudyErrorMsg: "Le format de l'export n'est pas spécifié",
-    exportCompression: 'Compression',
-    exportCompressionErrorMsg: "Le type de compression n'est pas spécifié",
 
     modifyAccessRights: "Modifier les droits d'accès",
     modifyAccessRightsError: "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
@@ -205,7 +200,6 @@ const messages_fr = {
     VoltageinitNodeName: 'Noeud : {nodeName}',
     VoltageinitDate: 'Date du calcul : {computationDate}',
 
-    Select: 'Choisir',
     SelectAll: 'Tous',
     UnselectAll: 'Aucun',
 
@@ -960,7 +954,6 @@ const messages_fr = {
     pccMinError: "Une erreur est survenue lors de l'exécution de pcc min N-1",
     PccMinResultsError: "Une erreur s'est produite lors de la récupération du résultat de pcc min N-1",
     NoFilter: 'Aucun filtre',
-    NoFolder: 'Aucun dossier',
     searchPlaceholder: 'Recherche',
     reportLogsPerPage: 'Logs par page : ',
     GeneratedModification: 'Modification-générée',
@@ -1272,10 +1265,6 @@ const messages_fr = {
     nadInfoReactivePowerArrow: 'Flèches Q',
     nadInfoVoltageLevelVoltage: 'Tensions postes',
 
-    gridExplore: 'GridExplore',
-    myComputer: 'Mon ordinateur',
-    destination: 'Destination',
-
     ActivePower: 'P (MW)',
     reactivePowerTooltip: 'Q (Mvar)',
     'tooltip.u': 'U (kV)',
@@ -1314,7 +1303,6 @@ const messages_fr = {
     downloadNetworkModifications: 'Télécharger les modifications',
     moveToTrash: 'Mettre à la corbeille',
     visualizedRootNetwork: 'Réseau racine visualisé : {tag}',
-    addDescription: 'Ajouter une description',
     activateModification: 'Activer la modification réseau',
     deactivateModification: 'Désactiver la modification réseau',
     deselectModification: 'Désélectionner la modification',
