@@ -735,12 +735,12 @@ const NetworkModificationNodeEditor = () => {
     const handleNameChange = useCallback(
         (modification: ComposedModificationMetadata, newName: string) => {
             if (isReferenceModification(modification)) {
-                updateElement(modification.referencedId, {
+                return updateElement(modification.referencedId, {
                     elementUuid: modification.referencedId,
                     elementName: newName,
                 });
             } else {
-                setModificationNameAndDescription(studyUuid, currentNode?.id, modification.uuid, {
+                return setModificationNameAndDescription(studyUuid, currentNode?.id, modification.uuid, {
                     name: newName,
                     type: modification.type,
                 });
