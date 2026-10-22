@@ -64,6 +64,8 @@ import GenericEquipmentPopover from 'components/tooltips/generic-equipment-popov
 import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-type';
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import useDebugSubscription from '../../../../../hooks/computation-debug/use-debug-subscription';
+import { DialogContentText } from '@mui/material';
+import { SelectOptionsDialog } from '../../../../../utils/dialogs';
 
 const oneBusLoaderStyle = (theme: Theme) => ({
     display: 'flex',
@@ -96,6 +98,11 @@ type BusMenuState = {
     display: boolean;
 };
 
+type PendingShortCircuitAnalysis = {
+    context: { busId: string };
+    debug: boolean;
+};
+
 const defaultBusMenuState: BusMenuState = {
     position: [-1, -1],
     busId: null,
@@ -124,6 +131,10 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
+    const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
+    const [pendingShortCircuitAnalysis, setPendingShortCircuitAnalysis] = useState<PendingShortCircuitAnalysis | null>(
+        null
+    );
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isEditBlocked = useIsEditBlocked(currentNode?.id);
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
@@ -269,11 +280,22 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         [dispatch, equipmentId, studyUuid, currentNode, currentRootNetworkUuid, snackError, subscribeDebug]
     );
 
+    const handleRunShortcircuitAnalysisWithConfirmation = useCallback(
+        (busId: string, debug: boolean) => {
+            if (isDirtyComputationParameters) {
+                setPendingShortCircuitAnalysis({ context: { busId }, debug });
+            } else {
+                handleRunShortcircuitAnalysis(busId, debug);
+            }
+        },
+        [handleRunShortcircuitAnalysis, isDirtyComputationParameters]
+    );
+
     const displayBusMenu = () => {
         return (
             busMenu.display && (
                 <BusMenu
-                    handleRunShortcircuitAnalysis={handleRunShortcircuitAnalysis}
+                    handleRunShortcircuitAnalysis={handleRunShortcircuitAnalysisWithConfirmation}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     busId={busMenu.busId ?? ''}
                     position={busMenu.position}
@@ -456,12 +478,34 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         setLocallySwitchedBreaker,
     ]);
 
+    const handleLaunchingPopupClose = useCallback(() => {
+        setPendingShortCircuitAnalysis(null);
+    }, []);
+
+    const handleLaunchingPopup = useCallback(() => {
+        if (pendingShortCircuitAnalysis) {
+            setPendingShortCircuitAnalysis(null);
+            handleRunShortcircuitAnalysis(pendingShortCircuitAnalysis.context.busId, pendingShortCircuitAnalysis.debug);
+        }
+    }, [handleRunShortcircuitAnalysis, pendingShortCircuitAnalysis]);
+
     /**
      * RENDER
      */
-
     return (
         <>
+            <SelectOptionsDialog
+                title=""
+                open={pendingShortCircuitAnalysis !== null}
+                onClose={handleLaunchingPopupClose}
+                onClick={handleLaunchingPopup}
+                child={
+                    <DialogContentText>
+                        <FormattedMessage id="launchComputationConfirmQuestion" />
+                    </DialogContentText>
+                }
+                validateKey="dialog.button.launch"
+            />
             <Box
                 sx={{
                     height: 2,
