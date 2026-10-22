@@ -13,8 +13,7 @@ import {
 } from 'components/graph/menus/root-network/root-network.types';
 
 /**
- * @return a function showing the error as a warning when refused because of the shared modifications the user cannot
- * write on, as an error with the given header otherwise
+ * Warns when refused by unwritable shared modifications, reports an error otherwise.
  */
 export const useSnackForbiddenByShared = () => {
     const { snackError, snackWarning } = useSnackMessage();
