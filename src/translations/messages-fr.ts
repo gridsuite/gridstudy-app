@@ -1320,6 +1320,7 @@ const messages_fr = {
     deselectModification: 'Désélectionner la modification',
     selectModification: 'Sélectionner la modification',
     moveModification: 'Déplacer la modification',
+    readOnlySharedModification: "Lecture seule : vous n'avez pas les droits d'écriture sur cette modification partagée",
     'button.next': 'Suivant',
     'button.previous': 'Précédent',
     disconnectedLoadActivePower: 'Consommation coupée (MW)',
