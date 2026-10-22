@@ -22,7 +22,7 @@ import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
-import { useSnackForbiddenByShared } from './use-snack-forbidden-by-shared';
+import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
 
 const styles = {
     checkboxListItem: (theme) => ({

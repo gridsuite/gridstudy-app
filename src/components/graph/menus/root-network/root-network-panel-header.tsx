@@ -27,7 +27,7 @@ import { setHighlightModification, setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
-import { useSnackForbiddenByShared } from './use-snack-forbidden-by-shared';
+import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
 
 const styles = {
     headerPanel: (theme) => ({

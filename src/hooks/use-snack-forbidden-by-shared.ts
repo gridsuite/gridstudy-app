@@ -10,7 +10,7 @@ import { snackWarningOrFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED,
     ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
-} from './root-network.types';
+} from 'components/graph/menus/root-network/root-network.types';
 
 /**
  * @return a function showing the error as a warning when refused because of the shared modifications the user cannot

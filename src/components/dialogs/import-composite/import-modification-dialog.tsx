@@ -17,7 +17,7 @@ import {
     PARAM_DEVELOPER_MODE,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
-import { useSnackForbiddenByShared } from 'components/graph/menus/root-network/use-snack-forbidden-by-shared';
+import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
 import { type CompositesToBeInserted, insertCompositeModifications } from '../../../services/study';
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';

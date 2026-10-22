@@ -29,7 +29,7 @@ import {
     usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useSnackForbiddenByShared } from '../root-network/use-snack-forbidden-by-shared';
+import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';

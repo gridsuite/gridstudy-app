@@ -18,7 +18,7 @@ import {
     useSnackMessage,
     BuildStatus,
 } from '@gridsuite/commons-ui';
-import { useSnackForbiddenByShared } from './graph/menus/root-network/use-snack-forbidden-by-shared';
+import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
 import { ExportNetworkDialog } from './dialogs/export-network/export-network-dialog';
 import {
     copySubtree,
