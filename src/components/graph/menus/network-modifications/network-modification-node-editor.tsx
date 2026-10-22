@@ -23,17 +23,13 @@ import {
     NotificationsUrlKeys,
     removeNullFields,
     setModificationMetadata,
-    snackWarningOrFallback,
     snackWithFallback,
     TabularModificationType,
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import {
-    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED,
-    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
-} from '../root-network/root-network.types';
+import { useSnackForbiddenByShared } from '../root-network/use-snack-forbidden-by-shared';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -161,7 +157,8 @@ const NetworkModificationNodeEditor = () => {
     // modifications need to reload once root network is fully created (not in "isCreating" state) in order to fetch its applicability
     const createdRootNetworksLength = createdRootNetworks.length;
     const createdRootNetworksPreviousLength = usePrevious(createdRootNetworks.length);
-    const { snackInfo, snackError, snackWarning } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
+    const snackForbiddenByShared = useSnackForbiddenByShared();
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
@@ -1006,28 +1003,14 @@ const NetworkModificationNodeEditor = () => {
             moveModifications(studyUuid, currentNode.id, modifications, copyInfos.originNodeUuid)
                 .then(() => cleanClipboard(false))
                 .catch((error) => {
-                    snackWarningOrFallback(
-                        snackError,
-                        snackWarning,
-                        error,
-                        [ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED],
-                        { headerId: 'errCutModificationMsg' },
-                        ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS
-                    );
+                    snackForbiddenByShared(error, 'errCutModificationMsg');
                 });
         } else {
             copyModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos).catch((error) => {
-                snackWarningOrFallback(
-                    snackError,
-                    snackWarning,
-                    error,
-                    [ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED],
-                    { headerId: 'errDuplicateModificationMsg' },
-                    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS
-                );
+                snackForbiddenByShared(error, 'errDuplicateModificationMsg');
             });
         }
-    }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanClipboard, snackError, snackWarning]);
+    }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanClipboard, snackForbiddenByShared]);
 
     const doEditModification = useCallback(
         (modificationUuid: UUID, modificationType: ModificationType) => {

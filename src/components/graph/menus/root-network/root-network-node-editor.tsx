@@ -5,14 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CheckBoxList,
-    mergeSx,
-    type MuiStyles,
-    snackWarningOrFallback,
-    snackWithFallback,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { CheckBoxList, mergeSx, type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     Delete as DeleteIcon,
     RemoveRedEye as RemoveRedEyeIcon,
@@ -29,10 +22,7 @@ import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
-import {
-    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED,
-    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
-} from './root-network.types';
+import { useSnackForbiddenByShared } from './use-snack-forbidden-by-shared';
 
 const styles = {
     checkboxListItem: (theme) => ({
@@ -113,7 +103,8 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
     setIsRootNetworksProcessing,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const { snackError, snackWarning } = useSnackMessage();
+    const { snackError } = useSnackMessage();
+    const snackForbiddenByShared = useSnackForbiddenByShared();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
@@ -286,14 +277,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
             await updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
         } catch (error) {
-            snackWarningOrFallback(
-                snackError,
-                snackWarning,
-                error,
-                [ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED],
-                { headerId: 'updateRootNetworksError' },
-                ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS
-            );
+            snackForbiddenByShared(error, 'updateRootNetworksError');
             setIsRootNetworksProcessing(false);
         }
     };
