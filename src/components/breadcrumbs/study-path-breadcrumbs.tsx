@@ -20,8 +20,8 @@ const styles = {
         '& .MuiBreadcrumbs-ol': {
             flexWrap: 'nowrap',
         },
-        '& .MuiBreadcrumbs-li': {
-            display: 'contents',
+        '& .MuiBreadcrumbs-li:not(:first-of-type):not(:last-of-type)': {
+            minWidth: 0,
         },
     },
     tooltipItem: {
