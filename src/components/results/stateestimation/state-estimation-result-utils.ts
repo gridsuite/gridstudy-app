@@ -24,7 +24,14 @@ import {
     QualityCriterionResult,
     ValidityType,
 } from './state-estimation-result.type';
-import { ColumnContext, numericFilterParams, textFilterParams } from '../../../types/custom-aggrid-types';
+import {
+    ColumnContext,
+    FILTER_DATA_TYPES,
+    numericFilterParams,
+    textFilterParams,
+} from '../../../types/custom-aggrid-types';
+import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
+import { booleanFilterParams } from '../../custom-aggrid/custom-aggrid-filters/boolean-filter-params';
 import {
     STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_RESULT_SORT_STORE,
@@ -149,6 +156,17 @@ export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): Co
             headerName: intl.formatMessage({ id: 'OutOfBound' }),
             colId: 'outOfBound',
             field: 'outOfBound',
+            filterParams: booleanFilterParams,
+            context: {
+                sortParams,
+                filterComponent: CustomAggridBooleanFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.BOOLEAN,
+                        ...filterParams,
+                    },
+                },
+            },
             cellRenderer: BooleanCellRenderer,
         }),
     ];
