@@ -12,6 +12,18 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CurrentSelection from './current-selection';
 
 const styles = {
+    breadcrumbs: {
+        p: 0.25,
+        mr: 1,
+        flex: 1,
+        minWidth: 0,
+        '& .MuiBreadcrumbs-ol': {
+            flexWrap: 'nowrap',
+        },
+        '& .MuiBreadcrumbs-li': {
+            display: 'contents',
+        },
+    },
     tooltipItem: {
         display: 'flex',
         alignItems: 'center',
@@ -48,7 +60,7 @@ export default function StudyPathBreadcrumbs({
             aria-label="breadcrumb"
             color="text"
             separator={<KeyboardArrowRightIcon fontSize="small" />}
-            sx={{ p: 0.25 }}
+            sx={styles.breadcrumbs}
         >
             <Tooltip
                 title={
