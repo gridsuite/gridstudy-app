@@ -33,13 +33,13 @@ export type ResultTabIndexRedirection = ResultsTabsRootLevel | ResultsTabsLevelO
  * @param setTabIndex setter allowing to set the tab in the current component
  */
 export const useResultsTab = (
-    resultTabIndexRedirection: ResultTabIndexRedirection,
+    resultTabIndexRedirection: ResultTabIndexRedirection | undefined | null,
     setTabIndex: React.Dispatch<React.SetStateAction<number>>
 ): Dispatch<SetStateAction<boolean>> => {
     const [redirectionLock, setRedirectionLock] = useResultsTabRedirectionLock();
 
     useEffect(() => {
-        if (!redirectionLock) {
+        if (!redirectionLock && resultTabIndexRedirection !== undefined && resultTabIndexRedirection !== null) {
             setTabIndex(resultTabIndexRedirection);
         }
     }, [resultTabIndexRedirection, setTabIndex, redirectionLock]);
@@ -62,14 +62,16 @@ const useResultsTabRedirectionLock = (): [boolean, Dispatch<SetStateAction<boole
 //function to convert computing type to the index corresponding to the resulting computation tab.
 //the list of services must also be passed as parameter because its content is dynamic depending on the state of the application (e.g. developer mode disabled)
 export const computingTypeToRootTabRedirection = (
-    computingType: ComputingType,
+    computingType: ComputingType | null | undefined,
     availableServices?: IService[]
-): ResultTabIndexRedirection => {
-    return availableServices
-        ? availableServices
-              .map((service) => service.computingType)
-              .findIndex((computations) => computations.includes(computingType))
-        : ResultsTabsRootLevel.LOAD_FLOW;
+): ResultTabIndexRedirection | undefined => {
+    if (!computingType || !availableServices) {
+        return undefined;
+    }
+    const index = availableServices
+        .map((service) => service.computingType)
+        .findIndex((computations) => computations.includes(computingType));
+    return index !== -1 ? index : undefined;
 };
 
 export const computingTypeToShortcircuitTabRedirection = (

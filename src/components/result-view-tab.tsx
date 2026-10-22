@@ -292,12 +292,12 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         renderPccMinResult,
     ]);
 
-    const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
-        () => computingTypeToRootTabRedirection(lastCompletedComputation ?? ComputingType.LOAD_FLOW, services),
+    const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection | undefined>(
+        () => computingTypeToRootTabRedirection(lastCompletedComputation, services),
         [lastCompletedComputation, services]
     );
 
-    const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
+    const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection ?? 0);
 
     const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex);
 
