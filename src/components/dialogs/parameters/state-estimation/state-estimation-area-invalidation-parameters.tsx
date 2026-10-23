@@ -7,9 +7,14 @@
 import { FunctionComponent, useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { IconButton, Tooltip } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
-import { DndColumn, DndColumnType, DndTable, ElementType, EquipmentType } from '@gridsuite/commons-ui';
+import {
+    CustomTooltipInfo,
+    DndColumn,
+    DndColumnType,
+    DndTable,
+    ElementType,
+    EquipmentType,
+} from '@gridsuite/commons-ui';
 import { AREA_INVALIDATIONS, FILTER, INVALIDATE, INVALIDATION_TYPE } from '../../../utils/field-constants';
 import { InvalidationType, TabValue } from './state-estimation-parameters-utils';
 
@@ -25,16 +30,12 @@ export const StateEstimationAreaInvalidationParameters: FunctionComponent = () =
 
     const columnsDefinition = useMemo(() => {
         const filtersHeaderTooltip = (
-            <Tooltip
-                title={intl.formatMessage({ id: 'StateEstimationParametersAreaInvalidationTooltip' })}
-                placement="right"
-            >
-                <span>
-                    <IconButton disabled size="small">
-                        <InfoIcon fontSize="small" />
-                    </IconButton>
-                </span>
-            </Tooltip>
+            <CustomTooltipInfo
+                tooltipProps={{
+                    title: intl.formatMessage({ id: 'StateEstimationParametersAreaInvalidationTooltip' }),
+                    sx: { marginLeft: 0.5 },
+                }}
+            />
         );
 
         return [
