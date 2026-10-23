@@ -1059,6 +1059,7 @@ const NetworkModificationNodeEditor = () => {
         setOpenNetworkModificationsMenu(false);
         setEditDialogOpen(id);
         setIsUpdate(false);
+        setIsReadOnly(false);
     };
     const handleRowSelected = useCallback(
         (selectedRows: ComposedModificationMetadata[], isAssemblyDepthExceeded: boolean) => {
