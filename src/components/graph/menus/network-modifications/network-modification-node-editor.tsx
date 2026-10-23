@@ -739,6 +739,11 @@ const NetworkModificationNodeEditor = () => {
                     elementUuid: modification.referencedId,
                     elementName: newName,
                 });
+            } else if (modification.parentSharedUuid) {
+                return updateElement(modification.parentSharedUuid, {
+                    elementUuid: modification.uuid,
+                    elementName: newName,
+                });
             } else {
                 return setModificationNameAndDescription(studyUuid, currentNode?.id, modification.uuid, {
                     name: newName,
