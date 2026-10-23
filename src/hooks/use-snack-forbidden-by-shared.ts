@@ -6,7 +6,7 @@
  */
 
 import { useCallback } from 'react';
-import { snackWarningOrFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { ProblemDetailError, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED,
     ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
@@ -18,15 +18,21 @@ import {
 export const useSnackForbiddenByShared = () => {
     const { snackError, snackWarning } = useSnackMessage();
     return useCallback(
-        (error: unknown, headerId: string) =>
-            snackWarningOrFallback(
-                snackError,
-                snackWarning,
-                error,
-                [ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED],
-                { headerId },
-                ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS
-            ),
+        (error: unknown, headerId: string) => {
+            if (
+                error instanceof ProblemDetailError &&
+                error.businessErrorCode === ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED
+            ) {
+                snackWarning({
+                    messageId: error.businessErrorCode,
+                    messageValues: error.businessErrorValues,
+                    autoHideDuration: ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
+                    headerId,
+                });
+            } else {
+                snackWithFallback(snackError, error, { headerId });
+            }
+        },
         [snackError, snackWarning]
     );
 };
