@@ -1183,7 +1183,7 @@ const NetworkModificationNodeEditor = () => {
         return selectedNetworkModifications.some((row) => (row.sublevelCount ?? 0) >= limit);
     }, [selectedNetworkModifications]);
 
-    // The selection has to come from a single shared modification, or from none: otherwise assembling moves
+    // The selection has to come from maximum one shared modification: otherwise assembling moves
     // modifications in or out of a shared one, possibly nesting it into itself
     const selectionCrossesSharedModification = useMemo(
         () => new Set(selectedNetworkModifications.map((modification) => modification.parentSharedUuid)).size > 1,
