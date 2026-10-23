@@ -188,6 +188,7 @@ const NetworkModificationNodeEditor = () => {
     const dispatch = useDispatch();
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
+    const [isReadOnly, setIsReadOnly] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
     const [modificationUuidsToReset, setModificationUuidsToReset] = useState<UUID[]>([]);
     const [modificationToEditLabel, setModificationToEditLabel] = useState<UUID | null>(null);
@@ -224,6 +225,7 @@ const NetworkModificationNodeEditor = () => {
     const handleCloseDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
+        setIsReadOnly(false);
     };
 
     function withDefaultParams(Dialog: React.FC<any>) {
@@ -236,6 +238,7 @@ const NetworkModificationNodeEditor = () => {
                 currentRootNetworkUuid={currentRootNetworkUuid}
                 editData={editData}
                 isUpdate={isUpdate}
+                isReadOnly={isReadOnly}
                 editDataFetchStatus={editDataFetchStatus}
                 exportCsvResetKey={`${studyUuid}-${currentNode?.id}-${currentRootNetworkUuid}`}
             />
@@ -252,6 +255,7 @@ const NetworkModificationNodeEditor = () => {
                 currentRootNetworkUuid={currentRootNetworkUuid}
                 editData={editData}
                 isUpdate={isUpdate}
+                isReadOnly={isReadOnly}
                 editDataFetchStatus={editDataFetchStatus}
                 dialogMode={dialogMode}
             />
@@ -269,6 +273,7 @@ const NetworkModificationNodeEditor = () => {
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     editData={editData as EquipmentDeletionDtoWithId}
                     isUpdate={isUpdate}
+                    isReadOnly={isReadOnly}
                     editDataFetchStatus={editDataFetchStatus}
                     equipmentType={equipmentType}
                 />
@@ -1025,14 +1030,15 @@ const NetworkModificationNodeEditor = () => {
     }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanClipboard, snackError]);
 
     const doEditModification = useCallback(
-        (modificationUuid: UUID, modificationType: ModificationType) => {
+        (modificationToEdit: ComposedModificationMetadata) => {
             setIsUpdate(true);
+            setIsReadOnly(modificationToEdit.childFromReadOnlyShared ?? false);
             // setting this state will trigger dialog rendering
-            setEditDialogOpen(modificationType);
+            setEditDialogOpen(modificationToEdit.type);
             // with fetching status, waiting for the edit data to be fetched
             setEditDataFetchStatus(FetchStatus.RUNNING);
 
-            const modification = fetchNetworkModification(modificationUuid);
+            const modification = fetchNetworkModification(modificationToEdit.uuid);
             modification
                 .then((res) => {
                     return res.json().then((data: NetworkModificationData) => {
@@ -1053,6 +1059,7 @@ const NetworkModificationNodeEditor = () => {
         setOpenNetworkModificationsMenu(false);
         setEditDialogOpen(id);
         setIsUpdate(false);
+        setIsReadOnly(false);
     };
     const handleRowSelected = useCallback(
         (selectedRows: ComposedModificationMetadata[], isAssemblyDepthExceeded: boolean) => {
@@ -1170,7 +1177,7 @@ const NetworkModificationNodeEditor = () => {
         (modification: ComposedModificationMetadata) => {
             if (isModificationClickable(modification)) {
                 // Check if the clicked column is the 'modificationName' column
-                doEditModification(modification.uuid, modification.type);
+                doEditModification(modification);
             }
         },
         [doEditModification, isModificationClickable]
