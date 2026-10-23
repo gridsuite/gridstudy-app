@@ -15,10 +15,9 @@ import {
     DndTable,
     ElementType,
     PARAM_DEVELOPER_MODE,
-    snackWithFallback,
     TreeViewFinderNodeProps,
-    useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
 import { type CompositesToBeInserted, insertCompositeModifications } from '../../../services/study';
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -132,7 +131,7 @@ const STEP_ORGANIZATION = 1;
 
 const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModificationDialogProps>): JSX.Element => {
     const intl = useIntl();
-    const { snackError } = useSnackMessage();
+    const snackForbiddenByShared = useSnackForbiddenByShared();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
@@ -270,11 +269,11 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             description: m.description,
         }));
         insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, action).catch((error) =>
-            snackWithFallback(snackError, error, { headerId: 'importComposites.error' })
+            snackForbiddenByShared(error, 'importComposites.error')
         );
 
         handleClose();
-    }, [studyUuid, currentNode, isValid, selectedModifications, action, handleClose, snackError]);
+    }, [studyUuid, currentNode, isValid, selectedModifications, action, handleClose, snackForbiddenByShared]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
