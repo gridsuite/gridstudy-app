@@ -13,7 +13,7 @@ import SplitButton from './utils/split-button';
 import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from '../utils/dialogs';
-import { DialogContentText } from '@mui/material';
+import { DialogContentText, useMediaQuery } from '@mui/material';
 import { LOAD_FLOW_RUNNABLES } from './run-button.constant';
 
 /** @typedef {{ context: { runnable: string }, debug: boolean }} PendingRunButtonComputation */
@@ -21,6 +21,8 @@ import { LOAD_FLOW_RUNNABLES } from './run-button.constant';
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled, canRun = () => true }) => {
     const intl = useIntl();
     const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
+    const isBelowMd = useMediaQuery((theme) => theme.breakpoints.down('md'));
+    const isBelowLg = useMediaQuery((theme) => theme.breakpoints.down('lg'));
     const [pendingComputation, setPendingComputation] = useState(
         /** @type {PendingRunButtonComputation | null} */ (null)
     );
@@ -38,7 +40,6 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             case RunningStatus.IDLE:
                 return Object.values(runnablesText);
             case RunningStatus.RUNNING:
-                return Array.of(intl.formatMessage({ id: 'StopComputation' }));
             case RunningStatus.PRELOADING:
             default:
                 return [];
@@ -68,6 +69,18 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     const getRunningStatus = useCallback(() => {
         return getStatus(selectedRunnable);
     }, [selectedRunnable, getStatus]);
+
+    // the button label is shortened on small screens, the options keep the full labels
+    function getButtonText() {
+        const messageId = runnables[selectedRunnable].messageId;
+        if (isBelowMd) {
+            return intl.formatMessage({ id: `runButton.short.${messageId}` });
+        }
+        if (isBelowLg) {
+            return intl.formatMessage({ id: `runButton.medium.${messageId}` });
+        }
+        return intl.formatMessage({ id: messageId });
+    }
 
     function isButtonDisable() {
         if (!canRun(selectedRunnable)) {
@@ -142,7 +155,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                 runningStatus={getRunningStatus()}
                 buttonDisabled={disabled || isButtonDisable()}
                 selectionDisabled={disabled || getRunningStatus() === RunningStatus.PRELOADING}
-                text={runnablesText[selectedRunnable] || ''}
+                text={getButtonText()}
                 actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
                 computationStopped={computationStopped}
             />
