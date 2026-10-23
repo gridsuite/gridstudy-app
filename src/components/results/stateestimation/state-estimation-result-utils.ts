@@ -5,10 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
 import { IntlShape } from 'react-intl';
-import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
-import { useSelector } from 'react-redux';
+import { ColDef } from 'ag-grid-community';
 import {
     CustomAggridComparatorFilter,
     makeAgGridCustomHeaderColumn,
@@ -29,7 +27,6 @@ import {
     STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_RESULT_SORT_STORE,
 } from '../../../utils/store-sort-filter-fields';
-import type { AppState } from '../../../redux/reducer.type';
 
 interface TableParams {
     sortParams: SortParams;
@@ -67,35 +64,6 @@ const createColumnContext = (
         },
     },
 });
-
-export const useInitialColumnSort = (tableName: string, enabled: boolean) => {
-    const [gridApi, setGridApi] = useState<GridApi>();
-    const sortConfig = useSelector(
-        (state: AppState) => state.tableSort[STATEESTIMATION_RESULT_SORT_STORE]?.[tableName]
-    );
-
-    useEffect(() => {
-        if (!enabled || !gridApi || gridApi.isDestroyed()) {
-            return;
-        }
-
-        gridApi.applyColumnState({
-            state: sortConfig?.map((columnSort, sortIndex) => ({ ...columnSort, sortIndex })) ?? [],
-            defaultState: { sort: null },
-        });
-    }, [enabled, gridApi, sortConfig]);
-
-    return useCallback(
-        (params: GridReadyEvent) => {
-            if (!enabled || !params.api || params.api.isDestroyed()) {
-                return;
-            }
-
-            setGridApi(params.api);
-        },
-        [enabled]
-    );
-};
 
 export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): ColDef[] => {
     const { sortParams, filterParams } = createTableParams(STATEESTIMATION_MEASUREMENTS);

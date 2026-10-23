@@ -115,12 +115,6 @@ export interface LogicalControlsResultTableProps {
     result: Partial<LogicalControlsResult>;
     isLoadingResult: boolean;
     columnDefs: ColDef[];
-    tableName:
-        | 'CsvNameBalances'
-        | 'CsvNameNonZeroMeasurementsOnDisconnected'
-        | 'CsvNameZeroMeasurementsOnConnected'
-        | 'CsvNameOriginExtremityDeviations'
-        | 'CsvNameOutOfBoundsMeasurements'
-        | 'CsvNameVoltageDeviations';
+    tableName: string;
     exportCsvResetKey: Key;
 }

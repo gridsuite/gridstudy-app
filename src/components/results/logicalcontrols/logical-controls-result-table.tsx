@@ -24,7 +24,17 @@ import {
 import { RenderTableAndExportCsv } from 'components/utils/renderTable-ExportCsv';
 import { PARAM_COMPUTED_LANGUAGE } from 'utils/config-params';
 import { AppState } from 'redux/reducer.type';
+import {
+    LOGICAL_CONTROLS_BALANCES,
+    LOGICAL_CONTROLS_NON_ZERO_MEASUREMENTS_ON_DISCONNECTED,
+    LOGICAL_CONTROLS_ORIGIN_EXTREMITY_DEVIATIONS,
+    LOGICAL_CONTROLS_OUT_OF_BOUNDS_MEASUREMENTS,
+    LOGICAL_CONTROLS_RESULT_SORT_STORE,
+    LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS,
+    LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED,
+} from 'utils/store-sort-filter-fields';
 import { LogicalControlsResultTableProps } from './logical-controls-result.type';
+import { useInitialColumnSort } from '../common/use-initial-column-sort';
 
 const LogicalControlsResultTable: FunctionComponent<LogicalControlsResultTableProps> = ({
     result,
@@ -35,6 +45,7 @@ const LogicalControlsResultTable: FunctionComponent<LogicalControlsResultTablePr
 }) => {
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
+    const handleOnGridReady = useInitialColumnSort(LOGICAL_CONTROLS_RESULT_SORT_STORE, tableName, true);
     const language = useSelector((state: AppState) => state[PARAM_COMPUTED_LANGUAGE]);
     const logicalControlsStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.LOGICAL_CONTROLS]
@@ -52,8 +63,8 @@ const LogicalControlsResultTable: FunctionComponent<LogicalControlsResultTablePr
 
     const defaultColDef = useMemo(
         () => ({
-            filter: false,
-            sortable: false,
+            filter: true,
+            sortable: true,
             resizable: true,
             lockPinned: true,
             suppressMovable: true,
@@ -68,17 +79,17 @@ const LogicalControlsResultTable: FunctionComponent<LogicalControlsResultTablePr
     const messages = useIntlResultStatusMessages(intl, true);
     const rowsToShow = (() => {
         switch (tableName) {
-            case 'CsvNameBalances':
+            case LOGICAL_CONTROLS_BALANCES:
                 return result.balances ?? [];
-            case 'CsvNameNonZeroMeasurementsOnDisconnected':
+            case LOGICAL_CONTROLS_NON_ZERO_MEASUREMENTS_ON_DISCONNECTED:
                 return result.nonZeroMeasurementsOnDisconnected ?? [];
-            case 'CsvNameZeroMeasurementsOnConnected':
+            case LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED:
                 return result.zeroMeasurementsOnConnected ?? [];
-            case 'CsvNameOriginExtremityDeviations':
+            case LOGICAL_CONTROLS_ORIGIN_EXTREMITY_DEVIATIONS:
                 return result.originExtremityDeviations ?? [];
-            case 'CsvNameOutOfBoundsMeasurements':
+            case LOGICAL_CONTROLS_OUT_OF_BOUNDS_MEASUREMENTS:
                 return result.outOfBoundsMeasurements ?? [];
-            case 'CsvNameVoltageDeviations':
+            case LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS:
                 return result.voltageDeviations ?? [];
             default:
                 return [];
@@ -87,6 +98,7 @@ const LogicalControlsResultTable: FunctionComponent<LogicalControlsResultTablePr
 
     const message = getNoRowsMessage(messages, rowsToShow, logicalControlsStatus, !isLoadingResult);
 
+    // TODO add prop formattedExport={true}, when available in commons-ui
     return (
         <>
             <Box sx={{ height: '4px', position: 'relative', zIndex: 1 }}>{openLoaderTab && <LinearProgress />}</Box>
@@ -100,6 +112,7 @@ const LogicalControlsResultTable: FunctionComponent<LogicalControlsResultTablePr
                 skipColumnHeaders={false}
                 computationType={TableType.LogicalControls}
                 computationSubType={tableName}
+                onGridReady={handleOnGridReady}
                 exportCsvResetKey={exportCsvResetKey}
                 language={language}
                 withTooltip

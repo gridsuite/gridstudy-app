@@ -6,9 +6,129 @@
  */
 
 import { IntlShape } from 'react-intl';
-import { ColDef, ValueGetterParams } from 'ag-grid-community';
-import { BooleanCellRenderer, makeAgGridCustomHeaderColumn } from '@gridsuite/commons-ui';
-import { LogicalControlsResultRow } from './logical-controls-result.type';
+import { ColDef } from 'ag-grid-community';
+import {
+    BooleanCellRenderer,
+    CustomAggridComparatorFilter,
+    makeAgGridCustomHeaderColumn,
+    SortParams,
+    TableType,
+} from '@gridsuite/commons-ui';
+import { createEnumColumn } from '../common/column-filter/utilis';
+import { FILTER_DATA_TYPES, numericFilterParams, textFilterParams } from '../../../types/custom-aggrid-types';
+import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
+import { booleanFilterParams } from '../../custom-aggrid/custom-aggrid-filters/boolean-filter-params';
+import {
+    LOGICAL_CONTROLS_BALANCES,
+    LOGICAL_CONTROLS_NON_ZERO_MEASUREMENTS_ON_DISCONNECTED,
+    LOGICAL_CONTROLS_ORIGIN_EXTREMITY_DEVIATIONS,
+    LOGICAL_CONTROLS_OUT_OF_BOUNDS_MEASUREMENTS,
+    LOGICAL_CONTROLS_RESULT_SORT_STORE,
+    LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS,
+    LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED,
+} from '../../../utils/store-sort-filter-fields';
+import { LimitType, LogicalControlsResultRow, MeasurementType, StatusType } from './logical-controls-result.type';
+
+interface TableParams {
+    sortParams: SortParams;
+    filterParams: {
+        type: TableType;
+        tab: string;
+    };
+}
+
+const createTableParams = (tabName: string): TableParams => ({
+    sortParams: {
+        table: LOGICAL_CONTROLS_RESULT_SORT_STORE,
+        tab: tabName,
+    },
+    filterParams: {
+        type: TableType.LogicalControls,
+        tab: tabName,
+    },
+});
+
+const createColumnContext = (
+    { sortParams, filterParams }: TableParams,
+    filterDefinition: typeof textFilterParams | typeof numericFilterParams,
+    numeric = false,
+    fractionDigits?: number
+) => ({
+    ...(numeric ? { numeric: true, fractionDigits } : {}),
+    sortParams,
+    filterComponent: CustomAggridComparatorFilter,
+    filterComponentParams: {
+        filterParams: {
+            ...filterDefinition,
+            ...filterParams,
+        },
+    },
+});
+
+const makeTextColumn = (intl: IntlShape, tableParams: TableParams, headerId: string, field: string): ColDef =>
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: headerId }),
+        colId: field,
+        field,
+        context: createColumnContext(tableParams, textFilterParams),
+    });
+
+const makeNumericColumn = (
+    intl: IntlShape,
+    tableParams: TableParams,
+    headerId: string,
+    field: string,
+    fractionDigits?: number
+): ColDef =>
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: headerId }),
+        colId: field,
+        field,
+        context: createColumnContext(tableParams, numericFilterParams, true, fractionDigits),
+    });
+
+// Enum values are translated with a '<labelPrefix>.<value>' message id
+const makeEnumColumn = (
+    intl: IntlShape,
+    { sortParams, filterParams }: TableParams,
+    headerId: string,
+    field: string,
+    options: string[],
+    labelPrefix: string
+): ColDef =>
+    createEnumColumn(
+        field,
+        headerId,
+        options,
+        (value: string) => (value ? intl.formatMessage({ id: `${labelPrefix}.${value}` }) : ''),
+        intl,
+        sortParams,
+        filterParams
+    );
+
+const makeBooleanColumn = (
+    intl: IntlShape,
+    { sortParams, filterParams }: TableParams,
+    headerId: string,
+    field: string
+): ColDef =>
+    makeAgGridCustomHeaderColumn({
+        headerName: intl.formatMessage({ id: headerId }),
+        colId: field,
+        field,
+        filterParams: booleanFilterParams,
+        context: {
+            sortParams,
+            filterComponent: CustomAggridBooleanFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.BOOLEAN,
+                    ...filterParams,
+                },
+            },
+        },
+        cellRenderer: BooleanCellRenderer,
+    });
 
 // Convert a record to rows, including its key as the equipment identifier.
 export const flattenRecord = <T extends object>(record?: Record<string, T>): LogicalControlsResultRow<T>[] =>
@@ -22,183 +142,105 @@ export const flattenRecordOfArrays = <T extends object>(record?: Record<string, 
           )
         : [];
 
-const makeBusIdentifierColumn = (intl: IntlShape): ColDef =>
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'BusIdentifier' }),
-        colId: 'equipmentIdentifier',
-        field: 'equipmentIdentifier',
-    });
+const makeBusIdentifierColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
+    makeTextColumn(intl, tableParams, 'BusIdentifier', 'equipmentIdentifier');
 
-const makeEquipmentIdentifierColumn = (intl: IntlShape): ColDef =>
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'EquipmentIdentifier' }),
-        colId: 'equipmentIdentifier',
-        field: 'equipmentIdentifier',
-    });
+const makeEquipmentIdentifierColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
+    makeTextColumn(intl, tableParams, 'EquipmentIdentifier', 'equipmentIdentifier');
 
-const makeVoltageLevelNameColumn = (intl: IntlShape): ColDef =>
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'VoltageLevelName' }),
-        colId: 'voltageLevelName',
-        field: 'voltageLevelName',
-    });
+const makeVoltageLevelNameColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
+    makeTextColumn(intl, tableParams, 'VoltageLevelName', 'voltageLevelName');
 
-const makeNominalVoltageColumn = (intl: IntlShape): ColDef =>
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'NominalVoltage' }),
-        colId: 'nominalVoltage',
-        field: 'nominalVoltage',
-        context: {
-            numeric: true,
-            fractionDigits: 0,
-        },
-    });
+const makeNominalVoltageColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
+    makeNumericColumn(intl, tableParams, 'NominalVoltage', 'nominalVoltage', 0);
 
-const makeMeasurementTypeColumn = (intl: IntlShape): ColDef =>
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'MeasurementType' }),
-        colId: 'measurementType',
-        field: 'measurementType',
-        valueGetter: (params: ValueGetterParams) =>
-            params.data?.measurementType
-                ? intl.formatMessage({ id: `MeasurementType.${params.data.measurementType}` })
-                : '',
-    });
+const makeMeasurementTypeColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
+    makeEnumColumn(
+        intl,
+        tableParams,
+        'MeasurementType',
+        'measurementType',
+        Object.values(MeasurementType),
+        'MeasurementType'
+    );
 
-const makeValueColumn = (intl: IntlShape): ColDef =>
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'Value' }),
-        colId: 'value',
-        field: 'value',
-        context: { numeric: true },
-    });
+const makeValueColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
+    makeNumericColumn(intl, tableParams, 'Value', 'value');
 
-const makeDeviationColumn = (intl: IntlShape): ColDef =>
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'Deviation' }),
-        colId: 'deviation',
-        field: 'deviation',
-        context: { numeric: true },
-    });
+const makeDeviationColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
+    makeNumericColumn(intl, tableParams, 'Deviation', 'deviation');
 
-export const logicalControlsBalancesColumnsDefinition = (intl: IntlShape): ColDef[] => [
-    makeBusIdentifierColumn(intl),
-    makeVoltageLevelNameColumn(intl),
-    makeNominalVoltageColumn(intl),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'ActiveBalance' }),
-        colId: 'activeBalance',
-        field: 'activeBalance',
-        context: { numeric: true },
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'ReactiveBalance' }),
-        colId: 'reactiveBalance',
-        field: 'reactiveBalance',
-        context: { numeric: true },
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'ActiveValidity' }),
-        colId: 'activeValidity',
-        field: 'activeValidity',
-        cellRenderer: BooleanCellRenderer,
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'ReactiveValidity' }),
-        colId: 'reactiveValidity',
-        field: 'reactiveValidity',
-        cellRenderer: BooleanCellRenderer,
-    }),
-];
+export const logicalControlsBalancesColumnsDefinition = (intl: IntlShape): ColDef[] => {
+    const tableParams = createTableParams(LOGICAL_CONTROLS_BALANCES);
+    return [
+        makeBusIdentifierColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams),
+        makeNominalVoltageColumn(intl, tableParams),
+        makeNumericColumn(intl, tableParams, 'ActiveBalance', 'activeBalance'),
+        makeNumericColumn(intl, tableParams, 'ReactiveBalance', 'reactiveBalance'),
+        makeBooleanColumn(intl, tableParams, 'ActiveValidity', 'activeValidity'),
+        makeBooleanColumn(intl, tableParams, 'ReactiveValidity', 'reactiveValidity'),
+    ];
+};
 
-export const logicalControlsInvalidMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => [
-    makeEquipmentIdentifierColumn(intl),
-    makeVoltageLevelNameColumn(intl),
-    makeNominalVoltageColumn(intl),
-    makeMeasurementTypeColumn(intl),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'StatusType' }),
-        colId: 'statusType',
-        field: 'statusType',
-        valueGetter: (params: ValueGetterParams) =>
-            params.data?.statusType ? intl.formatMessage({ id: `StatusType.${params.data.statusType}` }) : '',
-    }),
-    makeValueColumn(intl),
-];
+export const logicalControlsInvalidMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => {
+    const tableParams = createTableParams(LOGICAL_CONTROLS_NON_ZERO_MEASUREMENTS_ON_DISCONNECTED);
+    return [
+        makeEquipmentIdentifierColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams),
+        makeNominalVoltageColumn(intl, tableParams),
+        makeMeasurementTypeColumn(intl, tableParams),
+        makeEnumColumn(intl, tableParams, 'StatusType', 'statusType', Object.values(StatusType), 'StatusType'),
+        makeValueColumn(intl, tableParams),
+    ];
+};
 
-export const logicalControlsNullMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => [
-    makeEquipmentIdentifierColumn(intl),
-    makeVoltageLevelNameColumn(intl),
-    makeNominalVoltageColumn(intl),
-    makeMeasurementTypeColumn(intl),
-];
+export const logicalControlsNullMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => {
+    const tableParams = createTableParams(LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED);
+    return [
+        makeEquipmentIdentifierColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams),
+        makeNominalVoltageColumn(intl, tableParams),
+        makeMeasurementTypeColumn(intl, tableParams),
+    ];
+};
 
-export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => [
-    makeEquipmentIdentifierColumn(intl),
-    makeVoltageLevelNameColumn(intl),
-    makeNominalVoltageColumn(intl),
-    makeMeasurementTypeColumn(intl),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'OriginMeasurement' }),
-        colId: 'originMeasurement',
-        field: 'originMeasurement',
-        context: { numeric: true },
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'ExtremityMeasurement' }),
-        colId: 'extremityMeasurement',
-        field: 'extremityMeasurement',
-        context: { numeric: true },
-    }),
-    makeDeviationColumn(intl),
-];
+export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => {
+    const tableParams = createTableParams(LOGICAL_CONTROLS_ORIGIN_EXTREMITY_DEVIATIONS);
+    return [
+        makeEquipmentIdentifierColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams),
+        makeNominalVoltageColumn(intl, tableParams),
+        makeMeasurementTypeColumn(intl, tableParams),
+        makeNumericColumn(intl, tableParams, 'OriginMeasurement', 'originMeasurement'),
+        makeNumericColumn(intl, tableParams, 'ExtremityMeasurement', 'extremityMeasurement'),
+        makeDeviationColumn(intl, tableParams),
+    ];
+};
 
-export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => [
-    makeEquipmentIdentifierColumn(intl),
-    makeVoltageLevelNameColumn(intl),
-    makeNominalVoltageColumn(intl),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'ThresholdType' }),
-        colId: 'limitType',
-        field: 'limitType',
-        valueGetter: (params: ValueGetterParams) =>
-            params.data?.limitType ? intl.formatMessage({ id: `LimitType.${params.data.limitType}` }) : '',
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'Threshold' }),
-        colId: 'threshold',
-        field: 'threshold',
-        context: { numeric: true },
-    }),
-    makeValueColumn(intl),
-    makeDeviationColumn(intl),
-];
+export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => {
+    const tableParams = createTableParams(LOGICAL_CONTROLS_OUT_OF_BOUNDS_MEASUREMENTS);
+    return [
+        makeEquipmentIdentifierColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams),
+        makeNominalVoltageColumn(intl, tableParams),
+        makeEnumColumn(intl, tableParams, 'ThresholdType', 'limitType', Object.values(LimitType), 'LimitType'),
+        makeNumericColumn(intl, tableParams, 'Threshold', 'threshold'),
+        makeValueColumn(intl, tableParams),
+        makeDeviationColumn(intl, tableParams),
+    ];
+};
 
-export const logicalControlsVoltageDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => [
-    makeBusIdentifierColumn(intl),
-    makeVoltageLevelNameColumn(intl),
-    makeNominalVoltageColumn(intl),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'MinBusbarSection' }),
-        colId: 'minBusbarSection',
-        field: 'minBusbarSection',
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'MinBusbarSectionValue' }),
-        colId: 'minBusbarSectionValue',
-        field: 'minBusbarSectionValue',
-        context: { numeric: true },
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'MaxBusbarSection' }),
-        colId: 'maxBusbarSection',
-        field: 'maxBusbarSection',
-    }),
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'MaxBusbarSectionValue' }),
-        colId: 'maxBusbarSectionValue',
-        field: 'maxBusbarSectionValue',
-        context: { numeric: true },
-    }),
-    makeDeviationColumn(intl),
-];
+export const logicalControlsVoltageDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => {
+    const tableParams = createTableParams(LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS);
+    return [
+        makeBusIdentifierColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams),
+        makeNominalVoltageColumn(intl, tableParams),
+        makeTextColumn(intl, tableParams, 'MinBusbarSection', 'minBusbarSection'),
+        makeNumericColumn(intl, tableParams, 'MinBusbarSectionValue', 'minBusbarSectionValue'),
+        makeTextColumn(intl, tableParams, 'MaxBusbarSection', 'maxBusbarSection'),
+        makeNumericColumn(intl, tableParams, 'MaxBusbarSectionValue', 'maxBusbarSectionValue'),
+        makeDeviationColumn(intl, tableParams),
+    ];
+};

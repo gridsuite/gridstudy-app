@@ -11,7 +11,7 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
+import { ComputingType, RunningStatus, TableType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
 import { useNodeData } from 'components/use-node-data';
 import { fetchLogicalControlsResult } from '../../../services/study/state-estimation';
@@ -28,36 +28,45 @@ import {
     logicalControlsOutOfBoundsMeasurementsColumnsDefinition,
     logicalControlsVoltageDeviationsColumnsDefinition,
 } from './logical-controls-result-utils';
+import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
+import {
+    LOGICAL_CONTROLS_BALANCES,
+    LOGICAL_CONTROLS_NON_ZERO_MEASUREMENTS_ON_DISCONNECTED,
+    LOGICAL_CONTROLS_ORIGIN_EXTREMITY_DEVIATIONS,
+    LOGICAL_CONTROLS_OUT_OF_BOUNDS_MEASUREMENTS,
+    LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS,
+    LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED,
+} from '../../../utils/store-sort-filter-fields';
 
 const LOGICAL_CONTROLS_TABS = [
     {
         label: 'LogicalControlsBalances',
-        tableName: 'CsvNameBalances',
+        tableName: LOGICAL_CONTROLS_BALANCES,
         columnsDefinition: logicalControlsBalancesColumnsDefinition,
     },
     {
         label: 'LogicalControlsNonZeroMeasurementsOnDisconnected',
-        tableName: 'CsvNameNonZeroMeasurementsOnDisconnected',
+        tableName: LOGICAL_CONTROLS_NON_ZERO_MEASUREMENTS_ON_DISCONNECTED,
         columnsDefinition: logicalControlsInvalidMeasurementsColumnsDefinition,
     },
     {
         label: 'LogicalControlsZeroMeasurementsOnConnected',
-        tableName: 'CsvNameZeroMeasurementsOnConnected',
+        tableName: LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED,
         columnsDefinition: logicalControlsNullMeasurementsColumnsDefinition,
     },
     {
         label: 'LogicalControlsOriginExtremityDeviations',
-        tableName: 'CsvNameOriginExtremityDeviations',
+        tableName: LOGICAL_CONTROLS_ORIGIN_EXTREMITY_DEVIATIONS,
         columnsDefinition: logicalControlsOriginExtremityDeviationsColumnsDefinition,
     },
     {
         label: 'LogicalControlsOutOfBoundsMeasurements',
-        tableName: 'CsvNameOutOfBoundsMeasurements',
+        tableName: LOGICAL_CONTROLS_OUT_OF_BOUNDS_MEASUREMENTS,
         columnsDefinition: logicalControlsOutOfBoundsMeasurementsColumnsDefinition,
     },
     {
         label: 'LogicalControlsVoltageDeviations',
-        tableName: 'CsvNameVoltageDeviations',
+        tableName: LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS,
         columnsDefinition: logicalControlsVoltageDeviationsColumnsDefinition,
     },
 ] as const;
@@ -82,6 +91,8 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
     });
 
     const selectedTab = LOGICAL_CONTROLS_TABS[tabIndex];
+    useComputationColumnFilters(TableType.LogicalControls, selectedTab.tableName);
+
     const columnDefs = useMemo(() => selectedTab.columnsDefinition(intl), [intl, selectedTab]);
 
     const handleTabChange = (_event: SyntheticEvent, newTabIndex: number) => {
