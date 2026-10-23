@@ -151,6 +151,22 @@ export function getStateEstimationRunningStatus(stateEstimationStatus: string | 
     }
 }
 
+export function getLogicalControlsRunningStatus(logicalControlsStatus: string | null): RunningStatus {
+    switch (logicalControlsStatus) {
+        case 'COMPLETED':
+            return RunningStatus.SUCCEED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'FAILED':
+            return RunningStatus.FAILED;
+        case 'PRELOADING':
+            return RunningStatus.PRELOADING;
+        case 'NOT_DONE':
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
 export function getPccMinRunningStatus(pccMinStatus: string | null): RunningStatus {
     switch (pccMinStatus) {
         case 'COMPLETED':
@@ -191,6 +207,8 @@ export function getComputationRunningStatus(statusValue: string, computingType: 
             return getVoltageInitRunningStatus(statusValue);
         case ComputingType.STATE_ESTIMATION:
             return getStateEstimationRunningStatus(statusValue);
+        case ComputingType.LOGICAL_CONTROLS:
+            return getLogicalControlsRunningStatus(statusValue);
         default:
             return RunningStatus.IDLE;
     }
