@@ -46,6 +46,7 @@ import { useAllComputingStatus } from './computing-status/use-all-computing-stat
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { useTreeModelSync } from '../hooks/use-tree-model-sync';
 import { useNodeActivitySync } from 'components/node-activity/hooks/use-node-activity-sync';
+import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-spreadsheet-on-root-network';
 import {
     fetchNetworkExistence,
     fetchRootNetworkIndexationStatus,
@@ -172,6 +173,7 @@ export function StudyContainer() {
     useExportNotification();
     useTreeModelSync(studyUuid);
     useNodeActivitySync(studyUuid);
+    useResetSpreadsheetOnRootNetwork();
 
     const displayErrorNotifications = useCallback(
         (eventData) => {

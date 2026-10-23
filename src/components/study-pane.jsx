@@ -10,7 +10,6 @@ import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases';
 import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification';
-import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-spreadsheet-on-root-network';
 import { useNodeAliasesUpdateOnNotification } from './spreadsheet-view/hooks/use-node-aliases-update-on-notification';
 import { useSpreadsheetEquipments } from './spreadsheet-view/hooks/use-spreadsheet-equipments';
 import { useNodeAliasesLoadFlowStatus } from './spreadsheet-view/hooks/use-node-aliases-loadflow-status';
@@ -60,7 +59,6 @@ const StudyPane = () => {
     }, [fetchNodeAliases]);
     useUpdateEquipmentsOnNotification();
     useNodeAliasesUpdateOnNotification();
-    useResetSpreadsheetOnRootNetwork();
     useSpreadsheetEquipments();
     useNodeAliasesLoadFlowStatus();
 
