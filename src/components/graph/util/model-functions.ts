@@ -53,6 +53,7 @@ function convertModificationNodeToReactFlowModelNode(node: NetworkModificationNo
         globalBuildStatus: globalBuildStatus,
         localBuildStatus: localBuildStatus,
         nodeType: nodeType,
+        hasReferencedModifications: networkModificationNodeData?.hasReferencedModifications,
     };
 }
 
