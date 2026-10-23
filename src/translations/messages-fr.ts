@@ -1207,6 +1207,7 @@ const messages_fr = {
     Enum: 'Énumération',
     nodeType: 'Type',
     nodeStatus: 'Statut',
+    nodeContainsSharedModifications: 'Contient des modifications partagées',
     'nodeActivity.UPDATING': 'Mise à jour',
     'nodeActivity.DELETING': 'Suppression',
     'nodeActivity.BUILDING': 'Réalisation',
