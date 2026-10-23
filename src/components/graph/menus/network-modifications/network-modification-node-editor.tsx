@@ -739,6 +739,11 @@ const NetworkModificationNodeEditor = () => {
                     elementUuid: modification.referencedId,
                     elementName: newName,
                 });
+            } else if (modification.parentSharedUuid) {
+                return updateElement(modification.parentSharedUuid, {
+                    elementUuid: modification.uuid,
+                    elementName: newName,
+                });
             } else {
                 return setModificationNameAndDescription(studyUuid, currentNode?.id, modification.uuid, {
                     name: newName,
@@ -1198,6 +1203,13 @@ const NetworkModificationNodeEditor = () => {
         return selectedNetworkModifications.some((row) => (row.sublevelCount ?? 0) >= limit);
     }, [selectedNetworkModifications]);
 
+    // The selection has to come from maximum one shared modification: otherwise assembling moves
+    // modifications in or out of a shared one, possibly nesting it into itself
+    const selectionCrossesSharedModification = useMemo(
+        () => new Set(selectedNetworkModifications.map((modification) => modification.parentSharedUuid)).size > 1,
+        [selectedNetworkModifications]
+    );
+
     const disabledCompositeCreation: boolean = useMemo(() => {
         return (
             selectedNetworkModifications?.length === 0 ||
@@ -1205,7 +1217,8 @@ const NetworkModificationNodeEditor = () => {
             isRootNode ||
             isAssemblyDepthExceeded ||
             isEditBlocked ||
-            selectionContainsLockedModification
+            selectionContainsLockedModification ||
+            selectionCrossesSharedModification
         );
     }, [
         selectedNetworkModifications?.length,
@@ -1214,6 +1227,7 @@ const NetworkModificationNodeEditor = () => {
         isAssemblyDepthExceeded,
         isEditBlocked,
         selectionContainsLockedModification,
+        selectionCrossesSharedModification,
     ]);
 
     const disabledCompositeExport: boolean = useMemo(() => {
