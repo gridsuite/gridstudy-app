@@ -12,7 +12,9 @@ import {
     isObjectEmpty,
     MAX_CHAR_DESCRIPTION,
     Parameter,
+    snackWithFallback,
     TreeViewFinderNodeProps,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Grid, Stack } from '@mui/material';
@@ -101,6 +103,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     ...dialogProps
 }) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [modifiedByUser, setModifiedByUser] = useState(false);
 
@@ -127,11 +130,11 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
             getSharedModificationsWriteAccess(studyUuid)
                 .then(setSharedModificationsWriteAccess)
                 .catch((error) => {
-                    console.error('Failed to fetch the write access on the shared modifications of the study', error);
+                    snackWithFallback(snackError, error, { headerId: 'sharedModificationsWriteAccessFetchingError' });
                     setSharedModificationsWriteAccess(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
                 });
         }
-    }, [isModification, open, studyUuid]);
+    }, [isModification, open, studyUuid, snackError]);
 
     const tag = useWatch({ control, name: TAG })?.trim();
     const isRenamingTag = isModification && !!tag && tag !== editableRootNetwork?.tag;
