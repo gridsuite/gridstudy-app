@@ -855,7 +855,7 @@ const NetworkModificationNodeEditor = () => {
     ]);
 
     const doAssembleModificationsIntoComposite = useCallback(() => {
-        const selectedModUuids: UUID[] = selectedNetworkModifications.map((item) => item.uuid);
+        const selectedModUuids: UUID[] = [...new Set(selectedNetworkModifications.map((item) => item.uuid))];
         setSaveInProgress(true);
         assembleModificationsIntoComposite(studyUuid, currentNode?.id, selectedModUuids)
             .then((compositeUuid: UUID) => {
