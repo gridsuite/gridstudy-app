@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -28,6 +28,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { FormControlLabel, Switch, type Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer.type';
@@ -35,11 +36,15 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { AddLocationOutlined } from '@mui/icons-material';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
+import TooltipIconButton from 'components/common/tooltip-icon-button';
 import { useCSVDownloader } from 'react-papaparse';
 import type { DiagramConfigPosition } from 'services/explore';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import VoltageLevelSearchMenu from './voltage-level-search-menu';
+import UndoRedoButtons from './undo-redo-buttons';
+import FilterChip from './filter-chip';
+import { type NadEdit, NadEditType, type NadHistory } from 'components/workspace/diagrams/nad/nad-edit-history';
 
 const getControlsBackgroundColor = (theme: Theme) =>
     theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.background.default;
@@ -75,10 +80,9 @@ const styles = {
             fontSize: theme.typography.body2.fontSize,
         },
     }),
-    divider: (theme) => ({
-        borderColor: theme.palette.grey[600],
+    divider: {
         margin: '2px 4px',
-    }),
+    },
 } as const satisfies MuiStyles;
 
 interface DiagramControlsProps {
@@ -89,13 +93,16 @@ interface DiagramControlsProps {
     panelTitle?: string;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
-    onExpandAllVoltageLevels?: () => void;
-    onAddVoltageLevel: (vlId: string) => void;
-    onAddVoltageLevelsFromFilter: (elementUuid: UUID) => void;
+    onEdit: (edit: NadEdit) => void;
     isDiagramLoading?: boolean;
-    isNadCreationFromFilter: boolean;
+    filterUuid?: UUID;
+    filterName?: string;
+    isFilterDeleted: boolean;
+    hasHiddenVoltageLevels: boolean;
     svgVoltageLevels?: string[];
     onFocusVoltageLevel?: (vlId: string) => void;
+    editHistory: NadHistory;
+    onRestoreHistoryState: (target: number) => void;
 }
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({
@@ -106,18 +113,33 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     panelTitle,
     isEditNadMode,
     onToggleEditNadMode,
-    onExpandAllVoltageLevels,
-    onAddVoltageLevel,
-    onAddVoltageLevelsFromFilter,
+    onEdit,
     isDiagramLoading,
-    isNadCreationFromFilter,
+    filterUuid,
+    filterName = '',
+    isFilterDeleted,
+    hasHiddenVoltageLevels,
     svgVoltageLevels,
     onFocusVoltageLevel,
+    editHistory,
+    onRestoreHistoryState,
 }) => {
     const intl = useIntl();
+    // A deleted filter keeps the filter mode actions until the user removes or changes it
+    const isFilterMode = !!filterUuid;
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
-    const [isFilterSelectorOpen, setIsFilterSelectorOpen] = useState(false);
+    const [filterSelectorEdit, setFilterSelectorEdit] = useState<
+        NadEditType.ADD_FROM_FILTER | NadEditType.APPLY_FILTER
+    >();
+    // The selector only takes a new array as its selection, so one is made each time it opens
+    const filterSelection = useMemo(
+        () =>
+            filterSelectorEdit === NadEditType.APPLY_FILTER && filterUuid && !isFilterDeleted
+                ? [filterUuid]
+                : undefined,
+        [filterSelectorEdit, filterUuid, isFilterDeleted]
+    );
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -140,18 +162,11 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         setIsLoadSelectorOpen(true);
     };
 
-    const handleClickAddVoltageLevelSIcon = () => {
-        setIsFilterSelectorOpen(true);
-    };
-
-    const handleCloseFilterSelector = () => {
-        setIsFilterSelectorOpen(false);
-    };
+    // In filter mode, expanding only shows hidden voltage levels again, which needs the filter
+    const canExpandAll = isFilterMode ? hasHiddenVoltageLevels && !isFilterDeleted : !!svgVoltageLevels?.length;
 
     const handleClickExpandAllVoltageLevelsIcon = () => {
-        if (onExpandAllVoltageLevels && !isDiagramLoading) {
-            onExpandAllVoltageLevels();
-        }
+        onEdit({ type: NadEditType.EXPAND_ALL });
     };
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [searchAnchorEl, setSearchAnchorEl] = useState<HTMLElement | null>(null);
@@ -193,10 +208,11 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     };
 
     const handleSelectFilter = (selectedElements: TreeViewFinderNodeProps[]) => {
-        if (onAddVoltageLevelsFromFilter && selectedElements.length > 0) {
-            onAddVoltageLevelsFromFilter(selectedElements[0].id);
+        const [selectedFilter] = selectedElements;
+        if (selectedFilter && filterSelectorEdit) {
+            onEdit({ type: filterSelectorEdit, filterUuid: selectedFilter.id, filterName: selectedFilter.name });
         }
-        handleCloseFilterSelector();
+        setFilterSelectorEdit(undefined);
     };
 
     const handleToggleEditMode = () => {
@@ -235,7 +251,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                 false
             )
                 .then(() => {
-                    onAddVoltageLevel(equipment.id);
+                    onEdit({ type: NadEditType.ADD_VOLTAGE_LEVEL, voltageLevelId: equipment.id });
                 })
                 .catch(() => {
                     snackWarning({
@@ -244,7 +260,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                     });
                 });
         },
-        [handleCloseSearchDialog, currentNodeUuid, currentRootNetworkUuid, studyUuid, onAddVoltageLevel, snackWarning]
+        [handleCloseSearchDialog, currentNodeUuid, currentRootNetworkUuid, studyUuid, onEdit, snackWarning]
     );
     function renderSearchEquipment() {
         if (!currentRootNetworkUuid || !currentNodeUuid) {
@@ -262,6 +278,52 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         );
     }
 
+    function renderEditActions() {
+        return (
+            <>
+                <Divider orientation="vertical" flexItem sx={styles.divider} />
+                {!isFilterMode && (
+                    <>
+                        <TooltipIconButton
+                            tooltip={<FormattedMessage id={'nadReplaceWithFilter'} />}
+                            sx={styles.actionIcon}
+                            onClick={() => setFilterSelectorEdit(NadEditType.APPLY_FILTER)}
+                            disabled={isDiagramLoading}
+                        >
+                            <FilterAltIcon sx={styles.icon} />
+                        </TooltipIconButton>
+                        <TooltipIconButton
+                            tooltip={<FormattedMessage id={'addVoltageLevelsFromFilter'} />}
+                            sx={styles.actionIcon}
+                            onClick={() => setFilterSelectorEdit(NadEditType.ADD_FROM_FILTER)}
+                            disabled={isDiagramLoading}
+                        >
+                            <AddLocationAltOutlinedIcon sx={styles.icon} />
+                        </TooltipIconButton>
+                    </>
+                )}
+                <TooltipIconButton
+                    tooltip={<FormattedMessage id={'expandAllVoltageLevels'} />}
+                    sx={styles.actionIcon}
+                    onClick={handleClickExpandAllVoltageLevelsIcon}
+                    disabled={isDiagramLoading || !canExpandAll}
+                >
+                    <ArrowsOutputIcon sx={styles.icon} />
+                </TooltipIconButton>
+                {!isFilterMode && (
+                    <TooltipIconButton
+                        tooltip={<FormattedMessage id={'addVoltageLevel'} />}
+                        sx={styles.actionIcon}
+                        onClick={handleClickAddVoltageLevelIcon}
+                        disabled={isDiagramLoading}
+                    >
+                        <AddLocationOutlined sx={styles.icon} />
+                    </TooltipIconButton>
+                )}
+            </>
+        );
+    }
+
     /**
      * RENDER
      */
@@ -275,16 +337,30 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         flexDirection: 'row',
                     }}
                 >
-                    <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
-                        <IconButton sx={styles.actionIcon} onClick={handleClickSaveIcon}>
-                            <SaveIcon sx={styles.icon} />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={<FormattedMessage id={'importAndReplaceFromGridExplore'} />}>
-                        <IconButton sx={styles.actionIcon} onClick={handleClickLoadIcon}>
-                            <UploadIcon sx={styles.icon} />
-                        </IconButton>
-                    </Tooltip>
+                    {isEditNadMode && (
+                        <>
+                            <UndoRedoButtons
+                                history={editHistory}
+                                onRestoreHistoryState={onRestoreHistoryState}
+                                disabled={isDiagramLoading}
+                            />
+                            <Divider orientation="vertical" flexItem sx={styles.divider} />
+                        </>
+                    )}
+                    <TooltipIconButton
+                        tooltip={<FormattedMessage id={'SaveToGridexplore'} />}
+                        sx={styles.actionIcon}
+                        onClick={handleClickSaveIcon}
+                    >
+                        <SaveIcon sx={styles.icon} />
+                    </TooltipIconButton>
+                    <TooltipIconButton
+                        tooltip={<FormattedMessage id={'importAndReplaceFromGridExplore'} />}
+                        sx={styles.actionIcon}
+                        onClick={handleClickLoadIcon}
+                    >
+                        <UploadIcon sx={styles.icon} />
+                    </TooltipIconButton>
                     <Tooltip title={<FormattedMessage id={'exportNadPositions'} />}>
                         <span>
                             <CSVDownloader
@@ -298,55 +374,28 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             </CSVDownloader>
                         </span>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id={'searchVoltageLevelInNad'} />}>
-                        <span>
-                            <IconButton
-                                sx={styles.actionIcon}
-                                onClick={handleClickSearchVoltageLevelIcon}
-                                disabled={isDiagramLoading || !svgVoltageLevels || svgVoltageLevels.length === 0}
-                            >
-                                <SearchIcon sx={styles.icon} />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
-                    {isEditNadMode && (
+                    <TooltipIconButton
+                        tooltip={<FormattedMessage id={'searchVoltageLevelInNad'} />}
+                        sx={styles.actionIcon}
+                        onClick={handleClickSearchVoltageLevelIcon}
+                        disabled={isDiagramLoading || !svgVoltageLevels || svgVoltageLevels.length === 0}
+                    >
+                        <SearchIcon sx={styles.icon} />
+                    </TooltipIconButton>
+                    {isFilterMode && (
                         <>
                             <Divider orientation="vertical" flexItem sx={styles.divider} />
-                            <Tooltip title={<FormattedMessage id={'addVoltageLevelsFromFilter'} />}>
-                                <span>
-                                    <IconButton
-                                        sx={styles.actionIcon}
-                                        onClick={handleClickAddVoltageLevelSIcon}
-                                        disabled={isDiagramLoading || isNadCreationFromFilter}
-                                    >
-                                        <AddLocationAltOutlinedIcon sx={styles.icon} />
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
-                            <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
-                                <span>
-                                    <IconButton
-                                        sx={styles.actionIcon}
-                                        onClick={handleClickExpandAllVoltageLevelsIcon}
-                                        disabled={isDiagramLoading}
-                                    >
-                                        <ArrowsOutputIcon sx={styles.icon} />
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
-                            <Tooltip title={<FormattedMessage id={'addVoltageLevel'} />}>
-                                <span>
-                                    <IconButton
-                                        sx={styles.actionIcon}
-                                        onClick={handleClickAddVoltageLevelIcon}
-                                        disabled={isDiagramLoading}
-                                    >
-                                        <AddLocationOutlined sx={styles.icon} />
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
+                            <FilterChip
+                                filterName={filterName}
+                                isFilterDeleted={isFilterDeleted}
+                                isEditMode={isEditNadMode}
+                                disabled={isDiagramLoading}
+                                onChange={() => setFilterSelectorEdit(NadEditType.APPLY_FILTER)}
+                                onRemove={() => onEdit({ type: NadEditType.REMOVE_FILTER, filterName })}
+                            />
                         </>
                     )}
+                    {isEditNadMode && renderEditActions()}
                 </Box>
             </Box>
             <FormControlLabel
@@ -393,7 +442,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         }}
                     >
                         <DirectoryItemSelector
-                            open={isFilterSelectorOpen}
+                            open={!!filterSelectorEdit}
                             onClose={handleSelectFilter}
                             types={[ElementType.FILTER]}
                             equipmentTypes={[EquipmentType.VOLTAGE_LEVEL]}
@@ -401,6 +450,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                                 id: 'elementSelection',
                             })}
                             multiSelect={false}
+                            selected={filterSelection}
                         />
                     </Box>
                     {renderSearchEquipment()}
