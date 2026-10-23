@@ -14,7 +14,7 @@ import {
     LeftPanelOpenIcon,
     type MuiStyles,
     OverflowableText,
-    snackWarningOrFallback,
+    ProblemDetailError,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -172,14 +172,19 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                 caseFormat: caseFormat ?? null,
             },
         }).catch((error) => {
-            snackWarningOrFallback(
-                snackError,
-                snackWarning,
-                error,
-                [ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED],
-                { headerId: 'createRootNetworksError' },
-                ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS
-            );
+            if (
+                error instanceof ProblemDetailError &&
+                error.businessErrorCode === ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED
+            ) {
+                snackWarning({
+                    messageId: error.businessErrorCode,
+                    messageValues: error.businessErrorValues,
+                    autoHideDuration: ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
+                    headerId: 'createRootNetworksError',
+                });
+            } else {
+                snackWithFallback(snackError, error, { headerId: 'createRootNetworksError' });
+            }
             setIsRootNetworksProcessing(false);
         });
 

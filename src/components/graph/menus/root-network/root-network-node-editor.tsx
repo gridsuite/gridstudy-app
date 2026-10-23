@@ -9,7 +9,7 @@ import {
     CheckBoxList,
     mergeSx,
     type MuiStyles,
-    snackWarningOrFallback,
+    ProblemDetailError,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -286,14 +286,19 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
             await updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
         } catch (error) {
-            snackWarningOrFallback(
-                snackError,
-                snackWarning,
-                error,
-                [ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED],
-                { headerId: 'updateRootNetworksError' },
-                ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS
-            );
+            if (
+                error instanceof ProblemDetailError &&
+                error.businessErrorCode === ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED
+            ) {
+                snackWarning({
+                    messageId: error.businessErrorCode,
+                    messageValues: error.businessErrorValues,
+                    autoHideDuration: ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
+                    headerId: 'updateRootNetworksError',
+                });
+            } else {
+                snackWithFallback(snackError, error, { headerId: 'updateRootNetworksError' });
+            }
             setIsRootNetworksProcessing(false);
         }
     };
