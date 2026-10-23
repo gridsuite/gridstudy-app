@@ -1335,5 +1335,6 @@ const messages_en = {
     'runButton.short.VoltageInit': 'Voltage init',
     'runButton.short.StateEstimation': 'Estim',
     'runButton.short.PccMin': 'Pcc min N-1',
+    'runButton.quota': '{current}/{max} {current, plural, one {computation} other {computations}} running',
 };
 export default messages_en;

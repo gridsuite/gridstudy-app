@@ -18,7 +18,15 @@ import { LOAD_FLOW_RUNNABLES } from './run-button.constant';
 
 /** @typedef {{ context: { runnable: string }, debug: boolean }} PendingRunButtonComputation */
 
-const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled, canRun = () => true }) => {
+const RunButton = ({
+    runnables,
+    activeRunnables,
+    getStatus,
+    computationStopped,
+    disabled,
+    canRun = () => true,
+    getReachedQuota = () => undefined,
+}) => {
     const intl = useIntl();
     const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
     const isBelowMd = useMediaQuery((theme) => theme.breakpoints.down('md'));
@@ -83,7 +91,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     }
 
     function isButtonDisable() {
-        if (!canRun(selectedRunnable)) {
+        if (!canRun(selectedRunnable) || getReachedQuota(selectedRunnable)) {
             return true;
         }
         if (getRunningStatus() === RunningStatus.PRELOADING) {
@@ -158,6 +166,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
                 text={getButtonText()}
                 actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
                 computationStopped={computationStopped}
+                reachedQuotas={activeRunnables.map(getReachedQuota)}
             />
             <SelectOptionsDialog
                 title={''}
@@ -188,6 +197,7 @@ RunButton.propTypes = {
     computationStopped: PropTypes.bool.isRequired,
     disabled: PropTypes.bool,
     canRun: PropTypes.func,
+    getReachedQuota: PropTypes.func,
 };
 
 export default RunButton;
