@@ -85,11 +85,12 @@ export function fetchStateEstimationMeasurements(
         urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
     }
     const query = urlSearchParams.toString();
+    const queryString = query ? `?${query}` : '';
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/state-estimation/measurements${query ? `?${query}` : ''}`;
+    )}/state-estimation/measurements${queryString}`;
     console.debug(url);
     return backendFetchJson(url);
 }
