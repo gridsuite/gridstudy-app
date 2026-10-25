@@ -32,7 +32,14 @@ import type { RootState } from '../../../../redux/store';
 import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-actions';
 import { isNADPanel } from '../../hooks/workspace-panel-utils';
 import { useDirectoryElementListener } from '../../../../hooks/use-directory-element-listener';
-import { type NadEdit, NadEditType, type NadSnapshot, useNadEditHistory } from './nad-edit-history';
+import { changedPositions, isLayoutOnlyChange, useNadEditHistory } from './nad-edit-history';
+import { applyEdit, type NadEdit, NadEditType } from './nad-edits';
+import {
+    getActiveFilterUuid,
+    getShownVoltageLevelIds,
+    getSvgVoltageLevelIds,
+    isFilterDeleted,
+} from './nad-diagram-utils';
 
 interface UseNadDiagramProps {
     panelId: UUID;
@@ -50,81 +57,6 @@ const isEmptyDiagramError = (error: unknown) =>
 const hasStoredVoltageLevels = (
     source?: Pick<NetworkAreaDiagram, 'currentNadConfigUuid' | 'nadConfigUuid' | 'filterUuid'>
 ) => Boolean(source?.currentNadConfigUuid || source?.nadConfigUuid || source?.filterUuid);
-
-const isFilterDeleted = ({
-    filterUuid,
-    deletedFilterUuid,
-}: Pick<NetworkAreaDiagram, 'filterUuid' | 'deletedFilterUuid'>) => !!filterUuid && filterUuid === deletedFilterUuid;
-
-const getDrawnFilterUuid = (diagram: Pick<NetworkAreaDiagram, 'filterUuid' | 'deletedFilterUuid'>) =>
-    isFilterDeleted(diagram) ? undefined : diagram.filterUuid;
-
-const getDrawnVoltageLevelIds = (svg: DiagramSvg | null) =>
-    svg?.additionalMetadata?.voltageLevels.map((vl) => vl.id) ?? [];
-
-// Its own voltage levels, or in filter mode those its filter matches on the current node
-const getShownVoltageLevelIds = (
-    diagram: Pick<NetworkAreaDiagram, 'svg' | 'voltageLevelIds' | 'filterUuid' | 'deletedFilterUuid'>
-) => (getDrawnFilterUuid(diagram) ? getDrawnVoltageLevelIds(diagram.svg) : diagram.voltageLevelIds);
-
-const applyEdit = (diagram: NetworkAreaDiagram, edit: NadEdit): Partial<NetworkAreaDiagram> | undefined => {
-    const { svg, voltageLevelIds, voltageLevelToExpandIds, voltageLevelToOmitIds, filterUuid, positions } = diagram;
-    switch (edit.type) {
-        case NadEditType.MOVE_NODE:
-        case NadEditType.MOVE_LABEL:
-            return {
-                positions: positions.map((position) =>
-                    position.voltageLevelId === edit.voltageLevelId ? { ...position, ...edit.position } : position
-                ),
-            };
-        case NadEditType.ADD_VOLTAGE_LEVEL:
-            if (voltageLevelIds.includes(edit.voltageLevelId)) {
-                return undefined;
-            }
-            return {
-                voltageLevelIds: [...voltageLevelIds, edit.voltageLevelId],
-                voltageLevelToOmitIds: voltageLevelToOmitIds.filter((id) => id !== edit.voltageLevelId),
-            };
-        case NadEditType.ADD_FROM_FILTER:
-            return { filterToAddUuid: edit.filterUuid };
-        case NadEditType.EXPAND:
-            return {
-                voltageLevelIds: voltageLevelIds.filter((id) => id !== edit.voltageLevelId),
-                voltageLevelToExpandIds: [...voltageLevelToExpandIds, edit.voltageLevelId],
-            };
-        case NadEditType.EXPAND_ALL:
-            return { voltageLevelToExpandIds: getDrawnVoltageLevelIds(svg) };
-        case NadEditType.HIDE:
-            return {
-                voltageLevelIds: voltageLevelIds.filter((id) => id !== edit.voltageLevelId),
-                voltageLevelToOmitIds: [...voltageLevelToOmitIds, edit.voltageLevelId],
-            };
-        case NadEditType.APPLY_FILTER:
-            if (edit.filterUuid === filterUuid) {
-                return undefined;
-            }
-            // Like a NAD loaded from the filter
-            return {
-                filterUuid: edit.filterUuid,
-                filterName: edit.filterName,
-                voltageLevelIds: [],
-                voltageLevelToOmitIds: [],
-            };
-        case NadEditType.REMOVE_FILTER:
-            return { filterUuid: undefined, filterName: undefined, voltageLevelIds: getShownVoltageLevelIds(diagram) };
-    }
-};
-
-const sameIds = (a: string[], b: string[]) => a === b || (a.length === b.length && a.every((id, i) => id === b[i]));
-
-const isLayoutOnlyChange = (from: NadSnapshot, to: NadSnapshot) =>
-    sameIds(from.voltageLevelIds, to.voltageLevelIds) &&
-    sameIds(from.voltageLevelToOmitIds, to.voltageLevelToOmitIds) &&
-    from.filterUuid === to.filterUuid;
-
-// Positions keep their order and are only appended to, so they can be compared by index
-const changedPositions = (from: DiagramConfigPosition[], to: DiagramConfigPosition[]) =>
-    to.filter((position, index) => position !== from[index]);
 
 const BASE_RESET_STATE = {
     voltageLevelIds: [],
@@ -209,7 +141,7 @@ export const useNadDiagram = ({
         (svgData: DiagramSvg | null) => {
             if (!svgData) return;
 
-            const vlIdsFromSvg = getDrawnVoltageLevelIds(svgData);
+            const vlIdsFromSvg = getSvgVoltageLevelIds(svgData);
 
             console.info(`Number of voltage levels for NAD panel '${panelId}' : '${vlIdsFromSvg.length}'`);
 
@@ -217,8 +149,8 @@ export const useNadDiagram = ({
             const { voltageLevelIds, voltageLevelToOmitIds, positions } = current;
             updateDiagram({
                 svg: svgData,
-                // In filter mode, the diagram has no voltage levels of its own
-                voltageLevelIds: getDrawnFilterUuid(current)
+                // With an active filter, the diagram has no voltage levels of its own
+                voltageLevelIds: getActiveFilterUuid(current)
                     ? voltageLevelIds
                     : [...new Set([...voltageLevelIds, ...vlIdsFromSvg])],
                 voltageLevelToExpandIds: [],
@@ -235,7 +167,7 @@ export const useNadDiagram = ({
     }, []);
 
     const fetchDiagram = useCallback(
-        (persistAfterFetch = false) => {
+        (onDrawn?: () => void) => {
             if (!canFetchDiagram || !networkVisuParams) {
                 setLoading(true);
                 return;
@@ -258,13 +190,14 @@ export const useNadDiagram = ({
             setGlobalError(undefined);
 
             const current = diagramRef.current;
+            // The server draws the voltage levels of the saved config, those listed and those of the filter, all together
             const body = {
                 nadPositionsGenerationMode: networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
                 voltageLevelIds: current.voltageLevelIds,
                 voltageLevelToExpandIds: current.voltageLevelToExpandIds,
                 voltageLevelToOmitIds: current.voltageLevelToOmitIds,
                 nadConfigUuid: current.currentNadConfigUuid || current.nadConfigUuid,
-                filterUuid: getDrawnFilterUuid(current) ?? current.filterToAddUuid,
+                filterUuid: getActiveFilterUuid(current) ?? current.filterToAddUuid,
                 language,
             };
 
@@ -278,9 +211,10 @@ export const useNadDiagram = ({
                     processSvgData(svgData as DiagramSvg | null);
                     // From a config or a filter the server rebuilds the diagram, only a panel whose
                     // voltage levels live nowhere else needs a config of its own
-                    if (persistAfterFetch || !hasStoredVoltageLevels(current)) {
+                    if (!hasStoredVoltageLevels(current)) {
                         debounceSaveNad();
                     }
+                    onDrawn?.();
                 })
                 .catch((error) => {
                     // a newer fetchDiagram call already aborted this request, so its response is no longer relevant
@@ -290,9 +224,7 @@ export const useNadDiagram = ({
                     if (isEmptyDiagramError(error)) {
                         // Not an error: an empty diagram, which can still be edited
                         updateDiagram({ svg: null, voltageLevelToExpandIds: [], filterToAddUuid: undefined });
-                        if (persistAfterFetch) {
-                            debounceSaveNad();
-                        }
+                        onDrawn?.();
                         return;
                     }
                     handleFetchError(error);
@@ -320,7 +252,7 @@ export const useNadDiagram = ({
 
     // The server draws from the saved config, so it is saved first. Loading from the start, so nothing can be edited
     // meanwhile.
-    const saveAndFetchDiagram = useCallback(() => {
+    const saveThenFetchDiagram = useCallback(() => {
         debounceSaveNad.clear();
         setLoading(true);
         saveNad()
@@ -350,14 +282,14 @@ export const useNadDiagram = ({
                     break;
                 case NadEditType.APPLY_FILTER:
                     // Otherwise the saved voltage levels would be drawn along with the filter
-                    saveAndFetchDiagram();
+                    saveThenFetchDiagram();
                     break;
                 default:
                     // Drawn first, to save what the server adds, like the neighbours of an expanded voltage level
-                    fetchDiagram(true);
+                    fetchDiagram(debounceSaveNad);
             }
         },
-        [recordEdit, updateDiagram, debounceSaveNad, saveAndFetchDiagram, fetchDiagram]
+        [recordEdit, updateDiagram, debounceSaveNad, saveThenFetchDiagram, fetchDiagram]
     );
 
     // Returns the positions the viewer has to move nodes and labels to, none when the diagram is drawn again
@@ -374,10 +306,10 @@ export const useNadDiagram = ({
                 debounceSaveNad();
                 return changedPositions(current.positions, restored.positions);
             }
-            saveAndFetchDiagram();
+            saveThenFetchDiagram();
             return [];
         },
-        [restoreState, updateDiagram, debounceSaveNad, saveAndFetchDiagram]
+        [restoreState, updateDiagram, debounceSaveNad, saveThenFetchDiagram]
     );
 
     const replaceDiagram = useCallback(
@@ -410,6 +342,7 @@ export const useNadDiagram = ({
             }
             // A layout save queued before the replace would write back the NAD being left
             debounceSaveNad.clear();
+            // When a filter is loaded, the title is its name
             const filterName = filterUuid ? title : undefined;
 
             saveNadConfig(studyUuid, workspaceId, panelId, {
@@ -479,7 +412,7 @@ export const useNadDiagram = ({
         clearHistory();
         updateDiagram({
             deletedFilterUuid: current.filterUuid,
-            voltageLevelIds: getDrawnVoltageLevelIds(current.svg),
+            voltageLevelIds: getSvgVoltageLevelIds(current.svg),
         });
         if (current.svg) {
             // Already shown
@@ -511,11 +444,12 @@ export const useNadDiagram = ({
         diagram,
         shownVoltageLevelIds,
         isFilterDeleted: isFilterDeleted(diagram),
+        hasHiddenVoltageLevels: diagram.voltageLevelToOmitIds.length > 0,
         loading,
         globalError,
         editDiagram,
         replaceNadConfig,
-        history,
+        editHistory: history,
         restoreHistoryState,
     };
 };

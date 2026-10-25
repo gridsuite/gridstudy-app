@@ -5,40 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useState } from 'react';
 import type { NetworkAreaDiagram } from '../../../grid-layout/cards/diagrams/diagram.type';
 import type { DiagramConfigPosition } from '../../../../services/explore';
+import type { NadEdit } from './nad-edits';
 
 // Kept besides the initial state: 9 to go back to and the current one
 const MAX_LATEST_STATES = 10;
 
-export enum NadEditType {
-    MOVE_NODE = 'move-node',
-    MOVE_LABEL = 'move-label',
-    ADD_VOLTAGE_LEVEL = 'add-voltage-level',
-    ADD_FROM_FILTER = 'add-from-filter',
-    EXPAND = 'expand',
-    EXPAND_ALL = 'expand-all',
-    HIDE = 'hide',
-    APPLY_FILTER = 'apply-filter',
-    REMOVE_FILTER = 'remove-filter',
-}
-
-// Filter names label the edit in the history
-export type NadEdit =
-    | {
-          type: NadEditType.MOVE_NODE | NadEditType.MOVE_LABEL;
-          voltageLevelId: string;
-          position: Partial<DiagramConfigPosition>;
-      }
-    | { type: NadEditType.ADD_VOLTAGE_LEVEL | NadEditType.EXPAND | NadEditType.HIDE; voltageLevelId: string }
-    | { type: NadEditType.EXPAND_ALL }
-    | { type: NadEditType.ADD_FROM_FILTER | NadEditType.APPLY_FILTER; filterUuid: UUID; filterName: string }
-    | { type: NadEditType.REMOVE_FILTER; filterName: string };
-
 // What edits change. Its arrays are shared with the diagram, never copied.
-export type NadSnapshot = Pick<
+type NadSnapshot = Pick<
     NetworkAreaDiagram,
     'voltageLevelIds' | 'voltageLevelToOmitIds' | 'filterUuid' | 'filterName' | 'positions'
 >;
@@ -74,6 +50,18 @@ const toNadSnapshot = ({
     filterName,
     positions,
 });
+
+const sameIds = (a: string[], b: string[]) => a === b || (a.length === b.length && a.every((id, i) => id === b[i]));
+
+// Going from one to the other only moves nodes and labels: the viewer can do it without the diagram being drawn again
+export const isLayoutOnlyChange = (from: NadSnapshot, to: NadSnapshot) =>
+    sameIds(from.voltageLevelIds, to.voltageLevelIds) &&
+    sameIds(from.voltageLevelToOmitIds, to.voltageLevelToOmitIds) &&
+    from.filterUuid === to.filterUuid;
+
+// Positions keep their order and are only appended to, so they can be compared by index
+export const changedPositions = (from: DiagramConfigPosition[], to: DiagramConfigPosition[]) =>
+    to.filter((position, index) => position !== from[index]);
 
 export const historyTargets = ({ states, index }: NadHistory, action: NadHistoryAction) => {
     const indexes = states.map((_, i) => i);

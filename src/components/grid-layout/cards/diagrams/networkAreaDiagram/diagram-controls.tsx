@@ -44,7 +44,8 @@ import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import VoltageLevelSearchMenu from './voltage-level-search-menu';
 import UndoRedoButtons from './undo-redo-buttons';
 import FilterChip from './filter-chip';
-import { type NadEdit, NadEditType, type NadHistory } from 'components/workspace/diagrams/nad/nad-edit-history';
+import type { NadHistory } from 'components/workspace/diagrams/nad/nad-edit-history';
+import { type NadEdit, NadEditType } from 'components/workspace/diagrams/nad/nad-edits';
 
 const getControlsBackgroundColor = (theme: Theme) =>
     theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.background.default;
@@ -99,7 +100,7 @@ interface DiagramControlsProps {
     filterName?: string;
     isFilterDeleted: boolean;
     hasHiddenVoltageLevels: boolean;
-    svgVoltageLevels?: string[];
+    shownVoltageLevelIds?: string[];
     onFocusVoltageLevel?: (vlId: string) => void;
     editHistory: NadHistory;
     onRestoreHistoryState: (target: number) => void;
@@ -119,7 +120,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     filterName = '',
     isFilterDeleted,
     hasHiddenVoltageLevels,
-    svgVoltageLevels,
+    shownVoltageLevelIds,
     onFocusVoltageLevel,
     editHistory,
     onRestoreHistoryState,
@@ -163,7 +164,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     };
 
     // In filter mode, expanding only shows hidden voltage levels again, which needs the filter
-    const canExpandAll = isFilterMode ? hasHiddenVoltageLevels && !isFilterDeleted : !!svgVoltageLevels?.length;
+    const canExpandAll = isFilterMode ? hasHiddenVoltageLevels && !isFilterDeleted : !!shownVoltageLevelIds?.length;
 
     const handleClickExpandAllVoltageLevelsIcon = () => {
         onEdit({ type: NadEditType.EXPAND_ALL });
@@ -340,7 +341,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                     {isEditNadMode && (
                         <>
                             <UndoRedoButtons
-                                history={editHistory}
+                                editHistory={editHistory}
                                 onRestoreHistoryState={onRestoreHistoryState}
                                 disabled={isDiagramLoading}
                             />
@@ -378,7 +379,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         tooltip={<FormattedMessage id={'searchVoltageLevelInNad'} />}
                         sx={styles.actionIcon}
                         onClick={handleClickSearchVoltageLevelIcon}
-                        disabled={isDiagramLoading || !svgVoltageLevels || svgVoltageLevels.length === 0}
+                        disabled={isDiagramLoading || !shownVoltageLevelIds || shownVoltageLevelIds.length === 0}
                     >
                         <SearchIcon sx={styles.icon} />
                     </TooltipIconButton>
@@ -454,12 +455,12 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         />
                     </Box>
                     {renderSearchEquipment()}
-                    {svgVoltageLevels && (
+                    {shownVoltageLevelIds && (
                         <VoltageLevelSearchMenu
                             open={Boolean(searchAnchorEl)}
                             anchorEl={searchAnchorEl}
                             onClose={handleCloseSearch}
-                            voltageLevels={svgVoltageLevels}
+                            voltageLevels={shownVoltageLevelIds}
                             onSelect={handleVoltageLevelSelect}
                         />
                     )}

@@ -60,7 +60,8 @@ import { type RootState, store } from 'redux/store';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { getNadPanelLocalState, saveNadPanelLocalState } from 'redux/session-storage/workspace-local-storage';
 import { DiagramAdditionalMetadata } from '../diagram.type';
-import { type NadEdit, NadEditType, type NadHistory } from 'components/workspace/diagrams/nad/nad-edit-history';
+import type { NadHistory } from 'components/workspace/diagrams/nad/nad-edit-history';
+import { type NadEdit, NadEditType } from 'components/workspace/diagrams/nad/nad-edits';
 
 type NetworkAreaDiagramContentProps = {
     readonly nadPanelId: UUID;
@@ -68,7 +69,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svg?: string;
     readonly svgMetadata?: DiagramMetadata;
     readonly additionalMetadata?: DiagramAdditionalMetadata;
-    readonly svgVoltageLevels?: string[];
+    readonly shownVoltageLevelIds?: string[];
     readonly hiddenVoltageBands?: string[];
     readonly hiddenInfoSelectors?: string[];
     readonly areVoltageLevelNamesHidden?: boolean;
@@ -82,7 +83,7 @@ type NetworkAreaDiagramContentProps = {
     readonly onEdit: (edit: NadEdit) => void;
     readonly onReplaceNad: (name: string, nadConfigUuid?: UUID, filterUuid?: UUID) => void;
     readonly editHistory: NadHistory;
-    readonly onRestoreHistoryState: (target: number) => DiagramConfigPosition[];
+    readonly restoreHistoryState: (target: number) => DiagramConfigPosition[];
 };
 
 const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
@@ -92,12 +93,12 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         onEdit,
         onReplaceNad,
         editHistory,
-        onRestoreHistoryState,
+        restoreHistoryState,
         nadPanelId,
         svg,
         svgMetadata,
         additionalMetadata,
-        svgVoltageLevels,
+        shownVoltageLevelIds,
         hiddenVoltageBands,
         hiddenInfoSelectors,
         areVoltageLevelNamesHidden,
@@ -200,7 +201,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
         createDiagramConfig(
             {
                 scalingFactor: additionalMetadata?.scalingFactor,
-                voltageLevelIds: svgVoltageLevels ?? [],
+                voltageLevelIds: shownVoltageLevelIds ?? [],
                 positions: svgMetadata ? buildPositionsFromNadMetadata(svgMetadata) : [],
             },
             directoryData.name,
@@ -223,7 +224,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
             data.id,
             {
                 scalingFactor: additionalMetadata?.scalingFactor,
-                voltageLevelIds: svgVoltageLevels ?? [],
+                voltageLevelIds: shownVoltageLevelIds ?? [],
                 positions: svgMetadata ? buildPositionsFromNadMetadata(svgMetadata) : [],
             },
             data.name,
@@ -336,7 +337,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
     const handleRestoreHistoryState = useCallback(
         (target: number) => {
             const diagramViewer = diagramViewerRef.current;
-            onRestoreHistoryState(target).forEach(
+            restoreHistoryState(target).forEach(
                 ({ voltageLevelId, xPosition, yPosition, xLabelPosition, yLabelPosition }) => {
                     if (xPosition !== undefined && yPosition !== undefined) {
                         diagramViewer?.moveNodeToCoordinates(voltageLevelId, xPosition, yPosition);
@@ -347,7 +348,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 }
             );
         },
-        [onRestoreHistoryState]
+        [restoreHistoryState]
     );
 
     const handleReplaceNadConfig = useCallback(
@@ -566,7 +567,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 filterName={filterName}
                 isFilterDeleted={isFilterDeleted}
                 hasHiddenVoltageLevels={hasHiddenVoltageLevels}
-                svgVoltageLevels={svgVoltageLevels}
+                shownVoltageLevelIds={shownVoltageLevelIds}
                 onFocusVoltageLevel={handleFocusVoltageLevel}
                 editHistory={editHistory}
                 onRestoreHistoryState={handleRestoreHistoryState}

@@ -14,11 +14,10 @@ import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import {
     historyStep,
     historyTargets,
-    type NadEdit,
-    NadEditType,
     type NadHistory,
     type NadHistoryAction,
 } from 'components/workspace/diagrams/nad/nad-edit-history';
+import { type NadEdit, NadEditType } from 'components/workspace/diagrams/nad/nad-edits';
 
 const EDIT_MESSAGE_IDS: Record<NadEditType, string> = {
     [NadEditType.MOVE_NODE]: 'nadEditMoveNode',
@@ -69,18 +68,18 @@ function StateLabel({ edit }: Readonly<{ edit?: NadEdit }>) {
 }
 
 interface UndoRedoButtonsProps {
-    readonly history: NadHistory;
+    readonly editHistory: NadHistory;
     readonly onRestoreHistoryState: (target: number) => void;
     readonly disabled?: boolean;
 }
 
-export default function UndoRedoButtons({ history, onRestoreHistoryState, disabled }: UndoRedoButtonsProps) {
+export default function UndoRedoButtons({ editHistory, onRestoreHistoryState, disabled }: UndoRedoButtonsProps) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [openAction, setOpenAction] = useState<NadHistoryAction>('undo');
 
     const openHistoryList = (event: MouseEvent<HTMLElement>, action: NadHistoryAction) => {
         event.preventDefault();
-        if (disabled || historyTargets(history, action).length === 0) {
+        if (disabled || historyTargets(editHistory, action).length === 0) {
             return;
         }
         setOpenAction(action);
@@ -90,7 +89,7 @@ export default function UndoRedoButtons({ history, onRestoreHistoryState, disabl
     return (
         <>
             {BUTTONS.map(({ action, messageId, Icon }) => {
-                const step = historyStep(history, action);
+                const step = historyStep(editHistory, action);
                 return (
                     <Tooltip key={action} title={<FormattedMessage id={messageId} />}>
                         <span onContextMenu={(event) => openHistoryList(event, action)}>
@@ -117,8 +116,8 @@ export default function UndoRedoButtons({ history, onRestoreHistoryState, disabl
                 slotProps={{ paper: { sx: styles.popover } }}
             >
                 <List dense sx={{ py: 0 }}>
-                    {historyTargets(history, openAction).map((target, i) => {
-                        const { edit } = history.states[target];
+                    {historyTargets(editHistory, openAction).map((target, i) => {
+                        const { edit } = editHistory.states[target];
                         const isInitialState = !edit;
                         return (
                             <Fragment key={target}>

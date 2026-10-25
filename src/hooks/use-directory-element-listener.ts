@@ -44,6 +44,7 @@ export const useDirectoryElementListener = (elementUuid: UUID | undefined, liste
                 const name = path.at(-1)?.elementName;
                 if (name) {
                     onName?.(name);
+                    // Directory notifications carry the names of the changed elements, not their uuids
                     if (changedNames.includes(name)) {
                         onUpdate?.();
                     }

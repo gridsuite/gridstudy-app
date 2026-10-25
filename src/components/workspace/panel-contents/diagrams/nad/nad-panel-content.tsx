@@ -44,11 +44,12 @@ export const NadPanelContent = memo(function NadPanelContent({
         diagram,
         shownVoltageLevelIds,
         isFilterDeleted,
+        hasHiddenVoltageLevels,
         loading,
         globalError,
         editDiagram,
         replaceNadConfig,
-        history,
+        editHistory,
         restoreHistoryState,
     } = useNadDiagram({
         panelId,
@@ -94,7 +95,7 @@ export const NadPanelContent = memo(function NadPanelContent({
                         svg={diagram.svg?.svg ?? undefined}
                         svgMetadata={diagram.svg?.metadata ?? undefined}
                         additionalMetadata={diagram.svg?.additionalMetadata ?? undefined}
-                        svgVoltageLevels={shownVoltageLevelIds}
+                        shownVoltageLevelIds={shownVoltageLevelIds}
                         hiddenVoltageBands={unselectedVlNames}
                         hiddenInfoSelectors={hiddenInfoSelectors}
                         areVoltageLevelNamesHidden={false}
@@ -102,13 +103,13 @@ export const NadPanelContent = memo(function NadPanelContent({
                         filterUuid={diagram.filterUuid}
                         filterName={diagram.filterName}
                         isFilterDeleted={isFilterDeleted}
-                        hasHiddenVoltageLevels={diagram.voltageLevelToOmitIds.length > 0}
+                        hasHiddenVoltageLevels={hasHiddenVoltageLevels}
                         visible
                         onVoltageLevelClick={handleVoltageLevelClick}
                         onEdit={editDiagram}
                         onReplaceNad={replaceNadConfig}
-                        editHistory={history}
-                        onRestoreHistoryState={restoreHistoryState}
+                        editHistory={editHistory}
+                        restoreHistoryState={restoreHistoryState}
                         nadPanelId={panelId}
                     />
                 </DiagramWrapper>
