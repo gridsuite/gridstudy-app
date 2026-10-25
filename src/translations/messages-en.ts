@@ -1212,6 +1212,7 @@ const messages_en = {
     Enum: 'Enumeration',
     nodeType: 'Type',
     nodeStatus: 'Status',
+    nodeContainsSharedModifications: 'Contains shared modifications',
     'nodeActivity.UPDATING': 'Updating',
     'nodeActivity.DELETING': 'Deleting',
     'nodeActivity.BUILDING': 'Building',
