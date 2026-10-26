@@ -383,9 +383,9 @@ export function getUniqueNodeName(studyUuid: UUID) {
 }
 
 export function unshareAllReferencesInStudy(studyUuid: UUID) {
-    const uniqueNodeNameUrl = getStudyUrl(studyUuid) + '/unshare';
-    console.debug(uniqueNodeNameUrl);
-    return backendFetchText(uniqueNodeNameUrl, {
+    const url = getStudyUrl(studyUuid) + '/unshare';
+    console.debug(url);
+    return backendFetchText(url, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
