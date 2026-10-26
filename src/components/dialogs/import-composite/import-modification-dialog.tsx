@@ -6,6 +6,7 @@
  */
 
 import { FormattedMessage, useIntl } from 'react-intl';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import {
     CheckboxInput,
     CustomFormProvider,
@@ -373,7 +374,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box>
                         {activeStep === STEP_ORGANIZATION && (
-                            <Button onClick={handlePrevious}>
+                            <Button variant="outlined" onClick={handlePrevious} startIcon={<ChevronLeftIcon />}>
                                 <FormattedMessage id="button.previous" />
                             </Button>
                         )}

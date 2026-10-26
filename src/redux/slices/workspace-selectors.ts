@@ -139,7 +139,7 @@ export const selectNadDiagramFields = createSelector([selectPanel], (panel) => {
         title: panel.title,
         nadConfigUuid: panel.nadConfigUuid,
         filterUuid: panel.filterUuid,
-        currentFilterUuid: panel.currentFilterUuid,
+        filterName: panel.filterName,
         initialVoltageLevelIds: panel.initialVoltageLevelIds,
         voltageLevelToOmitIds: panel.voltageLevelToOmitIds,
         currentNadConfigUuid: panel.currentNadConfigUuid,

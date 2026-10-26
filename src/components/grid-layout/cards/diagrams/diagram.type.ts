@@ -47,11 +47,17 @@ export type NetworkAreaDiagram = DiagramBase & {
     svg: DiagramSvg | null;
     title?: string;
     nadConfigUuid: UUID | undefined;
+    // Filter mode: the diagram shows what this filter matches on the current node
     filterUuid: UUID | undefined;
-    currentFilterUuid: UUID | undefined;
+    // Saved, so that the filter can still be named once it is deleted
+    filterName?: string;
+    // While it is the diagram's filter, the diagram is drawn from its own voltage levels
+    deletedFilterUuid?: UUID;
     currentNadConfigUuid?: UUID;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
+    // Sent once, for the next drawing to add the voltage levels of this filter
+    filterToAddUuid?: UUID;
     voltageLevelToOmitIds: string[];
     positions: DiagramConfigPosition[];
 };
