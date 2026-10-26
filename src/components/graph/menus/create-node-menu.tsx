@@ -16,7 +16,13 @@ import { type AppState, type NodeSelectionForCopy } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
-import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType, NodeType } from '../tree-node.type';
+import {
+    CurrentTreeNode,
+    isSecurityModificationNode,
+    ModificationNode,
+    NetworkModificationNodeType,
+    NodeType,
+} from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
 import { Divider } from '@mui/material';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
@@ -144,6 +150,20 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
+
+    function hasModificationReferences(): boolean {
+        if (!treeModel?.treeNodes) {
+            return false;
+        }
+        return treeModel.treeNodes.some((node) => {
+            // only modification nodes may contain references
+            if (node.type === NodeType.NETWORK_MODIFICATION) {
+                const modificationNode = node as ModificationNode;
+                return modificationNode.data?.hasReferencedModifications === true;
+            }
+            return false;
+        });
+    }
 
     function buildNode() {
         handleBuildNode(activeNode);
@@ -545,7 +565,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             onRoot: true,
             action: () => unshareAllReferencesInStudy(),
             id: 'unshareReferencesInStudy',
-            disabled: activeNode?.type !== NodeType.ROOT, // TODO désactiver si pas de réf dans l'étude
+            disabled: activeNode?.type !== NodeType.ROOT || !hasModificationReferences(),
             hidden: activeNode?.type !== NodeType.ROOT,
         },
     };
