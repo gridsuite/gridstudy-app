@@ -122,7 +122,7 @@ export function saveNadConfig(
         } | null;
         nadConfigUuid?: UUID;
         filterUuid?: UUID;
-        currentFilterUuid?: UUID;
+        filterName?: string;
         voltageLevelToOmitIds: string[];
     }
 ): Promise<UUID | null> {
