@@ -187,8 +187,9 @@ const NetworkModificationNodeEditor = () => {
     const [createCompositeModificationDialogOpen, setCreateCompositeModificationDialogOpen] = useState(false);
     const dispatch = useDispatch();
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
-    const [isUpdate, setIsUpdate] = useState(false);
-    const [isReadOnly, setIsReadOnly] = useState(false);
+    const [modificationToEdit, setModificationToEdit] = useState<ComposedModificationMetadata | undefined>(undefined);
+    const isUpdate = modificationToEdit !== undefined;
+    const isReadOnly = modificationToEdit?.childFromReadOnlyShared ?? false;
     const buttonAddRef = useRef<HTMLButtonElement>(null);
     const [modificationUuidsToReset, setModificationUuidsToReset] = useState<UUID[]>([]);
     const [modificationToEditLabel, setModificationToEditLabel] = useState<UUID | null>(null);
@@ -225,7 +226,7 @@ const NetworkModificationNodeEditor = () => {
     const handleCloseDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
-        setIsReadOnly(false);
+        setModificationToEdit(undefined);
     };
 
     function withDefaultParams(Dialog: React.FC<any>) {
@@ -1031,8 +1032,7 @@ const NetworkModificationNodeEditor = () => {
 
     const doEditModification = useCallback(
         (modificationToEdit: ComposedModificationMetadata) => {
-            setIsUpdate(true);
-            setIsReadOnly(modificationToEdit.childFromReadOnlyShared ?? false);
+            setModificationToEdit(modificationToEdit);
             // setting this state will trigger dialog rendering
             setEditDialogOpen(modificationToEdit.type);
             // with fetching status, waiting for the edit data to be fetched
@@ -1058,8 +1058,7 @@ const NetworkModificationNodeEditor = () => {
     const onItemClick = (id: string) => {
         setOpenNetworkModificationsMenu(false);
         setEditDialogOpen(id);
-        setIsUpdate(false);
-        setIsReadOnly(false);
+        setModificationToEdit(undefined);
     };
     const handleRowSelected = useCallback(
         (selectedRows: ComposedModificationMetadata[], isAssemblyDepthExceeded: boolean) => {
