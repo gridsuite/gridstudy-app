@@ -94,6 +94,20 @@ const emptyFormData: FormData = {
 
 const MAX_TAG_LENGTH = 4;
 
+const getTagWarningId = (
+    sharedModificationsWriteAccess: SharedModificationsWriteAccess,
+    isRenamingTag: boolean,
+    isAddingTag: boolean
+): string | undefined => {
+    if (sharedModificationsWriteAccess === SharedModificationsWriteAccess.NONE_WRITABLE) {
+        return isRenamingTag || isAddingTag ? 'sharedModificationsNotWritableTag' : undefined;
+    }
+    if (isRenamingTag && sharedModificationsWriteAccess !== SharedModificationsWriteAccess.NO_SHARED_MODIFICATION) {
+        return 'sharedModificationsApplicabilitiesOverwritten';
+    }
+    return undefined;
+};
+
 const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     open,
     onSave,
@@ -126,7 +140,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     const [sharedModificationsWriteAccess, setSharedModificationsWriteAccess] =
         useState<SharedModificationsWriteAccess>(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
     useEffect(() => {
-        if (open && isModification && studyUuid) {
+        if (open && studyUuid) {
             getSharedModificationsWriteAccess(studyUuid)
                 .then(setSharedModificationsWriteAccess)
                 .catch((error) => {
@@ -134,10 +148,13 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                     setSharedModificationsWriteAccess(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
                 });
         }
-    }, [isModification, open, studyUuid, snackError]);
+    }, [open, studyUuid, snackError]);
 
     const tag = useWatch({ control, name: TAG })?.trim();
     const isRenamingTag = isModification && !!tag && tag !== editableRootNetwork?.tag;
+    const isAddingTag = !isModification && !!tag;
+
+    const tagWarningId = getTagWarningId(sharedModificationsWriteAccess, isRenamingTag, isAddingTag);
 
     // Reset the form values when editableRootNetwork is available (for modification mode)
     useEffect(() => {
@@ -257,20 +274,14 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             max_length={MAX_TAG_LENGTH}
                             formProps={{ sx: { width: 160, flexShrink: 0 } }}
                         />
-                        {isRenamingTag &&
-                            sharedModificationsWriteAccess !==
-                                SharedModificationsWriteAccess.NO_SHARED_MODIFICATION && (
-                                <Alert severity="warning">
-                                    <FormattedMessage
-                                        id={
-                                            sharedModificationsWriteAccess ===
-                                            SharedModificationsWriteAccess.NONE_WRITABLE
-                                                ? 'sharedModificationsNotWritableTagRenaming'
-                                                : 'sharedModificationsApplicabilitiesOverwritten'
-                                        }
-                                    />
-                                </Alert>
-                            )}
+                        {tagWarningId && (
+                            <Alert severity="warning">
+                                <FormattedMessage
+                                    id={tagWarningId}
+                                    values={{ tagAction: isModification ? 'renaming' : 'adding' }}
+                                />
+                            </Alert>
+                        )}
                     </Stack>
                 </Stack>
                 {!isModification && <ImportParametersSection />}
