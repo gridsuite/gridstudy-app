@@ -1034,6 +1034,10 @@ const messages_en = {
     TagRequiredCondition: 'Tag is required, should be unique in study and of length <= 4',
     sharedModificationsApplicabilitiesOverwritten:
         'This study contains shared modifications, which might have already defined applicability for this network tag: they will be overwritten with the current applicability for this network.',
+    sharedModificationsNotWritableTag:
+        'This study contains at least one shared modification you are not allowed to modify: {tagAction, select, renaming {renaming} other {adding}} the tag may be refused if the new tag is not already used by these modifications.',
+    sharedModificationsWriteAccessFetchingError:
+        'An error occurred while fetching the rights on the shared modifications',
     rootNetworksCount: '{count, plural, =1 {# network} other {# networks}}',
     deletingRootNetwork: 'Deleting root network ...',
     creatingRootNetwork: 'Creating root network ...',

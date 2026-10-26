@@ -14,6 +14,7 @@ import {
     LeftPanelOpenIcon,
     type MuiStyles,
     OverflowableText,
+    ProblemDetailError,
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -27,6 +28,10 @@ import { setHighlightModification, setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
+import {
+    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED,
+    ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
+} from './root-network.types';
 import StudyNavigationSyncToggle from 'components/study-navigation-sync-toggle';
 
 const styles = {
@@ -69,7 +74,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     setIsSearchActive,
     closeSearchPanel,
 }) => {
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const dispatch = useDispatch();
@@ -167,7 +172,19 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                 caseFormat: caseFormat ?? null,
             },
         }).catch((error) => {
-            snackWithFallback(snackError, error, { headerId: 'createRootNetworksError' });
+            if (
+                error instanceof ProblemDetailError &&
+                error.businessErrorCode === ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED
+            ) {
+                snackWarning({
+                    messageId: error.businessErrorCode,
+                    messageValues: error.businessErrorValues,
+                    autoHideDuration: ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS,
+                    headerId: 'createRootNetworksError',
+                });
+            } else {
+                snackWithFallback(snackError, error, { headerId: 'createRootNetworksError' });
+            }
             setIsRootNetworksProcessing(false);
         });
 

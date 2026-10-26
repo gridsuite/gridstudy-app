@@ -1050,6 +1050,10 @@ const messages_fr = {
     TagRequiredCondition: "La balise est obligatoire, unique dans l'étude et de taille <= 4",
     sharedModificationsApplicabilitiesOverwritten:
         "L'étude contient des modifications partagées, qui peuvent avoir des applicabilités déjà définies pour cette balise de réseau : celles-ci seront écrasées par les applicabilités existantes sur le réseau.",
+    sharedModificationsNotWritableTag:
+        "L'étude contient au moins une modification partagée pour laquelle vous n'avez pas les droits de modification : {tagAction, select, renaming {le renommage} other {l'ajout}} de la balise pourra être refusé si la nouvelle balise n'est pas déjà utilisée par ces modifications.",
+    sharedModificationsWriteAccessFetchingError:
+        'Une erreur est survenue lors de la récupération des droits sur les modifications partagées',
     rootNetworksCount: '{count, plural, =1 {# réseau} other {# réseaux}}',
     deletingRootNetwork: 'Suppression du réseau racine en cours ...',
     creatingRootNetwork: 'Création du réseau racine en cours ...',
