@@ -14,6 +14,7 @@ import {
     DndTable,
     ElementType,
     EquipmentType,
+    parametersStyles,
 } from '@gridsuite/commons-ui';
 import { AREA_INVALIDATIONS, FILTER, INVALIDATE, INVALIDATION_TYPE } from '../../../utils/field-constants';
 import { InvalidationType, TabValue } from './state-estimation-parameters-utils';
@@ -33,7 +34,7 @@ export const StateEstimationAreaInvalidationParameters: FunctionComponent = () =
             <CustomTooltipInfo
                 tooltipProps={{
                     title: intl.formatMessage({ id: 'StateEstimationParametersAreaInvalidationTooltip' }),
-                    sx: { marginLeft: 0.5 },
+                    sx: parametersStyles.tooltipInfo,
                 }}
             />
         );
