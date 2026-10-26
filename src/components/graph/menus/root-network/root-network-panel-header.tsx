@@ -27,6 +27,7 @@ import { setHighlightModification, setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
+import StudyNavigationSyncToggle from 'components/study-navigation-sync-toggle';
 
 const styles = {
     headerPanel: (theme) => ({
@@ -43,8 +44,10 @@ const styles = {
         alignItems: 'center',
         flexGrow: 1,
     }),
-    uploadButton: (theme) => ({
-        marginLeft: theme.spacing(0.5),
+    headerButtons: (theme) => ({
+        marginLeft: theme.spacing(1),
+        display: 'flex',
+        alignItems: 'center',
     }),
 } as const satisfies MuiStyles;
 
@@ -192,21 +195,25 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                         <RootNetworkMinimizedPanelContent isRootNetworkPanelMinimized={isRootNetworkPanelMinimized} />
                     )}
 
-                    <Tooltip title={<FormattedMessage id={'addNetwork'} />}>
-                        <span>
-                            <IconButton
-                                onClick={openRootNetworkCreationDialog}
-                                size={'small'}
-                                sx={styles.uploadButton}
-                                disabled={rootNetworks.length >= MAX_ROOT_NETWORKS_NUMBER || isRootNetworksProcessing}
-                            >
-                                <FileUpload fontSize="small" />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
-                    <IconButton size={'small'} onClick={openSearch}>
-                        <SearchIcon fontSize="small" />
-                    </IconButton>
+                    <Box sx={styles.headerButtons}>
+                        <StudyNavigationSyncToggle />
+                        <Tooltip title={<FormattedMessage id={'addNetwork'} />}>
+                            <span>
+                                <IconButton
+                                    onClick={openRootNetworkCreationDialog}
+                                    size={'small'}
+                                    disabled={
+                                        rootNetworks.length >= MAX_ROOT_NETWORKS_NUMBER || isRootNetworksProcessing
+                                    }
+                                >
+                                    <FileUpload fontSize="small" />
+                                </IconButton>
+                            </span>
+                        </Tooltip>
+                        <IconButton size={'small'} onClick={openSearch}>
+                            <SearchIcon fontSize="small" />
+                        </IconButton>
+                    </Box>
                 </Box>
                 <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
                     {isRootNetworkPanelMinimized ? <LeftPanelOpenIcon /> : <LeftPanelCloseIcon />}

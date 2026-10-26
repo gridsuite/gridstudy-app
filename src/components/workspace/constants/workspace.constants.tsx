@@ -38,7 +38,7 @@ export const DEFAULT_PANEL_CONFIGS: Record<PanelType, PanelConfig> = {
     [PanelType.TREE]: {
         title: 'Tree',
         defaultSize: { width: 0.2, height: 0.6 }, // 20% width, 60% height
-        minSize: { width: 300, height: 300 },
+        minSize: { width: 305, height: 300 },
         defaultPosition: { x: 0, y: 0 },
         icon: <AccountTree fontSize="inherit" sx={{ transform: 'scaleY(-1) rotate(-90deg)' }} />,
     },
