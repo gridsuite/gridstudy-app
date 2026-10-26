@@ -37,6 +37,7 @@ export default function SaveNetworkModificationsDialog({
     studyUuid,
     selectedModifications,
     defaultName,
+    defaultDescription,
     onSave,
     onSaveShared,
     onUpdate,
@@ -56,7 +57,6 @@ export default function SaveNetworkModificationsDialog({
 
     const isSharingAvailable = isDeveloperMode && isSelectedCompositeShareable && !hasReference;
 
-    // TODO fix description, when commons ui is fixed
     return (
         <ElementSaveDialog
             open={open}
@@ -69,6 +69,7 @@ export default function SaveNetworkModificationsDialog({
             titleId="CreateCompositeModification"
             prefixIdForGeneratedName="GeneratedModification"
             defaultName={defaultName}
+            defaultDescription={defaultDescription}
             studyUuid={studyUuid}
             selectorTitleId="SelectCompositeModificationTitle"
             createLabelId="CreateCompositeModificationLabel"
