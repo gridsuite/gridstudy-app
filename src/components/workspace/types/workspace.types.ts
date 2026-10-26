@@ -54,7 +54,7 @@ export interface NADPanel extends BasePanel {
     type: PanelType.NAD;
     nadConfigUuid?: UUID;
     filterUuid?: UUID;
-    currentFilterUuid?: UUID;
+    filterName?: string;
     voltageLevelToOmitIds?: string[];
     currentNadConfigUuid?: UUID;
     navigationHistory?: string[];
@@ -64,7 +64,7 @@ export interface NADPanel extends BasePanel {
 // Everything that decides which NAD a panel shows, the same set the save endpoint writes
 export type NadPanelFields = Pick<
     NADPanel,
-    'title' | 'nadConfigUuid' | 'filterUuid' | 'currentNadConfigUuid' | 'currentFilterUuid' | 'voltageLevelToOmitIds'
+    'title' | 'nadConfigUuid' | 'filterUuid' | 'filterName' | 'currentNadConfigUuid' | 'voltageLevelToOmitIds'
 >;
 
 export interface SLDVoltageLevelPanel extends BasePanel {
