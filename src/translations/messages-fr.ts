@@ -1368,6 +1368,7 @@ const messages_fr = {
     'runButton.short.VoltageInit': 'Init U',
     'runButton.short.StateEstimation': 'Estim',
     'runButton.short.PccMin': 'Pcc min N-1',
+    'runButton.quota': '{current}/{max} {current, plural, one {calcul} other {calculs}} en cours',
 };
 
 export default messages_fr;
