@@ -314,6 +314,8 @@ export const useNadDiagram = ({
 
     const replaceDiagram = useCallback(
         (definition: Partial<NetworkAreaDiagram>) => {
+            // A save still queued would write the emptied diagram below over the stored NAD
+            debounceSaveNad.clear();
             // A new history: going back would undo another client's change
             clearHistory();
             updateDiagram({ ...BASE_RESET_STATE, ...definition });
@@ -332,7 +334,7 @@ export const useNadDiagram = ({
             });
             fetchDiagram();
         },
-        [panelId, clearHistory, updateDiagram, updateNADFields, fetchDiagram]
+        [panelId, debounceSaveNad, clearHistory, updateDiagram, updateNADFields, fetchDiagram]
     );
 
     const replaceNadConfig = useCallback(
@@ -340,8 +342,6 @@ export const useNadDiagram = ({
             if (!workspaceId) {
                 return;
             }
-            // A layout save queued before the replace would write back the NAD being left
-            debounceSaveNad.clear();
             // When a filter is loaded, the title is its name
             const filterName = filterUuid ? title : undefined;
 
@@ -358,7 +358,7 @@ export const useNadDiagram = ({
             // The user's own choice to load: reset even if it's the same NAD again
             onNadReplaced();
         },
-        [workspaceId, studyUuid, panelId, debounceSaveNad, replaceDiagram, onNadReplaced]
+        [workspaceId, studyUuid, panelId, replaceDiagram, onNadReplaced]
     );
 
     const loadNadConfig = useCallback(() => {
