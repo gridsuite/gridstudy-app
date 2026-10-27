@@ -81,16 +81,14 @@ export const StateEstimationMeasurements: FunctionComponent<StateEstimationMeasu
     const isLoadingRows = !isSettled || isLoading;
 
     return (
-        <GlassPane active={isLoadingRows}>
-            <StateEstimationResultTable
-                measurementRows={measurementRows}
-                isLoadingResult={isLoadingRows}
-                columnDefs={columnDefs}
-                tableName={STATEESTIMATION_MEASUREMENTS}
-                exportCsvResetKey={`${studyUuid}-${nodeUuid}-${rootNetworkUuid}-${criteria}`}
-                filter={true}
-                sortable={true}
-            />
-        </GlassPane>
+        <StateEstimationResultTable
+            measurementRows={measurementRows}
+            isLoadingResult={isLoadingRows}
+            columnDefs={columnDefs}
+            tableName={STATEESTIMATION_MEASUREMENTS}
+            exportCsvResetKey={`${studyUuid}-${nodeUuid}-${rootNetworkUuid}-${criteria}`}
+            filter={true}
+            sortable={true}
+        />
     );
 };

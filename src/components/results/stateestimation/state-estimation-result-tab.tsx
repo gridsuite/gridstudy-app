@@ -151,12 +151,12 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
 
     const renderReportViewer = () => {
         return (
-            <GlassPane active={isLoadingResult}>
+            <>
                 {(stateEstimationStatus === RunningStatus.SUCCEED ||
                     stateEstimationStatus === RunningStatus.FAILED) && (
                     <ComputationReportViewer reportType={ComputingType.STATE_ESTIMATION} />
                 )}
-            </GlassPane>
+            </>
         );
     };
 
@@ -217,26 +217,22 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                 />
             )}
             {tabIndex === 2 && (
-                <GlassPane active={isLoadingResult}>
-                    <StateEstimationResultTable
-                        result={result}
-                        isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationResultColumns}
-                        tableName={STATEESTIMATION_QUALITY_CRITERION}
-                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                    />
-                </GlassPane>
+                <StateEstimationResultTable
+                    result={result}
+                    isLoadingResult={isLoadingResult}
+                    columnDefs={stateEstimationResultColumns}
+                    tableName={STATEESTIMATION_QUALITY_CRITERION}
+                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                />
             )}
             {tabIndex === 3 && (
-                <GlassPane active={isLoadingResult}>
-                    <StateEstimationResultTable
-                        result={result}
-                        isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationResultColumns}
-                        tableName={STATEESTIMATION_QUALITY_PER_REGION}
-                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                    />
-                </GlassPane>
+                <StateEstimationResultTable
+                    result={result}
+                    isLoadingResult={isLoadingResult}
+                    columnDefs={stateEstimationResultColumns}
+                    tableName={STATEESTIMATION_QUALITY_PER_REGION}
+                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                />
             )}
             {tabIndex === 4 && (
                 <LogicalControlsResult
