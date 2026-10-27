@@ -86,6 +86,7 @@ export default function VoltageLevelTopologyModificationDialog({
     editData,
     defaultIdValue,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<VoltageLevelTopologyModificationDialogProps>) {
@@ -189,6 +190,7 @@ export default function VoltageLevelTopologyModificationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={voltageLevelTopologyModificationFormSchema}
             removeOptional={true}
             {...formMethods}
