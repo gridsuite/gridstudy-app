@@ -36,27 +36,24 @@ export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
     setTabIndex: React.Dispatch<React.SetStateAction<number>>
 ): Dispatch<SetStateAction<boolean>> => {
-    const [redirectionLock, setRedirectionLock] = useResultsTabRedirectionLock();
-
-    useEffect(() => {
-        if (!redirectionLock) {
-            setTabIndex(resultTabIndexRedirection);
-        }
-    }, [resultTabIndexRedirection, setTabIndex, redirectionLock]);
-
-    return setRedirectionLock;
-};
-
-const useResultsTabRedirectionLock = (): [boolean, Dispatch<SetStateAction<boolean>>] => {
+    // null when no computation has just completed (reset on computation launch or node change): keep the current tab
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
     const [redirectionLock, setRedirectionLock] = useState<boolean>(false);
 
     useEffect(() => {
-        //we ought to release the redirection lock if the user launches a new computation
-        setRedirectionLock(false);
+        //we ought to release the redirection lock when a new computation completes
+        if (lastCompletedComputation) {
+            setRedirectionLock(false);
+        }
     }, [lastCompletedComputation]);
 
-    return [redirectionLock, setRedirectionLock];
+    useEffect(() => {
+        if (lastCompletedComputation && !redirectionLock) {
+            setTabIndex(resultTabIndexRedirection);
+        }
+    }, [lastCompletedComputation, resultTabIndexRedirection, setTabIndex, redirectionLock]);
+
+    return setRedirectionLock;
 };
 
 //function to convert computing type to the index corresponding to the resulting computation tab.
