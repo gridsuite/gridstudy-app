@@ -31,6 +31,7 @@ import {
     usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -159,6 +160,7 @@ const NetworkModificationNodeEditor = () => {
     const createdRootNetworksLength = createdRootNetworks.length;
     const createdRootNetworksPreviousLength = usePrevious(createdRootNetworks.length);
     const { snackInfo, snackError } = useSnackMessage();
+    const snackForbiddenByShared = useSnackForbiddenByShared();
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
@@ -739,6 +741,11 @@ const NetworkModificationNodeEditor = () => {
                     elementUuid: modification.referencedId,
                     elementName: newName,
                 });
+            } else if (modification.parentSharedUuid) {
+                return updateElement(modification.parentSharedUuid, {
+                    elementUuid: modification.uuid,
+                    elementName: newName,
+                });
             } else {
                 return setModificationNameAndDescription(studyUuid, currentNode?.id, modification.uuid, {
                     name: newName,
@@ -1011,18 +1018,14 @@ const NetworkModificationNodeEditor = () => {
             moveModifications(studyUuid, currentNode.id, modifications, copyInfos.originNodeUuid)
                 .then(() => cleanClipboard(false))
                 .catch((error) => {
-                    snackWithFallback(snackError, error, {
-                        headerId: 'errCutModificationMsg',
-                    });
+                    snackForbiddenByShared(error, 'errCutModificationMsg');
                 });
         } else {
             copyModifications(studyUuid, currentNode.id, modificationsToMoveOrCopy, copyInfos).catch((error) => {
-                snackWithFallback(snackError, error, {
-                    headerId: 'errDuplicateModificationMsg',
-                });
+                snackForbiddenByShared(error, 'errDuplicateModificationMsg');
             });
         }
-    }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanClipboard, snackError]);
+    }, [copyInfos, studyUuid, currentNode?.id, networkModificationsToCopy, cleanClipboard, snackForbiddenByShared]);
 
     const doEditModification = useCallback(
         (modificationUuid: UUID, modificationType: ModificationType) => {

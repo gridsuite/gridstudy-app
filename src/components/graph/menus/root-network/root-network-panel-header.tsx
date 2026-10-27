@@ -27,6 +27,7 @@ import { setHighlightModification, setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
+import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
 import StudyNavigationSyncToggle from 'components/study-navigation-sync-toggle';
 
 const styles = {
@@ -70,6 +71,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     closeSearchPanel,
 }) => {
     const { snackError } = useSnackMessage();
+    const snackForbiddenByShared = useSnackForbiddenByShared();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const dispatch = useDispatch();
@@ -167,7 +169,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                 caseFormat: caseFormat ?? null,
             },
         }).catch((error) => {
-            snackWithFallback(snackError, error, { headerId: 'createRootNetworksError' });
+            snackForbiddenByShared(error, 'createRootNetworksError');
             setIsRootNetworksProcessing(false);
         });
 
