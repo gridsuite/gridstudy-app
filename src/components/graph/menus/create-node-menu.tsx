@@ -83,6 +83,7 @@ interface CreateNodeMenuProps {
 
 const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
+    UNSHARE_STUDY: 'UNSHARE_STUDY',
     REMOVE_SUBTREE: 'REMOVE_SUBTREE',
     NO_ACTION: 'NO_ACTION',
 };
@@ -223,8 +224,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     }
 
     function unshareAllReferencesInStudy() {
-        handleUnshareAllReferencesInStudy();
-        handleClose();
+        setNodeAction(NodeActions.UNSHARE_STUDY);
     }
 
     function exportNodeInfos() {
@@ -597,9 +597,16 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         [intl, activeNode?.type]
     );
 
+    const ACTION_TO_CONFIRMATION_MESSAGE: Record<string, string> = {
+        [NodeActions.REMOVE_SUBTREE]: 'deleteSubTreeConfirmation',
+        [NodeActions.UNSHARE_STUDY]: 'unshareStudyConfirmation',
+        [NodeActions.REMOVE_NODE]: 'deleteNodeConfirmation',
+        [NodeActions.NO_ACTION]: 'deleteNodeConfirmation',
+    };
+
     const content = intl.formatMessage(
         {
-            id: nodeAction === NodeActions.REMOVE_SUBTREE ? 'deleteSubTreeConfirmation' : 'deleteNodeConfirmation',
+            id: ACTION_TO_CONFIRMATION_MESSAGE[nodeAction] ?? 'deleteNodeConfirmation',
         },
         {
             nodeName: activeNode?.data?.label,
@@ -614,6 +621,9 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     const handleOnValidate = useCallback(() => {
         if (nodeAction === NodeActions.REMOVE_NODE) {
             handleNodeRemoval(activeNode);
+        }
+        if (nodeAction === NodeActions.UNSHARE_STUDY) {
+            handleUnshareAllReferencesInStudy();
         } else {
             handleRemovalSubtree(activeNode);
         }
@@ -638,7 +648,9 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                 <CustomDialog
                     content={content}
                     onValidate={handleOnValidate}
-                    validateButtonLabel="button.delete"
+                    validateButtonLabel={
+                        nodeAction === NodeActions.UNSHARE_STUDY ? 'unshareReferencesInStudy' : 'button.delete'
+                    }
                     onClose={handleOnClose}
                 />
             )}

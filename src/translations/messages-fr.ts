@@ -876,6 +876,7 @@ const messages_fr = {
     checkNetworkExistenceError: "Une erreur est survenue lors de la vérification de l'existence du réseau de l'étude",
 
     deleteNodeConfirmation: '"{nodeName}" va être supprimé.',
+    unshareStudyConfirmation: "Le départage de l'étude est irréversible, voulez vous continuer ?",
     deleteSubTreeConfirmation:
         '"{nodeName}" {nodesNumber, plural, =0 {va être supprimé.} =1 {et son sous-arbre contenant un nœud vont être supprimés} other {et son sous-arbre contenant # nœuds vont être supprimés.}}',
 
