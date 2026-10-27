@@ -64,6 +64,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
 
         currentRootNetworkUuid,
         equipmentType: equipmentTypeFilter ?? undefined,
+        isDialogOpen: isDialogSearchOpen,
     });
     const disabledSearchReason = useDisabledSearchReason();
 
