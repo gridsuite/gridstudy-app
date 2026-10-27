@@ -9,10 +9,8 @@ import { ContingencyList } from './study/contingency-list';
 import type { UUID } from 'node:crypto';
 import { backendFetch, ElementType } from '@gridsuite/commons-ui';
 import { SpreadsheetCollection, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
-import { PREFIX_STUDY_QUERIES } from './study';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
-const PREFIX_DIRECTORY_QUERIES = PREFIX_STUDY_QUERIES + '/v1/directory';
 
 export function createParameter(
     newParameter: any,
@@ -52,15 +50,6 @@ export function updateParameter(
             body: JSON.stringify(newParameter),
         }
     );
-}
-
-export function elementExists(directoryUuid: UUID, elementName: string, type: ElementType) {
-    const existsElementUrl = `${PREFIX_DIRECTORY_QUERIES}/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
-
-    console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'head' }).then((response) => {
-        return response.status !== 204; // HTTP 204 : No-content
-    });
 }
 
 export function createCompositeModifications(
