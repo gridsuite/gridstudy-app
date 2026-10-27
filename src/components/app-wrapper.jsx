@@ -90,6 +90,7 @@ import {
     treeviewFinderFr,
     useUniqueNameValidationEn,
     useUniqueNameValidationFr,
+    DARK_THEME,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -252,6 +253,32 @@ const lightTheme = createTheme({
     },
 });
 
+function darkScrollbarStyles(theme) {
+    const trackColor = theme.palette.grey[800];
+    const thumbColor = theme.palette.grey[500];
+
+    return {
+        '*': {
+            scrollbarColor: `${thumbColor} ${trackColor}`,
+
+            '&::-webkit-scrollbar': {
+                width: '12px',
+                height: '12px',
+            },
+
+            '&::-webkit-scrollbar-track': {
+                backgroundColor: trackColor,
+            },
+
+            '&::-webkit-scrollbar-thumb': {
+                backgroundColor: thumbColor,
+                borderRadius: '8px',
+                border: `3px solid ${trackColor}`,
+            },
+        },
+    };
+}
+
 const darkTheme = createTheme({
     components: {
         MuiTab: {
@@ -390,6 +417,9 @@ function createThemeWithComponents(baseTheme, ...args) {
                         color: 'cancelButtonColor',
                     },
                 },
+                ...(baseTheme.palette.mode === DARK_THEME.toLowerCase()
+                    ? { MuiCssBaseline: { styleOverrides: darkScrollbarStyles } }
+                    : {}),
             },
         },
         ...args
