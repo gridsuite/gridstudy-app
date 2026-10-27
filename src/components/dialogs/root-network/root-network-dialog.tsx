@@ -12,7 +12,9 @@ import {
     isObjectEmpty,
     MAX_CHAR_DESCRIPTION,
     Parameter,
+    snackWithFallback,
     TreeViewFinderNodeProps,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Grid, Stack } from '@mui/material';
@@ -24,7 +26,10 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { ModificationDialog } from '../commons/modificationDialog';
 import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
-import { hasSharedModifications } from 'services/study/network-modifications';
+import {
+    getSharedModificationsWriteAccess,
+    SharedModificationsWriteAccess,
+} from 'services/study/network-modifications';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
@@ -89,6 +94,20 @@ const emptyFormData: FormData = {
 
 const MAX_TAG_LENGTH = 4;
 
+const getTagWarningId = (
+    sharedModificationsWriteAccess: SharedModificationsWriteAccess,
+    isRenamingTag: boolean,
+    isAddingTag: boolean
+): string | undefined => {
+    if (sharedModificationsWriteAccess === SharedModificationsWriteAccess.NONE_WRITABLE) {
+        return isRenamingTag || isAddingTag ? 'sharedModificationsNotWritableTag' : undefined;
+    }
+    if (isRenamingTag && sharedModificationsWriteAccess !== SharedModificationsWriteAccess.NO_SHARED_MODIFICATION) {
+        return 'sharedModificationsApplicabilitiesOverwritten';
+    }
+    return undefined;
+};
+
 const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     open,
     onSave,
@@ -98,6 +117,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     ...dialogProps
 }) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [modifiedByUser, setModifiedByUser] = useState(false);
 
@@ -117,20 +137,24 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
         formState: { errors },
     } = formMethods;
 
-    const [isStudyContainingSharedModifications, setIsStudyContainingSharedModifications] = useState(false);
+    const [sharedModificationsWriteAccess, setSharedModificationsWriteAccess] =
+        useState<SharedModificationsWriteAccess>(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
     useEffect(() => {
-        if (open && isModification && studyUuid) {
-            hasSharedModifications(studyUuid)
-                .then(setIsStudyContainingSharedModifications)
+        if (open && studyUuid) {
+            getSharedModificationsWriteAccess(studyUuid)
+                .then(setSharedModificationsWriteAccess)
                 .catch((error) => {
-                    console.error('Failed to fetch whether the study contains shared modifications', error);
-                    setIsStudyContainingSharedModifications(false);
+                    snackWithFallback(snackError, error, { headerId: 'sharedModificationsWriteAccessFetchingError' });
+                    setSharedModificationsWriteAccess(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
                 });
         }
-    }, [isModification, open, studyUuid]);
+    }, [open, studyUuid, snackError]);
 
     const tag = useWatch({ control, name: TAG })?.trim();
     const isRenamingTag = isModification && !!tag && tag !== editableRootNetwork?.tag;
+    const isAddingTag = !isModification && !!tag;
+
+    const tagWarningId = getTagWarningId(sharedModificationsWriteAccess, isRenamingTag, isAddingTag);
 
     // Reset the form values when editableRootNetwork is available (for modification mode)
     useEffect(() => {
@@ -250,9 +274,12 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             max_length={MAX_TAG_LENGTH}
                             formProps={{ sx: { width: 160, flexShrink: 0 } }}
                         />
-                        {isRenamingTag && isStudyContainingSharedModifications && (
+                        {tagWarningId && (
                             <Alert severity="warning">
-                                <FormattedMessage id="sharedModificationsApplicabilitiesOverwritten" />
+                                <FormattedMessage
+                                    id={tagWarningId}
+                                    values={{ tagAction: isModification ? 'renaming' : 'adding' }}
+                                />
                             </Alert>
                         )}
                     </Stack>
