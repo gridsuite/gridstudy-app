@@ -18,6 +18,7 @@ import {
     useSnackMessage,
     BuildStatus,
 } from '@gridsuite/commons-ui';
+import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
 import { ExportNetworkDialog } from './dialogs/export-network/export-network-dialog';
 import {
     copySubtree,
@@ -42,6 +43,7 @@ import { fetchNetworkModificationsToExport } from 'services/study/network-modifi
 
 export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNetworkUuid }) => {
     const { snackError } = useSnackMessage();
+    const snackForbiddenByShared = useSnackForbiddenByShared();
     const [nodesToRestore, setNodesToRestore] = useState([]);
 
     const { selectionForCopy, copyNode, cutNode, cleanClipboard, cleanOtherTabsClipboard } = useCopiedNodes();
@@ -194,7 +196,7 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
             if (CopyType.NODE_CUT === nodeSelectionForCopyRef.current.copyType) {
                 cutTreeNode(studyUuid, nodeSelectionForCopyRef.current.nodeId, referenceNodeId, insertMode).catch(
                     (error) => {
-                        snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
+                        snackForbiddenByShared(error, 'NodeCreateError');
                     }
                 );
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
@@ -207,12 +209,12 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
                     referenceNodeId,
                     insertMode
                 ).catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
+                    snackForbiddenByShared(error, 'NodeCreateError');
                 });
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, cleanClipboard, snackError]
+        [studyUuid, cleanClipboard, snackForbiddenByShared]
     );
 
     const handleRemoveNode = useCallback(
@@ -346,7 +348,7 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
         (referenceNodeId) => {
             if (CopyType.SUBTREE_CUT === nodeSelectionForCopyRef.current.copyType) {
                 cutSubtree(studyUuid, nodeSelectionForCopyRef.current.nodeId, referenceNodeId).catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
+                    snackForbiddenByShared(error, 'NodeCreateError');
                 });
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
                 cleanClipboard(false);
@@ -357,12 +359,12 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
                     nodeSelectionForCopyRef.current.nodeId,
                     referenceNodeId
                 ).catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'NodeCreateError' });
+                    snackForbiddenByShared(error, 'NodeCreateError');
                 });
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, cleanClipboard, snackError]
+        [studyUuid, cleanClipboard, snackForbiddenByShared]
     );
 
     return (
