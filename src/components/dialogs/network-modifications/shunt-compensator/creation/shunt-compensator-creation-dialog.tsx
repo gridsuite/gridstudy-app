@@ -59,6 +59,7 @@ export default function ShuntCompensatorCreationDialog({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<ShuntCompensatorCreationDialogProps>) {
@@ -153,6 +154,7 @@ export default function ShuntCompensatorCreationDialog({
     });
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={shuntCompensatorCreationFormSchema}
             {...formMethods}
