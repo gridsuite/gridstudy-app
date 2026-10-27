@@ -36,7 +36,7 @@ export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
     setTabIndex: React.Dispatch<React.SetStateAction<number>>
 ): Dispatch<SetStateAction<boolean>> => {
-    // null when no computation has just completed (reset on computation launch or node change): keep the current tab
+    // reset to null when a computation is launched or node changed: only redirect once a computation has completed
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
     const [redirectionLock, setRedirectionLock] = useState<boolean>(false);
 
