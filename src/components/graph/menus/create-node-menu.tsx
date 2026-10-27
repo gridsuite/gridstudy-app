@@ -555,18 +555,18 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             hidden: !isDeveloperMode,
             withDivider: true,
         },
-        EXPORT_NETWORK_ON_NODE: {
-            onRoot: true,
-            action: () => exportCaseOnNode(),
-            id: 'exportCaseOnNode',
-            disabled: activeNode?.type !== NodeType.ROOT && !isStatusBuilt(activeNode?.data?.globalBuildStatus),
-        },
         UNSHARE: {
             onRoot: true,
             action: () => unshareAllReferencesInStudy(),
             id: 'unshareReferencesInStudy',
             disabled: activeNode?.type !== NodeType.ROOT || !hasModificationReferences(),
             hidden: activeNode?.type !== NodeType.ROOT,
+        },
+        EXPORT_NETWORK_ON_NODE: {
+            onRoot: true,
+            action: () => exportCaseOnNode(),
+            id: 'exportCaseOnNode',
+            disabled: activeNode?.type !== NodeType.ROOT && !isStatusBuilt(activeNode?.data?.globalBuildStatus),
         },
     };
 
