@@ -14,6 +14,7 @@ import NetworkMapPanel from '../../network/network-map-panel';
 import type { CurrentTreeNode } from '../../graph/tree-node.type';
 import { selectPanel } from '../../../redux/slices/workspace-selectors';
 import { RootState } from 'redux/store';
+import { SnackbarProvider } from '@gridsuite/commons-ui';
 
 interface MapPanelContentProps {
     panelId: UUID;
@@ -39,12 +40,14 @@ export const MapPanelContent = ({ panelId, studyUuid, currentRootNetworkUuid, cu
 
     return (
         <Box sx={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
-            <NetworkMapPanel
-                studyUuid={studyUuid}
-                currentNode={currentNode}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                triggerMapResizeOnChange={triggerMapResize}
-            />
+            <SnackbarProvider hideIconVariant={false} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} dense>
+                <NetworkMapPanel
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    triggerMapResizeOnChange={triggerMapResize}
+                />
+            </SnackbarProvider>
         </Box>
     );
 };
