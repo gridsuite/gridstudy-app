@@ -628,7 +628,14 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             handleRemovalSubtree(activeNode);
         }
         handleOnClose();
-    }, [handleOnClose, handleNodeRemoval, handleRemovalSubtree, activeNode, nodeAction]);
+    }, [
+        handleOnClose,
+        handleNodeRemoval,
+        handleUn,
+        shareAllReferencesInStudyhandleRemovalSubtree,
+        activeNode,
+        nodeAction,
+    ]);
 
     return (
         <>
