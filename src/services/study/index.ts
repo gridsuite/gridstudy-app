@@ -382,6 +382,19 @@ export function getUniqueNodeName(studyUuid: UUID) {
     return backendFetchText(uniqueNodeNameUrl);
 }
 
+export function unshareAllReferencesInStudy(studyUuid: UUID) {
+    const url = getStudyUrl(studyUuid) + '/unshare';
+    console.debug(url);
+    return backendFetchText(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: null,
+    });
+}
+
 export function getOptionalServices() {
     console.info('get available optional services');
     const url = PREFIX_STUDY_QUERIES + '/v1/optional-services';
