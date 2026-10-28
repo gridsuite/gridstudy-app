@@ -88,6 +88,7 @@ interface VoltageLevelCreationDialogProps {
     studyUuid: UUID;
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus?: string;
     onCreateVoltageLevel?: (voltageLevel: VoltageLevelCreationDto) => Promise<string>;
     isAttachmentPointModification?: boolean;
@@ -113,6 +114,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     onCreateVoltageLevel,
     isAttachmentPointModification = false,
@@ -302,7 +304,7 @@ const VoltageLevelCreationDialog: FC<VoltageLevelCreationDialogProps> = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={voltageLevelCreationFormSchema} {...formMethods}>
+        <CustomFormProvider isReadOnly={isReadOnly} validationSchema={voltageLevelCreationFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

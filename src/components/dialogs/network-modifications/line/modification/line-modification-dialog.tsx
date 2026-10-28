@@ -77,6 +77,7 @@ const LineModificationDialog = ({
     currentNode,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<LineModificationDialogProps>) => {
@@ -270,6 +271,7 @@ const LineModificationDialog = ({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={lineModificationFormSchema}
             removeOptional={true}
             {...formMethods}
