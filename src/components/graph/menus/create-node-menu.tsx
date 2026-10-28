@@ -631,8 +631,8 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     }, [
         handleOnClose,
         handleNodeRemoval,
-        handleUn,
-        shareAllReferencesInStudyhandleRemovalSubtree,
+        handleRemovalSubtree,
+        handleUnshareAllReferencesInStudy,
         activeNode,
         nodeAction,
     ]);
