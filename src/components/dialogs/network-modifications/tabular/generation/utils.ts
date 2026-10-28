@@ -94,6 +94,7 @@ export const emptyFormData: PrefilledModelFormType = {
 
 export interface GeneratePrefilledModelDialogProps {
     open: UseStateBooleanReturn;
+    isReadOnly?: boolean;
     equipmentType: EquipmentType;
     onGenerate: (params: PrefilledModelGenerationParams) => void;
 }
