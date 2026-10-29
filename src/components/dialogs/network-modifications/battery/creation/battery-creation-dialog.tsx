@@ -57,6 +57,7 @@ export default function BatteryCreationDialog({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<BatteryCreationDialogProps>) {
@@ -164,6 +165,7 @@ export default function BatteryCreationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={batteryCreationFormSchema}
             {...formMethods}

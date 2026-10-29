@@ -41,6 +41,7 @@ interface LinesAttachToSplitLinesProps {
     studyUuid: UUID;
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus: FetchStatus;
 }
 
@@ -60,6 +61,7 @@ const LinesAttachToSplitLinesDialog = ({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<LinesAttachToSplitLinesProps>) => {
@@ -122,7 +124,11 @@ const LinesAttachToSplitLinesDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={linesAttachToSplittingLinesFormSchema} {...formMethods}>
+        <CustomFormProvider
+            isReadOnly={isReadOnly}
+            validationSchema={linesAttachToSplittingLinesFormSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
