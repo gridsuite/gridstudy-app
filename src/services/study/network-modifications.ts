@@ -1471,8 +1471,15 @@ export function shareCompositeModification(
     return backendFetch(url, { method: 'POST' });
 }
 
-export function hasSharedModifications(studyUuid: UUID): Promise<boolean> {
-    const hasSharedModificationsUrl = getStudyUrl(studyUuid) + '/network-modifications/references/exists';
-    console.debug(hasSharedModificationsUrl);
-    return backendFetchJson(hasSharedModificationsUrl);
+export enum SharedModificationsWriteAccess {
+    NO_SHARED_MODIFICATION = 'NO_SHARED_MODIFICATION',
+    ALL_WRITABLE = 'ALL_WRITABLE',
+    SOME_WRITABLE = 'SOME_WRITABLE',
+    NONE_WRITABLE = 'NONE_WRITABLE',
+}
+
+export function getSharedModificationsWriteAccess(studyUuid: UUID): Promise<SharedModificationsWriteAccess> {
+    const sharedModificationsWriteAccessUrl = getStudyUrl(studyUuid) + '/network-modifications/references/write-access';
+    console.debug(sharedModificationsWriteAccessUrl);
+    return backendFetchJson(sharedModificationsWriteAccessUrl);
 }

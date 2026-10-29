@@ -119,6 +119,7 @@ export const LccModificationDialog = ({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<LccModificationDialogProps>) => {
@@ -261,6 +262,7 @@ export const LccModificationDialog = ({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={lccHvdcLineModificationFormSchema}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}

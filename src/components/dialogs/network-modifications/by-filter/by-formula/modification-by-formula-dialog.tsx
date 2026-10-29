@@ -38,6 +38,7 @@ const ModificationByFormulaDialog = ({
     currentNode,
     editData,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: ByFormulaDialogProps) => {
@@ -78,7 +79,7 @@ const ModificationByFormulaDialog = ({
     );
 
     return (
-        <CustomFormProvider validationSchema={modificationByFormulaFormSchema} {...formMethods}>
+        <CustomFormProvider isReadOnly={isReadOnly} validationSchema={modificationByFormulaFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
