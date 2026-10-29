@@ -14,6 +14,7 @@ import {
     EquipmentType,
     ExtendedEquipmentType,
     type Identifiable,
+    NetworkExportInfos,
     safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
@@ -24,7 +25,6 @@ import { BusBarSectionsInfos, FeederBaysInfos, SwitchInfos } from './network-map
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';
 import { isBlankOrEmpty } from '../../components/utils/validation-functions';
-import { NetworkExportInfos } from '../study-types';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
