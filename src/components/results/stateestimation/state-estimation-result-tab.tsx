@@ -18,6 +18,9 @@ import { LogicalControlsResultDto } from './logicalcontrols/logicalControls.type
 import { AppState } from 'redux/reducer.type';
 import {
     ComputingType,
+    EquipmentType,
+    GlobalFilterType,
+    mergeSx,
     type MuiStyles,
     RunningStatus,
     snackWithFallback,
@@ -26,7 +29,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import StateEstimationResultTable from './state-estimation-result-table';
-import GlassPane from '../common/glass-pane';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import {
     mapMeasurementResults,
@@ -44,6 +46,21 @@ import {
     STATEESTIMATION_QUALITY_PER_REGION,
 } from '../../../utils/store-sort-filter-fields';
 import { LogicalControlsResult } from './logicalcontrols/logical-controls-result';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
+import { StateEstimationMeasurements } from './state-estimation-measurements';
+
+const GLOBAL_FILTER_CATEGORIES = [
+    GlobalFilterType.VOLTAGE_LEVEL,
+    GlobalFilterType.COUNTRY,
+    GlobalFilterType.SUBSTATION_PROPERTY,
+    GlobalFilterType.SUBSTATION_OR_VL,
+];
+const GLOBAL_FILTER_EQUIPMENT_TYPES = [
+    EquipmentType.LINE,
+    EquipmentType.TWO_WINDINGS_TRANSFORMER,
+    EquipmentType.VOLTAGE_LEVEL,
+];
 
 const styles = {
     flexWrapper: {
@@ -93,6 +110,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     });
 
     useComputationColumnFilters(TableType.StateEstimation, STATEESTIMATION_MEASUREMENTS);
+    const globalFilters = useComputationGlobalFilters(TableType.StateEstimation);
 
     const stateEstimationResultColumns = useMemo(() => {
         switch (tabIndex) {
@@ -132,12 +150,12 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
 
     const renderReportViewer = () => {
         return (
-            <GlassPane active={isLoadingResult}>
+            <>
                 {(stateEstimationStatus === RunningStatus.SUCCEED ||
                     stateEstimationStatus === RunningStatus.FAILED) && (
                     <ComputationReportViewer reportType={ComputingType.STATE_ESTIMATION} />
                 )}
-            </GlassPane>
+            </>
         );
     };
 
@@ -176,44 +194,44 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                         </Button>
                     </Box>
                 )}
+                <Box sx={mergeSx(styles.flexElement, tabIndex === 1 ? styles.show : styles.hide)}>
+                    <GlobalFilterSelector
+                        filterCategories={GLOBAL_FILTER_CATEGORIES}
+                        filterableEquipmentTypes={GLOBAL_FILTER_EQUIPMENT_TYPES}
+                        genericFiltersStrictMode={true}
+                        tableType={TableType.StateEstimation}
+                    />
+                </Box>
                 <Box sx={styles.emptySpace}></Box>
             </Box>
 
             {tabIndex === 0 && <StateEstimationStatusResult result={result} />}
             {tabIndex === 1 && (
-                <GlassPane active={isLoadingResult}>
-                    <StateEstimationResultTable
-                        result={result}
-                        isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationResultColumns}
-                        tableName={STATEESTIMATION_MEASUREMENTS}
-                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                        filter={true}
-                        sortable={true}
-                    />
-                </GlassPane>
+                <StateEstimationMeasurements
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    rootNetworkUuid={currentRootNetworkUuid}
+                    globalFilters={globalFilters}
+                    columnDefs={stateEstimationResultColumns}
+                />
             )}
             {tabIndex === 2 && (
-                <GlassPane active={isLoadingResult}>
-                    <StateEstimationResultTable
-                        result={result}
-                        isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationResultColumns}
-                        tableName={STATEESTIMATION_QUALITY_CRITERION}
-                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                    />
-                </GlassPane>
+                <StateEstimationResultTable
+                    result={result}
+                    isLoadingResult={isLoadingResult}
+                    columnDefs={stateEstimationResultColumns}
+                    tableName={STATEESTIMATION_QUALITY_CRITERION}
+                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                />
             )}
             {tabIndex === 3 && (
-                <GlassPane active={isLoadingResult}>
-                    <StateEstimationResultTable
-                        result={result}
-                        isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationResultColumns}
-                        tableName={STATEESTIMATION_QUALITY_PER_REGION}
-                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                    />
-                </GlassPane>
+                <StateEstimationResultTable
+                    result={result}
+                    isLoadingResult={isLoadingResult}
+                    columnDefs={stateEstimationResultColumns}
+                    tableName={STATEESTIMATION_QUALITY_PER_REGION}
+                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                />
             )}
             {tabIndex === 4 && (
                 <LogicalControlsResult
