@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
+import { booleanFilterParams } from '../../custom-aggrid/custom-aggrid-filters/boolean-filter-params';
 import {
     BooleanCellRenderer,
-    BooleanFilterValue,
     CustomAggridAutocompleteFilter,
     CustomAggridComparatorFilter,
     CustomHeaderComponent,
@@ -176,28 +176,7 @@ export const booleanColumnDefinition = (
     snackError: (snackInputs: SnackInputs) => void
 ): ColDef => {
     return {
-        filterParams: {
-            filterOptions: [
-                {
-                    displayKey: 'booleanMatches',
-                    displayName: 'booleanMatches', // translation key
-                    predicate: (filterValues: string[], cellValue: boolean) => {
-                        const filterValue = filterValues.at(0);
-                        if (filterValue === undefined) {
-                            return false;
-                        }
-                        // We receive here the filter boolean value as a string (filterValue)
-                        // we check if the cellValue is not null neither undefined
-                        if (cellValue != null) {
-                            return filterValue === cellValue.toString();
-                        }
-
-                        // we return true if the filter chosen is undefinedValue
-                        return filterValue === BooleanFilterValue.UNDEFINED;
-                    },
-                },
-            ] as IFilterOptionDef[],
-        },
+        filterParams: booleanFilterParams,
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             displayName: colDef.name,

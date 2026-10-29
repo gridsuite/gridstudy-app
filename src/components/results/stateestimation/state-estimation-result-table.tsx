@@ -125,6 +125,7 @@ const StateEstimationResultTable: FunctionComponent<StateEstimationResultTablePr
                 onGridReady={handleOnGridReady}
                 exportCsvResetKey={exportCsvResetKey}
                 language={language}
+                formattedExport={true}
             />
         </>
     );
