@@ -597,11 +597,6 @@ const NetworkModificationNodeEditor = () => {
                     hide: true,
                     action: () => withDefaultParams(VoltageInitModificationDialog),
                 },
-                {
-                    id: MODIFICATION_TYPES.NETWORK_REDUCTION.type,
-                    label: 'NetworkReduction',
-                    action: () => withDefaultParams(NetworkReductionDialog),
-                },
             ],
         },
         {
@@ -642,6 +637,11 @@ const NetworkModificationNodeEditor = () => {
                             id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
                             label: 'menu.deleteByFilter',
                             action: () => withDefaultParams(ByFilterDeletionDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.NETWORK_REDUCTION.type,
+                            label: 'NetworkReduction',
+                            action: () => withDefaultParams(NetworkReductionDialog),
                         },
                     ],
                 },
