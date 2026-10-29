@@ -15,7 +15,6 @@ import { useNodeData } from '../../use-node-data';
 import { fetchStateEstimationMeasurements } from '../../../services/study/state-estimation';
 import { stateEstimationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { STATEESTIMATION_MEASUREMENTS } from '../../../utils/store-sort-filter-fields';
-import GlassPane from '../common/glass-pane';
 import StateEstimationResultTable from './state-estimation-result-table';
 import { mapMeasurementResults } from './state-estimation-result-utils';
 import { MeasurementInformationResultDto } from './state-estimation-result.type';

@@ -29,7 +29,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import StateEstimationResultTable from './state-estimation-result-table';
-import GlassPane from '../common/glass-pane';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import {
     mapMeasurementResults,
