@@ -14,7 +14,7 @@ import { createTheme, ThemeProvider } from '@mui/material';
 import { ComputingType, RunningStatus, TableType } from '@gridsuite/commons-ui';
 import StateEstimationResultTable from './state-estimation-result-table';
 import { useInitialColumnSort } from './state-estimation-result-utils';
-import { Bounds, MeasurementInformationResult, MeasurementType, ValidityType } from './state-estimation-result.type';
+import { MeasurementInformationResult, MeasurementType, ValidityType } from './state-estimation-result.type';
 import {
     STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_QUALITY_CRITERION,
@@ -41,7 +41,7 @@ const measurement = (equipmentId: string): MeasurementInformationResult => ({
     currentValue: 1,
     estimatedValue: 2,
     differenceValue: 1,
-    outOfBound: Bounds.IN_BOUNDS,
+    outOfBound: false,
 });
 
 const embeddedResult: any = {
