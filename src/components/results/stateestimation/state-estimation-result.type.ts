@@ -44,11 +44,6 @@ export enum ValidityType {
     INV = 'INV',
 }
 
-export enum Bounds {
-    IN_BOUNDS = 'IN_BOUNDS',
-    OUT_OF_BOUNDS = 'OUT_OF_BOUNDS',
-}
-
 export interface MeasurementInformationResultDto {
     equipmentId: string;
     measurementType: string;
@@ -66,7 +61,7 @@ export interface MeasurementInformationResult {
     currentValue: number;
     estimatedValue: number;
     differenceValue: number;
-    outOfBound: Bounds;
+    outOfBound: boolean;
 }
 
 export interface StateEstimationResult {
@@ -85,7 +80,9 @@ export interface StateEstimationTabProps {
     currentRootNetworkUuid: UUID;
 }
 
-export interface StateEstimationResultTableProps extends StateEstimationStatusResultProps {
+export interface StateEstimationResultTableProps extends Partial<StateEstimationStatusResultProps> {
+    // When defined, the measurement table shows exactly these rows and never the ones embedded in `result`
+    measurementRows?: MeasurementInformationResult[];
     isLoadingResult: boolean;
     columnDefs: ColDef<any>[];
     tableName: string;

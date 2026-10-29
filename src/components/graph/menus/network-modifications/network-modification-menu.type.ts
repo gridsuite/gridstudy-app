@@ -96,6 +96,7 @@ export type NetworkModificationDialogProps = {
     studyUuid: UUID;
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
+    isReadOnly: boolean;
     editDataFetchStatus?: FetchStatus;
     onValidated?: () => void;
     onClose: () => void;

@@ -488,6 +488,7 @@ const messages_fr = {
     removeNode: 'Supprimer',
     unbuildNode: 'Déréaliser',
     exportCaseOnNode: 'Exporter',
+    unshareReferencesInStudy: "Départager l'étude",
     ConstructionNode: 'Créer un nœud de construction',
     SecurityNode: 'Créer un nœud de sécurité',
     NetworkModificationTreeLoadError:
@@ -875,6 +876,7 @@ const messages_fr = {
     checkNetworkExistenceError: "Une erreur est survenue lors de la vérification de l'existence du réseau de l'étude",
 
     deleteNodeConfirmation: '"{nodeName}" va être supprimé.',
+    unshareStudyConfirmation: "Le départage de l'étude est irréversible, voulez vous continuer ?",
     deleteSubTreeConfirmation:
         '"{nodeName}" {nodesNumber, plural, =0 {va être supprimé.} =1 {et son sous-arbre contenant un nœud vont être supprimés} other {et son sous-arbre contenant # nœuds vont être supprimés.}}',
 
@@ -1050,6 +1052,10 @@ const messages_fr = {
     TagRequiredCondition: "La balise est obligatoire, unique dans l'étude et de taille <= 4",
     sharedModificationsApplicabilitiesOverwritten:
         "L'étude contient des modifications partagées, qui peuvent avoir des applicabilités déjà définies pour cette balise de réseau : celles-ci seront écrasées par les applicabilités existantes sur le réseau.",
+    sharedModificationsNotWritableTag:
+        "L'étude contient au moins une modification partagée pour laquelle vous n'avez pas les droits de modification : {tagAction, select, renaming {le renommage} other {l'ajout}} de la balise pourra être refusé si la nouvelle balise n'est pas déjà utilisée par ces modifications.",
+    sharedModificationsWriteAccessFetchingError:
+        'Une erreur est survenue lors de la récupération des droits sur les modifications partagées',
     rootNetworksCount: '{count, plural, =1 {# réseau} other {# réseaux}}',
     deletingRootNetwork: 'Suppression du réseau racine en cours ...',
     creatingRootNetwork: 'Création du réseau racine en cours ...',

@@ -439,6 +439,7 @@ const ParametersTabs: FunctionComponent = () => {
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
                         voltageInitParameters={voltageInitParameters}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case TAB_VALUES.stateEstimationTabValue:

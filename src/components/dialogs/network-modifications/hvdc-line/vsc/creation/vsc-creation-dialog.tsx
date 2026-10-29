@@ -52,6 +52,7 @@ export default function VscCreationDialog({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<VscCreationDialogProps>) {
@@ -127,6 +128,7 @@ export default function VscCreationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             {...formMethods}
             validationSchema={vscHvdcLineCreationFormSchema}
             isNodeBuilt={isNodeBuilt(currentNode)}

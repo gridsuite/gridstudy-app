@@ -46,6 +46,7 @@ export default function CreateVoltageLevelSectionDialog({
     editData,
     defaultIdValue,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<VoltageLevelSectionCreationDialogProps>) {
@@ -148,6 +149,7 @@ export default function CreateVoltageLevelSectionDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={voltageLevelSectionCreationFormSchema}
             removeOptional={true}
             {...formMethods}
