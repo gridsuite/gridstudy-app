@@ -109,6 +109,14 @@ export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): Co
 
     const getEnumLabel = (value: string) => (value ? intl.formatMessage({ id: value, defaultMessage: value }) : '');
 
+    const createNumericColumn = (field: string, headerId: string): ColDef =>
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: headerId }),
+            colId: field,
+            field,
+            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
+        });
+
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Equipment' }),
@@ -134,24 +142,9 @@ export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): Co
             sortParams,
             filterParams
         ),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Value' }),
-            colId: 'currentValue',
-            field: 'currentValue',
-            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'EstimatedValue' }),
-            colId: 'estimatedValue',
-            field: 'estimatedValue',
-            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'DifferenceValue' }),
-            colId: 'differenceValue',
-            field: 'differenceValue',
-            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
-        }),
+        createNumericColumn('currentValue', 'Value'),
+        createNumericColumn('estimatedValue', 'EstimatedValue'),
+        createNumericColumn('differenceValue', 'DifferenceValue'),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OutOfBound' }),
             colId: 'outOfBound',
