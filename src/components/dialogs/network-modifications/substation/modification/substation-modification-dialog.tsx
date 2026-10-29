@@ -42,6 +42,7 @@ interface SubstationModificationDialogProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus?: string;
     editData?: SubstationModificationDto;
     defaultIdValue?: string;
@@ -65,6 +66,7 @@ const SubstationModificationDialog = ({
     currentRootNetworkUuid,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: SubstationModificationDialogProps) => {
@@ -166,6 +168,7 @@ const SubstationModificationDialog = ({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={substationModificationFormSchema}
             {...formMethods}
             removeOptional={true}

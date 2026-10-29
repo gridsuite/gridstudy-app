@@ -44,6 +44,7 @@ export function TabularDialog({
     currentNode,
     editData,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     dialogMode,
     ...dialogProps
@@ -120,7 +121,7 @@ export function TabularDialog({
     );
 
     return (
-        <CustomFormProvider validationSchema={tabularFormSchema} {...formMethods}>
+        <CustomFormProvider isReadOnly={isReadOnly} validationSchema={tabularFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}
