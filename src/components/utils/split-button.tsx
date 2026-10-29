@@ -14,7 +14,24 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
 import { AppState } from 'redux/reducer.type';
-import { type MuiStyles, RunningStatus, type UserQuotaState } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles, RunningStatus, type SxStyle, type UserQuotaState } from '@gridsuite/commons-ui';
+
+type BadgeColor = 'success' | 'error' | 'warning';
+
+const badgeColorStyle =
+    (color: BadgeColor): SxStyle =>
+    (theme) => {
+        const { light, main, dark } = theme.palette[color];
+        // keep main for dark success
+        const darkModeColor = color === 'success' ? main : dark;
+        const backgroundColor = theme.palette.mode === 'light' ? light : darkModeColor;
+        return {
+            '& .MuiBadge-badge': {
+                backgroundColor,
+                color: theme.palette.getContrastText(backgroundColor),
+            },
+        };
+    };
 
 const styles = {
     badge: (theme) => ({
@@ -100,7 +117,7 @@ const SplitButton = ({
     // a running computation counts in the quota, so it's not a warning for it
     const showQuota = !isRunning && reachedQuotas[selectedIndex] != null;
 
-    const getBadgeColor = () => {
+    const getBadgeColor = (): BadgeColor => {
         if (showQuota) {
             return 'warning';
         }
@@ -115,10 +132,9 @@ const SplitButton = ({
         <>
             <ButtonGroup variant="contained" ref={anchorRef}>
                 <Badge
-                    color={getBadgeColor()}
                     badgeContent={showQuota ? 0 : getResultBadge(runningStatus)}
                     showZero
-                    sx={styles.badge}
+                    sx={mergeSx(styles.badge, badgeColorStyle(getBadgeColor()))}
                 >
                     <Button
                         startIcon={
