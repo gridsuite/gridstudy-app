@@ -85,6 +85,7 @@ export function LccCreationDialog({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<LccCreationDialogProps>) {
@@ -154,6 +155,7 @@ export function LccCreationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={lccHvdcLineCreationFormSchema}
             {...formMethods}

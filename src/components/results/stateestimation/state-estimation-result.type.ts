@@ -80,7 +80,9 @@ export interface StateEstimationTabProps {
     currentRootNetworkUuid: UUID;
 }
 
-export interface StateEstimationResultTableProps extends StateEstimationStatusResultProps {
+export interface StateEstimationResultTableProps extends Partial<StateEstimationStatusResultProps> {
+    // When defined, the measurement table shows exactly these rows and never the ones embedded in `result`
+    measurementRows?: MeasurementInformationResult[];
     isLoadingResult: boolean;
     columnDefs: ColDef<any>[];
     tableName: string;
