@@ -621,8 +621,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     const handleOnValidate = useCallback(() => {
         if (nodeAction === NodeActions.REMOVE_NODE) {
             handleNodeRemoval(activeNode);
-        }
-        if (nodeAction === NodeActions.UNSHARE_STUDY) {
+        } else if (nodeAction === NodeActions.UNSHARE_STUDY) {
             handleUnshareAllReferencesInStudy();
         } else {
             handleRemovalSubtree(activeNode);

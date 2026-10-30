@@ -15,7 +15,6 @@ import {
     DndColumnType,
     DndTable,
     ElementType,
-    PARAM_DEVELOPER_MODE,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
@@ -47,7 +46,6 @@ import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from '../../utils/field-con
 import * as yup from 'yup';
 import { UUID } from 'node:crypto';
 import InsertNameCell from './insert-name-cell';
-import { useParameterState } from '../parameters/use-parameters-state';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -85,16 +83,11 @@ const emptyFormData: FormData = {
 
 interface SharedCellProps {
     rowIndex: number;
-    disabled: boolean;
 }
 
-function SharedCell({ rowIndex, disabled }: Readonly<SharedCellProps>) {
+function SharedCell({ rowIndex }: Readonly<SharedCellProps>) {
     return (
-        <CheckboxInput
-            name={`${SELECTED_MODIFICATIONS}.${rowIndex}.${IS_SHARED}`}
-            label={'importComposites.shared'}
-            formProps={{ disabled }}
-        />
+        <CheckboxInput name={`${SELECTED_MODIFICATIONS}.${rowIndex}.${IS_SHARED}`} label={'importComposites.shared'} />
     );
 }
 
@@ -158,7 +151,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const selectedModifications: SelectedComposite[] = watch(SELECTED_MODIFICATIONS);
     const isInsertMode = action === CompositeModificationAction.INSERT;
     const isNextDisabled = selectedModifications.length === 0;
-    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     // useFieldArray — consumed by DndTable
     const useFieldArrayOutput = useFieldArray({
@@ -175,9 +167,9 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             editable: true,
             width: '25%',
             type: DndColumnType.CUSTOM,
-            component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} disabled={!isDeveloperMode} />,
+            component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} />,
         }),
-        [isDeveloperMode]
+        []
     );
 
     // SPLIT mode — name is read-only, drag-and-drop only, cannot be shared
