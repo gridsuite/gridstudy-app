@@ -13,12 +13,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { ComputingType, RunningStatus, TableType } from '@gridsuite/commons-ui';
 import StateEstimationResultTable from './state-estimation-result-table';
-import { useInitialColumnSort } from './state-estimation-result-utils';
 import { MeasurementInformationResult, MeasurementType, ValidityType } from './state-estimation-result.type';
 import {
     STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_QUALITY_CRITERION,
+    STATEESTIMATION_RESULT_SORT_STORE,
 } from '../../../utils/store-sort-filter-fields';
+import { useInitialColumnSort } from '../common/use-initial-column-sort';
 
 const mockGrid: { props?: any } = {};
 const mockOnGridReady = jest.fn();
@@ -29,8 +30,7 @@ jest.mock('../../utils/renderTable-ExportCsv', () => ({
         return null;
     },
 }));
-jest.mock('./state-estimation-result-utils', () => ({
-    ...jest.requireActual('./state-estimation-result-utils'),
+jest.mock('../common/use-initial-column-sort', () => ({
     useInitialColumnSort: jest.fn(() => mockOnGridReady),
 }));
 
@@ -83,6 +83,7 @@ const rowIds = () => mockGrid.props.rows.map((row: any) => row.equipmentId);
 
 beforeEach(() => {
     (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
+    jest.mocked(useInitialColumnSort).mockClear();
     mockGrid.props = undefined;
     root = createRoot(document.createElement('div'));
 });
@@ -131,7 +132,11 @@ describe('native grid behavior', () => {
     it('keeps the stored column filters and sort of the measurement table', async () => {
         await show({ measurementRows: [] });
 
-        expect(useInitialColumnSort).toHaveBeenCalledWith(STATEESTIMATION_MEASUREMENTS, true);
+        expect(useInitialColumnSort).toHaveBeenCalledWith(
+            STATEESTIMATION_RESULT_SORT_STORE,
+            STATEESTIMATION_MEASUREMENTS,
+            true
+        );
         expect(mockGrid.props.onGridReady).toBe(mockOnGridReady);
         expect(mockGrid.props.computationType).toBe(TableType.StateEstimation);
         expect(mockGrid.props.computationSubType).toBe(STATEESTIMATION_MEASUREMENTS);

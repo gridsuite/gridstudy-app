@@ -26,12 +26,13 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultTableProps } from './state-estimation-result.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { useInitialColumnSort } from './state-estimation-result-utils';
+import { useInitialColumnSort } from '../common/use-initial-column-sort';
 import { RowClassParams } from 'ag-grid-community';
 import {
     STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
+    STATEESTIMATION_RESULT_SORT_STORE,
 } from '../../../utils/store-sort-filter-fields';
 
 const StateEstimationResultTable: FunctionComponent<StateEstimationResultTableProps> = ({
@@ -47,7 +48,7 @@ const StateEstimationResultTable: FunctionComponent<StateEstimationResultTablePr
     const theme = useTheme();
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
-    const handleOnGridReady = useInitialColumnSort(tableName, sortable);
+    const handleOnGridReady = useInitialColumnSort(STATEESTIMATION_RESULT_SORT_STORE, tableName, sortable);
 
     const tableNameFormatted = intl.formatMessage({ id: tableName });
 

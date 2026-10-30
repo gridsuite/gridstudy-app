@@ -9,7 +9,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index'
 import { backendFetch, backendFetchJson, backendFetchText, type GlobalFilters } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { StateEstimationParameters } from '../../components/dialogs/parameters/state-estimation/state-estimation-parameters-utils';
-import { LogicalControlsResultDto } from '../../components/results/stateestimation/logicalcontrols/logicalControls.types';
+import { LogicalControlsResultDto } from '../../components/results/logicalcontrols/logical-controls-result.type';
 import type { MeasurementInformationResultDto } from '../../components/results/stateestimation/state-estimation-result.type';
 
 export function startStateEstimation(
@@ -119,15 +119,57 @@ export function getStateEstimationStudyParameters(studyUuid: UUID) {
     return backendFetchJson(getStateEstimParams);
 }
 
-export function computeLogicalControls(
+export function startLogicalControls(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID
-): Promise<LogicalControlsResultDto> {
+): Promise<Response> {
     console.info(
-        `compute and retrieve logical controls on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+        `Running logical controls on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/state-estimation/logical-controls`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/logical-controls/run`;
     console.debug(url);
-    return backendFetchJson(url, { method: 'post' });
+    return backendFetch(url, { method: 'post' });
+}
+
+export function stopLogicalControls(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Stopping logical controls on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/logical-controls/stop`;
+    console.debug(url);
+    return backendFetch(url, { method: 'put' });
+}
+
+export function fetchLogicalControlsStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching logical controls status on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/logical-controls/status`;
+    console.debug(url);
+    return backendFetchText(url);
+}
+export function fetchLogicalControlsResult(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+): Promise<LogicalControlsResultDto | null> {
+    console.info(
+        `Fetching logical controls result on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/logical-controls/result`;
+    console.debug(url);
+    return backendFetchJson(url);
 }

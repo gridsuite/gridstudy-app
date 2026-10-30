@@ -23,6 +23,7 @@ import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import { useSelector } from 'react-redux';
 import { Box, Paper, Tab, Tabs } from '@mui/material';
 import { StateEstimationResultTab } from './results/stateestimation/state-estimation-result-tab';
+import { LogicalControlsResultTab } from './results/logicalcontrols/logical-controls-result-tab';
 import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysis/dynamic-security-analysis-result-tab';
 import { ComputingType, type MuiStyles, PARAM_DEVELOPER_MODE, usePrevious } from '@gridsuite/commons-ui';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
@@ -194,6 +195,18 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
+    const renderLogicalControlsResult = useMemo(() => {
+        return (
+            <Paper sx={styles.analysisResult}>
+                <LogicalControlsResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
+            </Paper>
+        );
+    }, [studyUuid, currentNode, currentRootNetworkUuid]);
+
     const renderPccMinResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
@@ -263,6 +276,13 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 renderResult: renderStateEstimationResult,
             },
             {
+                id: 'LogicalControls',
+                computingType: [ComputingType.LOGICAL_CONTROLS],
+                // logical controls are computed by the state estimation server
+                displayed: isDeveloperMode && stateEstimationAvailability === OptionalServicesStatus.Up,
+                renderResult: renderLogicalControlsResult,
+            },
+            {
                 id: 'PccMin',
                 computingType: [ComputingType.PCC_MIN],
                 displayed: pccMinAvailability === OptionalServicesStatus.Up,
@@ -288,6 +308,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         renderVoltageInitResult,
         stateEstimationAvailability,
         renderStateEstimationResult,
+        renderLogicalControlsResult,
         pccMinAvailability,
         renderPccMinResult,
     ]);

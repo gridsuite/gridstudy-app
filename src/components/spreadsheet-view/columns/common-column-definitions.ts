@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
-import { booleanFilterParams } from '../../custom-aggrid/custom-aggrid-filters/boolean-filter-params';
 import {
     BooleanCellRenderer,
     CustomAggridAutocompleteFilter,
@@ -32,6 +31,7 @@ import type { UUID } from 'node:crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
 import { ROW_INDEX_COLUMN_ID } from '../constants';
 import { updateSpreadsheetSort } from 'services/study/study-config';
+import { booleanFilterParams } from '../../custom-aggrid/custom-aggrid-filters/boolean-filter-params';
 import { ColumnDefinition } from '../types/spreadsheet.type';
 
 const persistSort = (

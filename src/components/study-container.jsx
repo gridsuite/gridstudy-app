@@ -247,6 +247,11 @@ export function StudyContainer() {
                     headerId: 'stateEstimationError',
                 });
             }
+            if (updateTypeHeader === NotificationType.LOGICAL_CONTROLS_FAILED) {
+                snackWithFallback(snackError, parseError(errorMessage), {
+                    headerId: 'logicalControlsError',
+                });
+            }
             if (updateTypeHeader === NotificationType.PCC_MIN_FAILED) {
                 snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'pccMinError',
