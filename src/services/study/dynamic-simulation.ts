@@ -152,7 +152,7 @@ export function fetchDynamicSimulationParameters(studyUuid: UUID): Promise<Dynam
     });
 }
 
-export function updateDynamicSimulationParameters(studyUuid: UUID, newParams: DynamicSimulationParametersInfos | null) {
+export function updateDynamicSimulationParameters(studyUuid: UUID, newParams: DynamicSimulationParametersInfos) {
     console.info(`Setting dynamic simulation parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
@@ -163,7 +163,17 @@ export function updateDynamicSimulationParameters(studyUuid: UUID, newParams: Dy
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: newParams ? JSON.stringify(mapDynamicSimulationParameters(newParams)) : newParams,
+        body: JSON.stringify(mapDynamicSimulationParameters(newParams)),
+    });
+}
+
+export function resetDynamicSimulationParameters(studyUuid: UUID) {
+    console.info(`Resetting dynamic simulation parameters on study '${studyUuid}' ...`);
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters/reset';
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'POST',
     });
 }
 
