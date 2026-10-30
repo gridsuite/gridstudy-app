@@ -15,10 +15,11 @@ interface UseTopBarSearchMatchingEquipmentProps {
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     equipmentType?: EquipmentType | ExtendedEquipmentType;
+    isDialogOpen: boolean;
 }
 
 export const useTopBarSearchMatchingEquipment = (props: UseTopBarSearchMatchingEquipmentProps) => {
-    const { nodeUuid, studyUuid, currentRootNetworkUuid, equipmentType } = props;
+    const { nodeUuid, studyUuid, currentRootNetworkUuid, equipmentType, isDialogOpen } = props;
     const { equipmentsFound, searchTerm, ...otherStates } = useSearchMatchingEquipments({
         studyUuid: studyUuid,
         nodeUuid: nodeUuid,
@@ -30,10 +31,12 @@ export const useTopBarSearchMatchingEquipment = (props: UseTopBarSearchMatchingE
     const equipmentsToReturn = useMemo(() => {
         if (searchTerm.length > 0 || equipmentType !== undefined) {
             return equipmentsFound;
+        } else if (!isDialogOpen) {
+            return [];
         } else {
             return getLocalStorageSearchEquipmentHistory(studyUuid); //elements from localstorage
         }
-    }, [searchTerm, equipmentType, equipmentsFound, studyUuid]);
+    }, [searchTerm, equipmentType, equipmentsFound, studyUuid, isDialogOpen]);
 
     return {
         ...otherStates,
