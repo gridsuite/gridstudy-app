@@ -91,6 +91,8 @@ import {
     useUniqueNameValidationEn,
     useUniqueNameValidationFr,
     DARK_THEME,
+    exportNetworkEn,
+    exportNetworkFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -480,6 +482,7 @@ const messages = {
         ...errorsEn,
         ...genericValidationEn,
         ...networkModificationValidationEn,
+        ...exportNetworkEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -526,6 +529,7 @@ const messages = {
         ...errorsFr,
         ...genericValidationFr,
         ...networkModificationValidationFr,
+        ...exportNetworkFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
