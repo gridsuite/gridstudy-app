@@ -98,7 +98,6 @@ const LogicalControlsResultTable: FunctionComponent<LogicalControlsResultTablePr
 
     const message = getNoRowsMessage(messages, rowsToShow, logicalControlsStatus, !isLoadingResult);
 
-    // TODO add prop formattedExport={true}, when available in commons-ui
     return (
         <>
             <Box sx={{ height: '4px', position: 'relative', zIndex: 1 }}>{openLoaderTab && <LinearProgress />}</Box>
@@ -116,6 +115,7 @@ const LogicalControlsResultTable: FunctionComponent<LogicalControlsResultTablePr
                 exportCsvResetKey={exportCsvResetKey}
                 language={language}
                 withTooltip
+                formattedExport
             />
         </>
     );
