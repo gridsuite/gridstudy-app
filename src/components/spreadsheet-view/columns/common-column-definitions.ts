@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
-import { booleanFilterParams } from '../../custom-aggrid/custom-aggrid-filters/boolean-filter-params';
 import {
     BooleanCellRenderer,
     CustomAggridAutocompleteFilter,
