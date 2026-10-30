@@ -56,12 +56,14 @@ export function createCompositeModifications(
     name: string,
     description: string,
     parentDirectoryUuid: UUID,
-    selectedModificationsUuid: UUID[]
+    selectedModificationsUuid: UUID[],
+    rootNetworkTags: string[]
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    rootNetworkTags.forEach((rootNetworkTag) => urlSearchParams.append('rootNetworkTags', rootNetworkTag));
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/composite-modifications?' + urlSearchParams.toString(),
         {
