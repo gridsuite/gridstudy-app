@@ -488,6 +488,7 @@ const messages_fr = {
     removeNode: 'Supprimer',
     unbuildNode: 'Déréaliser',
     exportCaseOnNode: 'Exporter',
+    unshareReferencesInStudy: "Départager l'étude",
     ConstructionNode: 'Créer un nœud de construction',
     SecurityNode: 'Créer un nœud de sécurité',
     NetworkModificationTreeLoadError:
@@ -875,6 +876,7 @@ const messages_fr = {
     checkNetworkExistenceError: "Une erreur est survenue lors de la vérification de l'existence du réseau de l'étude",
 
     deleteNodeConfirmation: '"{nodeName}" va être supprimé.',
+    unshareStudyConfirmation: "Le départage de l'étude est irréversible, voulez vous continuer ?",
     deleteSubTreeConfirmation:
         '"{nodeName}" {nodesNumber, plural, =0 {va être supprimé.} =1 {et son sous-arbre contenant un nœud vont être supprimés} other {et son sous-arbre contenant # nœuds vont être supprimés.}}',
 
@@ -1049,6 +1051,10 @@ const messages_fr = {
     TagRequiredCondition: "La balise est obligatoire, unique dans l'étude et de taille <= 4",
     sharedModificationsApplicabilitiesOverwritten:
         "L'étude contient des modifications partagées, qui peuvent avoir des applicabilités déjà définies pour cette balise de réseau : celles-ci seront écrasées par les applicabilités existantes sur le réseau.",
+    sharedModificationsNotWritableTag:
+        "L'étude contient au moins une modification partagée pour laquelle vous n'avez pas les droits de modification : {tagAction, select, renaming {le renommage} other {l'ajout}} de la balise pourra être refusé si la nouvelle balise n'est pas déjà utilisée par ces modifications.",
+    sharedModificationsWriteAccessFetchingError:
+        'Une erreur est survenue lors de la récupération des droits sur les modifications partagées',
     rootNetworksCount: '{count, plural, =1 {# réseau} other {# réseaux}}',
     deletingRootNetwork: 'Suppression du réseau racine en cours ...',
     creatingRootNetwork: 'Création du réseau racine en cours ...',
@@ -1149,7 +1155,27 @@ const messages_fr = {
     diagramLoadingFail: 'Erreur lors du chargement de {diagramName}',
     expand: 'Étendre',
     expandAllVoltageLevels: 'Étendre tous les postes',
-    addVoltageLevelsFromFilter: 'Ajouter un filtre complémentaire',
+    addVoltageLevelsFromFilter: "Ajouter les postes d'un filtre",
+    nadReplaceWithFilter: 'Remplacer les postes par un filtre',
+    nadFilterMode: "L'image nodale affiche les postes correspondant à ce filtre sur le nœud courant",
+    nadChangeFilter: 'Changer de filtre',
+    nadRemoveFilter: 'Retirer le filtre en conservant les postes affichés',
+    nadEmpty: "L'image nodale n'a aucun poste",
+    nadDeletedFilter: '{filterName} (supprimé)',
+    nadDeletedUnnamedFilter: 'Filtre supprimé',
+    nadDeletedFilterMessage: 'Le filtre a été supprimé, retirez-le ou changez-le en mode édition',
+    undoNadEdit: 'Annuler',
+    redoNadEdit: 'Rétablir',
+    nadEditInitialState: 'État initial',
+    nadEditMoveNode: '{voltageLevelId} déplacé',
+    nadEditMoveLabel: 'Nom de {voltageLevelId} déplacé',
+    nadEditAddVoltageLevel: '{voltageLevelId} ajouté',
+    nadEditAddFromFilter: 'Postes du filtre "{filterName}" ajoutés',
+    nadEditExpand: '{voltageLevelId} étendu',
+    nadEditExpandAll: 'Tous les postes étendus',
+    nadEditHide: '{voltageLevelId} masqué',
+    nadEditApplyFilter: 'Filtre "{filterName}" appliqué',
+    nadEditRemoveFilter: 'Filtre "{filterName}" retiré',
     addVoltageLevel: 'Ajouter un poste',
     searchVoltageLevelInNad: 'Rechercher un poste',
     exportNadPositions: 'Exporter les positions en CSV',
@@ -1206,6 +1232,7 @@ const messages_fr = {
     Enum: 'Énumération',
     nodeType: 'Type',
     nodeStatus: 'Statut',
+    nodeContainsSharedModifications: 'Contient des modifications partagées',
     'nodeActivity.UPDATING': 'Mise à jour',
     'nodeActivity.DELETING': 'Suppression',
     'nodeActivity.BUILDING': 'Réalisation',
@@ -1346,6 +1373,7 @@ const messages_fr = {
     'runButton.short.VoltageInit': 'Init U',
     'runButton.short.StateEstimation': 'Estim',
     'runButton.short.PccMin': 'Pcc min N-1',
+    'runButton.quota': '{current}/{max} {current, plural, one {calcul} other {calculs}} en cours',
 };
 
 export default messages_fr;

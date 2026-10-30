@@ -70,6 +70,7 @@ export function LoadCreationDialog({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<LoadCreationDialogProps>) {
@@ -151,6 +152,7 @@ export function LoadCreationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={loadCreationFormSchema}
             isNodeBuilt={isNodeBuilt(currentNode)}
             {...formMethods}

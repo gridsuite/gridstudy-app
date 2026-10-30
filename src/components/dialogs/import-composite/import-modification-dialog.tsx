@@ -6,6 +6,7 @@
  */
 
 import { FormattedMessage, useIntl } from 'react-intl';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import {
     CheckboxInput,
     CustomFormProvider,
@@ -14,11 +15,9 @@ import {
     DndColumnType,
     DndTable,
     ElementType,
-    PARAM_DEVELOPER_MODE,
-    snackWithFallback,
     TreeViewFinderNodeProps,
-    useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { useSnackForbiddenByShared } from 'hooks/use-snack-forbidden-by-shared';
 import { type CompositesToBeInserted, insertCompositeModifications } from '../../../services/study';
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -47,7 +46,6 @@ import { ACTION, IS_SHARED, SELECTED_MODIFICATIONS } from '../../utils/field-con
 import * as yup from 'yup';
 import { UUID } from 'node:crypto';
 import InsertNameCell from './insert-name-cell';
-import { useParameterState } from '../parameters/use-parameters-state';
 
 /**
  * Dialog to select composite network modifications and append them to the current node.
@@ -85,16 +83,11 @@ const emptyFormData: FormData = {
 
 interface SharedCellProps {
     rowIndex: number;
-    disabled: boolean;
 }
 
-function SharedCell({ rowIndex, disabled }: Readonly<SharedCellProps>) {
+function SharedCell({ rowIndex }: Readonly<SharedCellProps>) {
     return (
-        <CheckboxInput
-            name={`${SELECTED_MODIFICATIONS}.${rowIndex}.${IS_SHARED}`}
-            label={'importComposites.shared'}
-            formProps={{ disabled }}
-        />
+        <CheckboxInput name={`${SELECTED_MODIFICATIONS}.${rowIndex}.${IS_SHARED}`} label={'importComposites.shared'} />
     );
 }
 
@@ -132,7 +125,7 @@ const STEP_ORGANIZATION = 1;
 
 const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModificationDialogProps>): JSX.Element => {
     const intl = useIntl();
-    const { snackError } = useSnackMessage();
+    const snackForbiddenByShared = useSnackForbiddenByShared();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
@@ -158,7 +151,6 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
     const selectedModifications: SelectedComposite[] = watch(SELECTED_MODIFICATIONS);
     const isInsertMode = action === CompositeModificationAction.INSERT;
     const isNextDisabled = selectedModifications.length === 0;
-    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     // useFieldArray — consumed by DndTable
     const useFieldArrayOutput = useFieldArray({
@@ -175,9 +167,9 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             editable: true,
             width: '25%',
             type: DndColumnType.CUSTOM,
-            component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} disabled={!isDeveloperMode} />,
+            component: (rowIndex: number) => <SharedCell rowIndex={rowIndex} />,
         }),
-        [isDeveloperMode]
+        []
     );
 
     // SPLIT mode — name is read-only, drag-and-drop only, cannot be shared
@@ -270,11 +262,11 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
             description: m.description,
         }));
         insertCompositeModifications(studyUuid, currentNode.id, modificationsToInsert, action).catch((error) =>
-            snackWithFallback(snackError, error, { headerId: 'importComposites.error' })
+            snackForbiddenByShared(error, 'importComposites.error')
         );
 
         handleClose();
-    }, [studyUuid, currentNode, isValid, selectedModifications, action, handleClose, snackError]);
+    }, [studyUuid, currentNode, isValid, selectedModifications, action, handleClose, snackForbiddenByShared]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -374,7 +366,7 @@ const ImportModificationDialog = ({ open, onClose }: Readonly<ImportModification
                 <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box>
                         {activeStep === STEP_ORGANIZATION && (
-                            <Button onClick={handlePrevious}>
+                            <Button variant="outlined" onClick={handlePrevious} startIcon={<ChevronLeftIcon />}>
                                 <FormattedMessage id="button.previous" />
                             </Button>
                         )}

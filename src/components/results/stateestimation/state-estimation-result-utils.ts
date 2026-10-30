@@ -8,6 +8,7 @@
 import { IntlShape } from 'react-intl';
 import { ColDef } from 'ag-grid-community';
 import {
+    BooleanCellRenderer,
     CustomAggridComparatorFilter,
     makeAgGridCustomHeaderColumn,
     SortParams,
@@ -18,11 +19,17 @@ import {
     MeasurementInformationResult,
     MeasurementInformationResultDto,
     MeasurementType,
-    Bounds,
     QualityCriterionResult,
     ValidityType,
 } from './state-estimation-result.type';
-import { ColumnContext, numericFilterParams, textFilterParams } from '../../../types/custom-aggrid-types';
+import {
+    ColumnContext,
+    FILTER_DATA_TYPES,
+    numericFilterParams,
+    textFilterParams,
+} from '../../../types/custom-aggrid-types';
+import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
+import { booleanFilterParams } from '../../custom-aggrid/custom-aggrid-filters/boolean-filter-params';
 import {
     STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_RESULT_SORT_STORE,
@@ -70,6 +77,14 @@ export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): Co
 
     const getEnumLabel = (value: string) => (value ? intl.formatMessage({ id: value, defaultMessage: value }) : '');
 
+    const createNumericColumn = (field: string, headerId: string): ColDef =>
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: headerId }),
+            colId: field,
+            field,
+            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
+        });
+
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Equipment' }),
@@ -95,33 +110,26 @@ export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): Co
             sortParams,
             filterParams
         ),
+        createNumericColumn('currentValue', 'Value'),
+        createNumericColumn('estimatedValue', 'EstimatedValue'),
+        createNumericColumn('differenceValue', 'DifferenceValue'),
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Value' }),
-            colId: 'currentValue',
-            field: 'currentValue',
-            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
+            headerName: intl.formatMessage({ id: 'OutOfBound' }),
+            colId: 'outOfBound',
+            field: 'outOfBound',
+            filterParams: booleanFilterParams,
+            context: {
+                sortParams,
+                filterComponent: CustomAggridBooleanFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.BOOLEAN,
+                        ...filterParams,
+                    },
+                },
+            },
+            cellRenderer: BooleanCellRenderer,
         }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'EstimatedValue' }),
-            colId: 'estimatedValue',
-            field: 'estimatedValue',
-            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'DifferenceValue' }),
-            colId: 'differenceValue',
-            field: 'differenceValue',
-            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
-        }),
-        createEnumColumn(
-            'outOfBound',
-            'OutOfBound',
-            Object.values(Bounds),
-            getEnumLabel,
-            intl,
-            sortParams,
-            filterParams
-        ),
     ];
 };
 
@@ -206,7 +214,7 @@ export function mapMeasurementResults(
             currentValue: measurementInformationResult.currentValue,
             estimatedValue: measurementInformationResult.estimatedValue,
             differenceValue: measurementInformationResult.differenceValue,
-            outOfBound: measurementInformationResult.outOfBound ? Bounds.OUT_OF_BOUNDS : Bounds.IN_BOUNDS,
+            outOfBound: measurementInformationResult.outOfBound,
         };
     });
 }

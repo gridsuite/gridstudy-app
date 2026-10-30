@@ -487,7 +487,9 @@ export type TreeModelUpdateEventData =
     | NodesColumnPositionsChangedEventData
     | NodesDeletedEventData
     | NodesUpdatedEventData
-    | NodeEditedEventData;
+    | NodeEditedEventData
+    | ModificationsUpdateFinishedEventData
+    | ModificationsDeleteFinishedEventData;
 
 export interface ModificationsUpdateFinishedEventData extends CommonStudyEventData {
     headers: ModificationsUpdateFinishedEventDataHeaders;

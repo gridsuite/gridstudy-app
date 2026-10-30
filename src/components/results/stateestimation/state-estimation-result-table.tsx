@@ -37,6 +37,7 @@ import {
 
 const StateEstimationResultTable: FunctionComponent<StateEstimationResultTableProps> = ({
     result,
+    measurementRows,
     isLoadingResult,
     columnDefs,
     tableName,
@@ -96,11 +97,11 @@ const StateEstimationResultTable: FunctionComponent<StateEstimationResultTablePr
     const rowsToShow = (() => {
         switch (tableName) {
             case STATEESTIMATION_MEASUREMENTS:
-                return result.measurementInformationResults ?? [];
+                return measurementRows ?? result?.measurementInformationResults ?? [];
             case STATEESTIMATION_QUALITY_CRITERION:
-                return result.qualityCriterionResults ?? [];
+                return result?.qualityCriterionResults ?? [];
             case STATEESTIMATION_QUALITY_PER_REGION:
-                return result.qualityPerRegionResults ?? [];
+                return result?.qualityPerRegionResults ?? [];
             default:
                 return [];
         }
@@ -125,6 +126,7 @@ const StateEstimationResultTable: FunctionComponent<StateEstimationResultTablePr
                 onGridReady={handleOnGridReady}
                 exportCsvResetKey={exportCsvResetKey}
                 language={language}
+                formattedExport={true}
             />
         </>
     );

@@ -16,7 +16,13 @@ import { type AppState, type NodeSelectionForCopy } from 'redux/reducer.type';
 import type { UUID } from 'node:crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
-import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType, NodeType } from '../tree-node.type';
+import {
+    CurrentTreeNode,
+    isSecurityModificationNode,
+    ModificationNode,
+    NetworkModificationNodeType,
+    NodeType,
+} from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
 import { Divider } from '@mui/material';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
@@ -55,6 +61,7 @@ interface CreateNodeMenuProps {
     handleSecuritySequenceCreation: (element: CurrentTreeNode) => void;
     handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
     handleClose: () => void;
+    handleUnshareAllReferencesInStudy: () => void;
     handleBuildNode: (element: CurrentTreeNode) => void;
     handleUnbuildNode: (element: CurrentTreeNode) => void;
     handleExportCaseOnNode: (node: CurrentTreeNode) => void;
@@ -76,6 +83,7 @@ interface CreateNodeMenuProps {
 
 const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
+    UNSHARE_STUDY: 'UNSHARE_STUDY',
     REMOVE_SUBTREE: 'REMOVE_SUBTREE',
     NO_ACTION: 'NO_ACTION',
 };
@@ -119,6 +127,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     handleSecuritySequenceCreation,
     handleNodeRemoval,
     handleExportCaseOnNode,
+    handleUnshareAllReferencesInStudy,
     handleExportNodeInfos,
     activeNode,
     nodeSelectionForCopy,
@@ -142,6 +151,20 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
+
+    function hasModificationReferences(): boolean {
+        if (!treeModel?.treeNodes) {
+            return false;
+        }
+        return treeModel.treeNodes.some((node) => {
+            // only modification nodes may contain references
+            if (node.type === NodeType.NETWORK_MODIFICATION) {
+                const modificationNode = node as ModificationNode;
+                return modificationNode.data?.hasReferencedModifications === true;
+            }
+            return false;
+        });
+    }
 
     function buildNode() {
         handleBuildNode(activeNode);
@@ -198,6 +221,10 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     function exportCaseOnNode() {
         handleExportCaseOnNode(activeNode);
         handleClose();
+    }
+
+    function unshareAllReferencesInStudy() {
+        setNodeAction(NodeActions.UNSHARE_STUDY);
     }
 
     function exportNodeInfos() {
@@ -528,6 +555,13 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             hidden: !isDeveloperMode,
             withDivider: true,
         },
+        UNSHARE: {
+            onRoot: true,
+            action: () => unshareAllReferencesInStudy(),
+            id: 'unshareReferencesInStudy',
+            disabled: activeNode?.type !== NodeType.ROOT || !hasModificationReferences(),
+            hidden: activeNode?.type !== NodeType.ROOT,
+        },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,
             action: () => exportCaseOnNode(),
@@ -563,9 +597,16 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         [intl, activeNode?.type]
     );
 
+    const ACTION_TO_CONFIRMATION_MESSAGE: Record<string, string> = {
+        [NodeActions.REMOVE_SUBTREE]: 'deleteSubTreeConfirmation',
+        [NodeActions.UNSHARE_STUDY]: 'unshareStudyConfirmation',
+        [NodeActions.REMOVE_NODE]: 'deleteNodeConfirmation',
+        [NodeActions.NO_ACTION]: 'deleteNodeConfirmation',
+    };
+
     const content = intl.formatMessage(
         {
-            id: nodeAction === NodeActions.REMOVE_SUBTREE ? 'deleteSubTreeConfirmation' : 'deleteNodeConfirmation',
+            id: ACTION_TO_CONFIRMATION_MESSAGE[nodeAction] ?? 'deleteNodeConfirmation',
         },
         {
             nodeName: activeNode?.data?.label,
@@ -580,11 +621,21 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     const handleOnValidate = useCallback(() => {
         if (nodeAction === NodeActions.REMOVE_NODE) {
             handleNodeRemoval(activeNode);
+        }
+        if (nodeAction === NodeActions.UNSHARE_STUDY) {
+            handleUnshareAllReferencesInStudy();
         } else {
             handleRemovalSubtree(activeNode);
         }
         handleOnClose();
-    }, [handleOnClose, handleNodeRemoval, handleRemovalSubtree, activeNode, nodeAction]);
+    }, [
+        handleOnClose,
+        handleNodeRemoval,
+        handleRemovalSubtree,
+        handleUnshareAllReferencesInStudy,
+        activeNode,
+        nodeAction,
+    ]);
 
     return (
         <>
@@ -604,7 +655,9 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                 <CustomDialog
                     content={content}
                     onValidate={handleOnValidate}
-                    validateButtonLabel="button.delete"
+                    validateButtonLabel={
+                        nodeAction === NodeActions.UNSHARE_STUDY ? 'unshareReferencesInStudy' : 'button.delete'
+                    }
                     onClose={handleOnClose}
                 />
             )}

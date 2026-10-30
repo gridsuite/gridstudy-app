@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Badge, Button, ButtonGroup, CircularProgress, Menu, MenuItem, Tooltip } from '@mui/material';
+import { Badge, Button, ButtonGroup, Chip, CircularProgress, Menu, MenuItem, Tooltip } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import StopIcon from '@mui/icons-material/Stop';
 import DoneIcon from '@mui/icons-material/Done';
@@ -14,7 +14,24 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
 import { AppState } from 'redux/reducer.type';
-import { type MuiStyles, RunningStatus } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles, RunningStatus, type SxStyle, type UserQuotaState } from '@gridsuite/commons-ui';
+
+type BadgeColor = 'success' | 'error' | 'warning';
+
+const badgeColorStyle =
+    (color: BadgeColor): SxStyle =>
+    (theme) => {
+        const { light, main, dark } = theme.palette[color];
+        // keep main for dark success
+        const darkModeColor = color === 'success' ? main : dark;
+        const backgroundColor = theme.palette.mode === 'light' ? light : darkModeColor;
+        return {
+            '& .MuiBadge-badge': {
+                backgroundColor,
+                color: theme.palette.getContrastText(backgroundColor),
+            },
+        };
+    };
 
 const styles = {
     badge: (theme) => ({
@@ -25,12 +42,18 @@ const styles = {
             boxShadow: theme.shadows[2],
         },
     }),
-    // a running or already done computation keeps the button look even when it can't be clicked
+    // a running or already done computation, or one at its quota, keeps the button look even when it can't be clicked
     notClickable: {
         pointerEvents: 'none',
     },
     menuPaper: {
         marginTop: 0.5,
+    },
+    menuItem: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        gap: 0.5,
     },
 } as const satisfies MuiStyles;
 
@@ -39,6 +62,7 @@ interface SplitButtonProps {
     buttonDisabled?: boolean;
     selectionDisabled?: boolean;
     computationStopped: boolean;
+    reachedQuotas?: (UserQuotaState | undefined)[];
     text: string;
     options: string[];
     selectedIndex: number;
@@ -52,6 +76,7 @@ const SplitButton = ({
     buttonDisabled = false,
     selectionDisabled = false,
     computationStopped,
+    reachedQuotas = [],
     text,
     options,
     selectedIndex,
@@ -89,6 +114,16 @@ const SplitButton = ({
         }
     };
 
+    // a running computation counts in the quota, so it's not a warning for it
+    const showQuota = !isRunning && reachedQuotas[selectedIndex] != null;
+
+    const getBadgeColor = (): BadgeColor => {
+        if (showQuota) {
+            return 'warning';
+        }
+        return runningStatus === RunningStatus.FAILED ? 'error' : 'success';
+    };
+
     const stopDisabled =
         computationStarting || // disable if fetch starting a computation is pending
         computationStopped; // disable if already stopped once
@@ -97,9 +132,9 @@ const SplitButton = ({
         <>
             <ButtonGroup variant="contained" ref={anchorRef}>
                 <Badge
-                    color={runningStatus === RunningStatus.FAILED ? 'error' : 'success'}
-                    badgeContent={getResultBadge(runningStatus)}
-                    sx={styles.badge}
+                    badgeContent={showQuota ? 0 : getResultBadge(runningStatus)}
+                    showZero
+                    sx={mergeSx(styles.badge, badgeColorStyle(getBadgeColor()))}
                 >
                     <Button
                         startIcon={
@@ -109,7 +144,7 @@ const SplitButton = ({
                                 <PlayIcon />
                             )
                         }
-                        disabled={buttonDisabled && runningStatus === RunningStatus.IDLE}
+                        disabled={buttonDisabled && runningStatus === RunningStatus.IDLE && !showQuota}
                         aria-disabled={buttonDisabled}
                         onClick={buttonDisabled ? undefined : handleClick}
                         sx={buttonDisabled ? styles.notClickable : undefined}
@@ -161,8 +196,16 @@ const SplitButton = ({
                         selected={index === selectedIndex}
                         divider={index === 0}
                         onClick={() => handleMenuItemClick(index)}
+                        sx={styles.menuItem}
                     >
                         {option}
+                        {reachedQuotas[index] && (
+                            <Chip
+                                size="small"
+                                color="warning"
+                                label={<FormattedMessage id="runButton.quota" values={reachedQuotas[index]} />}
+                            />
+                        )}
                     </MenuItem>
                 ))}
             </Menu>
