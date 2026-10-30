@@ -6,10 +6,11 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchJson, backendFetchText, type GlobalFilters } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { StateEstimationParameters } from '../../components/dialogs/parameters/state-estimation/state-estimation-parameters-utils';
 import { LogicalControlsResultDto } from '../../components/results/stateestimation/logicalcontrols/logicalControls.types';
+import type { MeasurementInformationResultDto } from '../../components/results/stateestimation/state-estimation-result.type';
 
 export function startStateEstimation(
     studyUuid: UUID,
@@ -66,6 +67,30 @@ export function fetchStateEstimationResult(studyUuid: UUID, currentNodeUuid: UUI
         currentNodeUuid,
         currentRootNetworkUuid
     )}/state-estimation/result`;
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchStateEstimationMeasurements(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    globalFilters?: GlobalFilters
+): Promise<MeasurementInformationResultDto[] | null> {
+    console.info(
+        `Fetching state estimation measurements on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
+    );
+    const urlSearchParams = new URLSearchParams();
+    if (globalFilters) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
+    }
+    const query = urlSearchParams.toString();
+    const queryString = query ? `?${query}` : '';
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/state-estimation/measurements${queryString}`;
     console.debug(url);
     return backendFetchJson(url);
 }
