@@ -27,6 +27,7 @@ import {
     LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS,
     LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED,
 } from '../../../utils/store-sort-filter-fields';
+import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
 import { LimitType, LogicalControlsResultRow, MeasurementType, StatusType } from './logical-controls-result.type';
 
 interface TableParams {
@@ -148,8 +149,14 @@ const makeBusIdentifierColumn = (intl: IntlShape, tableParams: TableParams): Col
 const makeEquipmentIdentifierColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
     makeTextColumn(intl, tableParams, 'EquipmentIdentifier', 'equipmentIdentifier');
 
-const makeVoltageLevelNameColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
-    makeTextColumn(intl, tableParams, 'VoltageLevelName', 'voltageLevelName');
+const makeVoltageLevelNameColumn = (
+    intl: IntlShape,
+    tableParams: TableParams,
+    voltageLevelRenderer: SubjectIdRendererType
+): ColDef => ({
+    ...makeTextColumn(intl, tableParams, 'VoltageLevelName', 'voltageLevelName'),
+    cellRenderer: voltageLevelRenderer,
+});
 
 const makeNominalVoltageColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
     makeNumericColumn(intl, tableParams, 'NominalVoltage', 'nominalVoltage', 0);
@@ -170,11 +177,14 @@ const makeValueColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
 const makeDeviationColumn = (intl: IntlShape, tableParams: TableParams): ColDef =>
     makeNumericColumn(intl, tableParams, 'Deviation', 'deviation');
 
-export const logicalControlsBalancesColumnsDefinition = (intl: IntlShape): ColDef[] => {
+export const logicalControlsBalancesColumnsDefinition = (
+    intl: IntlShape,
+    voltageLevelRenderer: SubjectIdRendererType
+): ColDef[] => {
     const tableParams = createTableParams(LOGICAL_CONTROLS_BALANCES);
     return [
         makeBusIdentifierColumn(intl, tableParams),
-        makeVoltageLevelNameColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams, voltageLevelRenderer),
         makeNominalVoltageColumn(intl, tableParams),
         makeNumericColumn(intl, tableParams, 'ActiveBalance', 'activeBalance'),
         makeNumericColumn(intl, tableParams, 'ReactiveBalance', 'reactiveBalance'),
@@ -183,11 +193,14 @@ export const logicalControlsBalancesColumnsDefinition = (intl: IntlShape): ColDe
     ];
 };
 
-export const logicalControlsInvalidMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => {
+export const logicalControlsInvalidMeasurementsColumnsDefinition = (
+    intl: IntlShape,
+    voltageLevelRenderer: SubjectIdRendererType
+): ColDef[] => {
     const tableParams = createTableParams(LOGICAL_CONTROLS_NON_ZERO_MEASUREMENTS_ON_DISCONNECTED);
     return [
         makeEquipmentIdentifierColumn(intl, tableParams),
-        makeVoltageLevelNameColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams, voltageLevelRenderer),
         makeNominalVoltageColumn(intl, tableParams),
         makeMeasurementTypeColumn(intl, tableParams),
         makeEnumColumn(intl, tableParams, 'StatusType', 'statusType', Object.values(StatusType), 'StatusType'),
@@ -195,21 +208,27 @@ export const logicalControlsInvalidMeasurementsColumnsDefinition = (intl: IntlSh
     ];
 };
 
-export const logicalControlsNullMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => {
+export const logicalControlsNullMeasurementsColumnsDefinition = (
+    intl: IntlShape,
+    voltageLevelRenderer: SubjectIdRendererType
+): ColDef[] => {
     const tableParams = createTableParams(LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED);
     return [
         makeEquipmentIdentifierColumn(intl, tableParams),
-        makeVoltageLevelNameColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams, voltageLevelRenderer),
         makeNominalVoltageColumn(intl, tableParams),
         makeMeasurementTypeColumn(intl, tableParams),
     ];
 };
 
-export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => {
+export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (
+    intl: IntlShape,
+    voltageLevelRenderer: SubjectIdRendererType
+): ColDef[] => {
     const tableParams = createTableParams(LOGICAL_CONTROLS_ORIGIN_EXTREMITY_DEVIATIONS);
     return [
         makeEquipmentIdentifierColumn(intl, tableParams),
-        makeVoltageLevelNameColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams, voltageLevelRenderer),
         makeNominalVoltageColumn(intl, tableParams),
         makeMeasurementTypeColumn(intl, tableParams),
         makeNumericColumn(intl, tableParams, 'OriginMeasurement', 'originMeasurement'),
@@ -218,11 +237,14 @@ export const logicalControlsOriginExtremityDeviationsColumnsDefinition = (intl: 
     ];
 };
 
-export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: IntlShape): ColDef[] => {
+export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (
+    intl: IntlShape,
+    voltageLevelRenderer: SubjectIdRendererType
+): ColDef[] => {
     const tableParams = createTableParams(LOGICAL_CONTROLS_OUT_OF_BOUNDS_MEASUREMENTS);
     return [
         makeEquipmentIdentifierColumn(intl, tableParams),
-        makeVoltageLevelNameColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams, voltageLevelRenderer),
         makeNominalVoltageColumn(intl, tableParams),
         makeEnumColumn(intl, tableParams, 'ThresholdType', 'limitType', Object.values(LimitType), 'LimitType'),
         makeNumericColumn(intl, tableParams, 'Threshold', 'threshold'),
@@ -231,11 +253,14 @@ export const logicalControlsOutOfBoundsMeasurementsColumnsDefinition = (intl: In
     ];
 };
 
-export const logicalControlsVoltageDeviationsColumnsDefinition = (intl: IntlShape): ColDef[] => {
+export const logicalControlsVoltageDeviationsColumnsDefinition = (
+    intl: IntlShape,
+    voltageLevelRenderer: SubjectIdRendererType
+): ColDef[] => {
     const tableParams = createTableParams(LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS);
     return [
         makeBusIdentifierColumn(intl, tableParams),
-        makeVoltageLevelNameColumn(intl, tableParams),
+        makeVoltageLevelNameColumn(intl, tableParams, voltageLevelRenderer),
         makeNominalVoltageColumn(intl, tableParams),
         makeTextColumn(intl, tableParams, 'MinBusbarSection', 'minBusbarSection'),
         makeNumericColumn(intl, tableParams, 'MinBusbarSectionValue', 'minBusbarSectionValue'),

@@ -5,13 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { ICellRendererParams } from 'ag-grid-community';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { ComputingType, RunningStatus, TableType } from '@gridsuite/commons-ui';
+import { ComputingType, OverflowableText, RunningStatus, TableType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
 import { useNodeData } from 'components/use-node-data';
 import { fetchLogicalControlsResult } from '../../../services/study/state-estimation';
@@ -37,6 +39,9 @@ import {
     LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS,
     LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED,
 } from '../../../utils/store-sort-filter-fields';
+import { resultsStyles } from '../common/utils';
+import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
+import { PanelType } from 'components/workspace/types/workspace.types';
 
 const LOGICAL_CONTROLS_TABS = [
     {
@@ -93,7 +98,28 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
     const selectedTab = LOGICAL_CONTROLS_TABS[tabIndex];
     useComputationColumnFilters(TableType.LogicalControls, selectedTab.tableName);
 
-    const columnDefs = useMemo(() => selectedTab.columnsDefinition(intl), [intl, selectedTab]);
+    const { openSLD } = useWorkspacePanelActions();
+
+    const VoltageLevelRenderer = useCallback(
+        ({ value }: ICellRendererParams) => {
+            if (value) {
+                return (
+                    <Button
+                        sx={resultsStyles.sldLink}
+                        onClick={() => openSLD({ equipmentId: value, panelType: PanelType.SLD_VOLTAGE_LEVEL })}
+                    >
+                        <OverflowableText text={value} />
+                    </Button>
+                );
+            }
+        },
+        [openSLD]
+    );
+
+    const columnDefs = useMemo(
+        () => selectedTab.columnsDefinition(intl, VoltageLevelRenderer),
+        [intl, selectedTab, VoltageLevelRenderer]
+    );
 
     const handleTabChange = (_event: SyntheticEvent, newTabIndex: number) => {
         setTabIndex(newTabIndex);
