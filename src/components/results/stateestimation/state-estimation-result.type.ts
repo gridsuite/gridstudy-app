@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ColDef } from 'ag-grid-community';
+import { ColDef, GridReadyEvent } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
 import type { UUID } from 'node:crypto';
-import { Key } from 'react';
+import { Key, RefObject } from 'react';
 
 export interface QualityCriterionResult {
     type: string;
@@ -89,6 +90,9 @@ export interface StateEstimationResultTableProps extends Partial<StateEstimation
     exportCsvResetKey: Key;
     filter?: boolean;
     sortable?: boolean;
+    // to access the grid from outside the table (e.g. to count the displayed rows)
+    gridRef?: RefObject<AgGridReact | null>;
+    onGridReady?: (params: GridReadyEvent) => void;
 }
 
 export interface StateEstimationStatusResultProps {

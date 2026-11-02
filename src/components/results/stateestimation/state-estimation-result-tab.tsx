@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -27,7 +27,9 @@ import {
     TableType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { GridApi, GridReadyEvent } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
 import StateEstimationResultTable from './state-estimation-result-table';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import {
@@ -49,6 +51,10 @@ import { LogicalControlsResult } from './logicalcontrols/logical-controls-result
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { StateEstimationMeasurements } from './state-estimation-measurements';
+import { useFilteredRowCounterInfo } from '../../utils/row-counter/use-filtered-row-counter';
+import { FilteredRowCounter } from '../../utils/row-counter/filtered-row-counter';
+import { clearSelectedGlobalFilters } from '../../../redux/actions';
+import { persistComputationColumnFilter } from '../common/column-filter/persist-computation-column-filter';
 
 const GLOBAL_FILTER_CATEGORIES = [
     GlobalFilterType.VOLTAGE_LEVEL,
@@ -78,6 +84,10 @@ const styles = {
     emptySpace: {
         flexGrow: 1,
     },
+    rowCounter: {
+        display: 'flex',
+        alignItems: 'center',
+    },
     computeLogicalControlsButton: (theme) => ({
         display: 'flex',
         alignItems: 'center',
@@ -91,6 +101,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     currentRootNetworkUuid,
 }) => {
     const intl = useIntl();
+    const dispatch = useDispatch();
 
     const [tabIndex, setTabIndex] = useState(0);
     const stateEstimationStatus = useSelector(
@@ -109,7 +120,10 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         invalidations: stateEstimationResultInvalidations,
     });
 
-    useComputationColumnFilters(TableType.StateEstimation, STATEESTIMATION_MEASUREMENTS);
+    const { filters: measurementsColumnsFilters } = useComputationColumnFilters(
+        TableType.StateEstimation,
+        STATEESTIMATION_MEASUREMENTS
+    );
     const globalFilters = useComputationGlobalFilters(TableType.StateEstimation);
 
     const stateEstimationResultColumns = useMemo(() => {
@@ -147,6 +161,48 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             ),
         };
     }, [stateEstimationStatus, stateEstimationResult, intl]);
+
+    const measurementsGridRef = useRef<AgGridReact>(null);
+    const [measurementsGridApi, setMeasurementsGridApi] = useState<GridApi>();
+    const [isLoadingMeasurements, setIsLoadingMeasurements] = useState(true);
+    const handleMeasurementsGridReady = useCallback((params: GridReadyEvent) => setMeasurementsGridApi(params.api), []);
+
+    // measurements are filtered by the global filters on the server side: the unfiltered count comes from the full result
+    const measurementsRowCounterInfos = useFilteredRowCounterInfo({
+        gridRef: measurementsGridRef,
+        globalFilters,
+        columnsFilters: measurementsColumnsFilters,
+        unfilteredRowCount: result.measurementInformationResults?.length,
+        disabled: false,
+        isDataPending: isLoadingMeasurements || isLoadingResult,
+    });
+    const { registerRowCounterEvents } = measurementsRowCounterInfos;
+
+    useEffect(() => {
+        if (measurementsGridApi && !measurementsGridApi.isDestroyed()) {
+            registerRowCounterEvents({ api: measurementsGridApi });
+        }
+    }, [measurementsGridApi, registerRowCounterEvents]);
+
+    const resetMeasurementsFilters = useCallback(() => {
+        dispatch(clearSelectedGlobalFilters(TableType.StateEstimation, TableType.StateEstimation));
+        const onError = (error: unknown) => snackWithFallback(snackError, error);
+        // columns are reset one after the other, so that their notifications refresh the filters in order
+        [...new Set(measurementsColumnsFilters.map((filter) => filter.column))].reduce<Promise<unknown>>(
+            (previousReset, colId) =>
+                previousReset.then(() =>
+                    persistComputationColumnFilter(
+                        studyUuid,
+                        TableType.StateEstimation,
+                        STATEESTIMATION_MEASUREMENTS,
+                        colId,
+                        undefined,
+                        onError
+                    )
+                ),
+            Promise.resolve()
+        );
+    }, [dispatch, measurementsColumnsFilters, snackError, studyUuid]);
 
     const renderReportViewer = () => {
         return (
@@ -201,6 +257,12 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                         genericFiltersStrictMode={true}
                         tableType={TableType.StateEstimation}
                     />
+                    <Box sx={styles.rowCounter}>
+                        <FilteredRowCounter
+                            rowCounterInfos={measurementsRowCounterInfos}
+                            onResetFilters={resetMeasurementsFilters}
+                        />
+                    </Box>
                 </Box>
                 <Box sx={styles.emptySpace}></Box>
             </Box>
@@ -213,6 +275,9 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     rootNetworkUuid={currentRootNetworkUuid}
                     globalFilters={globalFilters}
                     columnDefs={stateEstimationResultColumns}
+                    gridRef={measurementsGridRef}
+                    onGridReady={handleMeasurementsGridReady}
+                    onLoadingChange={setIsLoadingMeasurements}
                 />
             )}
             {tabIndex === 2 && (
