@@ -29,7 +29,6 @@ const styles = {
 
 export type FilteredRowCounterProps = {
     rowCounterInfos: UseFilteredRowCounterInfoReturn;
-    // resets every filter taken into account by the counter (global filters and columns filters)
     onResetFilters: () => void;
 };
 

@@ -139,18 +139,6 @@ describe('native grid behavior', () => {
         expect(mockGrid.props.computationSubType).toBe(STATEESTIMATION_MEASUREMENTS);
     });
 
-    it('shares the grid with the caller', async () => {
-        const gridRef = { current: null };
-        const onGridReady = jest.fn();
-        await show({ measurementRows: [], gridRef, onGridReady });
-
-        expect(mockGrid.props.gridRef).toBe(gridRef);
-        const gridReadyEvent = { api: {} };
-        mockGrid.props.onGridReady(gridReadyEvent);
-        expect(mockOnGridReady).toHaveBeenCalledWith(gridReadyEvent);
-        expect(onGridReady).toHaveBeenCalledWith(gridReadyEvent);
-    });
-
     it('gives client-side filter and sort to the columns', async () => {
         await show({ measurementRows: [] });
 

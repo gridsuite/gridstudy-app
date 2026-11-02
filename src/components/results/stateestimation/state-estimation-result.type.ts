@@ -90,7 +90,6 @@ export interface StateEstimationResultTableProps extends Partial<StateEstimation
     exportCsvResetKey: Key;
     filter?: boolean;
     sortable?: boolean;
-    // to access the grid from outside the table (e.g. to count the displayed rows)
     gridRef?: RefObject<AgGridReact | null>;
     onGridReady?: (params: GridReadyEvent) => void;
 }

@@ -167,7 +167,6 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const [isLoadingMeasurements, setIsLoadingMeasurements] = useState(true);
     const handleMeasurementsGridReady = useCallback((params: GridReadyEvent) => setMeasurementsGridApi(params.api), []);
 
-    // measurements are filtered by the global filters on the server side: the unfiltered count comes from the full result
     const measurementsRowCounterInfos = useFilteredRowCounterInfo({
         gridRef: measurementsGridRef,
         globalFilters,
@@ -187,21 +186,19 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const resetMeasurementsFilters = useCallback(() => {
         dispatch(clearSelectedGlobalFilters(TableType.StateEstimation, TableType.StateEstimation));
         const onError = (error: unknown) => snackWithFallback(snackError, error);
-        // columns are reset one after the other, so that their notifications refresh the filters in order
-        [...new Set(measurementsColumnsFilters.map((filter) => filter.column))].reduce<Promise<unknown>>(
-            (previousReset, colId) =>
-                previousReset.then(() =>
-                    persistComputationColumnFilter(
-                        studyUuid,
-                        TableType.StateEstimation,
-                        STATEESTIMATION_MEASUREMENTS,
-                        colId,
-                        undefined,
-                        onError
-                    )
-                ),
-            Promise.resolve()
-        );
+        const resetColumnsFilters = async () => {
+            for (const colId of new Set(measurementsColumnsFilters.map((filter) => filter.column))) {
+                await persistComputationColumnFilter(
+                    studyUuid,
+                    TableType.StateEstimation,
+                    STATEESTIMATION_MEASUREMENTS,
+                    colId,
+                    undefined,
+                    onError
+                );
+            }
+        };
+        resetColumnsFilters().catch(onError);
     }, [dispatch, measurementsColumnsFilters, snackError, studyUuid]);
 
     const renderReportViewer = () => {

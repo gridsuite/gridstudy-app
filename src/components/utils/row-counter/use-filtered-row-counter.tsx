@@ -24,8 +24,7 @@ type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact | null>;
     globalFilters: GlobalFilter[];
     columnsFilters: FilterConfig[] | undefined;
-    // number of rows before any filter is applied. When omitted, the grid row data size is used, which is only right
-    // when every filter (global ones included) is applied by the grid itself.
+    // to be given when the global filters are applied outside the grid: number of rows before any filter is applied
     unfilteredRowCount?: number;
     disabled: boolean;
     // true while the grid data is not yet trustworthy: the global filter is still being evaluated and/or the
@@ -60,8 +59,8 @@ export function useFilteredRowCounterInfo({
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const totalRows = unfilteredRowCount ?? gridTotalRows;
-    // global filters applied outside the grid (e.g. by the server) are not reported by the grid
-    const isAnyFilterPresent = isAnyGridFilterPresent || buildValidGlobalFilters(globalFilters) != null;
+    const isAnyFilterPresent =
+        isAnyGridFilterPresent || (unfilteredRowCount !== undefined && buildValidGlobalFilters(globalFilters) != null);
 
     const isDataPendingRef = useRef(isDataPending);
 
