@@ -165,6 +165,11 @@ export const handleTreeModelUpdate = (
         case NotificationType.NODE_EDITED:
             fetchAndDispatchUpdatedNodes(dispatch, studyUuid, rootNetworkUuid, [eventData.headers.node]);
             break;
+        // the node may have gained or lost shared modifications
+        case NotificationType.MODIFICATIONS_UPDATE_FINISHED:
+        case NotificationType.MODIFICATIONS_DELETE_FINISHED:
+            fetchAndDispatchUpdatedNodes(dispatch, studyUuid, rootNetworkUuid, [eventData.headers.parentNode]);
+            break;
         default:
             break;
     }

@@ -38,6 +38,7 @@ interface DeleteAttachingLineDialogProps {
     currentRootNetworkUuid: UUID;
     editData?: DeleteAttachingLineDto;
     isUpdate: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus: string;
     onClose: () => void;
     onValidated?: () => void;
@@ -59,6 +60,7 @@ const DeleteAttachingLineDialog = ({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: DeleteAttachingLineDialogProps) => {
@@ -111,7 +113,7 @@ const DeleteAttachingLineDialog = ({
     }, [reset]);
 
     return (
-        <CustomFormProvider validationSchema={deleteAttachingLineFormSchema} {...formMethods}>
+        <CustomFormProvider isReadOnly={isReadOnly} validationSchema={deleteAttachingLineFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

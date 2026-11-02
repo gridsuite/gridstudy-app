@@ -59,6 +59,7 @@ export default function GeneratorModificationDialog({
     currentRootNetworkUuid,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<GeneratorModificationDialogProps>) {
@@ -231,6 +232,7 @@ export default function GeneratorModificationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={generatorModificationFormSchema}
             removeOptional={true}
             {...formMethods}

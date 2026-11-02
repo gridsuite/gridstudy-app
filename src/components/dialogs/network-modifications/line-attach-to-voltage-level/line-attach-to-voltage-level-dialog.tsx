@@ -50,6 +50,7 @@ interface LineAttachToVoltageLevelDialogProps {
     currentRootNetworkUuid: UUID;
     editData?: LineAttachToVoltageLevelCreationDto;
     isUpdate: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus?: FetchStatus;
     onClose: () => void;
 }
@@ -70,6 +71,7 @@ const LineAttachToVoltageLevelDialog = ({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: LineAttachToVoltageLevelDialogProps) => {
@@ -204,6 +206,7 @@ const LineAttachToVoltageLevelDialog = ({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         onCreateVoltageLevel={onCreateVoltageLevel}
                         editData={vlEditData}
+                        isReadOnly={isReadOnly}
                         isAttachmentPointModification
                         titleId="SpecifyAttachmentPoint"
                         isUpdate={vlIsUpdate}
@@ -211,7 +214,7 @@ const LineAttachToVoltageLevelDialog = ({
                     />
                 );
             },
-        [currentNode, studyUuid, currentRootNetworkUuid, editDataFetchStatus]
+        [currentNode, studyUuid, currentRootNetworkUuid, editDataFetchStatus, isReadOnly]
     );
 
     const NewVoltageLevelPane: VoltageLevelCreationPaneType = useMemo(
@@ -232,12 +235,13 @@ const LineAttachToVoltageLevelDialog = ({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         onCreateVoltageLevel={onCreateVoltageLevel}
                         editData={vlEditData}
+                        isReadOnly={isReadOnly}
                         isUpdate={vlIsUpdate}
                         editDataFetchStatus={editDataFetchStatus}
                     />
                 );
             },
-        [currentNode, studyUuid, currentRootNetworkUuid, editDataFetchStatus]
+        [currentNode, studyUuid, currentRootNetworkUuid, editDataFetchStatus, isReadOnly]
     );
 
     const AttachedLinePane: AttachedLinePaneType = useMemo(
@@ -250,6 +254,7 @@ const LineAttachToVoltageLevelDialog = ({
             }: ComponentProps<AttachedLinePaneType>) {
                 return (
                     <LineCreationDialog
+                        isReadOnly={isReadOnly}
                         onClose={onClose}
                         currentNode={currentNode}
                         studyUuid={studyUuid}
@@ -262,7 +267,7 @@ const LineAttachToVoltageLevelDialog = ({
                     />
                 );
             },
-        [currentNode, studyUuid, currentRootNetworkUuid, editDataFetchStatus]
+        [currentNode, studyUuid, currentRootNetworkUuid, editDataFetchStatus, isReadOnly]
     );
 
     const open = useOpenShortWaitFetching({
@@ -271,7 +276,11 @@ const LineAttachToVoltageLevelDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={lineAttachToVoltageLevelCreationFormSchema} {...formMethods}>
+        <CustomFormProvider
+            isReadOnly={isReadOnly}
+            validationSchema={lineAttachToVoltageLevelCreationFormSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

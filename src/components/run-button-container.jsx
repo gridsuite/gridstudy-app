@@ -64,6 +64,7 @@ import {
 } from '../services/study/dynamic-margin-calculation.ts';
 import useDebugSubscription from '../hooks/computation-debug/use-debug-subscription.ts';
 import useDebugNotification from '../hooks/computation-debug/use-debug-notification.ts';
+import useUserQuotaState from '../hooks/use-user-quota-state.ts';
 
 const COMPUTATIONS_WITH_PAGINATION = [
     ComputingType.SECURITY_ANALYSIS,
@@ -106,6 +107,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
     const stateEstimationStatus = useSelector((state) => state.computingStatus[ComputingType.STATE_ESTIMATION]);
     const pccMinStatus = useSelector((state) => state.computingStatus[ComputingType.PCC_MIN]);
+
+    const userQuotaState = useUserQuotaState();
 
     const [computationStopped, setComputationStopped] = useState(false);
 
@@ -536,6 +539,17 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         [isLoadFlowBlocked, isComputationBlocked]
     );
 
+    const getReachedQuota = useCallback(
+        (runnableType) => {
+            // both load flows share the same quota
+            const quota =
+                userQuotaState[LOAD_FLOW_RUNNABLES.includes(runnableType) ? ComputingType.LOAD_FLOW : runnableType];
+            // a quota without max is not limited
+            return quota?.max != null && quota.current >= quota.max ? quota : undefined;
+        },
+        [userQuotaState]
+    );
+
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(
         (runnableType) => {
@@ -627,6 +641,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             computationStopped={computationStopped}
             disabled={!isNodeRunnable}
             canRun={canRun}
+            getReachedQuota={getReachedQuota}
         />
     );
 }

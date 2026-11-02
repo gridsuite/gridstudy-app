@@ -73,7 +73,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
 
     const defaultColDef = useMemo(
         () => ({
-            filter: true,
             sortable: true,
             resizable: true,
             lockPinned: true,

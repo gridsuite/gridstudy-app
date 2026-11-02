@@ -524,7 +524,7 @@ const AppWrapperWithRedux = () => {
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={themeCompiled}>
                         <SnackbarProvider hideIconVariant={false}>
-                            <CssBaseline />
+                            <CssBaseline enableColorScheme />
                             <GlobalStyles styles={{ ':root': rootCssVars }} />
                             <CardErrorBoundary>
                                 <NotificationsProvider urls={urlMapper}>

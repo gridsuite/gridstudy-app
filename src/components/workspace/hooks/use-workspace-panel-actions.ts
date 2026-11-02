@@ -307,11 +307,13 @@ export const useWorkspacePanelActions = () => {
             title,
             nadConfigUuid,
             filterUuid,
+            filterName,
             initialVoltageLevelIds,
         }: {
             title?: string;
             nadConfigUuid?: UUID;
             filterUuid?: UUID;
+            filterName?: string;
             initialVoltageLevelIds?: string[];
         }) => {
             const newPanel = createNADPanel({
@@ -319,7 +321,7 @@ export const useWorkspacePanelActions = () => {
                 initialVoltageLevelIds,
                 nadConfigUuid,
                 filterUuid,
-                currentFilterUuid: filterUuid,
+                filterName,
             });
             saveAndFocusPanel(newPanel);
             // The panel must exist server side before its diagram saves a config for it

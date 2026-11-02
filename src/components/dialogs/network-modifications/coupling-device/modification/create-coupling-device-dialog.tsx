@@ -45,6 +45,7 @@ export default function CreateCouplingDeviceDialog({
     currentRootNetworkUuid,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<CreateCouplingDeviceDialogProps>) {
@@ -156,6 +157,7 @@ export default function CreateCouplingDeviceDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={couplingDeviceCreationFormSchema}
             removeOptional={true}
             {...formMethods}

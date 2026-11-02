@@ -57,6 +57,7 @@ interface LineSplitWithVoltageLevelDialogProps {
     currentRootNetworkUuid: UUID;
     editData?: LineSplitEditData;
     isUpdate: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus?: FetchStatus;
     onClose: () => void;
 }
@@ -77,6 +78,7 @@ const LineSplitWithVoltageLevelDialog = ({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: LineSplitWithVoltageLevelDialogProps) => {
@@ -222,12 +224,13 @@ const LineSplitWithVoltageLevelDialog = ({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         onCreateVoltageLevel={onCreateVoltageLevel}
                         editData={vlEditData}
+                        isReadOnly={isReadOnly}
                         isUpdate={vlIsUpdate}
                         editDataFetchStatus={editDataFetchStatus}
                     />
                 );
             },
-        [currentNode, studyUuid, currentRootNetworkUuid, editDataFetchStatus]
+        [currentNode, studyUuid, currentRootNetworkUuid, editDataFetchStatus, isReadOnly]
     );
 
     const open = useOpenShortWaitFetching({
@@ -236,7 +239,11 @@ const LineSplitWithVoltageLevelDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={lineSplitWithVoltageLevelCreationFormSchema} {...formMethods}>
+        <CustomFormProvider
+            isReadOnly={isReadOnly}
+            validationSchema={lineSplitWithVoltageLevelCreationFormSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
