@@ -186,19 +186,18 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const resetMeasurementsFilters = useCallback(() => {
         dispatch(clearSelectedGlobalFilters(TableType.StateEstimation, TableType.StateEstimation));
         const onError = (error: unknown) => snackWithFallback(snackError, error);
-        const resetColumnsFilters = async () => {
-            for (const colId of new Set(measurementsColumnsFilters.map((filter) => filter.column))) {
-                await persistComputationColumnFilter(
+        Promise.all(
+            [...new Set(measurementsColumnsFilters.map((filter) => filter.column))].map((colId) =>
+                persistComputationColumnFilter(
                     studyUuid,
                     TableType.StateEstimation,
                     STATEESTIMATION_MEASUREMENTS,
                     colId,
                     undefined,
                     onError
-                );
-            }
-        };
-        resetColumnsFilters().catch(onError);
+                )
+            )
+        ).catch(onError);
     }, [dispatch, measurementsColumnsFilters, snackError, studyUuid]);
 
     const renderReportViewer = () => {
