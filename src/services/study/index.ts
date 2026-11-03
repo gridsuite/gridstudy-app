@@ -15,6 +15,7 @@ import {
     ComputingType,
     ContingencyCount,
     EquipmentType,
+    ExportFormatProperties,
     ExtendedEquipmentType,
     safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
@@ -308,6 +309,13 @@ export const insertCompositeModifications = (
         }
     });
 };
+
+export function getAvailableExportFormats(): Promise<Record<string, ExportFormatProperties>> {
+    console.info('get export formats');
+    const getExportFormatsUrl = PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
+    console.debug(getExportFormatsUrl);
+    return backendFetchJson(getExportFormatsUrl);
+}
 
 export function getAvailableComponentLibraries(): Promise<string[]> {
     console.info('get available component libraries for diagrams');
