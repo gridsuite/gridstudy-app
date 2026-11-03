@@ -57,6 +57,7 @@ export default function GeneratorCreationDialog({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<GeneratorCreationDialogProps>) {
@@ -170,6 +171,7 @@ export default function GeneratorCreationDialog({
     });
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={generatorCreationFormSchema}
             {...formMethods}

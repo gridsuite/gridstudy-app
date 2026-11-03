@@ -34,6 +34,7 @@ import { ModificationDialogContent } from 'components/dialogs/commons/modificati
 
 export default function GeneratePrefilledModelDialog({
     open,
+    isReadOnly = false,
     equipmentType,
     onGenerate,
 }: Readonly<GeneratePrefilledModelDialogProps>) {
@@ -104,7 +105,7 @@ export default function GeneratePrefilledModelDialog({
     );
 
     return (
-        <CustomFormProvider validationSchema={schema} {...formMethods}>
+        <CustomFormProvider isReadOnly={isReadOnly} validationSchema={schema} {...formMethods}>
             <ModificationDialogContent
                 titleId="GeneratePrefilledModel"
                 open={open.value}

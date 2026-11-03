@@ -40,6 +40,7 @@ export function BalancesAdjustmentDialog({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<BalancesAdjustmentDialogProps>) {
@@ -95,7 +96,12 @@ export function BalancesAdjustmentDialog({
     });
 
     return (
-        <CustomFormProvider validationSchema={balancesAdjustmentFormSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider
+            isReadOnly={isReadOnly}
+            validationSchema={balancesAdjustmentFormSchema}
+            removeOptional={true}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}

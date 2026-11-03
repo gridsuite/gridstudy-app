@@ -18,6 +18,7 @@ import {
     SegmentSchema,
     LineSegmentsFormData,
     SegmentsFormData,
+    useCustomFormContext,
 } from '@gridsuite/commons-ui';
 import {
     APPLY_SEGMENTS_LIMITS,
@@ -75,6 +76,7 @@ export default function LineTypeSegmentDialog({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LineTypeSegmentDialogSchemaForm>>(LineTypeSegmentSchema),
     });
+    const { isReadOnly } = useCustomFormContext();
 
     const { reset } = formMethods;
     const { getValues } = formMethods;
@@ -90,7 +92,7 @@ export default function LineTypeSegmentDialog({
     );
 
     return (
-        <CustomFormProvider validationSchema={LineTypeSegmentSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={LineTypeSegmentSchema} isReadOnly={isReadOnly} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}

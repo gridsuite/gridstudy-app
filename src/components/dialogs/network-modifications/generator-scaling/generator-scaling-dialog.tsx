@@ -33,6 +33,7 @@ interface GeneratorScalingDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     isUpdate: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus?: string;
     editData?: {
         uuid: UUID;
@@ -46,6 +47,7 @@ const GeneratorScalingDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: GeneratorScalingDialogProps) => {
@@ -89,7 +91,7 @@ const GeneratorScalingDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={generatorScalingFormSchema} {...formMethods}>
+        <CustomFormProvider isReadOnly={isReadOnly} validationSchema={generatorScalingFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
