@@ -70,6 +70,7 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
                         filterValue: JSON.stringify(columnFilter?.value) ?? undefined,
                     },
                     visible: includeVisibility ? item.visible : true,
+                    locked: includeVisibility ? item.locked : false,
                 };
                 return acc;
             },

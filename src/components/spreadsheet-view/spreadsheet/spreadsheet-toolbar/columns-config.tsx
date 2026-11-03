@@ -113,7 +113,10 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
     const handleSaveSelectedColumnNames = useCallback(() => {
         // check if columns state has changed
         const hasColsStatesChanged = tableDefinition.columns.some(
-            (col, index) => col.uuid !== localColumns[index].uuid || col.visible !== localColumns[index].visible
+            (col, index) =>
+                col.uuid !== localColumns[index].uuid ||
+                col.visible !== localColumns[index].visible ||
+                col.locked !== localColumns[index].locked
         );
 
         let updatePromise = Promise.resolve();
@@ -121,7 +124,8 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         if (hasColsStatesChanged && studyUuid) {
             const updatedColumnsState = localColumns.map((col, index) => ({
                 columnId: col.uuid,
-                visible: Boolean(col.visible),
+                visible: col.visible,
+                locked: col.locked,
                 order: index,
             }));
             updatePromise = updateColumnStates(studyUuid, tableDefinition.uuid, updatedColumnsState);
