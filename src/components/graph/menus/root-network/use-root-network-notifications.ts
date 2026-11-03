@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SetStateAction, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import {
@@ -26,11 +26,7 @@ import {
 } from 'types/notification-types';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
-type UseRootNetworkNotificationsProps = {
-    setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
-};
-
-export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: UseRootNetworkNotificationsProps) => {
+export const useRootNetworkNotifications = () => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -43,12 +39,6 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
             fetchRootNetworks(studyUuid)
                 .then((res: RootNetworkMetadata[]) => {
                     dispatch(setRootNetworks(res));
-
-                    // This is used to hide the loader for creation, update and deletion of the root networks.
-                    // All the root networks must be fully established before the loader can be safely removed.
-                    if (res.every((network) => !network.isCreating)) {
-                        setIsRootNetworksProcessing(false);
-                    }
                     if (res.length > 1) {
                         dispatch(setMonoRootStudy(false));
                     }
@@ -57,7 +47,7 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
                     snackWithFallback(snackError, error);
                 });
         }
-    }, [studyUuid, dispatch, setIsRootNetworksProcessing, snackError]);
+    }, [studyUuid, dispatch, snackError]);
 
     const rootNetworksUpdatedNotification = useCallback(
         (event: MessageEvent<string>) => {
