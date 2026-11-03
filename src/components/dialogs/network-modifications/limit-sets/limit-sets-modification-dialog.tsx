@@ -34,6 +34,7 @@ interface LimitSetsModificationDialogProps {
     currentNode: CurrentTreeNode;
     editData: LimitSetsTabularModificationDto;
     isUpdate: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus: FetchStatus;
 }
 
@@ -42,6 +43,7 @@ export function LimitSetsModificationDialog({
     currentNode,
     editData,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<LimitSetsModificationDialogProps>) {
@@ -101,7 +103,11 @@ export function LimitSetsModificationDialog({
     });
 
     return (
-        <CustomFormProvider validationSchema={limitSetsTabularModificationFormSchema} {...formMethods}>
+        <CustomFormProvider
+            isReadOnly={isReadOnly}
+            validationSchema={limitSetsTabularModificationFormSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}

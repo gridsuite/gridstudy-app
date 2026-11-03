@@ -59,6 +59,7 @@ export default function BatteryModificationDialog({
     currentRootNetworkUuid,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<BatteryModificationDialogProps>) {
@@ -240,6 +241,7 @@ export default function BatteryModificationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={batteryModificationFormSchema}
             removeOptional={true}
             {...formMethods}

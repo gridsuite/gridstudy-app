@@ -48,6 +48,7 @@ interface DeleteVoltageLevelOnLineDialogProps {
         [REPLACING_LINE_1_NAME]: string;
     };
     isUpdate: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus?: string;
 }
 
@@ -67,6 +68,7 @@ const DeleteVoltageLevelOnLineDialog = ({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: DeleteVoltageLevelOnLineDialogProps) => {
@@ -148,7 +150,11 @@ const DeleteVoltageLevelOnLineDialog = ({
     }, [reset]);
 
     return (
-        <CustomFormProvider validationSchema={deleteVoltageLevelOnLineFormSchema} {...formMethods}>
+        <CustomFormProvider
+            isReadOnly={isReadOnly}
+            validationSchema={deleteVoltageLevelOnLineFormSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

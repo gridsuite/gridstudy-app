@@ -80,6 +80,7 @@ const TwoWindingsTransformerCreationDialog = ({
     currentNode,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<TwoWindingsTransformerCreationDialogProps>) => {
@@ -257,6 +258,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={twoWindingsTransformerCreationFormSchema}
             {...formMethods}

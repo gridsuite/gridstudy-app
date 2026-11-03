@@ -80,6 +80,7 @@ const LineCreationDialog = ({
     onCreateLine = createLine,
     displayConnectivity = true,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<LineCreationDialogProps>) => {
@@ -248,6 +249,7 @@ const LineCreationDialog = ({
         <CustomFormProvider
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={lineCreationFormSchema(displayConnectivity)}
+            isReadOnly={isReadOnly}
             {...formMethods}
         >
             <ModificationDialog

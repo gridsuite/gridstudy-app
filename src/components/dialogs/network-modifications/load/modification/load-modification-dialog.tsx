@@ -58,6 +58,7 @@ export default function LoadModificationDialog({
     currentRootNetworkUuid,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: LoadModificationDialogProps) {
@@ -176,6 +177,7 @@ export default function LoadModificationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={loadModificationFormSchema}
             removeOptional={true}
             {...formMethods}
