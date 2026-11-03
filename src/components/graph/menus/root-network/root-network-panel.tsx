@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Paper, useTheme } from '@mui/material';
 import RootNetworkPanelHeader from './root-network-panel-header';
 import RootNetworkNodeEditor from './root-network-node-editor';
 import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
-import { useRootNetworkNotifications } from './use-root-network-notifications';
 import RootNetworkSearchPanel from './root-network-panel-search';
 
 const styles = {
@@ -30,6 +29,7 @@ const RootNetworkPanel: FunctionComponent = () => {
     const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
     const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(true);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
+    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const [isSearchActive, setIsSearchActive] = useState(false);
 
     const theme = useTheme();
@@ -54,10 +54,13 @@ const RootNetworkPanel: FunctionComponent = () => {
         };
     }, [isRootNetworkPanelMinimized, isMonoRootStudy, theme]);
 
-    //handle root network notifications
-    useRootNetworkNotifications({
-        setIsRootNetworksProcessing,
-    });
+    // This is used to hide the loader for creation, update and deletion of the root networks.
+    // All the root networks must be fully established before the loader can be safely removed.
+    useEffect(() => {
+        if (rootNetworks.every((network) => !network.isCreating)) {
+            setIsRootNetworksProcessing(false);
+        }
+    }, [rootNetworks]);
 
     const closeSearchPanel = useCallback(() => {
         setIsSearchActive(false);
