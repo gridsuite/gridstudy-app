@@ -13,7 +13,7 @@ import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from 'redux/reducer.type';
 import {
-    getLoadFlowDefaultLimitReductions,
+    getLoadFlowDefaultLimitScalings,
     getLoadFlowProviders,
     getLoadFlowSpecificParametersDescription,
 } from 'services/loadflow';
@@ -37,7 +37,7 @@ import {
     fetchDynamicSecurityAnalysisProviders,
     fetchDynamicSimulationProviders,
     fetchSecurityAnalysisProviders,
-    getSecurityAnalysisDefaultLimitReductions,
+    getSecurityAnalysisDefaultLimitScalings,
     getSecurityAnalysisParameters,
     getSensitivityAnalysisParameters,
     LoadFlowParametersInline,
@@ -166,7 +166,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchParameters: getLoadFlowParameters,
             backendUpdateParameters: setLoadFlowParameters,
             backendFetchSpecificParametersDescription: getLoadFlowSpecificParametersDescription,
-            backendFetchDefaultLimitReductions: getLoadFlowDefaultLimitReductions,
+            backendFetchDefaultLimitScalings: getLoadFlowDefaultLimitScalings,
         }
     );
     useParametersNotification(ComputingType.LOAD_FLOW, OptionalServicesStatus.Up, loadFlowParametersBackend);
@@ -180,7 +180,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchProviders: fetchSecurityAnalysisProviders,
             backendFetchParameters: getSecurityAnalysisParameters,
             backendUpdateParameters: setSecurityAnalysisParameters,
-            backendFetchDefaultLimitReductions: getSecurityAnalysisDefaultLimitReductions,
+            backendFetchDefaultLimitScalings: getSecurityAnalysisDefaultLimitScalings,
         }
     );
     useParametersNotification(

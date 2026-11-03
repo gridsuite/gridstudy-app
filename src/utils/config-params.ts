@@ -11,7 +11,7 @@ export const LOCAL_STORAGE_KEY_PREFIX = `${ORGANIZATION_NAME}:${APP_NAME}`;
 
 // App config names
 export const PARAM_USE_NAME = 'useName';
-export const PARAM_LIMIT_REDUCTION = 'limitReduction';
+export const PARAM_LIMIT_SCALING = 'limitReduction';
 export const PARAM_COMPUTED_LANGUAGE = 'computedLanguage';
 export const PARAMS_LOADED = 'paramsLoaded';
 

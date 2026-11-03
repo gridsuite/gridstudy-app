@@ -10,12 +10,12 @@ import { loadboundsParametersFields, TabValue } from './state-estimation-paramet
 import { useIntl } from 'react-intl';
 import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
-import { CustomVoltageLevelTable, GridSection, type LimitReductionIColumnsDef } from '@gridsuite/commons-ui';
+import { CustomVoltageLevelTable, GridSection, type LimitScalingIColumnsDef } from '@gridsuite/commons-ui';
 
 export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
     const intl = useIntl();
 
-    const columnsDefinition = useMemo<LimitReductionIColumnsDef[]>(() => {
+    const columnsDefinition = useMemo<LimitScalingIColumnsDef[]>(() => {
         const definition = [
             {
                 dataKey: VOLTAGE_LEVEL,
