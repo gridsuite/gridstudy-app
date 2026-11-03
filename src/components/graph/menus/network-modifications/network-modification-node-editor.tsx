@@ -1114,9 +1114,22 @@ const NetworkModificationNodeEditor = () => {
         selectedNetworkModifications.length === 1 ? (selectedNetworkModifications[0]?.description ?? null) : null;
 
     const canMoveModifications = Boolean(currentNode?.id);
+    const canUpdateModificationStatusByRootNetwork = Boolean(studyUuid && currentNode?.id);
 
     const onMoveModifications = useCallback(
         (moves: ModificationMoveInfos[]) => moveModifications(studyUuid, currentNode?.id, moves),
+        [studyUuid, currentNode?.id]
+    );
+
+    const onUpdateModificationStatusByRootNetwork = useCallback(
+        (rootNetworkUuid: UUID, modificationUuid: UUID, applicable: boolean) =>
+            updateModificationStatusByRootNetwork(
+                studyUuid!,
+                currentNode?.id!,
+                rootNetworkUuid,
+                modificationUuid,
+                applicable
+            ),
         [studyUuid, currentNode?.id]
     );
 
@@ -1134,26 +1147,6 @@ const NetworkModificationNodeEditor = () => {
 
     const onUnshareModification = useCallback(
         (modificationUuid: UUID) => unshareNetworkModification(studyUuid, currentNode?.id ?? null, modificationUuid),
-        [studyUuid, currentNode?.id]
-    );
-
-    const canUpdateModificationStatusByRootNetwork = Boolean(studyUuid && currentNode?.id);
-
-    const onUpdateModificationStatusByRootNetwork = useCallback(
-        (rootNetworkUuid: UUID, modificationUuid: UUID, applicable: boolean) => {
-            if (!studyUuid || !currentNode?.id) {
-                return Promise.reject(
-                    new Error('studyUuid and currentNodeUuid are required to update modification status')
-                );
-            }
-            return updateModificationStatusByRootNetwork(
-                studyUuid,
-                currentNode.id,
-                rootNetworkUuid,
-                modificationUuid,
-                applicable
-            );
-        },
         [studyUuid, currentNode?.id]
     );
 
@@ -1187,13 +1180,13 @@ const NetworkModificationNodeEditor = () => {
                 visualizedRootNetworkUuid={currentRootNetworkUuid ?? undefined}
                 rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
                 isDisabled={isEditBlocked || mapDataLoading}
-                onMoveModifications={onMoveModifications}
-                canMoveModifications={canMoveModifications}
+                onMoveModifications={canMoveModifications ? onMoveModifications : undefined}
+                onUpdateModificationStatusByRootNetwork={
+                    canUpdateModificationStatusByRootNetwork ? onUpdateModificationStatusByRootNetwork : undefined
+                }
                 onUpdateModificationMetadata={onUpdateModificationMetadata}
                 onUpdateModificationNameAndDescription={onUpdateModificationNameAndDescription}
                 onUnshareModification={onUnshareModification}
-                onUpdateModificationStatusByRootNetwork={onUpdateModificationStatusByRootNetwork}
-                canUpdateModificationStatusByRootNetwork={canUpdateModificationStatusByRootNetwork}
                 rowStateResetKey={currentNode?.id}
             />
         );
