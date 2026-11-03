@@ -124,9 +124,18 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
 
     const suffixRenderer = useCallback(
         (props: TagRendererProps) => (
-            <CustomSuffixRenderer disablCenterSubstation={disablCenterSubstation} {...props} onClose={closeDialog} />
+            <CustomSuffixRenderer
+                disablCenterSubstation={disablCenterSubstation}
+                {...props}
+                onClose={() => {
+                    if (studyUuid) {
+                        addToLocalStorageSearchEquipmentHistory(studyUuid, props.element);
+                    }
+                    closeDialog();
+                }}
+            />
         ),
-        [closeDialog, disablCenterSubstation]
+        [closeDialog, disablCenterSubstation, studyUuid]
     );
 
     useSearchEvent(disableKeyboardShortcut ? () => {} : enableSearchDialog);
