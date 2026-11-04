@@ -240,9 +240,9 @@ describe('rows', () => {
         await elapse();
 
         expect(rows().map((row: any) => [row.equipmentId, row.outOfBound])).toEqual([
-            ['L1', 'IN_BOUNDS'],
-            ['L1', 'IN_BOUNDS'],
-            ['L2', 'OUT_OF_BOUNDS'],
+            ['L1', false],
+            ['L1', false],
+            ['L2', true],
         ]);
         expect(isLoading()).toBe(false);
     });
