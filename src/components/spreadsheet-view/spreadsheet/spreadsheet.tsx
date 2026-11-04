@@ -55,7 +55,7 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
         tableDefinition?.type
     );
 
-    const globalFilters = useSelectedGlobalFilters(tableDefinition.uuid);
+    const globalFilters = useSelectedGlobalFilters(tableDefinition?.uuid);
     const columnsFilters = useSelector(
         (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet]?.[tableDefinition?.uuid]
     );

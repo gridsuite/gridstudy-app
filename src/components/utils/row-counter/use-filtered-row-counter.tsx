@@ -63,6 +63,10 @@ export function useFilteredRowCounterInfo({
         isAnyGridFilterPresent || (unfilteredRowCount !== undefined && buildValidGlobalFilters(globalFilters) != null);
 
     const isDataPendingRef = useRef(isDataPending);
+    const latestRef = useRef({ currentNode, disabled });
+    useEffect(() => {
+        latestRef.current = { currentNode, disabled };
+    }, [currentNode, disabled]);
 
     // Update is debounced to avoid displayed row count falsely set to 0 because of AG Grid internal behaviour which briefly set row count to 0 in between filters
     const debouncedUpdateRowCounter = useMemo(
@@ -73,7 +77,8 @@ export function useFilteredRowCounterInfo({
                 if (isDataPendingRef.current) {
                     return;
                 }
-                if (!gridRef.current?.api || !currentNode || disabled) {
+                const latest = latestRef.current;
+                if (!gridRef.current?.api || !latest.currentNode || latest.disabled) {
                     setDisplayedRows(0);
                     setGridTotalRows(0);
                     setIsLoading(false);
@@ -84,8 +89,10 @@ export function useFilteredRowCounterInfo({
                 setGridTotalRows(api.getGridOption('rowData')?.length ?? 0);
                 setIsLoading(false);
             }, 600),
-        [gridRef, currentNode, disabled]
+        [gridRef]
     );
+
+    useEffect(() => () => debouncedUpdateRowCounter.clear(), [debouncedUpdateRowCounter]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -96,7 +103,9 @@ export function useFilteredRowCounterInfo({
     // spins once instead of twice.
     useEffect(() => {
         isDataPendingRef.current = isDataPending;
-        if (!isDataPending) {
+        if (isDataPending) {
+            setIsLoading(true);
+        } else {
             // the updates skipped while pending are replayed here, even if AG Grid emits no further event
             debouncedUpdateRowCounter();
         }

@@ -27,12 +27,9 @@ export const persistComputationColumnFilter = (
               }
             : null,
     };
-    return updateComputationResultFiltersColumn(
-        studyUuid,
-        computationType,
-        computationSubType,
-        columnFilterInfos
-    ).catch((error) => {
-        onError(error);
-    });
+    updateComputationResultFiltersColumn(studyUuid, computationType, computationSubType, columnFilterInfos).catch(
+        (error) => {
+            onError(error);
+        }
+    );
 };

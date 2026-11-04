@@ -856,6 +856,7 @@ const messages_fr = {
         "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
     SensitivityAnalysisResultsError: "Une erreur s'est produite lors de la récupération du résultat de sensibilité",
     ComputationFilterResultsError: 'Filtre introuvable :',
+    ComputationFiltersResetError: 'Erreur lors de la réinitialisation des filtres',
     muiTablePaginationLabelRowsPerPageAllBusesSCA: 'Défauts par page : ',
     muiTablePaginationLabelRowsPerPageOneBusSCA: 'Départs par page : ',
     previewModifications: 'Visualiser modifications',

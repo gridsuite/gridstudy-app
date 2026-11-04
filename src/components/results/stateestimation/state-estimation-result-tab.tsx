@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useRef, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -13,6 +13,7 @@ import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
 import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
+import { resetComputationResultFilters } from '../../../services/study/study-config';
 import { AppState } from 'redux/reducer.type';
 import {
     ComputingType,
@@ -25,8 +26,7 @@ import {
     TableType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useDispatch, useSelector } from 'react-redux';
-import { GridApi, GridReadyEvent } from 'ag-grid-community';
+import { useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
 import StateEstimationResultTable from './state-estimation-result-table';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
@@ -50,8 +50,6 @@ import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-c
 import { StateEstimationMeasurements } from './state-estimation-measurements';
 import { useFilteredRowCounterInfo } from '../../utils/row-counter/use-filtered-row-counter';
 import { FilteredRowCounter } from '../../utils/row-counter/filtered-row-counter';
-import { clearSelectedGlobalFilters } from '../../../redux/actions';
-import { persistComputationColumnFilter } from '../common/column-filter/persist-computation-column-filter';
 
 const GLOBAL_FILTER_CATEGORIES = [
     GlobalFilterType.VOLTAGE_LEVEL,
@@ -93,7 +91,6 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     currentRootNetworkUuid,
 }) => {
     const intl = useIntl();
-    const dispatch = useDispatch();
 
     const [tabIndex, setTabIndex] = useState(0);
     const stateEstimationStatus = useSelector(
@@ -152,9 +149,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     }, [stateEstimationStatus, stateEstimationResult, intl]);
 
     const measurementsGridRef = useRef<AgGridReact>(null);
-    const [measurementsGridApi, setMeasurementsGridApi] = useState<GridApi>();
     const [isLoadingMeasurements, setIsLoadingMeasurements] = useState(true);
-    const handleMeasurementsGridReady = useCallback((params: GridReadyEvent) => setMeasurementsGridApi(params.api), []);
 
     const measurementsRowCounterInfos = useFilteredRowCounterInfo({
         gridRef: measurementsGridRef,
@@ -164,30 +159,12 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         disabled: false,
         isDataPending: isLoadingMeasurements || isLoadingResult,
     });
-    const { registerRowCounterEvents } = measurementsRowCounterInfos;
-
-    useEffect(() => {
-        if (measurementsGridApi && !measurementsGridApi.isDestroyed()) {
-            registerRowCounterEvents({ api: measurementsGridApi });
-        }
-    }, [measurementsGridApi, registerRowCounterEvents]);
 
     const resetMeasurementsFilters = useCallback(() => {
-        dispatch(clearSelectedGlobalFilters(TableType.StateEstimation, TableType.StateEstimation));
-        const onError = (error: unknown) => snackWithFallback(snackError, error);
-        Promise.all(
-            [...new Set(measurementsColumnsFilters.map((filter) => filter.column))].map((colId) =>
-                persistComputationColumnFilter(
-                    studyUuid,
-                    TableType.StateEstimation,
-                    STATEESTIMATION_MEASUREMENTS,
-                    colId,
-                    undefined,
-                    onError
-                )
-            )
-        ).catch(onError);
-    }, [dispatch, measurementsColumnsFilters, snackError, studyUuid]);
+        resetComputationResultFilters(studyUuid, TableType.StateEstimation, STATEESTIMATION_MEASUREMENTS).catch(
+            (error) => snackWithFallback(snackError, error, { headerId: 'ComputationFiltersResetError' })
+        );
+    }, [snackError, studyUuid]);
 
     const renderReportViewer = () => {
         return (
@@ -236,7 +213,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     globalFilters={globalFilters}
                     columnDefs={stateEstimationResultColumns}
                     gridRef={measurementsGridRef}
-                    onGridReady={handleMeasurementsGridReady}
+                    onGridReady={measurementsRowCounterInfos.registerRowCounterEvents}
                     onLoadingChange={setIsLoadingMeasurements}
                 />
             )}
