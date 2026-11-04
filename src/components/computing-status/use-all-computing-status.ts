@@ -15,6 +15,7 @@ import {
     getSecurityAnalysisRunningStatus,
     getSensitivityAnalysisRunningStatus,
     getShortCircuitAnalysisRunningStatus,
+    getLogicalControlsRunningStatus,
     getStateEstimationRunningStatus,
     getVoltageInitRunningStatus,
 } from '../utils/running-status';
@@ -32,7 +33,7 @@ import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
 import { fetchLoadFlowComputationInfos, fetchLoadFlowStatus } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
-import { fetchStateEstimationStatus } from '../../services/study/state-estimation';
+import { fetchLogicalControlsStatus, fetchStateEstimationStatus } from '../../services/study/state-estimation';
 import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic-security-analysis';
 import { fetchDynamicMarginCalculationStatus } from '../../services/study/dynamic-margin-calculation';
 import { NotificationType } from 'types/notification-types';
@@ -76,6 +77,10 @@ const stateEstimationStatusInvalidations = [
     NotificationType.STATE_ESTIMATION_STATUS,
     NotificationType.STATE_ESTIMATION_FAILED,
 ];
+const logicalControlsStatusInvalidations = [
+    NotificationType.LOGICAL_CONTROLS_STATUS,
+    NotificationType.LOGICAL_CONTROLS_FAILED,
+];
 const pccMinStatusInvalidations = [NotificationType.PCC_MIN_STATUS, NotificationType.PCC_MIN_FAILED];
 
 // status completions
@@ -113,6 +118,10 @@ const stateEstimationStatusCompletions = [
     NotificationType.STATE_ESTIMATION_RESULT,
     NotificationType.STATE_ESTIMATION_FAILED,
 ];
+const logicalControlsStatusCompletions = [
+    NotificationType.LOGICAL_CONTROLS_RESULT,
+    NotificationType.LOGICAL_CONTROLS_FAILED,
+];
 const pccMinStatusCompletions = [NotificationType.PCC_MIN_RESULT, NotificationType.PCC_MIN_FAILED];
 
 // result invalidations
@@ -142,6 +151,10 @@ export const voltageInitResultInvalidations = [
 ];
 export const stateEstimationResultInvalidations = [
     NotificationType.STATE_ESTIMATION_RESULT,
+    NotificationType.NODE_BUILD_STATUS_UPDATED,
+];
+export const logicalControlsResultInvalidations = [
+    NotificationType.LOGICAL_CONTROLS_RESULT,
     NotificationType.NODE_BUILD_STATUS_UPDATED,
 ];
 export const pccMinResultInvalidations = [NotificationType.PCC_MIN_RESULT, NotificationType.NODE_BUILD_STATUS_UPDATED];
@@ -287,6 +300,19 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         ComputingType.STATE_ESTIMATION,
         undefined,
         stateEstimationAvailability
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        fetchLogicalControlsStatus,
+        logicalControlsStatusInvalidations,
+        logicalControlsStatusCompletions,
+        getLogicalControlsRunningStatus,
+        ComputingType.LOGICAL_CONTROLS,
+        undefined,
+        stateEstimationAvailability // logical controls are computed by the state estimation server
     );
 
     useComputingStatus(

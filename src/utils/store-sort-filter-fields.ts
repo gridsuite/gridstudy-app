@@ -52,6 +52,15 @@ export const STATEESTIMATION_QUALITY_CRITERION = 'stateEstimationQualityCriterio
 export const STATEESTIMATION_QUALITY_PER_REGION = 'stateEstimationQualityPerRegion';
 export const STATEESTIMATION_MEASUREMENTS = 'stateEstimationMeasurements';
 
+//logicalControls result store fields
+export const LOGICAL_CONTROLS_RESULT_SORT_STORE = 'logicalControlsResult';
+export const LOGICAL_CONTROLS_BALANCES = 'CsvNameBalances';
+export const LOGICAL_CONTROLS_NON_ZERO_MEASUREMENTS_ON_DISCONNECTED = 'CsvNameNonZeroMeasurementsOnDisconnected';
+export const LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED = 'CsvNameZeroMeasurementsOnConnected';
+export const LOGICAL_CONTROLS_ORIGIN_EXTREMITY_DEVIATIONS = 'CsvNameOriginExtremityDeviations';
+export const LOGICAL_CONTROLS_OUT_OF_BOUNDS_MEASUREMENTS = 'CsvNameOutOfBoundsMeasurements';
+export const LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS = 'CsvNameVoltageDeviations';
+
 //pccMin result store fields
 export const PCCMIN_ANALYSIS_RESULT_SORT_STORE = 'pccminAnalysisResult';
 export const PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD = 'pccminAnalysisPagination';
