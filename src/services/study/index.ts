@@ -15,8 +15,8 @@ import {
     ComputingType,
     ContingencyCount,
     EquipmentType,
+    ExportFormatProperties,
     ExtendedEquipmentType,
-    Parameter,
     safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
 import {
@@ -309,11 +309,6 @@ export const insertCompositeModifications = (
         }
     });
 };
-
-export interface ExportFormatProperties {
-    formatName: string;
-    parameters: Parameter[];
-}
 
 export function getAvailableExportFormats(): Promise<Record<string, ExportFormatProperties>> {
     console.info('get export formats');
