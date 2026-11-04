@@ -111,6 +111,7 @@ export interface ComputingStatus {
     [ComputingType.DYNAMIC_MARGIN_CALCULATION]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
+    [ComputingType.LOGICAL_CONTROLS]: RunningStatus;
     [ComputingType.PCC_MIN]: RunningStatus;
 }
 

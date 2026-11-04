@@ -5,16 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
-import { computeLogicalControls, fetchStateEstimationResult } from '../../../services/study/state-estimation';
-import { LogicalControlsResultDto } from './logicalcontrols/logicalControls.types';
+import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
 import { AppState } from 'redux/reducer.type';
 import {
     ComputingType,
@@ -23,9 +21,7 @@ import {
     mergeSx,
     type MuiStyles,
     RunningStatus,
-    snackWithFallback,
     TableType,
-    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import StateEstimationResultTable from './state-estimation-result-table';
@@ -45,7 +41,6 @@ import {
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
 } from '../../../utils/store-sort-filter-fields';
-import { LogicalControlsResult } from './logicalcontrols/logical-controls-result';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { StateEstimationMeasurements } from './state-estimation-measurements';
@@ -78,11 +73,6 @@ const styles = {
     emptySpace: {
         flexGrow: 1,
     },
-    computeLogicalControlsButton: (theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(2),
-    }),
 } as const satisfies MuiStyles;
 
 export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps> = ({
@@ -96,10 +86,6 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
-    const { snackError } = useSnackMessage();
-
-    const [isRunningLogicalControls, setIsRunningLogicalControls] = useState(false);
-    const [logicalControlsResult, setLogicalControlsResult] = useState<LogicalControlsResultDto>();
 
     const { result: stateEstimationResult, isLoading: isLoadingResult } = useNodeData({
         studyUuid,
@@ -159,23 +145,6 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         );
     };
 
-    const runLogicalControls = useCallback(() => {
-        if (studyUuid && nodeUuid && currentRootNetworkUuid) {
-            setIsRunningLogicalControls(true);
-            setLogicalControlsResult(undefined);
-            computeLogicalControls(studyUuid, nodeUuid, currentRootNetworkUuid)
-                .then((results) => {
-                    setLogicalControlsResult(results);
-                })
-                .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'LogicalControlsComputationErrorMsg' });
-                })
-                .finally(() => {
-                    setIsRunningLogicalControls(false);
-                });
-        }
-    }, [nodeUuid, currentRootNetworkUuid, snackError, studyUuid]);
-
     return (
         <>
             <Box sx={styles.flexWrapper}>
@@ -184,16 +153,8 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     <Tab label={<FormattedMessage id={'StateEstimationMeasurementResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityCriterionResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityPerRegionResults'} />} />
-                    <Tab label={<FormattedMessage id={'StateEstimationLogicalControlsResults'} />} />
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
-                {tabIndex === 4 && (
-                    <Box sx={styles.computeLogicalControlsButton}>
-                        <Button variant="outlined" onClick={runLogicalControls} disabled={isRunningLogicalControls}>
-                            <FormattedMessage id="StateEstimationRunLogicalControls" />
-                        </Button>
-                    </Box>
-                )}
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 1 ? styles.show : styles.hide)}>
                     <GlobalFilterSelector
                         filterCategories={GLOBAL_FILTER_CATEGORIES}
@@ -233,14 +194,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                 />
             )}
-            {tabIndex === 4 && (
-                <LogicalControlsResult
-                    result={logicalControlsResult}
-                    isLoadingResult={isRunningLogicalControls}
-                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                />
-            )}
-            {tabIndex === 5 && renderReportViewer()}
+            {tabIndex === 4 && renderReportViewer()}
         </>
     );
 };
