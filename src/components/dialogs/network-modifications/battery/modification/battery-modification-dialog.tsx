@@ -217,12 +217,12 @@ export default function BatteryModificationDialog({
 
     const onSubmit = useCallback(
         (batteryForm: BatteryModificationFormData) => {
-            const dto = batteryModificationFormToDto(batteryForm);
+            const dto = batteryModificationFormToDto(batteryForm, editData, batteryToModify ?? undefined);
             modifyBattery(studyUuid, currentNodeUuid, editData?.uuid, dto).catch((error: unknown) => {
                 snackWithFallback(snackError, error, { headerId: 'BatteryModificationError' });
             });
         },
-        [studyUuid, currentNodeUuid, editData?.uuid, snackError]
+        [editData, batteryToModify, studyUuid, currentNodeUuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({
