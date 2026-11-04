@@ -64,6 +64,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
 
         currentRootNetworkUuid,
         equipmentType: equipmentTypeFilter ?? undefined,
+        isDialogOpen: isDialogSearchOpen,
     });
     const disabledSearchReason = useDisabledSearchReason();
 
@@ -121,11 +122,25 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
         ]
     );
 
+    const onSuffixClose = useCallback(
+        (element: TagRendererProps['element']) => {
+            if (studyUuid) {
+                addToLocalStorageSearchEquipmentHistory(studyUuid, element);
+            }
+            closeDialog();
+        },
+        [closeDialog, studyUuid]
+    );
+
     const suffixRenderer = useCallback(
         (props: TagRendererProps) => (
-            <CustomSuffixRenderer disablCenterSubstation={disablCenterSubstation} {...props} onClose={closeDialog} />
+            <CustomSuffixRenderer
+                disablCenterSubstation={disablCenterSubstation}
+                {...props}
+                onClose={() => onSuffixClose(props.element)}
+            />
         ),
-        [closeDialog, disablCenterSubstation]
+        [disablCenterSubstation, onSuffixClose]
     );
 
     useSearchEvent(disableKeyboardShortcut ? () => {} : enableSearchDialog);
