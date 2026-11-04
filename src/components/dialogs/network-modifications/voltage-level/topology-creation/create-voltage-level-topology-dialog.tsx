@@ -43,6 +43,7 @@ export default function CreateVoltageLevelTopologyDialog({
     currentRootNetworkUuid,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<CreateVoltageLevelTopologyDialogProps>) {
@@ -97,6 +98,7 @@ export default function CreateVoltageLevelTopologyDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={createVoltageLevelTopologyFormSchema}
             removeOptional={true}
             {...formMethods}

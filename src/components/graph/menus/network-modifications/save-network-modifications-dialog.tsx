@@ -7,19 +7,15 @@
 
 import {
     ComposedModificationMetadata,
+    containsReferenceModification,
     ElementSaveDialog,
     ElementType,
     type IElementCreationDialog,
     type IElementUpdateDialog,
+    isReferenceModification,
     ModificationType,
-    PARAM_DEVELOPER_MODE,
-    snackWithFallback,
-    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { useEffect, useMemo, useState } from 'react';
-import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { hasModificationReferences } from '../../../../services/study/network-modifications';
 
 export interface SaveNetworkModificationsDialogProps {
     open: boolean;
@@ -27,6 +23,7 @@ export interface SaveNetworkModificationsDialogProps {
     studyUuid: UUID;
     selectedModifications: ComposedModificationMetadata[];
     defaultName: string | null;
+    defaultDescription: string | null;
     onSave: (data: IElementCreationDialog) => void;
     onSaveShared: (data: IElementCreationDialog) => void;
     onUpdate: (data: IElementUpdateDialog) => void;
@@ -38,23 +35,13 @@ export default function SaveNetworkModificationsDialog({
     studyUuid,
     selectedModifications,
     defaultName,
+    defaultDescription,
     onSave,
     onSaveShared,
     onUpdate,
 }: Readonly<SaveNetworkModificationsDialogProps>) {
-    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const { snackError } = useSnackMessage();
-    const [hasReference, setHasReference] = useState<boolean>();
-
-    const isReferenceSelected = selectedModifications.some(
-        (modification) => modification.type === ModificationType.MODIFICATION_REFERENCE
-    );
-    const selectedCompositeUuids = useMemo(
-        () =>
-            selectedModifications
-                .filter((modification) => modification.type === ModificationType.COMPOSITE_MODIFICATION)
-                .map((modification) => modification.uuid),
-        [selectedModifications]
+    const hasReference = selectedModifications.some(
+        (modification) => isReferenceModification(modification) || containsReferenceModification(modification)
     );
 
     // Sharing moves the selected composite itself into gridexplore : it needs exactly one composite, and one contained
@@ -62,32 +49,9 @@ export default function SaveNetworkModificationsDialog({
     const isSelectedCompositeShareable =
         selectedModifications.length === 1 &&
         selectedModifications[0].type === ModificationType.COMPOSITE_MODIFICATION &&
-        !selectedModifications[0].childFromShared;
+        !selectedModifications[0].parentSharedUuid;
 
-    // nested references are lazily loaded by the table, so the selection alone can't tell : ask the server
-    useEffect(() => {
-        setHasReference(undefined);
-        if (!open) {
-            return;
-        }
-        if (isReferenceSelected || selectedCompositeUuids.length === 0) {
-            setHasReference(isReferenceSelected);
-            return;
-        }
-        let active = true; // to manage race condition
-        hasModificationReferences(selectedCompositeUuids)
-            .then((exists) => {
-                if (active) {
-                    setHasReference(exists);
-                }
-            })
-            .catch((error) => snackWithFallback(snackError, error));
-        return () => {
-            active = false;
-        };
-    }, [open, isReferenceSelected, selectedCompositeUuids, snackError]);
-
-    const isSharingAvailable = isDeveloperMode && isSelectedCompositeShareable && hasReference === false;
+    const isSharingAvailable = isSelectedCompositeShareable && !hasReference;
 
     return (
         <ElementSaveDialog
@@ -101,6 +65,7 @@ export default function SaveNetworkModificationsDialog({
             titleId="CreateCompositeModification"
             prefixIdForGeneratedName="GeneratedModification"
             defaultName={defaultName}
+            defaultDescription={defaultDescription}
             studyUuid={studyUuid}
             selectorTitleId="SelectCompositeModificationTitle"
             createLabelId="CreateCompositeModificationLabel"

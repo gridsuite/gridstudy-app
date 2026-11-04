@@ -115,7 +115,7 @@ export const WorkspaceToolbar = () => {
             if (element.type === ElementType.DIAGRAM_CONFIG) {
                 openNAD({ title: element.name, nadConfigUuid: element.id });
             } else if (element.type === ElementType.FILTER) {
-                openNAD({ title: element.name, filterUuid: element.id });
+                openNAD({ title: element.name, filterUuid: element.id, filterName: element.name });
             }
         }
         setIsLoadSelectorOpen(false);

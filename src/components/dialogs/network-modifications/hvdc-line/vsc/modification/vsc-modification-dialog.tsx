@@ -58,6 +58,7 @@ export default function VscModificationDialog({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<VscModificationDialogProps>) {
@@ -257,6 +258,7 @@ export default function VscModificationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={vscHvdcLineModificationFormSchema}
             removeOptional={true}
             {...formMethods}

@@ -6,5 +6,4 @@
  */
 
 export const SEGMENT_DISTANCE_MUST_BE_GREATER_THAN_ZERO = 'SegmentDistanceMustBeGreaterThanZero';
-export const VARIATION_LIST_EMPTY = 'EmptyList.variations';
 export const TARGET_DEADBAND_MUST_BE_GREATER_OR_EQUAL_TO_ZERO = 'TargetDeadbandMustBeGreaterOrEqualToZero';

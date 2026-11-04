@@ -6,6 +6,9 @@
  */
 import type { UUID } from 'node:crypto';
 
+export const ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED = 'modification.rootNetworkTagsForbiddenByShared';
+export const ROOT_NETWORK_TAGS_FORBIDDEN_BY_SHARED_DURATION_MS = 10000;
+
 export interface Modification {
     modificationUuid: UUID;
     messageValues: string;

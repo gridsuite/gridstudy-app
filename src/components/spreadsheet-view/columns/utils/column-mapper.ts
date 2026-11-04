@@ -20,8 +20,6 @@ import { isCalculationRow } from '../../utils/calculation-utils';
 import { ErrorCellRenderer, SnackInputs } from '@gridsuite/commons-ui';
 import { COLUMN_TYPES, CustomAggridValue, CustomColDef } from '../../../../types/custom-aggrid-types';
 
-export const SPREADSHEET_INVALID_CELL_CLASS = 'spreadsheet-invalid-cell';
-
 const createValueGetter =
     (colDef: ColumnDefinition) =>
     (params: ValueGetterParams): CustomAggridValue | null => {
@@ -96,8 +94,8 @@ export const mapColumns = (
                 },
                 isInvalid,
             },
-            cellClass: isInvalid ? SPREADSHEET_INVALID_CELL_CLASS : undefined,
-            valueGetter: createValueGetter(colDef),
+            // Unreliable values are not shown
+            valueGetter: isInvalid ? () => null : createValueGetter(colDef),
             cellRendererSelector: (params) =>
                 isValidationError(params.value) ? { component: ErrorCellRenderer } : undefined, //Returning undefined make it so the originally defined renderer is used
             hide: !colDef.visible,

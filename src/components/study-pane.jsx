@@ -10,7 +10,6 @@ import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases';
 import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification';
-import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-spreadsheet-on-root-network';
 import { useNodeAliasesUpdateOnNotification } from './spreadsheet-view/hooks/use-node-aliases-update-on-notification';
 import { useSpreadsheetEquipments } from './spreadsheet-view/hooks/use-spreadsheet-equipments';
 import { useNodeAliasesLoadFlowStatus } from './spreadsheet-view/hooks/use-node-aliases-loadflow-status';
@@ -19,7 +18,6 @@ import useStudyPath from 'hooks/use-study-path';
 import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 import { CustomAggridReduxProvider } from './custom-aggrid/custom-aggrid-redux-provider';
 import { RunButtonContainer } from './run-button-container';
-import StudyNavigationSyncToggle from './study-navigation-sync-toggle';
 
 const styles = {
     paneContainer: {
@@ -45,16 +43,6 @@ const styles = {
         gap: 1,
         p: 1,
     }),
-    '@global': {
-        '@keyframes spin': {
-            '0%': {
-                transform: 'rotate(0deg)',
-            },
-            '100%': {
-                transform: 'rotate(-360deg)',
-            },
-        },
-    },
 };
 
 const StudyPane = () => {
@@ -71,7 +59,6 @@ const StudyPane = () => {
     }, [fetchNodeAliases]);
     useUpdateEquipmentsOnNotification();
     useNodeAliasesUpdateOnNotification();
-    useResetSpreadsheetOnRootNetwork();
     useSpreadsheetEquipments();
     useNodeAliasesLoadFlowStatus();
 
@@ -81,7 +68,6 @@ const StudyPane = () => {
                 <Box sx={styles.breadCrumbs}>
                     <StudyPathBreadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
                     <Box sx={styles.studyControls}>
-                        <StudyNavigationSyncToggle />
                         {studyUuid && currentRootNetworkUuid && (
                             <RunButtonContainer
                                 studyUuid={studyUuid}

@@ -252,7 +252,10 @@ export default class NetworkModificationTreeModel {
                         label: node.name,
                         description: node.description,
                         globalBuildStatus: globalBuildStatus,
-                        ...(!isReactFlowRootNodeData(nodeToUpdate) && { localBuildStatus }), // Only include the attribute if node is a modification node (localBuildStatus is not defined for root node)
+                        ...(!isReactFlowRootNodeData(nodeToUpdate) && {
+                            localBuildStatus,
+                            hasReferencedModifications: modificationNodeData?.hasReferencedModifications,
+                        }), // Only include these attributes if node is a modification node (they are not defined for root node)
                         readOnly: node.readOnly,
                     },
                 };

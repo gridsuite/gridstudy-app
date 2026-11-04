@@ -15,7 +15,6 @@ import {
     ReactiveCapabilityCurvePoints,
     VoltageLevelCreationDto,
 } from '@gridsuite/commons-ui';
-import { VARIATION_TYPES } from '../components/network/constants';
 
 export interface WithModificationId {
     uuid: UUID;
@@ -27,31 +26,6 @@ export type VoltageLevelCreationInfo = VoltageLevelCreationDto & {
     isUpdate?: boolean;
     modificationUuid?: UUID;
 };
-
-type VariationFilter = {
-    id: string;
-    name: string;
-    specificMetadata: { type: string };
-};
-
-export type VariationType = keyof typeof VARIATION_TYPES;
-
-export interface ItemFilterType {
-    type?: string;
-    specificMetadata?: {
-        type?: string;
-        filterEquipmentsAttributes?: {
-            distributionKey?: number;
-        }[];
-    };
-}
-
-export interface Variations {
-    variationMode: string | null;
-    variationValue: number | null;
-    reactiveVariationMode: string | null;
-    filters: VariationFilter[];
-}
 
 export interface ConverterStationCreationInfos {
     equipmentId: string;
@@ -105,21 +79,6 @@ export interface DivideLineInfo {
     newLine2Name: string | null;
 }
 
-export interface LinesAttachToSplitLinesInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    uuid?: UUID;
-    lineToAttachTo1Id: string;
-    lineToAttachTo2Id: string;
-    attachedLineId: string;
-    voltageLevelId: string | null;
-    bbsBusId: string | null;
-    replacingLine1Id: string;
-    replacingLine1Name: string | null;
-    replacingLine2Id: string;
-    replacingLine2Name: string | null;
-}
-
 export interface VscCreationInfos {
     type: ModificationType;
     uuid?: string;
@@ -140,30 +99,6 @@ export interface VscCreationInfos {
     properties: Property[] | null;
 }
 
-type GenerationDispatchInfos = {
-    lossCoefficient: number | null;
-    defaultOutageRate: number | null;
-    generatorsWithoutOutage: Filter[] | null;
-    generatorsWithFixedSupply: Filter[] | null;
-    generatorsFrequencyReserve:
-        | {
-              generatorsFilters: Filter[];
-              frequencyReserve: number;
-          }[]
-        | null;
-    substationsGeneratorsOrdering:
-        | {
-              substationIds: string[];
-          }[]
-        | null;
-};
-
-export type GenerationDispatchModificationInfos = GenerationDispatchInfos & {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    uuid?: UUID;
-};
-
 export interface CreateVoltageLevelTopologyInfos {
     type: ModificationType;
     uuid?: string;
@@ -171,47 +106,3 @@ export interface CreateVoltageLevelTopologyInfos {
     sectionCount?: number | null;
     switchKinds?: string[] | null;
 }
-
-export type NetworkModificationRequestInfos = {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    modificationUuid?: UUID;
-};
-
-export enum ShiftEquipmentType {
-    LOAD = 'LOAD',
-    GENERATOR = 'GENERATOR',
-}
-
-export enum ShiftType {
-    PROPORTIONAL = 'PROPORTIONAL',
-    BALANCED = 'BALANCED',
-}
-
-export enum BalanceType {
-    PROPORTIONAL_TO_GENERATION_P = 'PROPORTIONAL_TO_GENERATION_P',
-    PROPORTIONAL_TO_GENERATION_P_MAX = 'PROPORTIONAL_TO_GENERATION_P_MAX',
-    PROPORTIONAL_TO_LOAD = 'PROPORTIONAL_TO_LOAD',
-    PROPORTIONAL_TO_CONFORM_LOAD = 'PROPORTIONAL_TO_CONFORM_LOAD',
-}
-
-export type BalancesAdjustmentZoneInfos = {
-    name: string;
-    countries: string[];
-    netPosition: number;
-    shiftEquipmentType: ShiftEquipmentType;
-    shiftType: ShiftType;
-};
-
-export type BalancesAdjustmentInfos = {
-    uuid: UUID | null;
-    maxNumberIterations: number;
-    thresholdNetPosition: number;
-    countriesToBalance: string[];
-    balanceType: BalanceType;
-    withLoadFlow: boolean;
-    loadFlowParametersId: string | null;
-    withRatioTapChangers: boolean;
-    subtractLoadFlowBalancing: boolean;
-    areas: BalancesAdjustmentZoneInfos[];
-};

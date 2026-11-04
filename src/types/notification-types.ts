@@ -81,6 +81,9 @@ export enum NotificationType {
     STATE_ESTIMATION_RESULT = 'stateEstimationResult',
     STATE_ESTIMATION_FAILED = 'stateEstimation_failed',
     STATE_ESTIMATION_STATUS = 'stateEstimation_status',
+    LOGICAL_CONTROLS_RESULT = 'logicalControlsResult',
+    LOGICAL_CONTROLS_FAILED = 'logicalControls_failed',
+    LOGICAL_CONTROLS_STATUS = 'logicalControls_status',
     PCC_MIN_RESULT = 'pccMinResult',
     PCC_MIN_FAILED = 'pccMin_failed',
     PCC_MIN_STATUS = 'pccMin_status',
@@ -484,7 +487,9 @@ export type TreeModelUpdateEventData =
     | NodesColumnPositionsChangedEventData
     | NodesDeletedEventData
     | NodesUpdatedEventData
-    | NodeEditedEventData;
+    | NodeEditedEventData
+    | ModificationsUpdateFinishedEventData
+    | ModificationsDeleteFinishedEventData;
 
 export interface ModificationsUpdateFinishedEventData extends CommonStudyEventData {
     headers: ModificationsUpdateFinishedEventDataHeaders;

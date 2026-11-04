@@ -41,7 +41,12 @@ import { getLoadFlowProvider, startLoadFlow, stopLoadFlow } from '../services/st
 import { startSecurityAnalysis, stopSecurityAnalysis } from '../services/study/security-analysis';
 import { startShortCircuitAnalysis, stopShortCircuitAnalysis } from '../services/study/short-circuit-analysis';
 import { startVoltageInit, stopVoltageInit } from '../services/study/voltage-init';
-import { startStateEstimation, stopStateEstimation } from '../services/study/state-estimation';
+import {
+    startLogicalControls,
+    startStateEstimation,
+    stopLogicalControls,
+    stopStateEstimation,
+} from '../services/study/state-estimation';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import {
@@ -64,6 +69,7 @@ import {
 } from '../services/study/dynamic-margin-calculation.ts';
 import useDebugSubscription from '../hooks/computation-debug/use-debug-subscription.ts';
 import useDebugNotification from '../hooks/computation-debug/use-debug-notification.ts';
+import useUserQuotaState from '../hooks/use-user-quota-state.ts';
 
 const COMPUTATIONS_WITH_PAGINATION = [
     ComputingType.SECURITY_ANALYSIS,
@@ -105,7 +111,10 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     );
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
     const stateEstimationStatus = useSelector((state) => state.computingStatus[ComputingType.STATE_ESTIMATION]);
+    const logicalControlsStatus = useSelector((state) => state.computingStatus[ComputingType.LOGICAL_CONTROLS]);
     const pccMinStatus = useSelector((state) => state.computingStatus[ComputingType.PCC_MIN]);
+
+    const userQuotaState = useUserQuotaState();
 
     const [computationStopped, setComputationStopped] = useState(false);
 
@@ -497,6 +506,25 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 },
             },
 
+            [ComputingType.LOGICAL_CONTROLS]: {
+                messageId: 'LogicalControls',
+                startComputation() {
+                    startComputationAsync(
+                        ComputingType.LOGICAL_CONTROLS,
+                        null,
+                        () => startLogicalControls(studyUuid, currentNode?.id, currentRootNetworkUuid),
+                        () => {},
+                        null,
+                        'startLogicalControlsError'
+                    );
+                },
+                actionOnRunnable() {
+                    actionOnRunnables(ComputingType.LOGICAL_CONTROLS, () =>
+                        stopLogicalControls(studyUuid, currentNode?.id, currentRootNetworkUuid)
+                    );
+                },
+            },
+
             [ComputingType.PCC_MIN]: {
                 messageId: 'PccMin',
                 startComputation() {
@@ -536,6 +564,17 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         [isLoadFlowBlocked, isComputationBlocked]
     );
 
+    const getReachedQuota = useCallback(
+        (runnableType) => {
+            // both load flows share the same quota
+            const quota =
+                userQuotaState[LOAD_FLOW_RUNNABLES.includes(runnableType) ? ComputingType.LOAD_FLOW : runnableType];
+            // a quota without max is not limited
+            return quota?.max != null && quota.current >= quota.max ? quota : undefined;
+        },
+        [userQuotaState]
+    );
+
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(
         (runnableType) => {
@@ -560,6 +599,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     return voltageInitStatus;
                 case ComputingType.STATE_ESTIMATION:
                     return stateEstimationStatus;
+                case ComputingType.LOGICAL_CONTROLS:
+                    return logicalControlsStatus;
                 case ComputingType.PCC_MIN:
                     return pccMinStatus;
                 default:
@@ -577,6 +618,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             dynamicMarginCalculationStatus,
             voltageInitStatus,
             stateEstimationStatus,
+            logicalControlsStatus,
             pccMinStatus,
         ]
     );
@@ -604,6 +646,9 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             ...(stateEstimationAvailability === OptionalServicesStatus.Up && isDeveloperMode
                 ? [ComputingType.STATE_ESTIMATION]
                 : []),
+            ...(stateEstimationAvailability === OptionalServicesStatus.Up && isDeveloperMode
+                ? [ComputingType.LOGICAL_CONTROLS]
+                : []),
             ...(pccMinAvailability === OptionalServicesStatus.Up ? [ComputingType.PCC_MIN] : []),
         ];
     }, [
@@ -627,6 +672,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             computationStopped={computationStopped}
             disabled={!isNodeRunnable}
             canRun={canRun}
+            getReachedQuota={getReachedQuota}
         />
     );
 }

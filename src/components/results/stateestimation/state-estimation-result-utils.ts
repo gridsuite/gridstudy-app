@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
 import { IntlShape } from 'react-intl';
-import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
-import { useSelector } from 'react-redux';
+import { ColDef } from 'ag-grid-community';
 import {
+    BooleanCellRenderer,
     CustomAggridComparatorFilter,
     makeAgGridCustomHeaderColumn,
     SortParams,
@@ -20,16 +19,21 @@ import {
     MeasurementInformationResult,
     MeasurementInformationResultDto,
     MeasurementType,
-    Bounds,
     QualityCriterionResult,
     ValidityType,
 } from './state-estimation-result.type';
-import { ColumnContext, numericFilterParams, textFilterParams } from '../../../types/custom-aggrid-types';
+import {
+    ColumnContext,
+    FILTER_DATA_TYPES,
+    numericFilterParams,
+    textFilterParams,
+} from '../../../types/custom-aggrid-types';
+import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
+import { booleanFilterParams } from '../../custom-aggrid/custom-aggrid-filters/boolean-filter-params';
 import {
     STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_RESULT_SORT_STORE,
 } from '../../../utils/store-sort-filter-fields';
-import type { AppState } from '../../../redux/reducer.type';
 
 interface TableParams {
     sortParams: SortParams;
@@ -68,39 +72,18 @@ const createColumnContext = (
     },
 });
 
-export const useInitialColumnSort = (tableName: string, enabled: boolean) => {
-    const [gridApi, setGridApi] = useState<GridApi>();
-    const sortConfig = useSelector(
-        (state: AppState) => state.tableSort[STATEESTIMATION_RESULT_SORT_STORE]?.[tableName]
-    );
-
-    useEffect(() => {
-        if (!enabled || !gridApi || gridApi.isDestroyed()) {
-            return;
-        }
-
-        gridApi.applyColumnState({
-            state: sortConfig?.map((columnSort, sortIndex) => ({ ...columnSort, sortIndex })) ?? [],
-            defaultState: { sort: null },
-        });
-    }, [enabled, gridApi, sortConfig]);
-
-    return useCallback(
-        (params: GridReadyEvent) => {
-            if (!enabled || !params.api || params.api.isDestroyed()) {
-                return;
-            }
-
-            setGridApi(params.api);
-        },
-        [enabled]
-    );
-};
-
 export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): ColDef[] => {
     const { sortParams, filterParams } = createTableParams(STATEESTIMATION_MEASUREMENTS);
 
     const getEnumLabel = (value: string) => (value ? intl.formatMessage({ id: value, defaultMessage: value }) : '');
+
+    const createNumericColumn = (field: string, headerId: string): ColDef =>
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: headerId }),
+            colId: field,
+            field,
+            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
+        });
 
     return [
         makeAgGridCustomHeaderColumn({
@@ -127,33 +110,26 @@ export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): Co
             sortParams,
             filterParams
         ),
+        createNumericColumn('currentValue', 'Value'),
+        createNumericColumn('estimatedValue', 'EstimatedValue'),
+        createNumericColumn('differenceValue', 'DifferenceValue'),
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Value' }),
-            colId: 'currentValue',
-            field: 'currentValue',
-            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
+            headerName: intl.formatMessage({ id: 'OutOfBound' }),
+            colId: 'outOfBound',
+            field: 'outOfBound',
+            filterParams: booleanFilterParams,
+            context: {
+                sortParams,
+                filterComponent: CustomAggridBooleanFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.BOOLEAN,
+                        ...filterParams,
+                    },
+                },
+            },
+            cellRenderer: BooleanCellRenderer,
         }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'EstimatedValue' }),
-            colId: 'estimatedValue',
-            field: 'estimatedValue',
-            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'DifferenceValue' }),
-            colId: 'differenceValue',
-            field: 'differenceValue',
-            context: createColumnContext(sortParams, filterParams, numericFilterParams, true, 2),
-        }),
-        createEnumColumn(
-            'outOfBound',
-            'OutOfBound',
-            Object.values(Bounds),
-            getEnumLabel,
-            intl,
-            sortParams,
-            filterParams
-        ),
     ];
 };
 
@@ -238,7 +214,7 @@ export function mapMeasurementResults(
             currentValue: measurementInformationResult.currentValue,
             estimatedValue: measurementInformationResult.estimatedValue,
             differenceValue: measurementInformationResult.differenceValue,
-            outOfBound: measurementInformationResult.outOfBound ? Bounds.OUT_OF_BOUNDS : Bounds.IN_BOUNDS,
+            outOfBound: measurementInformationResult.outOfBound,
         };
     });
 }

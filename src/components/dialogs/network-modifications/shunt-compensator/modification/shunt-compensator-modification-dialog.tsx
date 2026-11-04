@@ -51,6 +51,7 @@ export default function ShuntCompensatorModificationDialog({
     currentRootNetworkUuid,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<ShuntCompensatorModificationDialogProps>) {
@@ -193,6 +194,7 @@ export default function ShuntCompensatorModificationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={shuntCompensatorModificationFormSchema}
             {...formMethods}
             removeOptional

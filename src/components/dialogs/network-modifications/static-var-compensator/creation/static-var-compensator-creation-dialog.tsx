@@ -68,6 +68,7 @@ export default function StaticVarCompensatorCreationDialog({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<StaticVarCompensatorCreationDialogProps>) {
@@ -193,6 +194,7 @@ export default function StaticVarCompensatorCreationDialog({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             isNodeBuilt={isNodeBuilt(currentNode)}
             validationSchema={staticVarCompensatorCreationFormSchema}
             {...formMethods}

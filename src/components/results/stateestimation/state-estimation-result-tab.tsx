@@ -5,28 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
-import { computeLogicalControls, fetchStateEstimationResult } from '../../../services/study/state-estimation';
-import { LogicalControlsResultDto } from './logicalcontrols/logicalControls.types';
+import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
 import { AppState } from 'redux/reducer.type';
 import {
     ComputingType,
+    EquipmentType,
+    GlobalFilterType,
+    mergeSx,
     type MuiStyles,
     RunningStatus,
-    snackWithFallback,
     TableType,
-    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import StateEstimationResultTable from './state-estimation-result-table';
-import GlassPane from '../common/glass-pane';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import {
     mapMeasurementResults,
@@ -43,7 +41,21 @@ import {
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
 } from '../../../utils/store-sort-filter-fields';
-import { LogicalControlsResult } from './logicalcontrols/logical-controls-result';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
+import { StateEstimationMeasurements } from './state-estimation-measurements';
+
+const GLOBAL_FILTER_CATEGORIES = [
+    GlobalFilterType.VOLTAGE_LEVEL,
+    GlobalFilterType.COUNTRY,
+    GlobalFilterType.SUBSTATION_PROPERTY,
+    GlobalFilterType.SUBSTATION_OR_VL,
+];
+const GLOBAL_FILTER_EQUIPMENT_TYPES = [
+    EquipmentType.LINE,
+    EquipmentType.TWO_WINDINGS_TRANSFORMER,
+    EquipmentType.VOLTAGE_LEVEL,
+];
 
 const styles = {
     flexWrapper: {
@@ -61,11 +73,6 @@ const styles = {
     emptySpace: {
         flexGrow: 1,
     },
-    computeLogicalControlsButton: (theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(2),
-    }),
 } as const satisfies MuiStyles;
 
 export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps> = ({
@@ -79,10 +86,6 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
-    const { snackError } = useSnackMessage();
-
-    const [isRunningLogicalControls, setIsRunningLogicalControls] = useState(false);
-    const [logicalControlsResult, setLogicalControlsResult] = useState<LogicalControlsResultDto>();
 
     const { result: stateEstimationResult, isLoading: isLoadingResult } = useNodeData({
         studyUuid,
@@ -93,6 +96,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     });
 
     useComputationColumnFilters(TableType.StateEstimation, STATEESTIMATION_MEASUREMENTS);
+    const globalFilters = useComputationGlobalFilters(TableType.StateEstimation);
 
     const stateEstimationResultColumns = useMemo(() => {
         switch (tabIndex) {
@@ -132,31 +136,14 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
 
     const renderReportViewer = () => {
         return (
-            <GlassPane active={isLoadingResult}>
+            <>
                 {(stateEstimationStatus === RunningStatus.SUCCEED ||
                     stateEstimationStatus === RunningStatus.FAILED) && (
                     <ComputationReportViewer reportType={ComputingType.STATE_ESTIMATION} />
                 )}
-            </GlassPane>
+            </>
         );
     };
-
-    const runLogicalControls = useCallback(() => {
-        if (studyUuid && nodeUuid && currentRootNetworkUuid) {
-            setIsRunningLogicalControls(true);
-            setLogicalControlsResult(undefined);
-            computeLogicalControls(studyUuid, nodeUuid, currentRootNetworkUuid)
-                .then((results) => {
-                    setLogicalControlsResult(results);
-                })
-                .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'LogicalControlsComputationErrorMsg' });
-                })
-                .finally(() => {
-                    setIsRunningLogicalControls(false);
-                });
-        }
-    }, [nodeUuid, currentRootNetworkUuid, snackError, studyUuid]);
 
     return (
         <>
@@ -166,63 +153,48 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     <Tab label={<FormattedMessage id={'StateEstimationMeasurementResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityCriterionResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityPerRegionResults'} />} />
-                    <Tab label={<FormattedMessage id={'StateEstimationLogicalControlsResults'} />} />
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
-                {tabIndex === 4 && (
-                    <Box sx={styles.computeLogicalControlsButton}>
-                        <Button variant="outlined" onClick={runLogicalControls} disabled={isRunningLogicalControls}>
-                            <FormattedMessage id="StateEstimationRunLogicalControls" />
-                        </Button>
-                    </Box>
-                )}
+                <Box sx={mergeSx(styles.flexElement, tabIndex === 1 ? styles.show : styles.hide)}>
+                    <GlobalFilterSelector
+                        filterCategories={GLOBAL_FILTER_CATEGORIES}
+                        filterableEquipmentTypes={GLOBAL_FILTER_EQUIPMENT_TYPES}
+                        genericFiltersStrictMode={true}
+                        tableType={TableType.StateEstimation}
+                    />
+                </Box>
                 <Box sx={styles.emptySpace}></Box>
             </Box>
 
             {tabIndex === 0 && <StateEstimationStatusResult result={result} />}
             {tabIndex === 1 && (
-                <GlassPane active={isLoadingResult}>
-                    <StateEstimationResultTable
-                        result={result}
-                        isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationResultColumns}
-                        tableName={STATEESTIMATION_MEASUREMENTS}
-                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                        filter={true}
-                        sortable={true}
-                    />
-                </GlassPane>
+                <StateEstimationMeasurements
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    rootNetworkUuid={currentRootNetworkUuid}
+                    globalFilters={globalFilters}
+                    columnDefs={stateEstimationResultColumns}
+                />
             )}
             {tabIndex === 2 && (
-                <GlassPane active={isLoadingResult}>
-                    <StateEstimationResultTable
-                        result={result}
-                        isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationResultColumns}
-                        tableName={STATEESTIMATION_QUALITY_CRITERION}
-                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                    />
-                </GlassPane>
-            )}
-            {tabIndex === 3 && (
-                <GlassPane active={isLoadingResult}>
-                    <StateEstimationResultTable
-                        result={result}
-                        isLoadingResult={isLoadingResult}
-                        columnDefs={stateEstimationResultColumns}
-                        tableName={STATEESTIMATION_QUALITY_PER_REGION}
-                        exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
-                    />
-                </GlassPane>
-            )}
-            {tabIndex === 4 && (
-                <LogicalControlsResult
-                    result={logicalControlsResult}
-                    isLoadingResult={isRunningLogicalControls}
+                <StateEstimationResultTable
+                    result={result}
+                    isLoadingResult={isLoadingResult}
+                    columnDefs={stateEstimationResultColumns}
+                    tableName={STATEESTIMATION_QUALITY_CRITERION}
                     exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
                 />
             )}
-            {tabIndex === 5 && renderReportViewer()}
+            {tabIndex === 3 && (
+                <StateEstimationResultTable
+                    result={result}
+                    isLoadingResult={isLoadingResult}
+                    columnDefs={stateEstimationResultColumns}
+                    tableName={STATEESTIMATION_QUALITY_PER_REGION}
+                    exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                />
+            )}
+            {tabIndex === 4 && renderReportViewer()}
         </>
     );
 };

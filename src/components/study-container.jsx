@@ -39,7 +39,6 @@ import {
     useNotificationsListener,
     useSnackMessage,
     BuildStatus,
-    fetchUserQuotaState,
 } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType } from './graph/util/model-functions';
@@ -47,6 +46,7 @@ import { useAllComputingStatus } from './computing-status/use-all-computing-stat
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { useTreeModelSync } from '../hooks/use-tree-model-sync';
 import { useNodeActivitySync } from 'components/node-activity/hooks/use-node-activity-sync';
+import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-spreadsheet-on-root-network';
 import {
     fetchNetworkExistence,
     fetchRootNetworkIndexationStatus,
@@ -71,6 +71,7 @@ import { saveStudyAccessTimestamp } from '../redux/session-storage/local-storage
 import { getLastRootNetworkUuid } from 'redux/session-storage/last-root-network-local-storage';
 import { getLastTreeNodeUuid } from 'redux/session-storage/last-tree-node-local-storage';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
+import { useRootNetworkNotifications } from './graph/menus/root-network/use-root-network-notifications';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -173,6 +174,8 @@ export function StudyContainer() {
     useExportNotification();
     useTreeModelSync(studyUuid);
     useNodeActivitySync(studyUuid);
+    useResetSpreadsheetOnRootNetwork();
+    useRootNetworkNotifications();
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -244,6 +247,11 @@ export function StudyContainer() {
             if (updateTypeHeader === NotificationType.STATE_ESTIMATION_FAILED) {
                 snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'stateEstimationError',
+                });
+            }
+            if (updateTypeHeader === NotificationType.LOGICAL_CONTROLS_FAILED) {
+                snackWithFallback(snackError, parseError(errorMessage), {
+                    headerId: 'logicalControlsError',
                 });
             }
             if (updateTypeHeader === NotificationType.PCC_MIN_FAILED) {
@@ -505,34 +513,6 @@ export function StudyContainer() {
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: handleEvent,
-    });
-
-    const handleQuotaEvent = useCallback(
-        (event) => {
-            const eventData = parseEventData(event);
-            const quotaType = eventData.headers.quotaType;
-
-            fetchUserQuotaState(userName)
-                .then((response) => {
-                    const currentComputationQuota = response[quotaType];
-
-                    if (currentComputationQuota != null) {
-                        if (currentComputationQuota.current >= currentComputationQuota.max) {
-                            console.debug('Quota reached', quotaType, currentComputationQuota);
-                        } else {
-                            console.debug('Quota available', quotaType, currentComputationQuota);
-                        }
-                    }
-                })
-                .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'NodeUnbuildingError' });
-                });
-        },
-        [userName, snackError]
-    );
-
-    useNotificationsListener(NotificationsUrlKeys.QUOTA, {
-        listenerCallbackMessage: handleQuotaEvent,
     });
 
     useEffect(() => {

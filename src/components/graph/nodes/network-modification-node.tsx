@@ -21,7 +21,7 @@ import { BlockingActivitySpinner } from 'components/node-activity/components/blo
 import { useIsBuildBlocked, useNodeActivity } from 'components/node-activity/hooks/use-node-activity';
 
 import { BuildButton } from './build-button';
-import { Tooltip, Typography } from '@mui/material';
+import { Divider, Tooltip, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
@@ -41,6 +41,23 @@ const styles = {
         border: theme.node.modification.border,
         ...interactiveNodeStyles(theme, 'modification'),
     }),
+    // double border : the node contains at least one shared modification
+    containsSharedModifications: (theme) => ({
+        border: 'none',
+        outline: theme.node.modification.border,
+        outlineStyle: 'double',
+        outlineWidth: '6px',
+    }),
+    containsSharedModificationsSelected: (theme) => ({
+        border: 'none',
+        outline: theme.node.modification.selectedBorder,
+        outlineStyle: 'double',
+        outlineWidth: '6px',
+    }),
+    tooltipDivider: {
+        my: 0.5,
+        borderColor: 'white',
+    },
     contentBox: (theme) => ({
         flexGrow: 1,
         display: 'flex',
@@ -105,6 +122,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
 
     const activity = useNodeActivity(props.id);
     const isBuildBlocked = useIsBuildBlocked(props.id, props.data);
+    const hasReferencedModifications = props.data.hasReferencedModifications ?? false;
 
     const onClipboardCopy = useCallback(() => {
         snackInfo({ headerId: 'uuidCopiedToClipboard' });
@@ -139,6 +157,13 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 <Box>
                     {intl.formatMessage({ id: 'nodeType' })} : {intl.formatMessage({ id: props.data.nodeType })}
                 </Box>
+                {hasReferencedModifications && (
+                    <>
+                        <Divider sx={styles.tooltipDivider} />
+                        <Box>{intl.formatMessage({ id: 'nodeContainsSharedModifications' })}</Box>
+                        <Divider sx={styles.tooltipDivider} />
+                    </>
+                )}
                 <Box
                     sx={{
                         cursor: 'pointer',
@@ -154,7 +179,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 </Box>
             </Box>
         );
-    }, [props.data, props.id, intl, onClipboardCopy, onClipboardError]);
+    }, [props.data, props.id, intl, onClipboardCopy, onClipboardError, hasReferencedModifications]);
 
     const getNodeOpacity = () => {
         return isSelectedForCut() ? (getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6) : 'unset';
@@ -187,6 +212,10 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 <ForwardRefBox
                     sx={[
                         isSelectedNode() ? styles.networkModificationSelected : styles.networkModification,
+                        hasReferencedModifications &&
+                            (isSelectedNode()
+                                ? styles.containsSharedModificationsSelected
+                                : styles.containsSharedModifications),
                         { opacity: getNodeOpacity() },
                     ]}
                 >
