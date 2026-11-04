@@ -116,14 +116,35 @@ const stateEstimationStatusCompletions = [
 const pccMinStatusCompletions = [NotificationType.PCC_MIN_RESULT, NotificationType.PCC_MIN_FAILED];
 
 // result invalidations
-export const loadflowResultInvalidations = [NotificationType.LOADFLOW_RESULT];
-export const securityAnalysisResultInvalidations = [NotificationType.SECURITY_ANALYSIS_RESULT];
-export const dynamicSimulationResultInvalidations = [NotificationType.DYNAMIC_SIMULATION_RESULT];
-export const dynamicSecurityAnalysisResultInvalidations = [NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT];
-export const dynamicMarginCalculationResultInvalidations = [NotificationType.DYNAMIC_MARGIN_CALCULATION_RESULT];
-export const voltageInitResultInvalidations = [NotificationType.VOLTAGE_INIT_RESULT];
-export const stateEstimationResultInvalidations = [NotificationType.STATE_ESTIMATION_RESULT];
-export const pccMinResultInvalidations = [NotificationType.PCC_MIN_RESULT];
+export const loadflowResultInvalidations = [
+    NotificationType.LOADFLOW_RESULT,
+    NotificationType.NODE_BUILD_STATUS_UPDATED,
+];
+export const securityAnalysisResultInvalidations = [
+    NotificationType.SECURITY_ANALYSIS_RESULT,
+    NotificationType.NODE_BUILD_STATUS_UPDATED,
+];
+export const dynamicSimulationResultInvalidations = [
+    NotificationType.DYNAMIC_SIMULATION_RESULT,
+    NotificationType.NODE_BUILD_STATUS_UPDATED,
+];
+export const dynamicSecurityAnalysisResultInvalidations = [
+    NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT,
+    NotificationType.NODE_BUILD_STATUS_UPDATED,
+];
+export const dynamicMarginCalculationResultInvalidations = [
+    NotificationType.DYNAMIC_MARGIN_CALCULATION_RESULT,
+    NotificationType.NODE_BUILD_STATUS_UPDATED,
+];
+export const voltageInitResultInvalidations = [
+    NotificationType.VOLTAGE_INIT_RESULT,
+    NotificationType.NODE_BUILD_STATUS_UPDATED,
+];
+export const stateEstimationResultInvalidations = [
+    NotificationType.STATE_ESTIMATION_RESULT,
+    NotificationType.NODE_BUILD_STATUS_UPDATED,
+];
+export const pccMinResultInvalidations = [NotificationType.PCC_MIN_RESULT, NotificationType.NODE_BUILD_STATUS_UPDATED];
 
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
 export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): void => {
