@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useMemo, useState } from 'react';
+import { FunctionComponent, RefObject, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, GridReadyEvent } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
 import { buildValidGlobalFilters, ComputingType, type GlobalFilter, RunningStatus } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer.type';
 import { useNodeData } from '../../use-node-data';
@@ -25,6 +26,9 @@ interface StateEstimationMeasurementsProps {
     rootNetworkUuid: UUID;
     globalFilters: GlobalFilter[];
     columnDefs: ColDef<any>[];
+    gridRef?: RefObject<AgGridReact | null>;
+    onGridReady?: (params: GridReadyEvent) => void;
+    onLoadingChange?: (isLoading: boolean) => void;
 }
 
 type MeasurementsQueryResult = { query: object; rows: MeasurementInformationResultDto[] };
@@ -35,6 +39,9 @@ export const StateEstimationMeasurements: FunctionComponent<StateEstimationMeasu
     rootNetworkUuid,
     globalFilters,
     columnDefs,
+    gridRef,
+    onGridReady,
+    onLoadingChange,
 }) => {
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
@@ -79,6 +86,10 @@ export const StateEstimationMeasurements: FunctionComponent<StateEstimationMeasu
     );
     const isLoadingRows = !isSettled || isLoading;
 
+    useEffect(() => {
+        onLoadingChange?.(isLoadingRows);
+    }, [isLoadingRows, onLoadingChange]);
+
     return (
         <StateEstimationResultTable
             measurementRows={measurementRows}
@@ -88,6 +99,8 @@ export const StateEstimationMeasurements: FunctionComponent<StateEstimationMeasu
             exportCsvResetKey={`${studyUuid}-${nodeUuid}-${rootNetworkUuid}-${criteria}`}
             filter={true}
             sortable={true}
+            gridRef={gridRef}
+            onGridReady={onGridReady}
         />
     );
 };
