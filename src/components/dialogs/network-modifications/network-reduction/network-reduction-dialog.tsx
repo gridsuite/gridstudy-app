@@ -38,6 +38,7 @@ export function NetworkReductionDialog({
     currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
+    isReadOnly = false,
     ...dialogProps
 }: Readonly<NetworkReductionDialogProps>) {
     const currentNodeUuid = currentNode?.id;
@@ -81,7 +82,12 @@ export function NetworkReductionDialog({
     });
 
     return (
-        <CustomFormProvider validationSchema={networkReductionFormSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider
+            isReadOnly={isReadOnly}
+            validationSchema={networkReductionFormSchema}
+            removeOptional={true}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
