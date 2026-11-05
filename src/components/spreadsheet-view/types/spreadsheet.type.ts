@@ -62,7 +62,7 @@ export type ColumnDefinition = {
     formula: string;
     dependencies?: string[];
     visible: boolean;
-    locked?: boolean;
+    locked: boolean;
 };
 
 export type ColumnDefinitionDto = Omit<ColumnDefinition, 'dependencies'> & {
@@ -79,6 +79,7 @@ export type ColumnDefinitionDto = Omit<ColumnDefinition, 'dependencies'> & {
 export type ColumnStateDto = {
     columnId: UUID;
     visible: boolean;
+    locked: boolean;
     order: number;
 };
 
