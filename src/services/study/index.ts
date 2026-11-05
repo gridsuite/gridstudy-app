@@ -15,8 +15,8 @@ import {
     ComputingType,
     ContingencyCount,
     EquipmentType,
+    ExportFormatProperties,
     ExtendedEquipmentType,
-    Parameter,
     safeEncodeURIComponent,
 } from '@gridsuite/commons-ui';
 import {
@@ -310,11 +310,6 @@ export const insertCompositeModifications = (
     });
 };
 
-export interface ExportFormatProperties {
-    formatName: string;
-    parameters: Parameter[];
-}
-
 export function getAvailableExportFormats(): Promise<Record<string, ExportFormatProperties>> {
     console.info('get export formats');
     const getExportFormatsUrl = PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
@@ -380,6 +375,19 @@ export function getUniqueNodeName(studyUuid: UUID) {
     const uniqueNodeNameUrl = getStudyUrl(studyUuid) + '/nodes/nextUniqueName';
     console.debug(uniqueNodeNameUrl);
     return backendFetchText(uniqueNodeNameUrl);
+}
+
+export function unshareAllReferencesInStudy(studyUuid: UUID) {
+    const url = getStudyUrl(studyUuid) + '/unshare';
+    console.debug(url);
+    return backendFetchText(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: null,
+    });
 }
 
 export function getOptionalServices() {

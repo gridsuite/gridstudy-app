@@ -5,21 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { type ReactElement, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer.type';
-import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
-import { useSelectedGlobalFilters } from '../../../../results/common/global-filter/hooks/use-selected-global-filters';
+import { AppState } from '../../../redux/reducer.type';
+import { type FilterChangedEvent, type GridApi, type ModelUpdatedEvent } from 'ag-grid-community';
 
-import { isCriteriaFilterType, TableType } from '@gridsuite/commons-ui';
+import {
+    buildValidGlobalFilters,
+    type FilterConfig,
+    type GlobalFilter,
+    isCriteriaFilterType,
+} from '@gridsuite/commons-ui';
 
 type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact | null>;
-    tableDefinition: SpreadsheetTabDefinition;
+    globalFilters: GlobalFilter[];
+    columnsFilters: FilterConfig[] | undefined;
+    // to be given when the global filters are applied outside the grid: number of rows before any filter is applied
+    unfilteredRowCount?: number;
     disabled: boolean;
     // true while the grid data is not yet trustworthy: the global filter is still being evaluated and/or the
     // equipments are still being fetched. The counter must not finalize a count until it turns false.
@@ -31,31 +37,36 @@ export type UseFilteredRowCounterInfoReturn = {
     isAnyFilterPresent: boolean;
     rowCountLabel: string | undefined;
     tooltipContent: ReactElement | undefined;
-    registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
+    registerRowCounterEvents: (params: { api: GridApi }) => void;
     displayedRows: number | null;
 };
 
 export function useFilteredRowCounterInfo({
     gridRef,
-    tableDefinition,
+    globalFilters,
+    columnsFilters,
+    unfilteredRowCount,
     disabled,
     isDataPending,
 }: UseFilteredRowCounterInfoParams): UseFilteredRowCounterInfoReturn {
     const intl = useIntl();
     const [displayedRows, setDisplayedRows] = useState<number | null>(null);
-    const [totalRows, setTotalRows] = useState<number | null>(null);
+    const [gridTotalRows, setGridTotalRows] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [isAnyFilterPresent, setIsAnyFilterPresent] = useState(false);
+    const [isAnyGridFilterPresent, setIsAnyGridFilterPresent] = useState(false);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const globalFilterSpreadsheetState = useSelectedGlobalFilters(tableDefinition.uuid);
-    const spreadsheetColumnsFiltersState = useSelector(
-        (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet]?.[tableDefinition?.uuid]
-    );
+    const totalRows = unfilteredRowCount ?? gridTotalRows;
+    const isAnyFilterPresent =
+        isAnyGridFilterPresent || (unfilteredRowCount !== undefined && buildValidGlobalFilters(globalFilters) != null);
 
     const isDataPendingRef = useRef(isDataPending);
+    const latestRef = useRef({ currentNode, disabled });
+    useEffect(() => {
+        latestRef.current = { currentNode, disabled };
+    }, [currentNode, disabled]);
 
     // Update is debounced to avoid displayed row count falsely set to 0 because of AG Grid internal behaviour which briefly set row count to 0 in between filters
     const debouncedUpdateRowCounter = useMemo(
@@ -66,19 +77,22 @@ export function useFilteredRowCounterInfo({
                 if (isDataPendingRef.current) {
                     return;
                 }
-                if (!gridRef.current?.api || !currentNode || disabled) {
+                const latest = latestRef.current;
+                if (!gridRef.current?.api || !latest.currentNode || latest.disabled) {
                     setDisplayedRows(0);
-                    setTotalRows(0);
+                    setGridTotalRows(0);
                     setIsLoading(false);
                     return;
                 }
                 const api = gridRef.current.api;
                 setDisplayedRows(api.getDisplayedRowCount());
-                setTotalRows(api.getGridOption('rowData')?.length ?? 0);
+                setGridTotalRows(api.getGridOption('rowData')?.length ?? 0);
                 setIsLoading(false);
             }, 600),
-        [gridRef, currentNode, disabled]
+        [gridRef]
     );
+
+    useEffect(() => () => debouncedUpdateRowCounter.clear(), [debouncedUpdateRowCounter]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -89,33 +103,35 @@ export function useFilteredRowCounterInfo({
     // spins once instead of twice.
     useEffect(() => {
         isDataPendingRef.current = isDataPending;
-        if (!isDataPending) {
+        if (isDataPending) {
+            setIsLoading(true);
+        } else {
             // the updates skipped while pending are replayed here, even if AG Grid emits no further event
             debouncedUpdateRowCounter();
         }
     }, [debouncedUpdateRowCounter, isDataPending]);
 
     const onFilterChanged = useCallback((event: FilterChangedEvent) => {
-        setIsAnyFilterPresent(event.api.isAnyFilterPresent());
+        setIsAnyGridFilterPresent(event.api.isAnyFilterPresent());
         setIsLoading(true);
     }, []);
 
     const onModelUpdated = useCallback(
         (event: ModelUpdatedEvent) => {
-            setIsAnyFilterPresent(event.api.isAnyFilterPresent());
+            setIsAnyGridFilterPresent(event.api.isAnyFilterPresent());
             debouncedUpdateRowCounter();
         },
         [debouncedUpdateRowCounter]
     );
 
     const registerRowCounterEvents = useCallback(
-        (params: RowDataUpdatedEvent) => {
+        (params: { api: GridApi }) => {
             params.api.addEventListener('filterChanged', onFilterChanged);
             params.api.addEventListener('modelUpdated', onModelUpdated);
 
             //Initial display of counter
             debouncedUpdateRowCounter();
-            setIsAnyFilterPresent(params.api.isAnyFilterPresent());
+            setIsAnyGridFilterPresent(params.api.isAnyFilterPresent());
         },
         [debouncedUpdateRowCounter, onFilterChanged, onModelUpdated]
     );
@@ -141,7 +157,7 @@ export function useFilteredRowCounterInfo({
         if (isCounterLoading || !isAnyFilterPresent) {
             return;
         }
-        const gsFilterByType = globalFilterSpreadsheetState?.reduce<Record<string, string[]>>((acc, item) => {
+        const gsFilterByType = globalFilters.reduce<Record<string, string[]>>((acc, item) => {
             acc[item.filterType] = acc[item.filterType] || [];
             acc[item.filterType].push(item.label);
             return acc;
@@ -158,9 +174,9 @@ export function useFilteredRowCounterInfo({
             }
         }
 
-        if (spreadsheetColumnsFiltersState?.length > 0) {
+        if (columnsFilters?.length) {
             lines.push(`${intl.formatMessage({ id: 'ColumnsFilters' })} : `);
-            for (const filterModel of spreadsheetColumnsFiltersState) {
+            for (const filterModel of columnsFilters) {
                 const headerName =
                     gridRef.current?.api.getColumn(filterModel.column)?.getColDef()?.headerName ?? filterModel.column;
                 lines.push(
@@ -172,14 +188,7 @@ export function useFilteredRowCounterInfo({
             }
         }
         return <span style={{ whiteSpace: 'pre-line' }}>{lines.join('\n')}</span>;
-    }, [
-        globalFilterSpreadsheetState,
-        gridRef,
-        intl,
-        isAnyFilterPresent,
-        isCounterLoading,
-        spreadsheetColumnsFiltersState,
-    ]);
+    }, [globalFilters, gridRef, intl, isAnyFilterPresent, isCounterLoading, columnsFilters]);
 
     const tooltipContent = useMemo(
         () =>

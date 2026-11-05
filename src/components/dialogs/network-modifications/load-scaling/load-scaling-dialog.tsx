@@ -32,6 +32,7 @@ interface LoadScalingDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     isUpdate: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus?: string;
     editData?: VariationScalingDto;
 }
@@ -41,6 +42,7 @@ const LoadScalingDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: LoadScalingDialogProps) => {
@@ -80,7 +82,7 @@ const LoadScalingDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider validationSchema={loadScalingFormSchema} {...formMethods}>
+        <CustomFormProvider isReadOnly={isReadOnly} validationSchema={loadScalingFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

@@ -205,6 +205,7 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                     onClose={closeModificationDialog}
                     editData={undefined}
                     editDataFetchStatus={undefined}
+                    isReadOnly={false}
                 />
             )
         );
@@ -225,6 +226,7 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                     onClose={closeDeletionDialog}
                     editData={undefined}
                     editDataFetchStatus={undefined}
+                    isReadOnly={false}
                     defaultIdValue={equipmentToDelete.equipmentId as UUID}
                     equipmentType={equipmentToDelete.equipmentType}
                 />

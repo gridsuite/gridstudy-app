@@ -60,6 +60,7 @@ const EquipmentDeletionDialog = ({
     currentRootNetworkUuid,
     editData,
     isUpdate,
+    isReadOnly = false,
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD/map
     equipmentType,
     editDataFetchStatus,
@@ -160,7 +161,7 @@ const EquipmentDeletionDialog = ({
     );
 
     return (
-        <CustomFormProvider validationSchema={equipmentDeletionFormSchema} {...formMethods}>
+        <CustomFormProvider isReadOnly={isReadOnly} validationSchema={equipmentDeletionFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

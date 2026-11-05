@@ -5,18 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { RefObject } from 'react';
+import { type RefObject, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Grid } from '@mui/material';
-import { type MuiStyles } from '@gridsuite/commons-ui';
+import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { ColumnsConfig } from './columns-config';
 import ColumnCreationButton from './column-creation-button';
 import SaveSpreadsheetButton from './save/save-spreadsheet-button';
 import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
-import { FilteredRowCounter } from './row-counter/filtered-row-counter';
-import { UseFilteredRowCounterInfoReturn } from './row-counter/use-filtered-row-counter';
+import { FilteredRowCounter } from '../../../utils/row-counter/filtered-row-counter';
+import { UseFilteredRowCounterInfoReturn } from '../../../utils/row-counter/use-filtered-row-counter';
 import { CustomColDef } from '../../../../types/custom-aggrid-types';
+import { AppState } from '../../../../redux/reducer.type';
+import { resetSpreadsheetColumnsFilters } from '../../../../services/study/study-config';
 
 const styles = {
     toolbar: (theme) => ({
@@ -47,13 +50,24 @@ export const SpreadsheetToolbar = ({
     columns,
     disabled,
 }: SpreadsheetToolbarProps) => {
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const { snackError } = useSnackMessage();
+
+    const handleResetFilters = useCallback(() => {
+        if (studyUuid) {
+            resetSpreadsheetColumnsFilters(studyUuid, tableDefinition.uuid).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'spreadsheet/reset_filters_error' });
+            });
+        }
+    }, [snackError, studyUuid, tableDefinition.uuid]);
+
     return (
         <Grid container columnSpacing={2} sx={styles.toolbar}>
             <Grid sx={styles.filterContainer}>
                 <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
             </Grid>
             <Grid>
-                <FilteredRowCounter rowCounterInfos={rowCounterInfos} tableDefinition={tableDefinition} />
+                <FilteredRowCounter rowCounterInfos={rowCounterInfos} onResetFilters={handleResetFilters} />
             </Grid>
             <Grid>
                 <ColumnsConfig

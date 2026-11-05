@@ -26,27 +26,39 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultTableProps } from './state-estimation-result.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
-import { useInitialColumnSort } from './state-estimation-result-utils';
-import { RowClassParams } from 'ag-grid-community';
+import { useInitialColumnSort } from '../common/use-initial-column-sort';
+import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 import {
     STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
+    STATEESTIMATION_RESULT_SORT_STORE,
 } from '../../../utils/store-sort-filter-fields';
 
 const StateEstimationResultTable: FunctionComponent<StateEstimationResultTableProps> = ({
     result,
+    measurementRows,
     isLoadingResult,
     columnDefs,
     tableName,
     exportCsvResetKey,
     filter = false,
     sortable = false,
+    gridRef: externalGridRef,
+    onGridReady,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
-    const gridRef = useRef<AgGridReact>(null);
-    const handleOnGridReady = useInitialColumnSort(tableName, sortable);
+    const internalGridRef = useRef<AgGridReact>(null);
+    const gridRef = externalGridRef ?? internalGridRef;
+    const handleInitialColumnSort = useInitialColumnSort(STATEESTIMATION_RESULT_SORT_STORE, tableName, sortable);
+    const handleOnGridReady = useCallback(
+        (params: GridReadyEvent) => {
+            handleInitialColumnSort(params);
+            onGridReady?.(params);
+        },
+        [handleInitialColumnSort, onGridReady]
+    );
 
     const tableNameFormatted = intl.formatMessage({ id: tableName });
 
@@ -95,11 +107,11 @@ const StateEstimationResultTable: FunctionComponent<StateEstimationResultTablePr
     const rowsToShow = (() => {
         switch (tableName) {
             case STATEESTIMATION_MEASUREMENTS:
-                return result.measurementInformationResults ?? [];
+                return measurementRows ?? result?.measurementInformationResults ?? [];
             case STATEESTIMATION_QUALITY_CRITERION:
-                return result.qualityCriterionResults ?? [];
+                return result?.qualityCriterionResults ?? [];
             case STATEESTIMATION_QUALITY_PER_REGION:
-                return result.qualityPerRegionResults ?? [];
+                return result?.qualityPerRegionResults ?? [];
             default:
                 return [];
         }
@@ -124,6 +136,7 @@ const StateEstimationResultTable: FunctionComponent<StateEstimationResultTablePr
                 onGridReady={handleOnGridReady}
                 exportCsvResetKey={exportCsvResetKey}
                 language={language}
+                formattedExport={true}
             />
         </>
     );

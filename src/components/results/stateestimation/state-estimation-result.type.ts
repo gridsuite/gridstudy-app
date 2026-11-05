@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ColDef } from 'ag-grid-community';
+import { ColDef, GridReadyEvent } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
 import type { UUID } from 'node:crypto';
-import { Key } from 'react';
+import { Key, RefObject } from 'react';
 
 export interface QualityCriterionResult {
     type: string;
@@ -44,11 +45,6 @@ export enum ValidityType {
     INV = 'INV',
 }
 
-export enum Bounds {
-    IN_BOUNDS = 'IN_BOUNDS',
-    OUT_OF_BOUNDS = 'OUT_OF_BOUNDS',
-}
-
 export interface MeasurementInformationResultDto {
     equipmentId: string;
     measurementType: string;
@@ -66,7 +62,7 @@ export interface MeasurementInformationResult {
     currentValue: number;
     estimatedValue: number;
     differenceValue: number;
-    outOfBound: Bounds;
+    outOfBound: boolean;
 }
 
 export interface StateEstimationResult {
@@ -85,13 +81,17 @@ export interface StateEstimationTabProps {
     currentRootNetworkUuid: UUID;
 }
 
-export interface StateEstimationResultTableProps extends StateEstimationStatusResultProps {
+export interface StateEstimationResultTableProps extends Partial<StateEstimationStatusResultProps> {
+    // When defined, the measurement table shows exactly these rows and never the ones embedded in `result`
+    measurementRows?: MeasurementInformationResult[];
     isLoadingResult: boolean;
     columnDefs: ColDef<any>[];
     tableName: string;
     exportCsvResetKey: Key;
     filter?: boolean;
     sortable?: boolean;
+    gridRef?: RefObject<AgGridReact | null>;
+    onGridReady?: (params: GridReadyEvent) => void;
 }
 
 export interface StateEstimationStatusResultProps {

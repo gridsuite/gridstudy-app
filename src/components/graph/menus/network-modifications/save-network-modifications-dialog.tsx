@@ -14,10 +14,8 @@ import {
     type IElementUpdateDialog,
     isReferenceModification,
     ModificationType,
-    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 export interface SaveNetworkModificationsDialogProps {
     open: boolean;
@@ -42,8 +40,6 @@ export default function SaveNetworkModificationsDialog({
     onSaveShared,
     onUpdate,
 }: Readonly<SaveNetworkModificationsDialogProps>) {
-    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
     const hasReference = selectedModifications.some(
         (modification) => isReferenceModification(modification) || containsReferenceModification(modification)
     );
@@ -55,7 +51,7 @@ export default function SaveNetworkModificationsDialog({
         selectedModifications[0].type === ModificationType.COMPOSITE_MODIFICATION &&
         !selectedModifications[0].parentSharedUuid;
 
-    const isSharingAvailable = isDeveloperMode && isSelectedCompositeShareable && !hasReference;
+    const isSharingAvailable = isSelectedCompositeShareable && !hasReference;
 
     return (
         <ElementSaveDialog

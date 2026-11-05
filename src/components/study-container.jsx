@@ -71,6 +71,7 @@ import { saveStudyAccessTimestamp } from '../redux/session-storage/local-storage
 import { getLastRootNetworkUuid } from 'redux/session-storage/last-root-network-local-storage';
 import { getLastTreeNodeUuid } from 'redux/session-storage/last-tree-node-local-storage';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
+import { useRootNetworkNotifications } from './graph/menus/root-network/use-root-network-notifications';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -174,6 +175,7 @@ export function StudyContainer() {
     useTreeModelSync(studyUuid);
     useNodeActivitySync(studyUuid);
     useResetSpreadsheetOnRootNetwork();
+    useRootNetworkNotifications();
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -245,6 +247,11 @@ export function StudyContainer() {
             if (updateTypeHeader === NotificationType.STATE_ESTIMATION_FAILED) {
                 snackWithFallback(snackError, parseError(errorMessage), {
                     headerId: 'stateEstimationError',
+                });
+            }
+            if (updateTypeHeader === NotificationType.LOGICAL_CONTROLS_FAILED) {
+                snackWithFallback(snackError, parseError(errorMessage), {
+                    headerId: 'logicalControlsError',
                 });
             }
             if (updateTypeHeader === NotificationType.PCC_MIN_FAILED) {

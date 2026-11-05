@@ -56,6 +56,7 @@ interface VoltageLevelModificationDialogProps {
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
     isUpdate: boolean;
+    isReadOnly?: boolean;
     editDataFetchStatus?: FetchStatusType;
     [key: string]: any;
 }
@@ -67,6 +68,7 @@ const VoltageLevelModificationDialog = ({
     currentRootNetworkUuid,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: VoltageLevelModificationDialogProps) => {
@@ -297,6 +299,7 @@ const VoltageLevelModificationDialog = ({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             validationSchema={voltageLevelModificationWithMeasurementsFormSchema as any}
             removeOptional={true}
             {...formMethods}

@@ -38,6 +38,7 @@ const ModificationByAssignmentDialog: FC<ModificationByAssignmentDialogProps> = 
     currentNode,
     studyUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }) => {
@@ -80,7 +81,11 @@ const ModificationByAssignmentDialog: FC<ModificationByAssignmentDialogProps> = 
     );
 
     return (
-        <CustomFormProvider validationSchema={modificationByAssignmentFormSchema} {...formMethods}>
+        <CustomFormProvider
+            isReadOnly={isReadOnly}
+            validationSchema={modificationByAssignmentFormSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}

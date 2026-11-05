@@ -84,6 +84,7 @@ export interface TwoWindingsTransformerModificationDialogProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
+    isReadOnly?: boolean;
     editData?: TwoWindingsTransformerModificationDtoWithId;
     editDataFetchStatus?: FetchStatus;
     onClose?: () => void;
@@ -107,6 +108,7 @@ const TwoWindingsTransformerModificationDialog = ({
     currentNode,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editData,
     editDataFetchStatus,
     ...dialogProps
@@ -369,6 +371,7 @@ const TwoWindingsTransformerModificationDialog = ({
 
     return (
         <CustomFormProvider
+            isReadOnly={isReadOnly}
             removeOptional={true}
             validationSchema={twoWindingsTransformerModificationFormSchema}
             {...formMethods}

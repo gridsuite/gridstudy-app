@@ -43,6 +43,7 @@ const GenerationDispatchDialog = ({
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
+    isReadOnly = false,
     editDataFetchStatus,
     ...dialogProps
 }: Readonly<GenerationDispatchProps>) => {
@@ -97,7 +98,12 @@ const GenerationDispatchDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={generationDispatchFormSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider
+            isReadOnly={isReadOnly}
+            validationSchema={generationDispatchFormSchema}
+            removeOptional={true}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}

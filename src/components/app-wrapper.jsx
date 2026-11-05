@@ -90,7 +90,8 @@ import {
     treeviewFinderFr,
     useUniqueNameValidationEn,
     useUniqueNameValidationFr,
-    DARK_THEME,
+    exportNetworkEn,
+    exportNetworkFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -253,32 +254,6 @@ const lightTheme = createTheme({
     },
 });
 
-function darkScrollbarStyles(theme) {
-    const trackColor = theme.palette.grey[800];
-    const thumbColor = theme.palette.grey[500];
-
-    return {
-        '*': {
-            scrollbarColor: `${thumbColor} ${trackColor}`,
-
-            '&::-webkit-scrollbar': {
-                width: '12px',
-                height: '12px',
-            },
-
-            '&::-webkit-scrollbar-track': {
-                backgroundColor: trackColor,
-            },
-
-            '&::-webkit-scrollbar-thumb': {
-                backgroundColor: thumbColor,
-                borderRadius: '8px',
-                border: `3px solid ${trackColor}`,
-            },
-        },
-    };
-}
-
 const darkTheme = createTheme({
     components: {
         MuiTab: {
@@ -417,9 +392,6 @@ function createThemeWithComponents(baseTheme, ...args) {
                         color: 'cancelButtonColor',
                     },
                 },
-                ...(baseTheme.palette.mode === DARK_THEME.toLowerCase()
-                    ? { MuiCssBaseline: { styleOverrides: darkScrollbarStyles } }
-                    : {}),
             },
         },
         ...args
@@ -480,6 +452,7 @@ const messages = {
         ...errorsEn,
         ...genericValidationEn,
         ...networkModificationValidationEn,
+        ...exportNetworkEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -526,6 +499,7 @@ const messages = {
         ...errorsFr,
         ...genericValidationFr,
         ...networkModificationValidationFr,
+        ...exportNetworkFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
@@ -554,7 +528,7 @@ const AppWrapperWithRedux = () => {
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={themeCompiled}>
                         <SnackbarProvider hideIconVariant={false}>
-                            <CssBaseline />
+                            <CssBaseline enableColorScheme />
                             <GlobalStyles styles={{ ':root': rootCssVars }} />
                             <CardErrorBoundary>
                                 <NotificationsProvider urls={urlMapper}>
