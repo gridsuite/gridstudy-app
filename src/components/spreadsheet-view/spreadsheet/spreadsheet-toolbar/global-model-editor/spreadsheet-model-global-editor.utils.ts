@@ -18,6 +18,7 @@ export const COLUMN_FORMULA = 'columnFormula';
 export const COLUMN_DEPENDENCIES = 'columnDependencies';
 export const COLUMN_UUID = 'columnUuid';
 export const COLUMN_VISIBLE = 'columnVisible';
+export const COLUMN_LOCKED = 'columnLocked';
 export const SELECTED = 'selected';
 
 export const initialColumnsModelForm: columnsModelForm = {
@@ -72,6 +73,7 @@ export const columnsModelFormSchema = yup.object().shape({
                 [COLUMN_FORMULA]: yup.string().required(),
                 [COLUMN_DEPENDENCIES]: yup.array().of(yup.string().required()),
                 [COLUMN_VISIBLE]: yup.boolean().required(),
+                [COLUMN_LOCKED]: yup.boolean().required(),
                 [SELECTED]: yup.boolean().required(),
             })
         )

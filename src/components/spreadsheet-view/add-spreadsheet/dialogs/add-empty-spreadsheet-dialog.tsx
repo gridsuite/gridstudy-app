@@ -45,6 +45,7 @@ const DEFAULT_ID_COLUMN = {
     type: COLUMN_TYPES.TEXT,
     formula: 'id',
     visible: true,
+    locked: false,
 } as const satisfies ColumnDefinitionDto;
 
 /**

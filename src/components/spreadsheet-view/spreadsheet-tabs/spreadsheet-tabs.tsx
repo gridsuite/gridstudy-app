@@ -166,6 +166,7 @@ export default function SpreadsheetTabs({
                         ? JSON.stringify(columnModel.columnDependencies)
                         : undefined,
                     visible: columnModel.columnVisible,
+                    locked: columnModel.columnLocked,
                 };
                 return column;
             }),
@@ -281,6 +282,7 @@ export default function SpreadsheetTabs({
                 columnFormula: columnDef.formula,
                 columnDependencies: columnDef.dependencies,
                 columnVisible: columnDef.visible,
+                columnLocked: columnDef.locked,
             };
         });
     }, [tableDefinitionInProgress]);

@@ -286,7 +286,6 @@ import { CopyType } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import {
-    type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     type SpreadsheetTabDefinition,
@@ -794,15 +793,7 @@ export const reducer = createReducer(initialState, (builder) => {
             (tabDef) => tabDef.uuid === spreadsheetConfigUuid
         );
         if (existingTableDefinition) {
-            existingTableDefinition.columns = columns.map((column) => {
-                const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
-                const colDef: ColumnDefinition = {
-                    ...column,
-                    visible: column.visible ?? existingColDef?.visible ?? true,
-                    locked: existingColDef ? existingColDef.locked : false,
-                };
-                return colDef;
-            });
+            existingTableDefinition.columns = columns;
         }
     });
 
@@ -815,14 +806,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(INIT_TABLE_DEFINITIONS, (state, action: InitTableDefinitionsAction) => {
         state.tables.uuid = action.collectionUuid;
-        state.tables.definitions = action.tableDefinitions.map((tabDef) => ({
-            ...tabDef,
-            columns: tabDef.columns.map((col) => ({
-                ...col,
-                visible: col.visible ?? true,
-                locked: false,
-            })),
-        }));
+        state.tables.definitions = action.tableDefinitions;
         const isValidAddedTable = state.tables.addedTable
             ? action.tableDefinitions.some((tabDef) => tabDef.uuid === state.tables.addedTable)
             : false;
