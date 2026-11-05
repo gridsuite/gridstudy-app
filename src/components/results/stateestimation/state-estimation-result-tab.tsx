@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useRef, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -13,6 +13,7 @@ import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
 import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
+import { resetComputationResultFilters } from '../../../services/study/study-config';
 import { AppState } from 'redux/reducer.type';
 import {
     ComputingType,
@@ -21,9 +22,12 @@ import {
     mergeSx,
     type MuiStyles,
     RunningStatus,
+    snackWithFallback,
     TableType,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
+import { AgGridReact } from 'ag-grid-react';
 import StateEstimationResultTable from './state-estimation-result-table';
 import { useComputationColumnFilters } from '../common/column-filter/use-computation-column-filters';
 import {
@@ -44,6 +48,8 @@ import {
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
 import { StateEstimationMeasurements } from './state-estimation-measurements';
+import { useFilteredRowCounterInfo } from '../../utils/row-counter/use-filtered-row-counter';
+import { FilteredRowCounter } from '../../utils/row-counter/filtered-row-counter';
 
 const GLOBAL_FILTER_CATEGORIES = [
     GlobalFilterType.VOLTAGE_LEVEL,
@@ -73,6 +79,10 @@ const styles = {
     emptySpace: {
         flexGrow: 1,
     },
+    rowCounter: {
+        display: 'flex',
+        alignItems: 'center',
+    },
 } as const satisfies MuiStyles;
 
 export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps> = ({
@@ -86,6 +96,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
+    const { snackError } = useSnackMessage();
 
     const { result: stateEstimationResult, isLoading: isLoadingResult } = useNodeData({
         studyUuid,
@@ -95,7 +106,10 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         invalidations: stateEstimationResultInvalidations,
     });
 
-    useComputationColumnFilters(TableType.StateEstimation, STATEESTIMATION_MEASUREMENTS);
+    const { filters: measurementsColumnsFilters } = useComputationColumnFilters(
+        TableType.StateEstimation,
+        STATEESTIMATION_MEASUREMENTS
+    );
     const globalFilters = useComputationGlobalFilters(TableType.StateEstimation);
 
     const stateEstimationResultColumns = useMemo(() => {
@@ -134,6 +148,24 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         };
     }, [stateEstimationStatus, stateEstimationResult, intl]);
 
+    const measurementsGridRef = useRef<AgGridReact>(null);
+    const [isLoadingMeasurements, setIsLoadingMeasurements] = useState(true);
+
+    const measurementsRowCounterInfos = useFilteredRowCounterInfo({
+        gridRef: measurementsGridRef,
+        globalFilters,
+        columnsFilters: measurementsColumnsFilters,
+        unfilteredRowCount: result.measurementInformationResults?.length,
+        disabled: false,
+        isDataPending: isLoadingMeasurements || isLoadingResult,
+    });
+
+    const resetMeasurementsFilters = useCallback(() => {
+        resetComputationResultFilters(studyUuid, TableType.StateEstimation, STATEESTIMATION_MEASUREMENTS).catch(
+            (error) => snackWithFallback(snackError, error, { headerId: 'ComputationFiltersResetError' })
+        );
+    }, [snackError, studyUuid]);
+
     const renderReportViewer = () => {
         return (
             <>
@@ -162,6 +194,12 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                         genericFiltersStrictMode={true}
                         tableType={TableType.StateEstimation}
                     />
+                    <Box sx={styles.rowCounter}>
+                        <FilteredRowCounter
+                            rowCounterInfos={measurementsRowCounterInfos}
+                            onResetFilters={resetMeasurementsFilters}
+                        />
+                    </Box>
                 </Box>
                 <Box sx={styles.emptySpace}></Box>
             </Box>
@@ -174,6 +212,9 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     rootNetworkUuid={currentRootNetworkUuid}
                     globalFilters={globalFilters}
                     columnDefs={stateEstimationResultColumns}
+                    gridRef={measurementsGridRef}
+                    onGridReady={measurementsRowCounterInfos.registerRowCounterEvents}
+                    onLoadingChange={setIsLoadingMeasurements}
                 />
             )}
             {tabIndex === 2 && (
