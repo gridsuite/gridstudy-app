@@ -235,7 +235,7 @@ import {
 } from './session-storage/local-storage';
 import { getLocalStorageSyncEnabled } from './session-storage/navigation-local-storage';
 import { saveLastTreeNodeUuid } from './session-storage/last-tree-node-local-storage';
-import { PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
+import { PARAM_LIMIT_SCALING, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
 import { OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
@@ -575,7 +575,7 @@ const initialState: AppState = {
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
     [PARAM_USE_NAME]: true,
-    [PARAM_LIMIT_REDUCTION]: 100,
+    [PARAM_LIMIT_SCALING]: 100,
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
 

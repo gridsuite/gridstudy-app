@@ -28,11 +28,11 @@ export function getLoadFlowSpecificParametersDescription() {
     return backendFetchJson(getLoadFlowSpecificParametersUrl);
 }
 
-export function getLoadFlowDefaultLimitReductions() {
-    console.info('get load flow default limit reductions');
-    const getLoadFlowDefaultLimitReductionsUrl = getLoadFlowUrl() + 'parameters/default-limit-reductions';
-    console.debug(getLoadFlowDefaultLimitReductionsUrl);
-    return backendFetchJson(getLoadFlowDefaultLimitReductionsUrl);
+export function getLoadFlowDefaultLimitScalings() {
+    console.info('get load flow default limit scalings');
+    const getLoadFlowDefaultLimitScalingsUrl = getLoadFlowUrl() + 'parameters/default-limit-reductions';
+    console.debug(getLoadFlowDefaultLimitScalingsUrl);
+    return backendFetchJson(getLoadFlowDefaultLimitScalingsUrl);
 }
 
 export function fetchLoadFlowParameters(parameterUuid: string) {
