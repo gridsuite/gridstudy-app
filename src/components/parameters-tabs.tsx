@@ -46,11 +46,9 @@ import {
     PARAM_LANGUAGE,
     ParameterLayoutProvider,
     PccMinParametersInLine,
-    resetSecurityAnalysisParameters,
     RunningStatus,
     SecurityAnalysisParametersInline,
     SensitivityAnalysisParametersInline,
-    setSecurityAnalysisParameters,
     ShortCircuitParametersInLine,
     useParametersBackend,
     VoltageInitParametersInLine,
@@ -85,6 +83,7 @@ import {
 import { fetchVoltageLevelsMapInfos } from '../services/study/network';
 import { fetchAllCountries } from '../services/study/network-map';
 import { evaluateJsonFilter } from '../services/study/filter';
+import { updateSecurityAnalysisParameters, resetSecurityAnalysisParameters } from '../services/study/security-analysis';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -185,7 +184,7 @@ const ParametersTabs: FunctionComponent = () => {
         {
             backendFetchProviders: fetchSecurityAnalysisProviders,
             backendFetchParameters: getSecurityAnalysisParameters,
-            backendUpdateParameters: setSecurityAnalysisParameters,
+            backendUpdateParameters: updateSecurityAnalysisParameters,
             backendResetParameters: resetSecurityAnalysisParameters,
             backendFetchDefaultLimitReductions: getSecurityAnalysisDefaultLimitReductions,
         }
