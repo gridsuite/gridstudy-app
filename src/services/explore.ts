@@ -294,9 +294,13 @@ export function shareCompositeModification(
     description: string,
     parentDirectoryUuid: UUID
 ) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     console.info('Sharing composite modification');
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/${studyUuid}
-        /nodes/${nodeUuid}/network-modifications/${modificationUuid}
-        /share?${new URLSearchParams({ name, description, parentDirectoryUuid }).toString()}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/${studyUuid}` +
+        `/nodes/${nodeUuid}/network-modifications/${modificationUuid}` +
+        `/share?${urlSearchParams.toString()}`;
     return backendFetch(url, { method: 'POST' });
 }
