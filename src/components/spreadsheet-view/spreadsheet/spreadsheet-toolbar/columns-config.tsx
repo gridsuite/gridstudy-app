@@ -182,7 +182,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
             return {
                 ...col,
                 visible: !isAllChecked,
-                locked: col.locked && !col.visible,
+                locked: isAllChecked ? false : col.locked,
             };
         });
         setLocalColumns(newLocalColumns);
