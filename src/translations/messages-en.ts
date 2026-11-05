@@ -832,6 +832,7 @@ const messages_en = {
     partialCopyShuntCompensator: 'Partial copy : copying sections is not supported for this shunt compensator',
     SensitivityAnalysisResultsError: 'An error occurred while fetching sensitivity results',
     ComputationFilterResultsError: 'Filter not found:',
+    ComputationFiltersResetError: 'Error while resetting filters',
     muiTablePaginationLabelRowsPerPageAllBusesSCA: 'Faults per page: ',
     muiTablePaginationLabelRowsPerPageOneBusSCA: 'Feeders per page: ',
     previewModifications: 'View modifications',

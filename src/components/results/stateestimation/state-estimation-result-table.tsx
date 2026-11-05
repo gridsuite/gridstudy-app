@@ -27,7 +27,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultTableProps } from './state-estimation-result.type';
 import { PARAM_COMPUTED_LANGUAGE } from '../../../utils/config-params';
 import { useInitialColumnSort } from '../common/use-initial-column-sort';
-import { RowClassParams } from 'ag-grid-community';
+import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 import {
     STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_QUALITY_CRITERION,
@@ -44,11 +44,21 @@ const StateEstimationResultTable: FunctionComponent<StateEstimationResultTablePr
     exportCsvResetKey,
     filter = false,
     sortable = false,
+    gridRef: externalGridRef,
+    onGridReady,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
-    const gridRef = useRef<AgGridReact>(null);
-    const handleOnGridReady = useInitialColumnSort(STATEESTIMATION_RESULT_SORT_STORE, tableName, sortable);
+    const internalGridRef = useRef<AgGridReact>(null);
+    const gridRef = externalGridRef ?? internalGridRef;
+    const handleInitialColumnSort = useInitialColumnSort(STATEESTIMATION_RESULT_SORT_STORE, tableName, sortable);
+    const handleOnGridReady = useCallback(
+        (params: GridReadyEvent) => {
+            handleInitialColumnSort(params);
+            onGridReady?.(params);
+        },
+        [handleInitialColumnSort, onGridReady]
+    );
 
     const tableNameFormatted = intl.formatMessage({ id: tableName });
 
