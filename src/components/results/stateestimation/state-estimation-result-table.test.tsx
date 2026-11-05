@@ -137,7 +137,9 @@ describe('native grid behavior', () => {
             STATEESTIMATION_MEASUREMENTS,
             true
         );
-        expect(mockGrid.props.onGridReady).toBe(mockOnGridReady);
+        const gridReadyEvent = { api: {} };
+        mockGrid.props.onGridReady(gridReadyEvent);
+        expect(mockOnGridReady).toHaveBeenCalledWith(gridReadyEvent);
         expect(mockGrid.props.computationType).toBe(TableType.StateEstimation);
         expect(mockGrid.props.computationSubType).toBe(STATEESTIMATION_MEASUREMENTS);
     });

@@ -13,10 +13,11 @@ import { AgGridReact } from 'ag-grid-react';
 import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { mapColumns } from '../columns/utils/column-mapper';
-import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
+import { useFilteredRowCounterInfo } from '../../utils/row-counter/use-filtered-row-counter';
+import { useSelectedGlobalFilters } from '../../results/common/global-filter/hooks/use-selected-global-filters';
 import { useSpreadsheetGlobalFilter } from './spreadsheet-content/hooks/use-spreadsheet-gs-filter';
 import type { UUID } from 'node:crypto';
-import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, TableType, useSnackMessage } from '@gridsuite/commons-ui';
 import { CustomColDef } from '../../../types/custom-aggrid-types';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
@@ -54,9 +55,15 @@ export const Spreadsheet = memo(({ panelId, currentNode, tableDefinition, disabl
         tableDefinition?.type
     );
 
+    const globalFilters = useSelectedGlobalFilters(tableDefinition?.uuid);
+    const columnsFilters = useSelector(
+        (state: AppState) => state.tableFilters.columnsFilters[TableType.Spreadsheet]?.[tableDefinition?.uuid]
+    );
+
     const rowCounterInfos = useFilteredRowCounterInfo({
         gridRef,
-        tableDefinition,
+        globalFilters,
+        columnsFilters,
         disabled,
         // the row counter stays loading until both the equipment fetch and the global filter evaluation are done
         isDataPending: isEquipmentFetching || isGlobalFilterPending,
