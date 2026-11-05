@@ -570,7 +570,12 @@ export const NetworkMapPanel = memo(function NetworkMapPanel({
                 setIsRootNodeGeoDataLoaded(true);
             })
             .catch(function (error) {
-                snackWithFallback(snackError, error, { headerId: 'geoDataLoadingFail' });
+                if (
+                    currentNodeRef.current?.id === rootNodeId &&
+                    currentRootNetworkUuidRef.current === currentRootNetworkUuid
+                ) {
+                    snackWithFallback(snackError, error, { headerId: 'geoDataLoadingFail' });
+                }
             })
             .finally(() => {
                 if (currentNodeRef.current?.id === rootNodeId) {
