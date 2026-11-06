@@ -43,7 +43,8 @@ export type EditableEquipmentType =
     | SpreadsheetEquipmentType.GENERATOR
     | SpreadsheetEquipmentType.LOAD
     | SpreadsheetEquipmentType.BATTERY
-    | SpreadsheetEquipmentType.SHUNT_COMPENSATOR;
+    | SpreadsheetEquipmentType.SHUNT_COMPENSATOR
+    | SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR;
 
 export interface SpreadsheetTabDefinition {
     uuid: UUID;
