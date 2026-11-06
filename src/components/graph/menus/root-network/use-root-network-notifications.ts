@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {useCallback} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppState} from 'redux/reducer.type';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer.type';
 import {
     NotificationsUrlKeys,
     snackWithFallback,
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import {fetchRootNetworks} from 'services/root-network';
-import {setMonoRootStudy, setRootNetworks} from 'redux/actions';
-import {RootNetworkMetadata} from '../network-modifications/network-modification-menu.type';
+import { fetchRootNetworks } from 'services/root-network';
+import { setMonoRootStudy, setRootNetworks } from 'redux/actions';
+import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import {
     CommonStudyEventData,
     isRootNetworkDeletionStartedNotification,
@@ -24,7 +24,7 @@ import {
     isRootNetworkUpdateFailedNotification,
     parseEventData,
 } from 'types/notification-types';
-import {useSyncNavigationActions} from 'hooks/use-sync-navigation-actions';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 export const useRootNetworkNotifications = () => {
     const dispatch = useDispatch();
