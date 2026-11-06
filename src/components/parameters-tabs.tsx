@@ -84,6 +84,7 @@ import { fetchVoltageLevelsMapInfos } from '../services/study/network';
 import { fetchAllCountries } from '../services/study/network-map';
 import { evaluateJsonFilter } from '../services/study/filter';
 import { updateSecurityAnalysisParameters, resetSecurityAnalysisParameters } from '../services/study/security-analysis';
+import { resetSensitivityAnalysisParameters } from '../services/study/sensitivity-analysis';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -215,6 +216,7 @@ const ParametersTabs: FunctionComponent = () => {
         {
             backendFetchProviders: fetchSensitivityAnalysisProviders,
             backendFetchParameters: getSensitivityAnalysisParameters,
+            backendResetParameters: resetSensitivityAnalysisParameters,
         }
     );
     useParametersNotification(
