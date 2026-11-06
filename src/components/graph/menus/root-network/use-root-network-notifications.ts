@@ -18,11 +18,11 @@ import { fetchRootNetworks } from 'services/root-network';
 import { setMonoRootStudy, setRootNetworks } from 'redux/actions';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import {
-    CommonStudyEventData,
     isRootNetworkDeletionStartedNotification,
     isRootNetworksUpdatedNotification,
     isRootNetworkUpdateFailedNotification,
     parseEventData,
+    CommonStudyEventData,
 } from 'types/notification-types';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
