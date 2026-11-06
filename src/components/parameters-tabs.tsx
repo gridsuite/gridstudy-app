@@ -46,7 +46,6 @@ import {
     PARAM_LANGUAGE,
     ParameterLayoutProvider,
     PccMinParametersInLine,
-    resetSensitivityAnalysisParameters,
     RunningStatus,
     SecurityAnalysisParametersInline,
     SensitivityAnalysisParametersInline,
@@ -216,7 +215,6 @@ const ParametersTabs: FunctionComponent = () => {
         {
             backendFetchProviders: fetchSensitivityAnalysisProviders,
             backendFetchParameters: getSensitivityAnalysisParameters,
-            backendResetParameters: resetSensitivityAnalysisParameters,
         }
     );
     useParametersNotification(
