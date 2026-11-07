@@ -22,5 +22,7 @@ export const FEEDER_TYPES = {
     THREE_WINDINGS_TRANSFORMER_LEG: 'THREE_WINDINGS_TRANSFORMER_LEG',
     HVDC_LINE_VSC: 'HVDC_LINE_VSC',
     HVDC_LINE_LCC: 'HVDC_LINE_LCC',
+    // NAD element type of a voltage level label
+    TEXT_NODE: 'TEXT_NODE',
 };
 export type FeederTypes = ValueOf<typeof FEEDER_TYPES>;
