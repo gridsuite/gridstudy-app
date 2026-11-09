@@ -64,8 +64,10 @@ export const useRootNetworkNotifications = () => {
             const eventData = parseEventData<CommonStudyEventData>(event);
             if (eventData && isRootNetworkUpdateFailedNotification(eventData)) {
                 doFetchRootNetworks();
+                const errorMessage = eventData.headers.error;
                 snackError({
-                    messageId: 'importCaseFailure',
+                    messageTxt: errorMessage,
+                    messageId: errorMessage ? undefined : 'importCaseFailure',
                     headerId: 'createRootNetworksError',
                 });
             }
