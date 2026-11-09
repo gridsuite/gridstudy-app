@@ -17,7 +17,7 @@ import {
     getLoadFlowProviders,
     getLoadFlowSpecificParametersDescription,
 } from 'services/loadflow';
-import { getLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
+import { getLoadFlowParameters, resetLoadFlowParameters, setLoadFlowParameters } from 'services/study/loadflow';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import GlassPane from './results/common/glass-pane';
@@ -49,7 +49,6 @@ import {
     RunningStatus,
     SecurityAnalysisParametersInline,
     SensitivityAnalysisParametersInline,
-    setSecurityAnalysisParameters,
     ShortCircuitParametersInLine,
     useParametersBackend,
     VoltageInitParametersInLine,
@@ -60,26 +59,32 @@ import {
     getShortCircuitParameters,
     getShortCircuitSpecificParametersDescription,
     setShortCircuitParameters,
+    resetShortCircuitParameters,
 } from 'services/study/short-circuit-analysis';
 import { useGetPccMinParameters } from './dialogs/parameters/use-get-pcc-min-parameters';
 import { fetchContingencyCount } from '../services/study';
 import { useIsNodeUpdating } from 'components/node-activity/hooks/use-node-activity';
 import {
     fetchDynamicMarginCalculationParameters,
+    resetDynamicMarginCalculationParameters,
     updateDynamicMarginCalculationParameters,
 } from '../services/study/dynamic-margin-calculation';
 import {
     fetchDynamicSecurityAnalysisParameters,
+    resetDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisParameters,
 } from '../services/study/dynamic-security-analysis';
 import { NodeType } from './graph/tree-node.type';
 import {
     fetchDynamicSimulationParameters,
+    resetDynamicSimulationParameters,
     updateDynamicSimulationParameters,
 } from '../services/study/dynamic-simulation';
 import { fetchVoltageLevelsMapInfos } from '../services/study/network';
 import { fetchAllCountries } from '../services/study/network-map';
 import { evaluateJsonFilter } from '../services/study/filter';
+import { updateSecurityAnalysisParameters, resetSecurityAnalysisParameters } from '../services/study/security-analysis';
+import { resetSensitivityAnalysisParameters } from '../services/study/sensitivity-analysis';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -165,6 +170,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchProviders: getLoadFlowProviders,
             backendFetchParameters: getLoadFlowParameters,
             backendUpdateParameters: setLoadFlowParameters,
+            backendResetParameters: resetLoadFlowParameters,
             backendFetchSpecificParametersDescription: getLoadFlowSpecificParametersDescription,
             backendFetchDefaultLimitReductions: getLoadFlowDefaultLimitReductions,
         }
@@ -179,7 +185,8 @@ const ParametersTabs: FunctionComponent = () => {
         {
             backendFetchProviders: fetchSecurityAnalysisProviders,
             backendFetchParameters: getSecurityAnalysisParameters,
-            backendUpdateParameters: setSecurityAnalysisParameters,
+            backendUpdateParameters: updateSecurityAnalysisParameters,
+            backendResetParameters: resetSecurityAnalysisParameters,
             backendFetchDefaultLimitReductions: getSecurityAnalysisDefaultLimitReductions,
         }
     );
@@ -209,6 +216,7 @@ const ParametersTabs: FunctionComponent = () => {
         {
             backendFetchProviders: fetchSensitivityAnalysisProviders,
             backendFetchParameters: getSensitivityAnalysisParameters,
+            backendResetParameters: resetSensitivityAnalysisParameters,
         }
     );
     useParametersNotification(
@@ -225,6 +233,7 @@ const ParametersTabs: FunctionComponent = () => {
         {
             backendFetchParameters: getShortCircuitParameters,
             backendUpdateParameters: setShortCircuitParameters,
+            backendResetParameters: resetShortCircuitParameters,
             backendFetchSpecificParametersDescription: getShortCircuitSpecificParametersDescription,
         }
     );
@@ -239,6 +248,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchProviders: fetchDynamicSimulationProviders,
             backendFetchParameters: fetchDynamicSimulationParameters,
             backendUpdateParameters: updateDynamicSimulationParameters,
+            backendResetParameters: resetDynamicSimulationParameters,
         }
     );
     useParametersNotification(
@@ -256,6 +266,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchProviders: fetchDynamicSecurityAnalysisProviders,
             backendFetchParameters: fetchDynamicSecurityAnalysisParameters,
             backendUpdateParameters: updateDynamicSecurityAnalysisParameters,
+            backendResetParameters: resetDynamicSecurityAnalysisParameters,
         }
     );
     useParametersNotification(
@@ -273,6 +284,7 @@ const ParametersTabs: FunctionComponent = () => {
             backendFetchProviders: fetchDynamicMarginCalculationProviders,
             backendFetchParameters: fetchDynamicMarginCalculationParameters,
             backendUpdateParameters: updateDynamicMarginCalculationParameters,
+            backendResetParameters: resetDynamicMarginCalculationParameters,
         }
     );
     useParametersNotification(
