@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import type { UUID } from 'node:crypto';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, GsLangUser } from '@gridsuite/commons-ui';
 import { SecurityAnalysisQueryParams } from '../../components/results/securityanalysis/security-analysis.type';
@@ -122,4 +122,27 @@ function getSecurityAnalysisQueryParams(queryParams: SecurityAnalysisQueryParams
     }
 
     return params;
+}
+
+export function updateSecurityAnalysisParameters(studyUuid: UUID, newParams: any) {
+    console.info('set security analysis parameters');
+    const uri = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(uri);
+    return backendFetch(uri, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: newParams ? JSON.stringify(newParams) : null,
+    });
+}
+
+export function resetSecurityAnalysisParameters(studyUuid: UUID) {
+    console.info('reset security analysis parameters');
+    const uri = getStudyUrl(studyUuid) + '/security-analysis/parameters/reset';
+    console.debug(uri);
+    return backendFetch(uri, {
+        method: 'POST',
+    });
 }
