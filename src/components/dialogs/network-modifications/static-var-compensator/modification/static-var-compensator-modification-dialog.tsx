@@ -92,6 +92,8 @@ export default function StaticVarCompensatorModificationDialog({
         resolver: yupResolver<DeepNullable<StaticVarCompensatorModificationFormData>>(
             staticVarCompensatorModificationFormSchema
         ),
+        // the standby automaton values are required only when it is added on the equipment
+        context: { hasStandbyAutomaton: staticVarCompensatorToModify?.standbyAutomatonInfos != null },
     });
 
     const { reset, getValues } = formMethods;
