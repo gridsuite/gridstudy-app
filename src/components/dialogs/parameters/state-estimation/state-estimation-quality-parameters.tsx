@@ -26,7 +26,7 @@ import { useIntl } from 'react-intl';
 import {
     CustomVoltageLevelTable,
     GridSection,
-    LimitReductionIColumnsDef,
+    LimitScalingIColumnsDef,
     ParameterField,
     ParameterType,
     SpecificParameterInfos,
@@ -88,7 +88,7 @@ const basicParams: SpecificParameterInfos[] = [
 export const StateEstimationQualityParameters = () => {
     const intl = useIntl();
 
-    const columnsDefinition = useMemo<LimitReductionIColumnsDef[]>(() => {
+    const columnsDefinition = useMemo<LimitScalingIColumnsDef[]>(() => {
         const definition = [
             {
                 dataKey: VOLTAGE_LEVEL,

@@ -66,7 +66,7 @@ import {
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
-import { PARAM_COMPUTED_LANGUAGE, PARAM_LIMIT_REDUCTION, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
+import { PARAM_COMPUTED_LANGUAGE, PARAM_LIMIT_SCALING, PARAM_USE_NAME, PARAMS_LOADED } from '../utils/config-params';
 import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 
 // ——— Equipments ———
@@ -200,7 +200,7 @@ export interface AppConfigState {
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
     [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
-    [PARAM_LIMIT_REDUCTION]: number;
+    [PARAM_LIMIT_SCALING]: number;
     [PARAM_USE_NAME]: boolean;
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAMS_LOADED]: boolean;

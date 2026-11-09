@@ -8,6 +8,7 @@
 export const IGNORED_PARAMS = [
     'iidm.import.cgmes.cgm-with-subnetworks',
     'iidm.import.cgmes.cgm-with-subnetworks-defined-by',
+    'iidm.import.cgmes.cgm-with-subnetworks-thread-count',
     'iidm.import.xml.excluded.extensions',
     'iidm.export.xml.excluded.extensions',
     'iidm.die.excluded-extensions',

@@ -8,12 +8,12 @@ import { FunctionComponent, useMemo } from 'react';
 import { VOLTAGE_LEVEL, WEIGHTS_PARAMETERS } from '../../../utils/field-constants';
 import { TabValue, weightsParametersFields } from './state-estimation-parameters-utils';
 import { useIntl } from 'react-intl';
-import { CustomVoltageLevelTable, LimitReductionIColumnsDef } from '@gridsuite/commons-ui';
+import { CustomVoltageLevelTable, LimitScalingIColumnsDef } from '@gridsuite/commons-ui';
 
 export const StateEstimationWeightsParameters: FunctionComponent = () => {
     const intl = useIntl();
 
-    const columnsDefinition = useMemo<LimitReductionIColumnsDef[]>(() => {
+    const columnsDefinition = useMemo<LimitScalingIColumnsDef[]>(() => {
         const definition = [
             {
                 dataKey: VOLTAGE_LEVEL,
