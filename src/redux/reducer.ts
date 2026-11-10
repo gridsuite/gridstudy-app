@@ -1331,26 +1331,39 @@ export const reducer = createReducer(initialState, (builder) => {
         }
         let propsToClean;
         switch (action.equipmentType) {
-            case SpreadsheetEquipmentType.GENERATOR:
-                propsToClean = {
-                    regulationType: undefined,
-                    regulatingTerminalVlName: undefined,
-                    regulatingTerminalConnectableId: undefined,
-                    regulatingTerminalConnectableType: undefined,
-                    regulatingTerminalVlId: undefined,
-                    bus: undefined,
-                };
+            case SpreadsheetEquipmentType.GENERATOR: {
+                const options = state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR];
+                propsToClean = {};
+                if (!options.regulatingTerminal) {
+                    propsToClean = {
+                        regulationType: undefined,
+                        regulatingTerminalVlName: undefined,
+                        regulatingTerminalConnectableId: undefined,
+                        regulatingTerminalConnectableType: undefined,
+                        regulatingTerminalVlId: undefined,
+                    };
+                }
+                if (!options.bus) {
+                    propsToClean = { ...propsToClean, bus: undefined };
+                }
                 break;
-            case SpreadsheetEquipmentType.LINE:
-                propsToClean = {
-                    operationalLimitsGroup1: undefined,
-                    operationalLimitsGroup1Names: undefined,
-                    operationalLimitsGroup2: undefined,
-                    operationalLimitsGroup2Names: undefined,
-                    bus1: undefined,
-                    bus2: undefined,
-                };
+            }
+            case SpreadsheetEquipmentType.LINE: {
+                const options = state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE];
+                propsToClean = {};
+                if (!options.operationalLimitsGroups) {
+                    propsToClean = {
+                        operationalLimitsGroup1: undefined,
+                        operationalLimitsGroup1Names: undefined,
+                        operationalLimitsGroup2: undefined,
+                        operationalLimitsGroup2Names: undefined,
+                    };
+                }
+                if (!options.bus) {
+                    propsToClean = { ...propsToClean, bus1: undefined, bus2: undefined };
+                }
                 break;
+            }
             case SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER:
             case SpreadsheetEquipmentType.BRANCH:
                 propsToClean = {
