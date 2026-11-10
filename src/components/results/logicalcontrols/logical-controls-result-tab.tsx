@@ -13,12 +13,24 @@ import Button from '@mui/material/Button';
 import { ICellRendererParams } from 'ag-grid-community';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { ComputingType, OverflowableText, RunningStatus, TableType } from '@gridsuite/commons-ui';
+import {
+    buildValidGlobalFilters,
+    ComputingType,
+    EquipmentType,
+    GlobalFilterType,
+    OverflowableText,
+    RunningStatus,
+    TableType,
+} from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
 import { useNodeData } from 'components/use-node-data';
 import { fetchLogicalControlsResult } from '../../../services/study/state-estimation';
 import { logicalControlsResultInvalidations } from '../../computing-status/use-all-computing-status';
-import { LogicalControlsResult, LogicalControlsTabProps } from './logical-controls-result.type';
+import {
+    LogicalControlsResult,
+    LogicalControlsResultDto,
+    LogicalControlsTabProps,
+} from './logical-controls-result.type';
 import LogicalControlsResultTable from './logical-controls-result-table';
 import {
     flattenRecord,
@@ -42,6 +54,25 @@ import {
 import { resultsStyles } from '../common/utils';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from 'components/workspace/types/workspace.types';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
+
+const GLOBAL_FILTER_CATEGORIES = [
+    GlobalFilterType.VOLTAGE_LEVEL,
+    GlobalFilterType.COUNTRY,
+    GlobalFilterType.SUBSTATION_PROPERTY,
+    GlobalFilterType.SUBSTATION_OR_VL,
+];
+const GLOBAL_FILTER_EQUIPMENT_TYPES = [
+    EquipmentType.LINE,
+    EquipmentType.TWO_WINDINGS_TRANSFORMER,
+    EquipmentType.GENERATOR,
+    EquipmentType.LOAD,
+    EquipmentType.HVDC_LINE,
+    EquipmentType.VOLTAGE_LEVEL,
+];
+
+type LogicalControlsQueryResult = { query: object; result: LogicalControlsResultDto | null };
 
 const LOGICAL_CONTROLS_TABS = [
     {
@@ -87,13 +118,37 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
         (state: AppState) => state.computingStatus[ComputingType.LOGICAL_CONTROLS]
     );
 
-    const { result: logicalControlsResult, isLoading: isLoadingResult } = useNodeData({
+    const globalFilters = useComputationGlobalFilters(TableType.LogicalControls);
+    // Compare criteria content, not selection references, to avoid querying again on rehydration.
+    const criteria = JSON.stringify(buildValidGlobalFilters(globalFilters) ?? null);
+    const [launchedQuery, setLaunchedQuery] = useState<object>();
+    const { query, fetcher } = useMemo(() => {
+        const query = {};
+        const parsedCriteria = JSON.parse(criteria);
+        const fetcher = () => {
+            setLaunchedQuery(query);
+            return fetchLogicalControlsResult(
+                studyUuid,
+                nodeUuid,
+                currentRootNetworkUuid,
+                parsedCriteria ?? undefined
+            ).then((result): LogicalControlsQueryResult => ({ query, result }));
+        };
+        return { query, fetcher };
+    }, [studyUuid, nodeUuid, currentRootNetworkUuid, criteria]);
+
+    const { result: queryResult, isLoading } = useNodeData({
         studyUuid,
         nodeUuid,
         rootNetworkUuid: currentRootNetworkUuid,
-        fetcher: fetchLogicalControlsResult,
+        fetcher,
         invalidations: logicalControlsResultInvalidations,
     });
+    // Hide previous criteria/context results immediately, including during the request debounce.
+    const isCurrentResult = queryResult?.query === query;
+    const logicalControlsResult = isCurrentResult ? queryResult.result : undefined;
+    const isSettled = isCurrentResult || (launchedQuery === query && !isLoading);
+    const isLoadingResult = !isSettled || isLoading;
 
     const selectedTab = LOGICAL_CONTROLS_TABS[tabIndex];
     useComputationColumnFilters(TableType.LogicalControls, selectedTab.tableName);
@@ -145,11 +200,20 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Tabs value={tabIndex} onChange={handleTabChange}>
-                {LOGICAL_CONTROLS_TABS.map(({ label }) => (
-                    <Tab key={label} label={<FormattedMessage id={label} />} />
-                ))}
-            </Tabs>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Tabs value={tabIndex} onChange={handleTabChange} sx={{ flexGrow: 0 }}>
+                    {LOGICAL_CONTROLS_TABS.map(({ label }) => (
+                        <Tab key={label} label={<FormattedMessage id={label} />} />
+                    ))}
+                </Tabs>
+                <GlobalFilterSelector
+                    filterCategories={GLOBAL_FILTER_CATEGORIES}
+                    filterableEquipmentTypes={GLOBAL_FILTER_EQUIPMENT_TYPES}
+                    genericFiltersStrictMode={true}
+                    tableType={TableType.LogicalControls}
+                />
+                <Box sx={{ flexGrow: 1 }} />
+            </Box>
 
             <LogicalControlsResultTable
                 key={selectedTab.tableName}
@@ -157,7 +221,7 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
                 columnDefs={columnDefs}
                 isLoadingResult={isLoadingResult}
                 tableName={selectedTab.tableName}
-                exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}-${criteria}`}
             />
         </Box>
     );

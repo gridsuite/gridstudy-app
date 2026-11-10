@@ -80,7 +80,7 @@ function shouldUpdate<T>({
     if (nodeUuidFromNotif === undefined && nodeUuidsFromNotif === undefined) {
         return true;
     }
-    if (nodeUuidFromNotif === nodeUuid || nodeUuidsFromNotif?.indexOf(nodeUuid) !== -1) {
+    if (nodeUuidFromNotif === nodeUuid || nodeUuidsFromNotif?.includes(nodeUuid)) {
         return true;
     }
 
