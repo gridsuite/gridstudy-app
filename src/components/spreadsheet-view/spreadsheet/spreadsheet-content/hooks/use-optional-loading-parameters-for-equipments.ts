@@ -51,6 +51,9 @@ export function useOptionalLoadingParametersForEquipments() {
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
     );
+    const remoteGeneratorBus = useSelector(
+        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].bus ?? false
+    );
     const remoteBatteryRegTerm = useSelector(
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BATTERY].regulatingTerminal
@@ -62,6 +65,7 @@ export function useOptionalLoadingParametersForEquipments() {
     const [lineOlg, setLineOlg] = useState<boolean>(remoteLineOlg);
     const [twtOlg, setTwtOlg] = useState<boolean>(remoteTwtOlg);
     const [generatorRegTerm, setGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
+    const [generatorBus, setGeneratorBus] = useState<boolean>(remoteGeneratorBus);
     const [batteryRegTerm, setBatteryRegTerm] = useState<boolean>(remoteBatteryRegTerm);
     const [busNetworkComponents, setBusNetworkComponents] = useState<boolean>(remoteBusNetworkComponents);
 
@@ -117,6 +121,15 @@ export function useOptionalLoadingParametersForEquipments() {
                 return { ...prevState, [SpreadsheetEquipmentType.GENERATOR]: true };
             });
         }
+        if (remoteGeneratorBus !== generatorBus && remoteGeneratorBus) {
+            setLoadOptional((prevState) => {
+                return { ...prevState, [SpreadsheetEquipmentType.GENERATOR]: true };
+            });
+        } else if (remoteGeneratorBus !== generatorBus && !remoteGeneratorBus) {
+            setCleanOptional((prevState) => {
+                return { ...prevState, [SpreadsheetEquipmentType.GENERATOR]: true };
+            });
+        }
         if (remoteBatteryRegTerm !== batteryRegTerm && remoteBatteryRegTerm) {
             setLoadOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.BATTERY]: true };
@@ -139,6 +152,7 @@ export function useOptionalLoadingParametersForEquipments() {
         setLineOlg(remoteLineOlg);
         setTwtOlg(remoteTwtOlg);
         setGeneratorRegTerm(remoteGeneratorRegTerm);
+        setGeneratorBus(remoteGeneratorBus);
         setBatteryRegTerm(remoteBatteryRegTerm);
         setBusNetworkComponents(remoteBusNetworkComponents);
     }, [
@@ -146,11 +160,13 @@ export function useOptionalLoadingParametersForEquipments() {
         branchOlg,
         busNetworkComponents,
         generatorRegTerm,
+        generatorBus,
         lineOlg,
         remoteBatteryRegTerm,
         remoteBranchOlg,
         remoteBusNetworkComponents,
         remoteGeneratorRegTerm,
+        remoteGeneratorBus,
         remoteLineOlg,
         remoteTwtOlg,
         twtOlg,

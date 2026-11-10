@@ -535,6 +535,7 @@ const initialState: AppState = {
         },
         [SpreadsheetEquipmentType.GENERATOR]: {
             regulatingTerminal: false,
+            bus: false,
         },
         [SpreadsheetEquipmentType.BUS]: {
             networkComponents: false,
@@ -1336,6 +1337,7 @@ export const reducer = createReducer(initialState, (builder) => {
                     regulatingTerminalConnectableId: undefined,
                     regulatingTerminalConnectableType: undefined,
                     regulatingTerminalVlId: undefined,
+                    bus: undefined,
                 };
                 break;
             case SpreadsheetEquipmentType.LINE:

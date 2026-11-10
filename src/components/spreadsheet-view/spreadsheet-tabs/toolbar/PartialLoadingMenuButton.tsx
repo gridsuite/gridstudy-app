@@ -49,6 +49,9 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
     );
+    const remoteGeneratorBus = useSelector(
+        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].bus ?? false
+    );
     const remoteBatteryRegTerm = useSelector(
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BATTERY].regulatingTerminal
@@ -60,6 +63,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
     const [localLineOlg, setLocalLineOlg] = useState<boolean>(remoteLineOlg);
     const [localTwtOlg, setLocalTwtOlg] = useState<boolean>(remoteTwtOlg);
     const [localGeneratorRegTerm, setLocalGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
+    const [localGeneratorBus, setLocalGeneratorBus] = useState<boolean>(remoteGeneratorBus);
     const [localBatteryRegTerm, setLocalBatteryRegTerm] = useState<boolean>(remoteBatteryRegTerm);
     const [localBusNetworkComponents, setLocalBusNetworkComponents] = useState<boolean>(remoteBusNetworkComponents);
 
@@ -70,6 +74,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             setLocalLineOlg(remoteLineOlg);
             setLocalTwtOlg(remoteTwtOlg);
             setLocalGeneratorRegTerm(remoteGeneratorRegTerm);
+            setLocalGeneratorBus(remoteGeneratorBus);
             setLocalBatteryRegTerm(remoteBatteryRegTerm);
             setLocalBusNetworkComponents(remoteBusNetworkComponents);
         },
@@ -78,6 +83,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             remoteBranchOlg,
             remoteBusNetworkComponents,
             remoteGeneratorRegTerm,
+            remoteGeneratorBus,
             remoteLineOlg,
             remoteTwtOlg,
         ]
@@ -90,6 +96,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             localLineOlg !== remoteLineOlg ||
             localTwtOlg !== remoteTwtOlg ||
             localGeneratorRegTerm !== remoteGeneratorRegTerm ||
+            localGeneratorBus !== remoteGeneratorBus ||
             localBatteryRegTerm !== remoteBatteryRegTerm ||
             localBusNetworkComponents !== remoteBusNetworkComponents
         ) {
@@ -102,6 +109,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
                     },
                     [SpreadsheetEquipmentType.GENERATOR]: {
                         regulatingTerminal: localGeneratorRegTerm,
+                        bus: localGeneratorBus,
                     },
                     [SpreadsheetEquipmentType.BUS]: {
                         networkComponents: localBusNetworkComponents,
@@ -121,6 +129,8 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         remoteTwtOlg,
         localGeneratorRegTerm,
         remoteGeneratorRegTerm,
+        localGeneratorBus,
+        remoteGeneratorBus,
         localBatteryRegTerm,
         remoteBatteryRegTerm,
         localBusNetworkComponents,
@@ -136,6 +146,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             remoteLineOlg ||
             remoteTwtOlg ||
             remoteGeneratorRegTerm ||
+            remoteGeneratorBus ||
             remoteBatteryRegTerm ||
             remoteBusNetworkComponents,
         [
@@ -143,6 +154,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             remoteBranchOlg,
             remoteBusNetworkComponents,
             remoteGeneratorRegTerm,
+            remoteGeneratorBus,
             remoteLineOlg,
             remoteTwtOlg,
         ]
@@ -211,6 +223,11 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
                     value={localGeneratorRegTerm}
                     labelId="spreadsheet/tabs/lazy_loading/labels/regulatingTerminal"
                     onChange={setLocalGeneratorRegTerm}
+                />
+                <PartialLoadingMenuItem
+                    value={localGeneratorBus}
+                    labelId="spreadsheet/tabs/lazy_loading/labels/bus"
+                    onChange={setLocalGeneratorBus}
                 />
 
                 <ListSubheader sx={styles.headers}>

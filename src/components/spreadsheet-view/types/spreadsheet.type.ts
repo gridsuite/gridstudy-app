@@ -125,6 +125,7 @@ export type SpreadsheetOptionalLoadingParameters = {
     [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: BranchOptionalLoadingParameters;
     [SpreadsheetEquipmentType.GENERATOR]: {
         regulatingTerminal: boolean;
+        bus: boolean;
     };
     [SpreadsheetEquipmentType.BATTERY]: {
         regulatingTerminal: boolean;

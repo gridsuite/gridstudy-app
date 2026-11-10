@@ -127,6 +127,7 @@ const spreadsheetEn = {
     'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Include additional data',
     'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Inactive limit sets',
     'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Regulated terminals',
+    'spreadsheet/tabs/lazy_loading/labels/bus': 'Bus',
     'spreadsheet/tabs/lazy_loading/labels/networkComponentsInformation': 'Network components',
 
     'spreadsheet/global-model-edition/edit': 'Model edition',
