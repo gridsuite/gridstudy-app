@@ -43,27 +43,35 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
 
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
+    const CONTINGENCY_EQUIPMENTS_WITHOUT_SWITCH = Object.fromEntries(
+        Object.entries(CONTINGENCY_LIST_EQUIPMENTS).filter(([key]) => key !== EquipmentType.SWITCH)
+    );
+
     const EQUIPMENTS_EXCLUDED_IN_NON_DEV_MODE = [EquipmentType.BOUNDARY_LINE, EquipmentType.THREE_WINDINGS_TRANSFORMER];
 
     const CONTINGENCY_EQUIPMENTS_FOR_NON_DEV_MODE = Object.fromEntries(
-        Object.entries(CONTINGENCY_LIST_EQUIPMENTS).filter(
+        Object.entries(CONTINGENCY_EQUIPMENTS_WITHOUT_SWITCH).filter(
             ([key]) => !EQUIPMENTS_EXCLUDED_IN_NON_DEV_MODE.includes(key as EquipmentType)
         )
     );
 
+    const FILTER_EQUIPMENTS_WITHOUT_SWITCH = Object.fromEntries(
+        Object.entries(FILTER_EQUIPMENTS).filter(([key]) => key !== EquipmentType.SWITCH)
+    );
+
     const filteredContingencyEquipments = isDeveloperMode
-        ? CONTINGENCY_LIST_EQUIPMENTS
+        ? CONTINGENCY_EQUIPMENTS_WITHOUT_SWITCH
         : CONTINGENCY_EQUIPMENTS_FOR_NON_DEV_MODE;
     const equipmentTypesOptions = useMemo(() => {
         return Object.values(
-            selectionType === SELECTION_TYPES.FILTER ? FILTER_EQUIPMENTS : filteredContingencyEquipments
+            selectionType === SELECTION_TYPES.FILTER ? FILTER_EQUIPMENTS_WITHOUT_SWITCH : filteredContingencyEquipments
         ).map((equipment: { id: string; label: string }) => {
             return {
                 id: equipment.id,
                 label: equipment.label,
             };
         });
-    }, [filteredContingencyEquipments, selectionType]);
+    }, [filteredContingencyEquipments, selectionType, FILTER_EQUIPMENTS_WITHOUT_SWITCH]);
 
     return (
         <Stack spacing={2}>
