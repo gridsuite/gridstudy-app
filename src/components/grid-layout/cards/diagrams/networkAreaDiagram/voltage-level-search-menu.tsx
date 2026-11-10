@@ -7,8 +7,9 @@
 
 import { useMemo, useState, type FC } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Popover, TextField, MenuItem, ListItemText, InputAdornment, MenuList } from '@mui/material';
+import { Popover, TextField, MenuItem, ListItemText, InputAdornment, MenuList, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { GpsFixed as GpsFixedIcon } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { List, type RowComponentProps } from 'react-window';
 import { escapeRegExp } from '../../../../utils/utils';
@@ -30,11 +31,13 @@ const VirtualizedMenuItem = ({
     style,
     data,
     searchTerm,
-    onSelect,
+    onOpen,
+    onLocate,
 }: RowComponentProps<{
     data: string[];
     searchTerm: string;
-    onSelect: (id: string) => void;
+    onOpen: (id: string) => void;
+    onLocate: (id: string) => void;
 }>) => {
     const vlId = data[index];
 
@@ -57,8 +60,17 @@ const VirtualizedMenuItem = ({
     };
 
     return (
-        <MenuItem key={vlId} onClick={() => onSelect(vlId)} style={style}>
+        <MenuItem key={vlId} onClick={() => onOpen(vlId)} style={style}>
             <ListItemText primary={highlightText(vlId, searchTerm)} />
+            <IconButton
+                size="small"
+                onClick={(event) => {
+                    event.stopPropagation();
+                    onLocate(vlId);
+                }}
+            >
+                <GpsFixedIcon fontSize="small" />
+            </IconButton>
         </MenuItem>
     );
 };
@@ -68,7 +80,8 @@ interface VoltageLevelSearchMenuProps {
     anchorEl: HTMLElement | null;
     onClose: () => void;
     voltageLevels: string[];
-    onSelect: (voltageLevelId: string) => void;
+    onOpen: (voltageLevelId: string) => void;
+    onLocate: (voltageLevelId: string) => void;
 }
 
 const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
@@ -76,7 +89,8 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     anchorEl,
     onClose,
     voltageLevels,
-    onSelect,
+    onOpen,
+    onLocate,
 }) => {
     const intl = useIntl();
     const [searchTerm, setSearchTerm] = useState('');
@@ -109,8 +123,13 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
         onClose();
     };
 
-    const handleSelect = (voltageLevelId: string) => {
-        onSelect(voltageLevelId);
+    const handleOpen = (voltageLevelId: string) => {
+        onOpen(voltageLevelId);
+        setSearchTerm('');
+    };
+
+    const handleLocate = (voltageLevelId: string) => {
+        onLocate(voltageLevelId);
         setSearchTerm('');
     };
 
@@ -156,7 +175,12 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
                         style={{ height: listHeight }}
                         rowCount={filteredVoltageLevels.length}
                         rowHeight={ITEM_HEIGHT}
-                        rowProps={{ data: filteredVoltageLevels, searchTerm, onSelect: handleSelect }}
+                        rowProps={{
+                            data: filteredVoltageLevels,
+                            searchTerm,
+                            onOpen: handleOpen,
+                            onLocate: handleLocate,
+                        }}
                         rowComponent={VirtualizedMenuItem}
                     />
                 )}

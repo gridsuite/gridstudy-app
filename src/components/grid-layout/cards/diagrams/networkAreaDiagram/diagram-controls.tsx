@@ -102,6 +102,7 @@ interface DiagramControlsProps {
     hasHiddenVoltageLevels: boolean;
     shownVoltageLevelIds?: string[];
     onFocusVoltageLevel?: (vlId: string) => void;
+    onOpenVoltageLevel?: (vlId: string) => void;
     editHistory: NadHistory;
     onRestoreHistoryState: (target: number) => void;
 }
@@ -122,6 +123,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     hasHiddenVoltageLevels,
     shownVoltageLevelIds,
     onFocusVoltageLevel,
+    onOpenVoltageLevel,
     editHistory,
     onRestoreHistoryState,
 }) => {
@@ -220,7 +222,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         onToggleEditNadMode?.(!isEditNadMode);
     };
 
-    const handleVoltageLevelSelect = useCallback(
+    const handleVoltageLevelLocate = useCallback(
         (voltageLevelId: string) => {
             if (onFocusVoltageLevel) {
                 onFocusVoltageLevel(voltageLevelId);
@@ -228,6 +230,16 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
             handleCloseSearch();
         },
         [onFocusVoltageLevel]
+    );
+
+    const handleVoltageLevelOpen = useCallback(
+        (voltageLevelId: string) => {
+            if (onOpenVoltageLevel) {
+                onOpenVoltageLevel(voltageLevelId);
+            }
+            handleCloseSearch();
+        },
+        [onOpenVoltageLevel]
     );
 
     const handleCloseSearchDialog = useCallback(() => {
@@ -461,7 +473,8 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             anchorEl={searchAnchorEl}
                             onClose={handleCloseSearch}
                             voltageLevels={shownVoltageLevelIds}
-                            onSelect={handleVoltageLevelSelect}
+                            onOpen={handleVoltageLevelOpen}
+                            onLocate={handleVoltageLevelLocate}
                         />
                     )}
                 </>
