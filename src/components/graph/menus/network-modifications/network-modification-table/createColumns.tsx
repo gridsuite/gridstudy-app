@@ -7,26 +7,21 @@
 import {
     BASE_MODIFICATION_TABLE_COLUMNS,
     ComposedModificationMetadata,
-    computeTagMinSize,
     DescriptionCellRenderer,
     DragHandleRenderer,
     NameCellRenderer,
     NameHeaderRenderer,
     networkModificationTableStyles,
-    RootNetworkCellRenderer,
-    RootNetworkHeaderRenderer,
     SelectCellRenderer,
     SelectHeaderRenderer,
     ReferenceCellRenderer,
     SwitchCellRenderer,
 } from '@gridsuite/commons-ui';
 import { ColumnDef } from '@tanstack/react-table';
-import { RootNetworkMetadata } from '../network-modification-menu.type';
 
 /**
- * Column definition is broken up in 2 parts : base columns which are always on display and root networks columns.
- * Since the amount of root network is inbetween 1-4 and we want to be able to control the status of a modification
- * for each individual root network hence they all have a dedicated column generated on the fly
+ * Column definition is broken up in 2 parts : base columns which are always on display and root networks columns,
+ * created by createRootNetworksColumns of commons-ui.
  */
 
 export const createBaseColumns = (
@@ -87,21 +82,3 @@ export const createBaseColumns = (
         },
     },
 ];
-
-export const createRootNetworksColumns = (
-    rootNetworks: RootNetworkMetadata[]
-): ColumnDef<ComposedModificationMetadata>[] => {
-    const tagMinSizes = rootNetworks.map((rootNetwork) => computeTagMinSize(rootNetwork.tag ?? ''));
-    const sharedSize = Math.max(Math.min(...tagMinSizes), 56);
-
-    return rootNetworks.map((rootNetwork, index) => ({
-        id: rootNetwork.rootNetworkUuid,
-        header: RootNetworkHeaderRenderer,
-        cell: RootNetworkCellRenderer,
-        size: sharedSize,
-        minSize: tagMinSizes[index],
-        meta: {
-            cellStyle: networkModificationTableStyles.columnCell.rootNetworkChip,
-        },
-    }));
-};
