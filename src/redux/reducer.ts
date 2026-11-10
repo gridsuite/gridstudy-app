@@ -529,6 +529,7 @@ const initialState: AppState = {
         },
         [SpreadsheetEquipmentType.LINE]: {
             operationalLimitsGroups: false,
+            bus: false,
         },
         [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: {
             operationalLimitsGroups: false,
@@ -1341,6 +1342,15 @@ export const reducer = createReducer(initialState, (builder) => {
                 };
                 break;
             case SpreadsheetEquipmentType.LINE:
+                propsToClean = {
+                    operationalLimitsGroup1: undefined,
+                    operationalLimitsGroup1Names: undefined,
+                    operationalLimitsGroup2: undefined,
+                    operationalLimitsGroup2Names: undefined,
+                    bus1: undefined,
+                    bus2: undefined,
+                };
+                break;
             case SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER:
             case SpreadsheetEquipmentType.BRANCH:
                 propsToClean = {

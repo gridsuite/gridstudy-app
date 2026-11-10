@@ -42,6 +42,9 @@ export function useOptionalLoadingParametersForEquipments() {
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].operationalLimitsGroups
     );
+    const remoteLineBus = useSelector(
+        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].bus ?? false
+    );
     const remoteTwtOlg = useSelector(
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]
@@ -63,6 +66,7 @@ export function useOptionalLoadingParametersForEquipments() {
     );
     const [branchOlg, setBranchOlg] = useState<boolean>(remoteBranchOlg);
     const [lineOlg, setLineOlg] = useState<boolean>(remoteLineOlg);
+    const [lineBus, setLineBus] = useState<boolean>(remoteLineBus);
     const [twtOlg, setTwtOlg] = useState<boolean>(remoteTwtOlg);
     const [generatorRegTerm, setGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
     const [generatorBus, setGeneratorBus] = useState<boolean>(remoteGeneratorBus);
@@ -99,6 +103,15 @@ export function useOptionalLoadingParametersForEquipments() {
                 return { ...prevState, [SpreadsheetEquipmentType.LINE]: true };
             });
         } else if (remoteLineOlg !== lineOlg && !remoteLineOlg) {
+            setCleanOptional((prevState) => {
+                return { ...prevState, [SpreadsheetEquipmentType.LINE]: true };
+            });
+        }
+        if (remoteLineBus !== lineBus && remoteLineBus) {
+            setLoadOptional((prevState) => {
+                return { ...prevState, [SpreadsheetEquipmentType.LINE]: true };
+            });
+        } else if (remoteLineBus !== lineBus && !remoteLineBus) {
             setCleanOptional((prevState) => {
                 return { ...prevState, [SpreadsheetEquipmentType.LINE]: true };
             });
@@ -150,6 +163,7 @@ export function useOptionalLoadingParametersForEquipments() {
         }
         setBranchOlg(remoteBranchOlg);
         setLineOlg(remoteLineOlg);
+        setLineBus(remoteLineBus);
         setTwtOlg(remoteTwtOlg);
         setGeneratorRegTerm(remoteGeneratorRegTerm);
         setGeneratorBus(remoteGeneratorBus);
@@ -162,12 +176,14 @@ export function useOptionalLoadingParametersForEquipments() {
         generatorRegTerm,
         generatorBus,
         lineOlg,
+        lineBus,
         remoteBatteryRegTerm,
         remoteBranchOlg,
         remoteBusNetworkComponents,
         remoteGeneratorRegTerm,
         remoteGeneratorBus,
         remoteLineOlg,
+        remoteLineBus,
         remoteTwtOlg,
         twtOlg,
     ]);

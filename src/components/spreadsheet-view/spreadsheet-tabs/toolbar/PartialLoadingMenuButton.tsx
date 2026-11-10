@@ -40,6 +40,9 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].operationalLimitsGroups
     );
+    const remoteLineBus = useSelector(
+        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].bus ?? false
+    );
     const remoteTwtOlg = useSelector(
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]
@@ -61,6 +64,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
     );
     const [localBranchOlg, setLocalBranchOlg] = useState<boolean>(remoteBranchOlg);
     const [localLineOlg, setLocalLineOlg] = useState<boolean>(remoteLineOlg);
+    const [localLineBus, setLocalLineBus] = useState<boolean>(remoteLineBus);
     const [localTwtOlg, setLocalTwtOlg] = useState<boolean>(remoteTwtOlg);
     const [localGeneratorRegTerm, setLocalGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
     const [localGeneratorBus, setLocalGeneratorBus] = useState<boolean>(remoteGeneratorBus);
@@ -72,6 +76,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             setAnchorEl(event.currentTarget);
             setLocalBranchOlg(remoteBranchOlg);
             setLocalLineOlg(remoteLineOlg);
+            setLocalLineBus(remoteLineBus);
             setLocalTwtOlg(remoteTwtOlg);
             setLocalGeneratorRegTerm(remoteGeneratorRegTerm);
             setLocalGeneratorBus(remoteGeneratorBus);
@@ -85,6 +90,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             remoteGeneratorRegTerm,
             remoteGeneratorBus,
             remoteLineOlg,
+            remoteLineBus,
             remoteTwtOlg,
         ]
     );
@@ -94,6 +100,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         if (
             localBranchOlg !== remoteBranchOlg ||
             localLineOlg !== remoteLineOlg ||
+            localLineBus !== remoteLineBus ||
             localTwtOlg !== remoteTwtOlg ||
             localGeneratorRegTerm !== remoteGeneratorRegTerm ||
             localGeneratorBus !== remoteGeneratorBus ||
@@ -103,7 +110,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             if (studyUuid) {
                 updateSpreadsheetParameters(studyUuid, {
                     [SpreadsheetEquipmentType.BRANCH]: { operationalLimitsGroups: localBranchOlg },
-                    [SpreadsheetEquipmentType.LINE]: { operationalLimitsGroups: localLineOlg },
+                    [SpreadsheetEquipmentType.LINE]: { operationalLimitsGroups: localLineOlg, bus: localLineBus },
                     [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: {
                         operationalLimitsGroups: localTwtOlg,
                     },
@@ -125,6 +132,8 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         remoteBranchOlg,
         localLineOlg,
         remoteLineOlg,
+        localLineBus,
+        remoteLineBus,
         localTwtOlg,
         remoteTwtOlg,
         localGeneratorRegTerm,
@@ -144,6 +153,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         () =>
             remoteBranchOlg ||
             remoteLineOlg ||
+            remoteLineBus ||
             remoteTwtOlg ||
             remoteGeneratorRegTerm ||
             remoteGeneratorBus ||
@@ -156,6 +166,7 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             remoteGeneratorRegTerm,
             remoteGeneratorBus,
             remoteLineOlg,
+            remoteLineBus,
             remoteTwtOlg,
         ]
     );
@@ -205,6 +216,11 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
                     value={localLineOlg}
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
                     onChange={setLocalLineOlg}
+                />
+                <PartialLoadingMenuItem
+                    value={localLineBus}
+                    labelId="spreadsheet/tabs/lazy_loading/labels/bus"
+                    onChange={setLocalLineBus}
                 />
 
                 <ListSubheader sx={styles.headers}>
