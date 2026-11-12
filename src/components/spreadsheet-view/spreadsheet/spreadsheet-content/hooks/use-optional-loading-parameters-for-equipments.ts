@@ -43,7 +43,7 @@ export function useOptionalLoadingParametersForEquipments() {
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].operationalLimitsGroups
     );
     const remoteLineBus = useSelector(
-        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].bus ?? false
+        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].bus
     );
     const remoteTwtOlg = useSelector(
         (state: AppState) =>
@@ -55,7 +55,7 @@ export function useOptionalLoadingParametersForEquipments() {
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
     );
     const remoteGeneratorBus = useSelector(
-        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].bus ?? false
+        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].bus
     );
     const remoteBatteryRegTerm = useSelector(
         (state: AppState) =>
