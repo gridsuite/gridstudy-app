@@ -909,7 +909,13 @@ const NetworkModificationNodeEditor = () => {
 
         const inheritedDescription = isSingleCompositeOrShared ? singleModification.description : '';
         const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
-        createCompositeModifications(name, description || inheritedDescription, folderId, selectedModificationsUuid)
+        createCompositeModifications(
+            name,
+            description || inheritedDescription,
+            folderId,
+            selectedModificationsUuid,
+            rootNetworks.map((rootNetwork) => rootNetwork.tag)
+        )
             .then(() => {
                 snackInfo({
                     headerId: 'infoCreateModificationsMsg',
