@@ -17,6 +17,7 @@ import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import PartialLoadingMenuItem from './PartialLoadingMenuItem';
 import { updateSpreadsheetParameters } from '../../../../services/study/spreadsheet';
 import { spreadsheetStyles } from '../../spreadsheet.style';
+import { useSpreadsheetOptionalLoadingParameters } from '../../hooks/use-spreadsheet-optional-loading-parameters';
 
 const styles = {
     headers: () => ({
@@ -32,36 +33,18 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>(undefined);
 
-    const remoteBranchOlg = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BRANCH].operationalLimitsGroups
-    );
-    const remoteLineOlg = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].operationalLimitsGroups
-    );
-    const remoteLineBus = useSelector(
-        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].bus ?? false
-    );
-    const remoteTwtOlg = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]
-                .operationalLimitsGroups
-    );
-    const remoteGeneratorRegTerm = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
-    );
-    const remoteGeneratorBus = useSelector(
-        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].bus ?? false
-    );
-    const remoteBatteryRegTerm = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BATTERY].regulatingTerminal
-    );
-    const remoteBusNetworkComponents = useSelector(
-        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BUS].networkComponents
-    );
+    const {
+        remoteBranchOlg,
+        remoteLineOlg,
+        remoteLineBus: lineBus,
+        remoteTwtOlg,
+        remoteGeneratorRegTerm,
+        remoteGeneratorBus: generatorBus,
+        remoteBatteryRegTerm,
+        remoteBusNetworkComponents,
+    } = useSpreadsheetOptionalLoadingParameters();
+    const remoteLineBus = lineBus ?? false;
+    const remoteGeneratorBus = generatorBus ?? false;
     const [localBranchOlg, setLocalBranchOlg] = useState<boolean>(remoteBranchOlg);
     const [localLineOlg, setLocalLineOlg] = useState<boolean>(remoteLineOlg);
     const [localLineBus, setLocalLineBus] = useState<boolean>(remoteLineBus);

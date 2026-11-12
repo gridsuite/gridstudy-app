@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSelector } from 'react-redux';
-import type { AppState } from '../../../../../redux/reducer.type';
+import { useSpreadsheetOptionalLoadingParameters } from '../../../hooks/use-spreadsheet-optional-loading-parameters';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -34,36 +33,16 @@ const initialOptionalLoadingParameters: Record<SpreadsheetEquipmentType, boolean
 };
 
 export function useOptionalLoadingParametersForEquipments() {
-    const remoteBranchOlg = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BRANCH].operationalLimitsGroups
-    );
-    const remoteLineOlg = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].operationalLimitsGroups
-    );
-    const remoteLineBus = useSelector(
-        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].bus
-    );
-    const remoteTwtOlg = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]
-                .operationalLimitsGroups
-    );
-    const remoteGeneratorRegTerm = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
-    );
-    const remoteGeneratorBus = useSelector(
-        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].bus
-    );
-    const remoteBatteryRegTerm = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BATTERY].regulatingTerminal
-    );
-    const remoteBusNetworkComponents = useSelector(
-        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BUS].networkComponents
-    );
+    const {
+        remoteBranchOlg,
+        remoteLineOlg,
+        remoteLineBus,
+        remoteTwtOlg,
+        remoteGeneratorRegTerm,
+        remoteGeneratorBus,
+        remoteBatteryRegTerm,
+        remoteBusNetworkComponents,
+    } = useSpreadsheetOptionalLoadingParameters();
     const [branchOlg, setBranchOlg] = useState<boolean>(remoteBranchOlg);
     const [lineOlg, setLineOlg] = useState<boolean>(remoteLineOlg);
     const [lineBus, setLineBus] = useState<boolean>(remoteLineBus);
