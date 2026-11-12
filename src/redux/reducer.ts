@@ -246,6 +246,13 @@ import {
     LOADFLOW_RESULT,
     LOADFLOW_RESULT_SORT_STORE,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    LOGICAL_CONTROLS_BALANCES,
+    LOGICAL_CONTROLS_NON_ZERO_MEASUREMENTS_ON_DISCONNECTED,
+    LOGICAL_CONTROLS_ORIGIN_EXTREMITY_DEVIATIONS,
+    LOGICAL_CONTROLS_OUT_OF_BOUNDS_MEASUREMENTS,
+    LOGICAL_CONTROLS_RESULT_SORT_STORE,
+    LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS,
+    LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED,
     LOGS_PAGINATION_STORE_FIELD,
     ONE_BUS,
     PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
@@ -279,7 +286,6 @@ import { CopyType } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import {
-    type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     type SpreadsheetTabDefinition,
@@ -404,6 +410,7 @@ const initialLogsFilterState: Record<string, FilterConfig[]> = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_MARGIN_CALCULATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOGICAL_CONTROLS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.PCC_MIN]: [],
 };
 
@@ -419,6 +426,7 @@ const initialLogsPaginationState: LogsPaginationState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_MARGIN_CALCULATION]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOGICAL_CONTROLS]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.PCC_MIN]: { ...DEFAULT_LOGS_PAGINATION },
 };
 
@@ -548,6 +556,7 @@ const initialState: AppState = {
         [ComputingType.DYNAMIC_MARGIN_CALCULATION]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
+        [ComputingType.LOGICAL_CONTROLS]: RunningStatus.IDLE,
         [ComputingType.PCC_MIN]: RunningStatus.IDLE,
     },
     computingStatusParameters: {
@@ -667,6 +676,16 @@ const initialState: AppState = {
                 },
             ],
         },
+        [LOGICAL_CONTROLS_RESULT_SORT_STORE]: {
+            [LOGICAL_CONTROLS_BALANCES]: [{ colId: 'equipmentIdentifier', sort: SortWay.ASC }],
+            [LOGICAL_CONTROLS_NON_ZERO_MEASUREMENTS_ON_DISCONNECTED]: [
+                { colId: 'equipmentIdentifier', sort: SortWay.ASC },
+            ],
+            [LOGICAL_CONTROLS_ZERO_MEASUREMENTS_ON_CONNECTED]: [{ colId: 'equipmentIdentifier', sort: SortWay.ASC }],
+            [LOGICAL_CONTROLS_ORIGIN_EXTREMITY_DEVIATIONS]: [{ colId: 'equipmentIdentifier', sort: SortWay.ASC }],
+            [LOGICAL_CONTROLS_OUT_OF_BOUNDS_MEASUREMENTS]: [{ colId: 'equipmentIdentifier', sort: SortWay.ASC }],
+            [LOGICAL_CONTROLS_VOLTAGE_DEVIATIONS]: [{ colId: 'equipmentIdentifier', sort: SortWay.ASC }],
+        },
     },
     tableFilters: {
         columnsFilters: {
@@ -774,15 +793,7 @@ export const reducer = createReducer(initialState, (builder) => {
             (tabDef) => tabDef.uuid === spreadsheetConfigUuid
         );
         if (existingTableDefinition) {
-            existingTableDefinition.columns = columns.map((column) => {
-                const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
-                const colDef: ColumnDefinition = {
-                    ...column,
-                    visible: column.visible ?? existingColDef?.visible ?? true,
-                    locked: existingColDef ? existingColDef.locked : false,
-                };
-                return colDef;
-            });
+            existingTableDefinition.columns = columns;
         }
     });
 
@@ -795,14 +806,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(INIT_TABLE_DEFINITIONS, (state, action: InitTableDefinitionsAction) => {
         state.tables.uuid = action.collectionUuid;
-        state.tables.definitions = action.tableDefinitions.map((tabDef) => ({
-            ...tabDef,
-            columns: tabDef.columns.map((col) => ({
-                ...col,
-                visible: col.visible ?? true,
-                locked: false,
-            })),
-        }));
+        state.tables.definitions = action.tableDefinitions;
         const isValidAddedTable = state.tables.addedTable
             ? action.tableDefinitions.some((tabDef) => tabDef.uuid === state.tables.addedTable)
             : false;

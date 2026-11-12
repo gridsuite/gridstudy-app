@@ -65,7 +65,7 @@ export const styles = {
             stroke: theme.palette.text.primary,
         },
         '& .sld-feeder-info.sld-measurement-valid text': {
-            fill: 'black',
+            fill: 'green',
         },
         '& .sld-feeder-info.sld-measurement-invalid text': {
             fill: 'red',

@@ -14,6 +14,7 @@ import {
     COLUMN_DEPENDENCIES,
     COLUMN_FORMULA,
     COLUMN_ID,
+    COLUMN_LOCKED,
     COLUMN_NAME,
     COLUMN_PRECISION,
     COLUMN_TYPE,
@@ -142,6 +143,7 @@ export function SpreadsheetModelGlobalEditorTable() {
         const newRowData: any = {};
         newRowData[SELECTED] = false;
         newRowData[COLUMN_VISIBLE] = true;
+        newRowData[COLUMN_LOCKED] = false;
         COLUMNS_MODEL_DEFINITIONS.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [COLUMNS_MODEL_DEFINITIONS]);

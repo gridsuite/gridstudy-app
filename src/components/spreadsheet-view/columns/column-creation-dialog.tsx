@@ -304,6 +304,7 @@ export default function ColumnCreationDialog({
             const formattedParams = {
                 ...newParams,
                 dependencies: newParams.dependencies?.length ? JSON.stringify(newParams.dependencies) : undefined,
+                locked: columnDefinition?.locked,
             };
 
             // we reset and close the dialog to avoid multiple submissions

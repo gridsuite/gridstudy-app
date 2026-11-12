@@ -191,6 +191,7 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                         dependencies: column.dependencies?.length ? JSON.stringify(column.dependencies) : undefined,
                         columnFilterInfos,
                         visible: includeVisibility ? column.visible : true,
+                        locked: includeVisibility ? column.locked : false,
                     };
                     return dto;
                 })

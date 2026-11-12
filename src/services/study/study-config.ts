@@ -233,6 +233,16 @@ export function resetSpreadsheetColumnsFilters(studyUuid: UUID, spreadsheetModel
     });
 }
 
+export function resetComputationResultFilters(studyUuid: UUID, computationType: TableType, computationSubType: string) {
+    const url = `${getStudyUrl(studyUuid)}/computation-result-filters/${computationType}/${computationSubType}/reset-filters`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
 export function getComputationResultColumnFilters(
     studyUuid: UUID,
     computationType: string,

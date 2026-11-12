@@ -9,10 +9,8 @@ import { ContingencyList } from './study/contingency-list';
 import type { UUID } from 'node:crypto';
 import { backendFetch, ElementType } from '@gridsuite/commons-ui';
 import { SpreadsheetCollection, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
-import { PREFIX_STUDY_QUERIES } from './study';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
-const PREFIX_DIRECTORY_QUERIES = PREFIX_STUDY_QUERIES + '/v1/directory';
 
 export function createParameter(
     newParameter: any,
@@ -52,15 +50,6 @@ export function updateParameter(
             body: JSON.stringify(newParameter),
         }
     );
-}
-
-export function elementExists(directoryUuid: UUID, elementName: string, type: ElementType) {
-    const existsElementUrl = `${PREFIX_DIRECTORY_QUERIES}/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
-
-    console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'head' }).then((response) => {
-        return response.status !== 204; // HTTP 204 : No-content
-    });
 }
 
 export function createCompositeModifications(
@@ -293,4 +282,28 @@ export function updateWorkspaceConfig(id: UUID, name: string, description: strin
             headers: { 'Content-Type': 'application/json' },
         }
     );
+}
+
+/**
+ * Moves a composite modification of the node out of the study into a directory of GridExplore,
+ * and replaces it in the node by a reference to the newly shared composite modification.
+ */
+export function shareCompositeModification(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuid: UUID,
+    name: string,
+    description: string,
+    parentDirectoryUuid: UUID
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    console.info('Sharing composite modification');
+    const url =
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/${studyUuid}` +
+        `/nodes/${nodeUuid}/network-modifications/${modificationUuid}` +
+        `/share?${urlSearchParams.toString()}`;
+    return backendFetch(url, { method: 'POST' });
 }

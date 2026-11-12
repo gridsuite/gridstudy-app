@@ -89,11 +89,14 @@ import ImportModificationDialog from '../../../dialogs/import-composite/import-m
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer.type';
-import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
+import {
+    createCompositeModifications,
+    shareCompositeModification,
+    updateCompositeModifications,
+} from '../../../../services/explore';
 import {
     assembleModificationsIntoComposite,
     fetchNetworkModifications,
-    shareCompositeModification,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import {

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText, FilterConfig, GlobalFilters } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import {
@@ -143,5 +143,14 @@ export function exportSensitivityResultsAsCsv(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(csvConfig),
+    });
+}
+
+export function resetSensitivityAnalysisParameters(studyUuid: UUID) {
+    console.info('reset sensitivity analysis parameters');
+    const uri = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters/reset';
+    console.debug(uri);
+    return backendFetch(uri, {
+        method: 'POST',
     });
 }

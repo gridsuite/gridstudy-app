@@ -53,11 +53,6 @@ const messages_fr = {
 
     exportNetwork: 'Exporter le réseau',
     export: 'Exporter',
-    'download.fileName': 'Nom de fichier',
-    exportFormat: "Format de l'export",
-    exportStudyErrorMsg: "Le format de l'export n'est pas spécifié",
-    exportCompression: 'Compression',
-    exportCompressionErrorMsg: "Le type de compression n'est pas spécifié",
 
     modifyAccessRights: "Modifier les droits d'accès",
     modifyAccessRightsError: "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
@@ -205,7 +200,6 @@ const messages_fr = {
     VoltageinitNodeName: 'Noeud : {nodeName}',
     VoltageinitDate: 'Date du calcul : {computationDate}',
 
-    Select: 'Choisir',
     SelectAll: 'Tous',
     UnselectAll: 'Aucun',
 
@@ -856,6 +850,7 @@ const messages_fr = {
         "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
     SensitivityAnalysisResultsError: "Une erreur s'est produite lors de la récupération du résultat de sensibilité",
     ComputationFilterResultsError: 'Filtre introuvable :',
+    ComputationFiltersResetError: 'Erreur lors de la réinitialisation des filtres',
     muiTablePaginationLabelRowsPerPageAllBusesSCA: 'Défauts par page : ',
     muiTablePaginationLabelRowsPerPageOneBusSCA: 'Départs par page : ',
     previewModifications: 'Visualiser modifications',
@@ -957,12 +952,14 @@ const messages_fr = {
     StateEstimation: "Estimation d'état",
     startStateEstimationError: "Une erreur est survenue lors du lancement de l'estimation d'état",
     stateEstimationError: "Une erreur est survenue lors de l'exécution de l'estimation d'état",
+    LogicalControls: 'Contrôles logiques',
+    startLogicalControlsError: 'Une erreur est survenue lors du lancement des contrôles logiques',
+    logicalControlsError: "Une erreur est survenue lors de l'exécution des contrôles logiques",
     PccMin: 'Pcc min N-1',
     startPccMinError: 'Une erreur est survenue lors du lancement de pcc min N-1',
     pccMinError: "Une erreur est survenue lors de l'exécution de pcc min N-1",
     PccMinResultsError: "Une erreur s'est produite lors de la récupération du résultat de pcc min N-1",
     NoFilter: 'Aucun filtre',
-    NoFolder: 'Aucun dossier',
     searchPlaceholder: 'Recherche',
     reportLogsPerPage: 'Logs par page : ',
     GeneratedModification: 'Modification-générée',
@@ -979,10 +976,6 @@ const messages_fr = {
     StateEstimationQualityCriterionResults: 'Qualité critères',
     StateEstimationQualityPerRegionResults: 'Qualité régions',
     StateEstimationStatusResults: 'Statut',
-    StateEstimationLogicalControlsResults: 'Contrôles logiques',
-    StateEstimationRunLogicalControls: 'Lancer les contrôles logiques',
-    LogicalControlsComputationErrorMsg:
-        'Une erreur est survenue lors du calcul et de la récupération des résultats des contrôles logiques',
     ValidityType: 'Validité',
     EstimatedValue: 'Valeur estimée',
     DifferenceValue: 'Écart',
@@ -1299,10 +1292,6 @@ const messages_fr = {
     nadInfoReactivePowerArrow: 'Flèches Q',
     nadInfoVoltageLevelVoltage: 'Tensions postes',
 
-    gridExplore: 'GridExplore',
-    myComputer: 'Mon ordinateur',
-    destination: 'Destination',
-
     ActivePower: 'P (MW)',
     reactivePowerTooltip: 'Q (Mvar)',
     'tooltip.u': 'U (kV)',
@@ -1341,7 +1330,6 @@ const messages_fr = {
     downloadNetworkModifications: 'Télécharger les modifications',
     moveToTrash: 'Mettre à la corbeille',
     visualizedRootNetwork: 'Réseau racine visualisé : {tag}',
-    addDescription: 'Ajouter une description',
     activateModification: 'Activer la modification réseau',
     deactivateModification: 'Désactiver la modification réseau',
     deselectModification: 'Désélectionner la modification',
