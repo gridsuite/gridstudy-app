@@ -19,7 +19,7 @@ import {
     StaticVarCompensatorModificationDto,
     staticVarCompensatorModificationDtoToForm,
     staticVarCompensatorModificationEmptyFormData,
-    StaticVarCompensatorModificationForm,
+    StaticVarCompensatorForm,
     StaticVarCompensatorModificationFormData,
     staticVarCompensatorModificationFormSchema,
     staticVarCompensatorModificationFormToDto,
@@ -233,7 +233,8 @@ export default function StaticVarCompensatorModificationDialog({
                     />
                 )}
                 {selectedId != null && (
-                    <StaticVarCompensatorModificationForm
+                    <StaticVarCompensatorForm
+                        isModification
                         staticVarCompensatorToModify={staticVarCompensatorToModify}
                         voltageLevelOptions={voltageLevelOptions}
                         fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
