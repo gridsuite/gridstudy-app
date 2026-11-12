@@ -569,6 +569,7 @@ const NetworkAreaDiagramContent = memo(function NetworkAreaDiagramContent(props:
                 hasHiddenVoltageLevels={hasHiddenVoltageLevels}
                 shownVoltageLevelIds={shownVoltageLevelIds}
                 onFocusVoltageLevel={handleFocusVoltageLevel}
+                onOpenVoltageLevel={onVoltageLevelClick}
                 editHistory={editHistory}
                 onRestoreHistoryState={handleRestoreHistoryState}
             />

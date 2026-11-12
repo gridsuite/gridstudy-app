@@ -51,7 +51,6 @@ const createNewTableDefinition = (
     columns: columns.map((col) => ({
         ...col,
         visible: true,
-        locked: false,
     })),
 });
 
@@ -64,6 +63,7 @@ export const mapColDefToDto = (colDef: ColumnDefinition, colFilter?: FilterConfi
     precision: colDef.precision,
     formula: colDef.formula,
     dependencies: colDef.dependencies?.length ? JSON.stringify(colDef.dependencies) : undefined,
+    locked: colDef.locked,
     columnFilterInfos: colFilter
         ? {
               filterDataType: colFilter.dataType,
@@ -89,6 +89,7 @@ export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
             filterValue: column.columnFilterInfos?.filterValue,
         },
         visible: column.visible,
+        locked: column.locked,
         [COLUMN_DEPENDENCIES]: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
     }));
 };
@@ -144,8 +145,6 @@ const handleSuccess = (
             newTableDefinition.columns = model.columns.map((col: ColumnDefinitionDto) => ({
                 ...col,
                 dependencies: col?.dependencies?.length ? JSON.parse(col.dependencies) : undefined,
-                visible: col.visible,
-                locked: false,
             }));
             const columnsFilters = extractColumnsFilters(model.columns);
             const formattedGlobalFilters = model.globalFilters ?? [];

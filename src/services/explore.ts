@@ -56,12 +56,14 @@ export function createCompositeModifications(
     name: string,
     description: string,
     parentDirectoryUuid: UUID,
-    selectedModificationsUuid: UUID[]
+    selectedModificationsUuid: UUID[],
+    rootNetworkTags: string[]
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    rootNetworkTags.forEach((rootNetworkTag) => urlSearchParams.append('rootNetworkTags', rootNetworkTag));
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/composite-modifications?' + urlSearchParams.toString(),
         {
@@ -280,4 +282,28 @@ export function updateWorkspaceConfig(id: UUID, name: string, description: strin
             headers: { 'Content-Type': 'application/json' },
         }
     );
+}
+
+/**
+ * Moves a composite modification of the node out of the study into a directory of GridExplore,
+ * and replaces it in the node by a reference to the newly shared composite modification.
+ */
+export function shareCompositeModification(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuid: UUID,
+    name: string,
+    description: string,
+    parentDirectoryUuid: UUID
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    console.info('Sharing composite modification');
+    const url =
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/${studyUuid}` +
+        `/nodes/${nodeUuid}/network-modifications/${modificationUuid}` +
+        `/share?${urlSearchParams.toString()}`;
+    return backendFetch(url, { method: 'POST' });
 }

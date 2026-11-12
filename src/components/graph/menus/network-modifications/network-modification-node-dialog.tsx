@@ -12,7 +12,7 @@ import {
     snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Grid, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -64,7 +64,10 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const formMethods = useForm<FormData>({
-        defaultValues: emptyFormData,
+        defaultValues: {
+            [NAME]: node?.data.label ?? '',
+            [DESCRIPTION]: node?.data.description ?? '',
+        },
         resolver: yupResolver(getSchema()),
     });
 
@@ -72,15 +75,6 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
         reset,
         formState: { errors },
     } = formMethods;
-
-    useEffect(() => {
-        if (open) {
-            reset({
-                [NAME]: node?.data.label ?? '',
-                [DESCRIPTION]: node?.data.description ?? '',
-            });
-        }
-    }, [open, reset, node?.data.label, node?.data.description]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -126,7 +120,7 @@ const NetworkModificationNodeDialog: React.FC<NetworkModificationNodeDialogProps
                             elementExists={isNodeExists}
                             errorMessageKey="nameAlreadyUsed"
                             catchMessageKey="NodeUpdateError"
-                            formProps={{ fullWidth: true }}
+                            formProps={{ fullWidth: true, onFocus: (event) => event.target.select() }}
                         />
                     </Grid>
                     <Grid>

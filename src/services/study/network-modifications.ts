@@ -10,6 +10,7 @@ import {
     backendFetchJson,
     backendFetchText,
     BalancesAdjustmentDto,
+    NetworkReductionDto,
     DeleteAttachingLineDto,
     EquipmentDeletionDto,
     EquipmentInfos,
@@ -1398,6 +1399,27 @@ export function balancesAdjustment(
     });
 }
 
+export function networkReduction(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: string | undefined,
+    networkReductionDto: NetworkReductionDto
+) {
+    let networkReductionUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        networkReductionUrl += '/' + encodeURIComponent(modificationUuid);
+    }
+
+    return backendFetchText(networkReductionUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(networkReductionDto),
+    });
+}
+
 export function createVoltageLevelTopology({
     CreateVoltageLevelTopologyDto,
     studyUuid,
@@ -1474,25 +1496,6 @@ export function assembleModificationsIntoComposite(
         },
         body: JSON.stringify(modificationUuids),
     });
-}
-
-/**
- * Moves a composite modification of the node out of the study into a directory of GridExplore,
- * and replaces it in the node by a reference to the newly shared composite modification.
- */
-export function shareCompositeModification(
-    studyUuid: UUID | null,
-    nodeUuid: UUID | undefined,
-    modificationUuid: UUID,
-    name: string,
-    description: string,
-    parentDirectoryUuid: UUID
-) {
-    console.info('Sharing composite modification');
-    const url = `${getNetworkModificationUrl(studyUuid, nodeUuid)}/${safeEncodeURIComponent(
-        modificationUuid
-    )}/share?${new URLSearchParams({ name, description, parentDirectoryUuid }).toString()}`;
-    return backendFetch(url, { method: 'POST' });
 }
 
 export enum SharedModificationsWriteAccess {

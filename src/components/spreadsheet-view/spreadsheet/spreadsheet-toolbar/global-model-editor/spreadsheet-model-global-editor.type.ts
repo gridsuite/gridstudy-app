@@ -15,4 +15,5 @@ export type ColumnGlobalModel = {
     columnFormula: string;
     columnDependencies?: string[];
     columnVisible: boolean;
+    columnLocked: boolean;
 };
