@@ -39,6 +39,7 @@ import {
     TwoWindingsTransformerCreationDto,
     TwoWindingsTransformerModificationDto,
     StaticVarCompensatorCreationDto,
+    StaticVarCompensatorModificationDto,
     CouplingDeviceCreationDto,
     CreateVoltageLevelTopologyDto,
     VoltageLevelSectionCreationDto,
@@ -336,6 +337,29 @@ export function modifyBattery(
         console.info('Updating battery modification');
     } else {
         console.info('Creating battery modification');
+    }
+    return backendFetchText(modificationUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dto),
+    });
+}
+
+export function modifyStaticVarCompensator(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: StaticVarCompensatorModificationDto
+) {
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating static var compensator modification');
+    } else {
+        console.info('Creating static var compensator modification');
     }
     return backendFetchText(modificationUrl, {
         method: modificationUuid ? 'PUT' : 'POST',

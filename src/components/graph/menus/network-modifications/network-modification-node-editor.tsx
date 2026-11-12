@@ -109,6 +109,7 @@ import {
     NetworkModificationData,
 } from './network-modification-menu.type';
 import StaticVarCompensatorCreationDialog from '../../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
+import StaticVarCompensatorModificationDialog from '../../../dialogs/network-modifications/static-var-compensator/modification/static-var-compensator-modification-dialog';
 import ModificationByAssignmentDialog from '../../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
 import ModificationByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by-formula/modification-by-formula-dialog';
 import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
@@ -559,6 +560,11 @@ const NetworkModificationNodeEditor = () => {
                             id: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_CREATION.type,
                             label: 'menu.create',
                             action: () => withDefaultParams(StaticVarCompensatorCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_MODIFICATION.type,
+                            label: 'ModifyFromMenu',
+                            action: () => withDefaultParams(StaticVarCompensatorModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.STATIC_VAR_COMPENSATOR),
                     ],
