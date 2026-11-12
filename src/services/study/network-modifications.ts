@@ -10,6 +10,7 @@ import {
     backendFetchJson,
     backendFetchText,
     BalancesAdjustmentDto,
+    NetworkReductionDto,
     DeleteAttachingLineDto,
     EquipmentDeletionDto,
     EquipmentInfos,
@@ -1371,6 +1372,27 @@ export function balancesAdjustment(
             'Content-Type': 'application/json',
         },
         body,
+    });
+}
+
+export function networkReduction(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: string | undefined,
+    networkReductionDto: NetworkReductionDto
+) {
+    let networkReductionUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        networkReductionUrl += '/' + encodeURIComponent(modificationUuid);
+    }
+
+    return backendFetchText(networkReductionUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(networkReductionDto),
     });
 }
 

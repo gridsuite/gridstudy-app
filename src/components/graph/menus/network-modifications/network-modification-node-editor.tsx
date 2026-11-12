@@ -129,6 +129,7 @@ import { LccModificationDialog } from '../../../dialogs/network-modifications/hv
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level/topology-modification/voltage-level-topology-modification-dialog';
 import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
+import { NetworkReductionDialog } from '../../../dialogs/network-modifications/network-reduction/network-reduction-dialog';
 import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level/topology-creation/create-voltage-level-topology-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
 import { BuildButton } from 'components/graph/nodes/build-button';
@@ -641,6 +642,11 @@ const NetworkModificationNodeEditor = () => {
                             label: 'menu.deleteByFilter',
                             action: () => withDefaultParams(ByFilterDeletionDialog),
                         },
+                        {
+                            id: MODIFICATION_TYPES.NETWORK_REDUCTION.type,
+                            label: 'NetworkReduction',
+                            action: () => withDefaultParams(NetworkReductionDialog),
+                        },
                     ],
                 },
             ],
@@ -904,7 +910,13 @@ const NetworkModificationNodeEditor = () => {
 
         const inheritedDescription = isSingleCompositeOrShared ? singleModification.description : '';
         const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
-        createCompositeModifications(name, description || inheritedDescription, folderId, selectedModificationsUuid)
+        createCompositeModifications(
+            name,
+            description || inheritedDescription,
+            folderId,
+            selectedModificationsUuid,
+            rootNetworks.map((rootNetwork) => rootNetwork.tag)
+        )
             .then(() => {
                 snackInfo({
                     headerId: 'infoCreateModificationsMsg',
