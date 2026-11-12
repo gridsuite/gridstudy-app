@@ -315,7 +315,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(SubstationModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.SUBSTATION),
@@ -379,7 +379,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.LINE_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(LineModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.LINE),
@@ -438,7 +438,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(TwoWindingsTransformerModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.TWO_WINDINGS_TRANSFORMER),
@@ -455,7 +455,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.VSC_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(VscModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.HVDC_LINE),
@@ -472,7 +472,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.LCC_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(LccModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.HVDC_LINE),
@@ -494,7 +494,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(GeneratorModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.GENERATOR),
@@ -511,7 +511,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(BatteryModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.BATTERY),
@@ -528,7 +528,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(LoadModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.LOAD),
@@ -545,7 +545,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(ShuntCompensatorModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.SHUNT_COMPENSATOR),
