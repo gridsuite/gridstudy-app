@@ -44,6 +44,7 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 import { WithModificationId } from 'services/network-modification-types';
+import { FORM_LOADING_DELAY } from '../../../../network/constants';
 
 interface StaticVarCompensatorModificationDtoWithId extends StaticVarCompensatorModificationDto, WithModificationId {}
 
@@ -64,7 +65,7 @@ export default function StaticVarCompensatorModificationDialog({
 }: Readonly<StaticVarCompensatorModificationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
+    const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
     const [staticVarCompensatorToModify, setStaticVarCompensatorToModify] =
         useState<StaticVarCompensatorFormInfo | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
@@ -196,7 +197,7 @@ export default function StaticVarCompensatorModificationDialog({
             !isUpdate ||
             ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
                 (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
-        delay: 2000,
+        delay: FORM_LOADING_DELAY,
     });
 
     return (
