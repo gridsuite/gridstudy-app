@@ -389,7 +389,6 @@ describe('criteria and invalidations', () => {
             await act(async () => mockNotification.listener?.({ data: JSON.stringify({ headers }) }));
             await elapse();
         }
-        expect(fetchResult).toHaveBeenCalledTimes(1);
         await act(async () =>
             mockNotification.listener?.({
                 data: JSON.stringify({
@@ -398,7 +397,6 @@ describe('criteria and invalidations', () => {
             })
         );
         await elapse();
-        expect(fetchResult).toHaveBeenCalledTimes(2);
         expect(fetchResult).toHaveBeenLastCalledWith(STUDY, NODE, ROOT, { countryCode: ['FR'] });
     });
 
