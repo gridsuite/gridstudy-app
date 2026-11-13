@@ -90,8 +90,13 @@ export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: Pendin
 
     useLayoutEffect(() => {
         const drawnNodeById = new Map(drawnNodes.flat().map((node) => [node.equipmentId, node]));
-        // A validated switch is only kept while a diagram still draws its previous state, until the refresh
-        const isKept = ({ id, open, validated }: PendingSwitch) => !validated || drawnNodeById.get(id)?.open === !open;
+        const isKept = ({ id, open, validated }: PendingSwitch) => {
+            const drawnNode = drawnNodeById.get(id);
+            if (drawnNode) {
+                return drawnNode.open !== open;
+            }
+            return !validated;
+        };
         setPendingSwitches((prev) => {
             const next = new Map([...prev].filter(([, pendingSwitch]) => isKept(pendingSwitch)));
             return next.size === prev.size ? prev : next;

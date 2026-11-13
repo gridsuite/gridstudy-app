@@ -266,14 +266,13 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
 
     const handleNextVoltageLevelClick: OnNextVoltageCallbackType = useCallback(
         (vlId, event) => {
-            // With switch changes to validate, a new panel would open behind the focus mode backdrop
-            if (event.ctrlKey && !hasPendingSwitches) {
+            if (event.ctrlKey) {
                 onNewVoltageLevelDiagram?.(vlId);
             } else {
                 onNextVoltageLevelDiagram?.(vlId);
             }
         },
-        [hasPendingSwitches, onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
+        [onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
     );
 
     // --- for running in debug mode --- //
