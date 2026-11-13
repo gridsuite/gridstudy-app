@@ -8,30 +8,35 @@
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { History as HistoryIcon } from '@mui/icons-material';
+import { TopologyIcon } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
 import { HistorySectionContent } from '../common/history-section-content';
+import { TopologySectionContent } from './topology-section-content';
+import type { PendingSwitches } from './use-pending-switches';
 
 interface SldNavigationSidebarProps {
-    navigationHistory: string[];
+    /** No history section when undefined: a substation diagram has no navigation. */
+    navigationHistory?: string[];
     currentVoltageLevelId?: string;
-    onNavigate: (voltageLevelId: string) => void;
+    onNavigate?: (voltageLevelId: string) => void;
+    pendingSwitches: PendingSwitches;
 }
 
 export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
-    ({ navigationHistory, currentVoltageLevelId, onNavigate }) => {
+    ({ navigationHistory, currentVoltageLevelId, onNavigate, pendingSwitches }) => {
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-        const hasHistory = navigationHistory.length > 0;
         const disabled = !isNodeBuilt(currentNode);
 
-        const sections = useMemo<SidebarSection[]>(
-            () => [
-                {
+        const sections = useMemo(() => {
+            const result: SidebarSection[] = [];
+            if (navigationHistory && onNavigate) {
+                result.push({
                     id: 'history',
                     icon: <HistoryIcon fontSize="small" />,
                     titleId: 'history',
-                    disabled: !hasHistory,
+                    disabled: navigationHistory.length === 0,
                     content: (
                         <HistorySectionContent
                             navigationHistory={navigationHistory}
@@ -40,11 +45,20 @@ export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
                             onNavigate={onNavigate}
                         />
                     ),
-                },
-            ],
-            [hasHistory, navigationHistory, disabled, currentVoltageLevelId, onNavigate]
-        );
+                });
+            }
+            if (pendingSwitches.size > 0) {
+                result.push({
+                    id: 'topology',
+                    icon: <TopologyIcon fontSize="small" />,
+                    titleId: 'topology',
+                    defaultExpanded: true,
+                    content: <TopologySectionContent pendingSwitches={pendingSwitches} />,
+                });
+            }
+            return result;
+        }, [navigationHistory, disabled, currentVoltageLevelId, onNavigate, pendingSwitches]);
 
-        return <NavigationSidebar sections={sections} isAbsolutePositioned />;
+        return <NavigationSidebar sections={sections} />;
     }
 );

@@ -30,8 +30,9 @@ export const HistorySectionContent = memo(function HistorySectionContent({
                     selected={isItemSelected ? isItemSelected(voltageLevelId) : false}
                     onClick={() => onNavigate(voltageLevelId)}
                     disabled={disabled}
+                    sx={{ px: 1, py: 0 }}
                 >
-                    <ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 28 }}>
                         <ArrowBackIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText

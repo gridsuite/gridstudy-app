@@ -21,7 +21,7 @@ import { SldAssociationButton } from './sld-association-button';
 import { setDirtyComputationParameters } from 'redux/actions';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import { getPanelBorder } from './utils/panel-border';
-import { selectPanelEditMode } from '../../../redux/slices/workspace-selectors';
+import { selectPanelEditMode, selectPanelFocusMode } from '../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../redux/store';
 
 const getHeaderBackground = (theme: Theme, isFocused: boolean) => {
@@ -95,6 +95,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
     const displayTitle = intl.messages[title] ? intl.formatMessage({ id: title }) : title || '';
     const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
     const isEditing = useSelector((state: RootState) => selectPanelEditMode(state, panelId));
+    const isFocusMode = useSelector((state: RootState) => selectPanelFocusMode(state, panelId));
     const [isConfirmCloseOpen, setIsConfirmCloseOpen] = useState(false);
 
     const handleClose = () => {
@@ -136,12 +137,18 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
                     sx={styles.iconButton}
                     onClick={() => pinPanel(panelId)}
                     onMouseDown={(e) => e.stopPropagation()}
+                    disabled={isFocusMode}
                     data-testid={pinned ? 'UnpinPanel' : 'PinPanel'}
                 >
                     {pinned ? <PushPin fontSize="small" /> : <PushPinOutlined fontSize="small" />}
                 </IconButton>
                 {panelType === PanelType.SLD_VOLTAGE_LEVEL && (
-                    <SldAssociationButton panelId={panelId} title={title} iconButtonStyles={styles.iconButton} />
+                    <SldAssociationButton
+                        panelId={panelId}
+                        title={title}
+                        iconButtonStyles={styles.iconButton}
+                        disabled={isFocusMode}
+                    />
                 )}
                 {(panelType === PanelType.SLD_VOLTAGE_LEVEL ||
                     panelType === PanelType.SLD_SUBSTATION ||
@@ -152,6 +159,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
                         sx={styles.iconButton}
                         onClick={() => minimizePanel(panelId)}
                         onMouseDown={(e) => e.stopPropagation()}
+                        disabled={isFocusMode}
                     >
                         <Minimize fontSize="small" />
                     </IconButton>
@@ -172,7 +180,7 @@ export const PanelHeader = memo(({ panelId, title, panelType, pinned, maximized,
                     sx={styles.iconButton}
                     onClick={handleClose}
                     onMouseDown={(e) => e.stopPropagation()}
-                    disabled={pinned}
+                    disabled={pinned || isFocusMode}
                     data-testid="ClosePanel"
                 >
                     <Close fontSize="small" />

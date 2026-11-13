@@ -19,13 +19,14 @@ interface SldAssociationButtonProps {
     panelId: UUID;
     title: string;
     iconButtonStyles: SxProps<Theme>;
+    disabled?: boolean;
 }
 
 /**
  * Component that encapsulates all SLD association button logic.
  * Renders the associate button + menu for voltage level SLD panels.
  */
-export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAssociationButtonProps) => {
+export const SldAssociationButton = ({ panelId, title, iconButtonStyles, disabled }: SldAssociationButtonProps) => {
     const { associateSldToNad, createNadAndAssociateSld } = useWorkspacePanelActions();
     const [associateMenuAnchor, setAssociateMenuAnchor] = useState<HTMLElement | null>(null);
     const sldFields = useSelector((state: RootState) => selectSldDiagramFields(state, panelId));
@@ -60,6 +61,7 @@ export const SldAssociationButton = ({ panelId, title, iconButtonStyles }: SldAs
                 sx={iconButtonStyles}
                 onClick={handleAssociateClick}
                 onMouseDown={(e) => e.stopPropagation()}
+                disabled={disabled}
             >
                 <LinkIcon fontSize="small" />
             </IconButton>
