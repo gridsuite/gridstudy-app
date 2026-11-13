@@ -152,3 +152,9 @@ export const selectNadNavigationHistory = createSelector([selectPanel], (panel):
 });
 
 export const selectPanelEditMode = createSelector([selectPanel], (panel): boolean => !!panel?.editMode);
+
+export const selectPanelFocusMode = createSelector([selectPanel], (panel): boolean => !!panel?.focusMode);
+
+export const selectIsFocusModeActive = createSelector([selectPanels], (panels): boolean =>
+    panels.some((panel) => panel.focusMode)
+);

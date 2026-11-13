@@ -46,6 +46,7 @@ interface BasePanel {
     pinned: boolean;
     zIndex?: number; // Client-only, not persisted to backend
     editMode?: boolean; // Client-only, not persisted to backend
+    focusMode?: boolean; // Client-only, not persisted to backend
     restorePosition?: PanelPosition;
     restoreSize?: PanelSize;
 }

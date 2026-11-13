@@ -58,6 +58,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import { DivideLineInfo, VoltageLevelCreationInfo } from '../network-modification-types';
+import type { SwitchInfos } from './network-map.type';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -1173,6 +1174,30 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
             equipmentAttributeValue: open,
         }),
     });
+}
+
+export function updateVoltageLevelSwitchStates(
+    studyUuid: UUID,
+    nodeUuid: UUID | undefined,
+    voltageLevelId: string,
+    switches: SwitchInfos[]
+) {
+    return modifyVoltageLevelTopology(
+        {
+            type: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
+            equipmentId: voltageLevelId,
+            equipmentAttributeModificationList: switches.map(({ id, open }) => ({
+                type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
+                equipmentType: EquipmentType.SWITCH,
+                equipmentId: id,
+                equipmentAttributeName: 'open',
+                equipmentAttributeValue: open,
+            })),
+        },
+        null,
+        studyUuid,
+        nodeUuid
+    );
 }
 
 export function createLcc(

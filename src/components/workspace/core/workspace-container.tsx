@@ -8,8 +8,12 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
-import type { MuiStyles } from '@gridsuite/commons-ui';
-import { selectOpenPanelIds, selectFocusedPanelId } from '../../../redux/slices/workspace-selectors';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import {
+    selectOpenPanelIds,
+    selectFocusedPanelId,
+    selectIsFocusModeActive,
+} from '../../../redux/slices/workspace-selectors';
 import type { SnapRect } from './utils/snap-utils';
 import { toPixels } from './utils/coordinate-utils';
 import { Panel } from './panel';
@@ -24,6 +28,10 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         isolation: 'isolate',
+    },
+    // A panel in focus mode must rise above the whole app, not only above the other panels
+    containerInFocusMode: {
+        isolation: 'auto',
     },
     panelsArea: {
         position: 'relative',
@@ -44,6 +52,7 @@ const styles = {
 export const WorkspaceContainer = () => {
     const visiblePanelIds = useSelector(selectOpenPanelIds);
     const focusedPanelId = useSelector(selectFocusedPanelId);
+    const isFocusModeActive = useSelector(selectIsFocusModeActive);
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
     const [snapPreview, setSnapPreview] = useState<SnapRect | null>(null);
@@ -72,7 +81,7 @@ export const WorkspaceContainer = () => {
     }, []);
 
     return (
-        <Box sx={styles.container}>
+        <Box sx={mergeSx(styles.container, isFocusModeActive ? styles.containerInFocusMode : undefined)}>
             <Box ref={containerRef} sx={styles.panelsArea}>
                 {containerRect &&
                     visiblePanelIds.map((panelId) => (
