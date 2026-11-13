@@ -13,9 +13,15 @@ import Button from '@mui/material/Button';
 import { ICellRendererParams } from 'ag-grid-community';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { ComputingType, OverflowableText, RunningStatus, TableType } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    EquipmentType,
+    GlobalFilterType,
+    OverflowableText,
+    RunningStatus,
+    TableType,
+} from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer.type';
-import { useNodeData } from 'components/use-node-data';
 import { fetchLogicalControlsResult } from '../../../services/study/state-estimation';
 import { logicalControlsResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { LogicalControlsResult, LogicalControlsTabProps } from './logical-controls-result.type';
@@ -42,6 +48,24 @@ import {
 import { resultsStyles } from '../common/utils';
 import { useWorkspacePanelActions } from 'components/workspace/hooks/use-workspace-panel-actions';
 import { PanelType } from 'components/workspace/types/workspace.types';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import { useComputationGlobalFilters } from '../common/global-filter/hooks/use-computation-global-filters';
+import { useFilteredNodeData } from '../common/use-filtered-node-data';
+
+const GLOBAL_FILTER_CATEGORIES = [
+    GlobalFilterType.VOLTAGE_LEVEL,
+    GlobalFilterType.COUNTRY,
+    GlobalFilterType.SUBSTATION_PROPERTY,
+    GlobalFilterType.SUBSTATION_OR_VL,
+];
+const GLOBAL_FILTER_EQUIPMENT_TYPES = [
+    EquipmentType.LINE,
+    EquipmentType.TWO_WINDINGS_TRANSFORMER,
+    EquipmentType.GENERATOR,
+    EquipmentType.LOAD,
+    EquipmentType.HVDC_LINE,
+    EquipmentType.VOLTAGE_LEVEL,
+];
 
 const LOGICAL_CONTROLS_TABS = [
     {
@@ -87,10 +111,16 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
         (state: AppState) => state.computingStatus[ComputingType.LOGICAL_CONTROLS]
     );
 
-    const { result: logicalControlsResult, isLoading: isLoadingResult } = useNodeData({
+    const globalFilters = useComputationGlobalFilters(TableType.LogicalControls);
+    const {
+        result: logicalControlsResult,
+        isLoadingResult,
+        criteria,
+    } = useFilteredNodeData({
         studyUuid,
         nodeUuid,
         rootNetworkUuid: currentRootNetworkUuid,
+        globalFilters,
         fetcher: fetchLogicalControlsResult,
         invalidations: logicalControlsResultInvalidations,
     });
@@ -145,11 +175,21 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Tabs value={tabIndex} onChange={handleTabChange}>
-                {LOGICAL_CONTROLS_TABS.map(({ label }) => (
-                    <Tab key={label} label={<FormattedMessage id={label} />} />
-                ))}
-            </Tabs>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Tabs value={tabIndex} onChange={handleTabChange} sx={{ flexGrow: 0 }} variant={'scrollable'}>
+                    {LOGICAL_CONTROLS_TABS.map(({ label }) => (
+                        <Tab key={label} label={<FormattedMessage id={label} />} />
+                    ))}
+                </Tabs>
+                <Box sx={{ flexGrow: 1 }} />
+                <GlobalFilterSelector
+                    filterCategories={GLOBAL_FILTER_CATEGORIES}
+                    filterableEquipmentTypes={GLOBAL_FILTER_EQUIPMENT_TYPES}
+                    genericFiltersStrictMode={true}
+                    tableType={TableType.LogicalControls}
+                />
+                <Box sx={{ p: 3 }} />
+            </Box>
 
             <LogicalControlsResultTable
                 key={selectedTab.tableName}
@@ -157,7 +197,7 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
                 columnDefs={columnDefs}
                 isLoadingResult={isLoadingResult}
                 tableName={selectedTab.tableName}
-                exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}`}
+                exportCsvResetKey={`${studyUuid}-${nodeUuid}-${currentRootNetworkUuid}-${criteria}`}
             />
         </Box>
     );

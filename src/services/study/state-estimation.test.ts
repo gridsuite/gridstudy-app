@@ -7,7 +7,11 @@
 
 import type { UUID } from 'node:crypto';
 import { backendFetchJson, type GlobalFilters } from '@gridsuite/commons-ui';
-import { fetchStateEstimationMeasurements, fetchStateEstimationResult } from './state-estimation';
+import {
+    fetchLogicalControlsResult,
+    fetchStateEstimationMeasurements,
+    fetchStateEstimationResult,
+} from './state-estimation';
 
 jest.mock('@gridsuite/commons-ui', () => ({
     ...jest.requireActual('@gridsuite/commons-ui'),
@@ -94,5 +98,62 @@ describe('fetchStateEstimationResult', () => {
 
         expect(lastUrl().pathname).toMatch(/\/state-estimation\/result$/);
         expect(lastUrl().search).toBe('');
+    });
+});
+
+describe('fetchLogicalControlsResult', () => {
+    it('targets the logical-controls result without parameters when there are no criteria', async () => {
+        await fetchLogicalControlsResult(STUDY, NODE, ROOT);
+
+        expect(lastUrl().pathname).toMatch(
+            new RegExp(`/studies/${STUDY}/root-networks/${ROOT}/nodes/${NODE}/logical-controls/result$`)
+        );
+        expect(lastUrl().search).toBe('');
+        expect(fetchJson.mock.calls[0]).toHaveLength(1);
+    });
+
+    it('encodes all four global filter categories exactly once as JSON', async () => {
+        const globalFilters: GlobalFilters = {
+            countryCode: ['FR', 'a+b', '%41', '100%', 'x&y=z', 'é "q" \\ 中'],
+            voltageRanges: [[225, 400]],
+            substationProperty: { 'région & zone': ['sud ouest + 100%'] },
+            substationOrVoltageLevelFilter: [NODE],
+        };
+
+        await fetchLogicalControlsResult(STUDY, NODE, ROOT, globalFilters);
+
+        expect([...lastUrl().searchParams.keys()]).toEqual(['globalFilters']);
+        expect(JSON.parse(lastUrl().searchParams.get('globalFilters') as string)).toEqual(globalFilters);
+        expect(lastUrl().search).toBe(`?${new URLSearchParams({ globalFilters: JSON.stringify(globalFilters) })}`);
+        expect(fetchJson.mock.calls[0]).toHaveLength(1);
+    });
+
+    it('returns all six maps unchanged, including duplicate measurements', async () => {
+        const measurement = { value: 42 };
+        const result = {
+            balances: { BUS: { activeBalance: 1 } },
+            nonZeroMeasurementsOnDisconnected: { HVDC: [measurement, measurement] },
+            zeroMeasurementsOnConnected: { LOAD: [measurement] },
+            originExtremityDeviations: { LINE: [measurement] },
+            outOfBoundsMeasurements: { GENERATOR: [measurement] },
+            voltageDeviations: { BUS: { deviation: 2 } },
+        };
+        fetchJson.mockResolvedValue(result);
+
+        await expect(fetchLogicalControlsResult(STUDY, NODE, ROOT)).resolves.toBe(result);
+    });
+
+    it('returns null for a missing result (204)', async () => {
+        fetchJson.mockResolvedValue(null);
+
+        await expect(fetchLogicalControlsResult(STUDY, NODE, ROOT)).resolves.toBeNull();
+    });
+
+    it('propagates backend failures', async () => {
+        fetchJson.mockRejectedValue(new Error('invalid filter'));
+
+        await expect(fetchLogicalControlsResult(STUDY, NODE, ROOT, { countryCode: ['FR'] })).rejects.toThrow(
+            'invalid filter'
+        );
     });
 });
