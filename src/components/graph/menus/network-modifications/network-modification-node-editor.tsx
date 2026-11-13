@@ -8,6 +8,7 @@
 import {
     ArrowsInputIcon,
     ComposedModificationMetadata,
+    createRootNetworksColumns,
     EquipmentType,
     ErrorMessage,
     fetchNetworkModification,
@@ -137,7 +138,7 @@ import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modificati
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
 import { FetchStatus } from '../../../../services/utils.type';
-import { createBaseColumns, createRootNetworksColumns } from './network-modification-table/createColumns';
+import { createBaseColumns } from './network-modification-table/createColumns';
 import { ColumnDef } from '@tanstack/react-table';
 import { copyModifications } from '../../../../services/study';
 
