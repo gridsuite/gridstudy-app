@@ -95,7 +95,7 @@ export const useEquipmentContextMenu = ({
 
               if (!isEditDisabled) {
                   items.push({
-                      label: intl.formatMessage({ id: 'ModifyFromMenu' }),
+                      label: intl.formatMessage({ id: 'menu.modify' }),
                       icon: Edit,
                       onClick: handleEdit,
                   });

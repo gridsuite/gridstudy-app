@@ -96,7 +96,7 @@ export const RootNetworkCaseSelection = ({
                         onClick={() => setIsDialogOpen(true)}
                     >
                         {isModification ? (
-                            <FormattedMessage id={'ModifyFromMenu'} />
+                            <FormattedMessage id={'menu.modify'} />
                         ) : (
                             <FormattedMessage id={'chooseCase'} />
                         )}
