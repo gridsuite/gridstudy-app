@@ -18,7 +18,6 @@ import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navig
 import { selectSldDiagramFields } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
-import { usePendingSwitches } from '../../../diagrams/sld/use-pending-switches';
 
 interface VoltageLevelPanelContentProps {
     panelId: UUID;
@@ -38,7 +37,6 @@ export const VoltageLevelPanelContent = ({
     const sldFields = useSelector((state: RootState) => selectSldDiagramFields(state, panelId));
 
     const { associateVoltageLevelWithNad, navigateSLD } = useWorkspacePanelActions();
-    const { pendingSwitches } = usePendingSwitches();
 
     const { diagram, loading, globalError } = useSldDiagram({
         diagramType: DiagramType.VOLTAGE_LEVEL,
@@ -97,10 +95,7 @@ export const VoltageLevelPanelContent = ({
                     svgMetadata={diagram.svg?.metadata as SLDMetadata}
                     loadingState={loading}
                     visible
-                    // With switch changes to validate, a new panel would open behind the focus mode backdrop
-                    onNewVoltageLevelDiagram={
-                        pendingSwitches.size > 0 ? handleNavigateDiagram : handleNewVoltageLevelClick
-                    }
+                    onNewVoltageLevelDiagram={handleNewVoltageLevelClick}
                     onNextVoltageLevelDiagram={handleNavigateDiagram}
                     onSvgLoad={onSvgLoad}
                     navigationHistory={sldFields.navigationHistory}

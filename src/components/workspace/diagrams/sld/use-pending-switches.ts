@@ -27,6 +27,36 @@ export const noPendingSwitches: PendingSwitches = new Map();
 export const groupByVoltageLevel = (pendingSwitches: PendingSwitches) =>
     Map.groupBy(pendingSwitches.values(), ({ voltageLevelId }) => voltageLevelId);
 
+const drawPendingSwitch = (switchElement: SVGGraphicsElement, { open, componentType }: PendingSwitch) => {
+    switchElement.classList.remove('sld-open', 'sld-closed');
+    switchElement.classList.add(open ? 'sld-open' : 'sld-closed', 'pending-switch');
+    // A disconnector also gets a circle behind it, to stay visible on wires of the same color
+    if (componentType === 'DISCONNECTOR') {
+        const { x, y, width, height } = switchElement.getBBox();
+        switchElement.insertAdjacentHTML(
+            'afterbegin',
+            `<circle class="pending-switch-background" cx="${x + width / 2}" cy="${y + height / 2}" r="${width}" />`
+        );
+    }
+};
+
+/**
+ * The svg only knows the state of the pending switches before their change
+ */
+export const drawPendingSwitches = (
+    svgElement: HTMLElement,
+    svgMetadata: SLDMetadata | undefined,
+    pendingSwitches: PendingSwitches
+) => {
+    svgMetadata?.nodes.forEach(({ id, equipmentId }) => {
+        const pendingSwitch = pendingSwitches.get(equipmentId);
+        const switchElement = pendingSwitch && svgElement.querySelector<SVGGraphicsElement>(`#${CSS.escape(id)}`);
+        if (switchElement) {
+            drawPendingSwitch(switchElement, pendingSwitch);
+        }
+    });
+};
+
 interface PendingSwitchesContextValue {
     pendingSwitches: PendingSwitches;
     /** From the validation until the diagrams draw the new switch states */

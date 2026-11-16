@@ -67,7 +67,7 @@ import useDebugSubscription from '../../../../../hooks/computation-debug/use-deb
 import { DialogContentText } from '@mui/material';
 import { SelectOptionsDialog } from '../../../../../utils/dialogs';
 import { SldNavigationSidebar } from '../../../../workspace/diagrams/sld/sld-navigation-sidebar';
-import { type PendingSwitch, usePendingSwitches } from '../../../../workspace/diagrams/sld/use-pending-switches';
+import { drawPendingSwitches, usePendingSwitches } from '../../../../workspace/diagrams/sld/use-pending-switches';
 
 const oneBusLoaderStyle = (theme: Theme) => ({
     display: 'flex',
@@ -112,19 +112,6 @@ const defaultBusMenuState: BusMenuState = {
     busId: null,
     svgId: null,
     display: false,
-};
-
-const drawPendingSwitch = (switchElement: SVGGraphicsElement, { open, componentType }: PendingSwitch) => {
-    switchElement.classList.remove('sld-open', 'sld-closed');
-    switchElement.classList.add(open ? 'sld-open' : 'sld-closed', 'pending-switch');
-    // A disconnector also gets a circle behind it, to stay visible on wires of the same color
-    if (componentType === 'DISCONNECTOR') {
-        const { x, y, width, height } = switchElement.getBBox();
-        switchElement.insertAdjacentHTML(
-            'afterbegin',
-            `<circle class="pending-switch-background" cx="${x + width / 2}" cy="${y + height / 2}" r="${width}" />`
-        );
-    }
 };
 
 const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
@@ -266,13 +253,14 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
 
     const handleNextVoltageLevelClick: OnNextVoltageCallbackType = useCallback(
         (vlId, event) => {
-            if (event.ctrlKey) {
+            // With switch changes to validate, no new panel can be opened
+            if (event.ctrlKey && !hasPendingSwitches) {
                 onNewVoltageLevelDiagram?.(vlId);
             } else {
                 onNextVoltageLevelDiagram?.(vlId);
             }
         },
-        [onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
+        [hasPendingSwitches, onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
     );
 
     // --- for running in debug mode --- //
@@ -433,7 +421,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
                 diagramParams.type === DiagramType.VOLTAGE_LEVEL ? MAX_HEIGHT_VOLTAGE_LEVEL : MAX_HEIGHT_SUBSTATION,
 
                 // callback on the next voltage arrows
-                isReadyForInteraction ? handleNextVoltageLevelClick : null,
+                isReadyForInteraction && onNextVoltageLevelDiagram ? handleNextVoltageLevelClick : null,
 
                 // callback on the breakers
                 isReadyForInteraction && !isNodeReadOnly(currentNode) ? onBreakerClick : null,
@@ -456,15 +444,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
                 toggleBreakerDomClasses(locallySwitchedBreaker);
             }
 
-            // The svg only knows the state of the pending switches before their change
-            svgMetadata?.nodes.forEach(({ id, equipmentId }) => {
-                const pendingSwitch = pendingSwitches.get(equipmentId);
-                const switchElement =
-                    pendingSwitch && svgRef.current?.querySelector<SVGGraphicsElement>(`#${CSS.escape(id)}`);
-                if (switchElement) {
-                    drawPendingSwitch(switchElement, pendingSwitch);
-                }
-            });
+            drawPendingSwitches(svgRef.current, svgMetadata, pendingSwitches);
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
             // the user's zoom and scroll state for the current render.
@@ -506,6 +486,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         onSvgLoad,
         handleTogglePopover,
         computationStarting,
+        onNextVoltageLevelDiagram,
         handleNextVoltageLevelClick,
         toggleBreakerDomClasses,
     ]);
