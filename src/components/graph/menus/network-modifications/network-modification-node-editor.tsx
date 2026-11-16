@@ -1192,7 +1192,7 @@ const NetworkModificationNodeEditor = () => {
                 highlightedModificationUuid={highlightedModificationUuid}
                 modificationUuidsToReset={modificationUuidsToReset}
                 modificationToEditLabel={modificationToEditLabel}
-                visualizedRootNetworkUuid={currentRootNetworkUuid ?? undefined}
+                currentRootNetworkUuid={currentRootNetworkUuid ?? undefined}
                 rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
                 isDisabled={isEditBlocked || mapDataLoading}
                 onMoveModifications={canMoveModifications ? onMoveModifications : undefined}
