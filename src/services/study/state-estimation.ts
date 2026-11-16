@@ -170,16 +170,23 @@ export function fetchLogicalControlsStatus(studyUuid: UUID, currentNodeUuid: UUI
 export function fetchLogicalControlsResult(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID
+    currentRootNetworkUuid: UUID,
+    globalFilters?: GlobalFilters
 ): Promise<LogicalControlsResultDto | null> {
     console.info(
         `Fetching logical controls result on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
     );
+    const urlSearchParams = new URLSearchParams();
+    if (globalFilters) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
+    }
+    const query = urlSearchParams.toString();
+    const queryString = query ? `?${query}` : '';
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/logical-controls/result`;
+    )}/logical-controls/result${queryString}`;
     console.debug(url);
     return backendFetchJson(url);
 }
