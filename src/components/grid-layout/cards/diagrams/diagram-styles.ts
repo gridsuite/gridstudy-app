@@ -61,10 +61,12 @@ export const styles = {
         '& .pending-switch path': {
             stroke: theme.palette.warning.main,
         },
+        '& .sld-disconnector.pending-switch path': {
+            stroke: theme.palette.primary.contrastText,
+        },
         '& .pending-switch-background': {
-            fill: theme.palette.background.paper,
-            stroke: theme.palette.warning.main,
-            strokeWidth: 1,
+            fill: theme.palette.warning.main,
+            stroke: 'none',
         },
         '& .arrow': {
             fill: theme.palette.text.primary,
