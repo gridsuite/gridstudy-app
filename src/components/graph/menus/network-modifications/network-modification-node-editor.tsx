@@ -1128,8 +1128,7 @@ const NetworkModificationNodeEditor = () => {
     const defaultSaveModificationDescription =
         selectedNetworkModifications.length === 1 ? (selectedNetworkModifications[0]?.description ?? null) : null;
 
-    const canMoveModifications = Boolean(currentNode?.id);
-    const canUpdateModificationStatusByRootNetwork = Boolean(studyUuid && currentNode?.id);
+    const canEditNode = Boolean(studyUuid && currentNode?.id);
 
     const onMoveModifications = useCallback(
         (moves: ModificationMoveInfos[]) => moveModifications(studyUuid, currentNode?.id, moves),
@@ -1195,9 +1194,9 @@ const NetworkModificationNodeEditor = () => {
                 currentRootNetworkUuid={currentRootNetworkUuid ?? undefined}
                 rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
                 isDisabled={isEditBlocked || mapDataLoading}
-                onMoveModifications={canMoveModifications ? onMoveModifications : undefined}
+                onMoveModifications={canEditNode ? onMoveModifications : undefined}
                 onUpdateModificationStatusByRootNetwork={
-                    canUpdateModificationStatusByRootNetwork ? onUpdateModificationStatusByRootNetwork : undefined
+                    canEditNode ? onUpdateModificationStatusByRootNetwork : undefined
                 }
                 onUpdateModificationMetadata={onUpdateModificationMetadata}
                 onUpdateModificationNameAndDescription={onUpdateModificationNameAndDescription}
