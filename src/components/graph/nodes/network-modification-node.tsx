@@ -15,6 +15,7 @@ import { AppState } from 'redux/reducer.type';
 import { CopyType } from 'components/network-modification.type';
 import { ModificationNode } from '../tree-node.type';
 import NodeHandle from './node-handle';
+import { SharedIndicator } from './shared-indicator';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
 import { BlockingActivitySpinner } from 'components/node-activity/components/blocking-activity-spinner';
@@ -40,19 +41,6 @@ const styles = {
         ...baseNodeStyles(theme, 'column'),
         border: theme.node.modification.border,
         ...interactiveNodeStyles(theme, 'modification'),
-    }),
-    // double border : the node contains at least one shared modification
-    containsSharedModifications: (theme) => ({
-        border: 'none',
-        outline: theme.node.modification.border,
-        outlineStyle: 'double',
-        outlineWidth: '6px',
-    }),
-    containsSharedModificationsSelected: (theme) => ({
-        border: 'none',
-        outline: theme.node.modification.selectedBorder,
-        outlineStyle: 'double',
-        outlineWidth: '6px',
     }),
     tooltipDivider: {
         my: 0.5,
@@ -197,6 +185,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     onClick={(e) => e.stopPropagation()}
                 />
             )}
+            {hasReferencedModifications && <SharedIndicator tooltipId="nodeContainsSharedModifications" />}
             <Tooltip
                 title={tooltipContent}
                 disableFocusListener
@@ -212,10 +201,6 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 <ForwardRefBox
                     sx={[
                         isSelectedNode() ? styles.networkModificationSelected : styles.networkModification,
-                        hasReferencedModifications &&
-                            (isSelectedNode()
-                                ? styles.containsSharedModificationsSelected
-                                : styles.containsSharedModifications),
                         { opacity: getNodeOpacity() },
                     ]}
                 >

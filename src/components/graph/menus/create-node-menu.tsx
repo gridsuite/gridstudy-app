@@ -62,6 +62,7 @@ interface CreateNodeMenuProps {
     handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
     handleClose: () => void;
     handleUnshareAllReferencesInStudy: () => void;
+    handleUnshareNodeReferences: (node: CurrentTreeNode) => void;
     handleBuildNode: (element: CurrentTreeNode) => void;
     handleUnbuildNode: (element: CurrentTreeNode) => void;
     handleExportCaseOnNode: (node: CurrentTreeNode) => void;
@@ -84,6 +85,7 @@ interface CreateNodeMenuProps {
 const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
     UNSHARE_STUDY: 'UNSHARE_STUDY',
+    UNSHARE_NODE: 'UNSHARE_NODE',
     REMOVE_SUBTREE: 'REMOVE_SUBTREE',
     NO_ACTION: 'NO_ACTION',
 };
@@ -128,6 +130,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     handleNodeRemoval,
     handleExportCaseOnNode,
     handleUnshareAllReferencesInStudy,
+    handleUnshareNodeReferences,
     handleExportNodeInfos,
     activeNode,
     nodeSelectionForCopy,
@@ -226,6 +229,14 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     function unshareAllReferencesInStudy() {
         setNodeAction(NodeActions.UNSHARE_STUDY);
     }
+
+    function unshareNodeReferences() {
+        setNodeAction(NodeActions.UNSHARE_NODE);
+    }
+
+    const activeNodeHasReferencedModifications =
+        activeNode?.type === NodeType.NETWORK_MODIFICATION &&
+        (activeNode as ModificationNode).data?.hasReferencedModifications === true;
 
     function exportNodeInfos() {
         handleExportNodeInfos(activeNode);
@@ -555,6 +566,13 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             hidden: !isDeveloperMode,
             withDivider: true,
         },
+        UNSHARE_NODE: {
+            onRoot: false,
+            action: () => unshareNodeReferences(),
+            id: 'unshareReferencesInNode',
+            disabled: isActiveNodeEditBlocked,
+            hidden: !activeNodeHasReferencedModifications,
+        },
         UNSHARE: {
             onRoot: true,
             action: () => unshareAllReferencesInStudy(),
@@ -600,8 +618,14 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     const ACTION_TO_CONFIRMATION_MESSAGE: Record<string, string> = {
         [NodeActions.REMOVE_SUBTREE]: 'deleteSubTreeConfirmation',
         [NodeActions.UNSHARE_STUDY]: 'unshareStudyConfirmation',
+        [NodeActions.UNSHARE_NODE]: 'unshareNodeConfirmation',
         [NodeActions.REMOVE_NODE]: 'deleteNodeConfirmation',
         [NodeActions.NO_ACTION]: 'deleteNodeConfirmation',
+    };
+
+    const VALIDATE_BUTTON_LABEL: Record<string, string> = {
+        [NodeActions.UNSHARE_STUDY]: 'unshareReferencesInStudy',
+        [NodeActions.UNSHARE_NODE]: 'unshareReferencesInNode',
     };
 
     const content = intl.formatMessage(
@@ -623,6 +647,8 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             handleNodeRemoval(activeNode);
         } else if (nodeAction === NodeActions.UNSHARE_STUDY) {
             handleUnshareAllReferencesInStudy();
+        } else if (nodeAction === NodeActions.UNSHARE_NODE) {
+            handleUnshareNodeReferences(activeNode);
         } else {
             handleRemovalSubtree(activeNode);
         }
@@ -632,6 +658,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         handleNodeRemoval,
         handleRemovalSubtree,
         handleUnshareAllReferencesInStudy,
+        handleUnshareNodeReferences,
         activeNode,
         nodeAction,
     ]);
@@ -654,9 +681,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                 <CustomDialog
                     content={content}
                     onValidate={handleOnValidate}
-                    validateButtonLabel={
-                        nodeAction === NodeActions.UNSHARE_STUDY ? 'unshareReferencesInStudy' : 'button.delete'
-                    }
+                    validateButtonLabel={VALIDATE_BUTTON_LABEL[nodeAction] ?? 'button.delete'}
                     onClose={handleOnClose}
                 />
             )}
