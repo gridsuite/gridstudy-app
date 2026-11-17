@@ -110,6 +110,8 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
     const logicalControlsStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.LOGICAL_CONTROLS]
     );
+    const canReadResult =
+        logicalControlsStatus === RunningStatus.SUCCEED || logicalControlsStatus === RunningStatus.FAILED;
 
     const globalFilters = useComputationGlobalFilters(TableType.LogicalControls);
     const {
@@ -123,6 +125,7 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
         globalFilters,
         fetcher: fetchLogicalControlsResult,
         invalidations: logicalControlsResultInvalidations,
+        enabled: canReadResult,
     });
 
     const selectedTab = LOGICAL_CONTROLS_TABS[tabIndex];
@@ -156,9 +159,7 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
     };
 
     const result = useMemo<Partial<LogicalControlsResult>>(() => {
-        const isProcessing =
-            logicalControlsStatus !== RunningStatus.SUCCEED && logicalControlsStatus !== RunningStatus.FAILED;
-        if (isProcessing || !logicalControlsResult) {
+        if (!canReadResult || !logicalControlsResult) {
             return {};
         }
         return {
@@ -171,7 +172,7 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
             outOfBoundsMeasurements: flattenRecordOfArrays(logicalControlsResult.outOfBoundsMeasurements),
             voltageDeviations: flattenRecord(logicalControlsResult.voltageDeviations),
         };
-    }, [logicalControlsStatus, logicalControlsResult]);
+    }, [canReadResult, logicalControlsResult]);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

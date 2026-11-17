@@ -90,6 +90,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const [tabIndex, setTabIndex] = useState(0);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const canReadSummary = loadFlowStatus === RunningStatus.SUCCEED || loadFlowStatus === RunningStatus.FAILED;
     const onGridReadyLimitViolations = useAgGridInitialColumnFilters(TableType.Loadflow, mappingTabs(tabIndex));
 
     const sortConfig = useSelector(
@@ -182,6 +183,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         rootNetworkUuid: currentRootNetworkUuid,
         fetcher: fetchResult,
         invalidations: loadflowResultInvalidations,
+        enabled: tabIndex !== 2 || canReadSummary,
     });
 
     const SubjectIdRenderer = useCallback(

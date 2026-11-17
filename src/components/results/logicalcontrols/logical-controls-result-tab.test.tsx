@@ -476,19 +476,29 @@ describe('result display and request identity', () => {
         expect(table().isLoadingResult).toBe(false);
     });
 
-    it('hides results during computation and allows both success and failure results', async () => {
-        await show();
-        await elapse();
-        for (const status of [
-            RunningStatus.RUNNING,
-            RunningStatus.PRELOADING,
-            RunningStatus.SUCCEED,
-            RunningStatus.FAILED,
-        ]) {
-            await act(async () => store.dispatch(setComputingStatus(ComputingType.LOGICAL_CONTROLS, status)));
-            expect(ids()).toEqual(status === RunningStatus.SUCCEED || status === RunningStatus.FAILED ? ['ID'] : []);
+    it.each([RunningStatus.SUCCEED, RunningStatus.FAILED])(
+        'hides results during computation and reads fresh results on %s',
+        async (terminalStatus) => {
+            await show();
+            await elapse();
+            expect(ids()).toEqual(['ID']);
+            for (const status of [RunningStatus.RUNNING, RunningStatus.PRELOADING, RunningStatus.IDLE]) {
+                await act(async () => store.dispatch(setComputingStatus(ComputingType.LOGICAL_CONTROLS, status)));
+                expect(ids()).toEqual([]);
+                expect(table().isLoadingResult).toBe(false);
+                await elapse();
+                expect(fetchResult).toHaveBeenCalledTimes(1);
+            }
+            fetchResult.mockResolvedValue(dto('NEW'));
+            await act(async () => store.dispatch(setComputingStatus(ComputingType.LOGICAL_CONTROLS, terminalStatus)));
+            expect(ids()).toEqual([]);
+            expect(table().isLoadingResult).toBe(true);
+            await elapse();
+            expect(ids()).toEqual(['NEW']);
+            expect(fetchResult).toHaveBeenCalledTimes(2);
+            expect(table().isLoadingResult).toBe(false);
         }
-    });
+    );
 
     it('hides previous criteria immediately during debounce and resets CSV', async () => {
         const second = deferred<LogicalControlsResultDto>();

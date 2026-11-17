@@ -24,6 +24,7 @@ type UseFilteredNodeDataParams<T> = {
         globalFilters?: GlobalFilters
     ) => Promise<T | null>;
     invalidations: string[];
+    enabled?: boolean;
 };
 
 export function useFilteredNodeData<T>({
@@ -33,12 +34,13 @@ export function useFilteredNodeData<T>({
     globalFilters,
     fetcher: resultFetcher,
     invalidations,
+    enabled = true,
 }: UseFilteredNodeDataParams<T>) {
     // Only the criteria content matters: a rehydration of the same selection must not trigger a new query.
     const criteria = JSON.stringify(buildValidGlobalFilters(globalFilters) ?? null);
     const [launchedQuery, setLaunchedQuery] = useState<object>();
     const { query, nodeFetcher, queryInvalidations } = useMemo(() => {
-        const query = {};
+        const query = { enabled };
         const parsedCriteria = JSON.parse(criteria);
         const nodeFetcher = () => {
             setLaunchedQuery(query);
@@ -47,7 +49,7 @@ export function useFilteredNodeData<T>({
             );
         };
         return { query, nodeFetcher, queryInvalidations: invalidations };
-    }, [studyUuid, nodeUuid, rootNetworkUuid, criteria, resultFetcher, invalidations]);
+    }, [studyUuid, nodeUuid, rootNetworkUuid, criteria, resultFetcher, invalidations, enabled]);
 
     const { result: queryResult, isLoading } = useNodeData({
         studyUuid,
@@ -55,6 +57,7 @@ export function useFilteredNodeData<T>({
         rootNetworkUuid,
         fetcher: nodeFetcher,
         invalidations: queryInvalidations,
+        enabled,
     });
 
     // Hide previous criteria/context results immediately, including during the request debounce.
@@ -62,7 +65,7 @@ export function useFilteredNodeData<T>({
     const result = isCurrentResult ? queryResult.value : undefined;
     // A failed query (no result) is settled once it has been launched and is over.
     const isSettled = isCurrentResult || (launchedQuery === query && !isLoading);
-    const isLoadingResult = !isSettled || isLoading;
+    const isLoadingResult = enabled && (!isSettled || isLoading);
 
     return { result, isLoadingResult, criteria };
 }

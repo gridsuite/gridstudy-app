@@ -24,6 +24,7 @@ import { MeasurementInformationResultDto } from './state-estimation-result.type'
 import { store as appStore } from '../../../redux/store';
 import {
     addToGlobalFilterOptions,
+    initOrUpdateGlobalFilters,
     openStudy,
     setComputingStatus,
     setTableSort,
@@ -37,13 +38,21 @@ import {
 import messages_fr from '../../../translations/messages-fr';
 
 const mockTable: { props?: any } = {};
-const mockNotification: { listener?: (event: Partial<MessageEvent>) => void } = {};
+const mockCounter: { props?: any; isLoading?: boolean } = {};
+const mockNotification = new Set<(event?: MessageEvent) => void>();
 const mockSnackError = jest.fn();
 
 jest.mock('./state-estimation-result-table', () => ({
     __esModule: true,
     default: (props: unknown) => {
         mockTable.props = props;
+        return null;
+    },
+}));
+jest.mock('../../utils/row-counter/filtered-row-counter', () => ({
+    FilteredRowCounter: (props: any) => {
+        mockCounter.props = props;
+        mockCounter.isLoading = props.rowCounterInfos.isLoading;
         return null;
     },
 }));
@@ -67,7 +76,13 @@ jest.mock('@gridsuite/commons-ui', () => ({
     useSnackMessage: () => ({ snackError: mockSnackError }),
     fetchDirectoryElementPath: () => Promise.resolve([]),
     useNotificationsListener: (_key: unknown, { listenerCallbackMessage }: any) => {
-        mockNotification.listener = listenerCallbackMessage;
+        const React = jest.requireActual('react') as typeof import('react');
+        React.useEffect(() => {
+            mockNotification.add(listenerCallbackMessage);
+            return () => {
+                mockNotification.delete(listenerCallbackMessage);
+            };
+        }, [listenerCallbackMessage]);
     },
 }));
 
@@ -144,6 +159,16 @@ async function setStatus(status: RunningStatus) {
     });
 }
 
+async function notifyResult(nodeUuid = NODE_A) {
+    await act(async () => {
+        for (const listener of mockNotification) {
+            listener({
+                data: JSON.stringify({ headers: { updateType: 'stateEstimationResult', node: nodeUuid } }),
+            } as MessageEvent);
+        }
+    });
+}
+
 async function elapse(ms = DEBOUNCE_MS) {
     await act(async () => {
         jest.advanceTimersByTime(ms);
@@ -160,8 +185,11 @@ beforeEach(() => {
     jest.spyOn(console, 'info').mockImplementation(() => {});
     jest.spyOn(console, 'debug').mockImplementation(() => {});
     fetchMeasurements.mockReset();
+    mockNotification.clear();
     mockSnackError.mockReset();
     mockTable.props = undefined;
+    mockCounter.props = undefined;
+    mockCounter.isLoading = undefined;
     store = makeStore(RunningStatus.SUCCEED);
     root = createRoot(document.createElement('div'));
 });
@@ -221,11 +249,7 @@ describe('query', () => {
         await show({ nodeUuid: NODE_A, globalFilters: FR });
         await elapse();
 
-        await act(async () => {
-            mockNotification.listener?.({
-                data: JSON.stringify({ headers: { updateType: 'stateEstimationResult', node: NODE_A } }),
-            });
-        });
+        await notifyResult();
         await elapse();
 
         expect(fetchMeasurements).toHaveBeenCalledTimes(2);
@@ -290,7 +314,40 @@ describe('rows', () => {
         await setStatus(RunningStatus.PRELOADING);
         expect(rows()).toEqual([]);
         await setStatus(RunningStatus.FAILED);
+        expect(rows()).toEqual([]);
+        expect(isLoading()).toBe(true);
+        await elapse();
         expect(rows()).toHaveLength(1);
+    });
+
+    it('keeps IDLE readable payload disabled and reports no pending measurement query', async () => {
+        store = makeStore(RunningStatus.IDLE);
+        fetchMeasurements.mockResolvedValue([dto('should-not-read')]);
+        await show({ nodeUuid: NODE_A, globalFilters: FR });
+        expect(isLoading()).toBe(false);
+        await elapse(2000);
+        expect(fetchMeasurements).not.toHaveBeenCalled();
+        expect(rows()).toEqual([]);
+        expect(isLoading()).toBe(false);
+    });
+
+    it('accepts criteria updates while computing and reads only the latest criteria on completion', async () => {
+        store = makeStore(RunningStatus.PRELOADING);
+        fetchMeasurements.mockResolvedValue([dto('latest')]);
+        await show({ nodeUuid: NODE_A, globalFilters: FR });
+        await show({ nodeUuid: NODE_A, globalFilters: BE });
+        await elapse(2000);
+
+        expect(fetchMeasurements).not.toHaveBeenCalled();
+        expect(isLoading()).toBe(false);
+
+        await setStatus(RunningStatus.SUCCEED);
+        expect(isLoading()).toBe(true);
+        await elapse();
+
+        expect(fetchMeasurements).toHaveBeenCalledTimes(1);
+        expect(fetchMeasurements).toHaveBeenCalledWith(STUDY, NODE_A, ROOT, { countryCode: ['BE'] });
+        expect(rowIds()).toEqual(['latest']);
     });
 
     it('changes the export reset key with the criteria', async () => {
@@ -447,9 +504,34 @@ describe('result tab', () => {
         await click(tabs()[1]);
     }
 
+    async function mountParentOnly() {
+        await act(async () =>
+            root.render(
+                <Provider store={appStore}>
+                    <IntlProvider locale="fr" messages={messages_fr as any} onError={() => {}}>
+                        <StateEstimationResultTab studyUuid={STUDY} nodeUuid={NODE_A} currentRootNetworkUuid={ROOT} />
+                    </IntlProvider>
+                </Provider>
+            )
+        );
+    }
+
+    async function readyCounter() {
+        const api = {
+            addEventListener: jest.fn(),
+            getDisplayedRowCount: () => 1,
+            getGridOption: () => [dto('L1')],
+            isAnyFilterPresent: () => false,
+            isRowDataEmpty: () => false,
+        };
+        mockTable.props.gridRef.current = { api };
+        await act(async () => mockTable.props.onGridReady({ api }));
+    }
+
     beforeEach(async () => {
         tabContainer = document.body.appendChild(document.createElement('div'));
         root = createRoot(tabContainer);
+        fullResult.mockReset();
         fetchMeasurements.mockResolvedValue([dto('L1')]);
         fullResult.mockResolvedValue({
             status: 'OK',
@@ -458,6 +540,7 @@ describe('result tab', () => {
         });
         savedGlobalFilters.mockResolvedValue([]);
         saveGlobalFilters.mockResolvedValue(undefined);
+        jest.mocked(getComputationResultGlobalFilters).mockReset().mockResolvedValue([]);
         jest.mocked(getComputationResultColumnFilters).mockResolvedValue([]);
         appStore.dispatch(openStudy(STUDY));
         appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.SUCCEED));
@@ -581,5 +664,182 @@ describe('result tab', () => {
 
         expect(input()).not.toBeNull();
         expect(getComputedStyle(input().closest('.MuiBox-root') as HTMLElement).display).toBe('none');
+    });
+
+    it.each([RunningStatus.PRELOADING, RunningStatus.RUNNING, RunningStatus.IDLE])(
+        'blocks both full and measurements reads at %s, including a result event before delayed terminal status',
+        async (status) => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, status));
+            await mountTab();
+            await elapse(2000);
+            expect(fullResult).not.toHaveBeenCalled();
+            expect(fetchMeasurements).not.toHaveBeenCalled();
+            expect(isLoading()).toBe(false);
+
+            await notifyResult();
+            await elapse(2000);
+            expect(fullResult).not.toHaveBeenCalled();
+            expect(fetchMeasurements).not.toHaveBeenCalled();
+            expect(mockSnackError).not.toHaveBeenCalled();
+
+            await act(async () => {
+                appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.SUCCEED));
+            });
+            await elapse();
+            expect(fullResult).toHaveBeenCalledTimes(1);
+            expect(fetchMeasurements).toHaveBeenCalledTimes(1);
+        }
+    );
+
+    it('mounts and completes the full-result reader without opening measurements', async () => {
+        appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.RUNNING));
+        await mountParentOnly();
+        await elapse(2000);
+        expect(fullResult).not.toHaveBeenCalled();
+        expect(fetchMeasurements).not.toHaveBeenCalled();
+
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.SUCCEED));
+        });
+        await elapse();
+        expect(fullResult).toHaveBeenCalledTimes(1);
+        expect(fetchMeasurements).not.toHaveBeenCalled();
+    });
+
+    it('cancels both readers’ queued work when active status commits before debounce', async () => {
+        await mountTab();
+        await elapse(500);
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.PRELOADING));
+        });
+        await elapse(1500);
+        expect(fullResult).not.toHaveBeenCalled();
+        expect(fetchMeasurements).not.toHaveBeenCalled();
+
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.SUCCEED));
+        });
+        await elapse();
+        expect(fullResult).toHaveBeenCalledTimes(1);
+        expect(fetchMeasurements).toHaveBeenCalledTimes(1);
+    });
+
+    it('reads diagnostics on an eligible FAILED mount', async () => {
+        appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.FAILED));
+        fetchMeasurements.mockResolvedValue([dto('diagnostic')]);
+        await mountTab();
+        await elapse();
+
+        expect(fullResult).toHaveBeenCalledTimes(1);
+        expect(fetchMeasurements).toHaveBeenCalledTimes(1);
+        expect(rowIds()).toEqual(['diagnostic']);
+    });
+
+    it('does not fetch while parent and measurements are mounted during criteria changes; completion reads latest criteria', async () => {
+        appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.PRELOADING));
+        await mountTab();
+        await act(async () => {
+            appStore.dispatch(initOrUpdateGlobalFilters(TableType.StateEstimation, [selectedFr]));
+            appStore.dispatch(initOrUpdateGlobalFilters(TableType.StateEstimation, [selectedBe]));
+        });
+        await elapse(2000);
+
+        expect(fullResult).not.toHaveBeenCalled();
+        expect(fetchMeasurements).not.toHaveBeenCalled();
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.SUCCEED));
+        });
+        await elapse();
+
+        expect(fullResult).toHaveBeenCalledTimes(1);
+        expect(fullResult.mock.calls[0]).toHaveLength(3);
+        expect(fetchMeasurements).toHaveBeenCalledTimes(1);
+        expect(fetchMeasurements).toHaveBeenCalledWith(STUDY, NODE_A, ROOT, { countryCode: ['BE'] });
+    });
+
+    it('settles the counter after an eligible null read and remounts without a stuck loader', async () => {
+        appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.RUNNING));
+        await mountTab();
+        await readyCounter();
+        await elapse(1500);
+        expect(mockCounter.isLoading).toBe(true);
+
+        fetchMeasurements.mockResolvedValueOnce(null);
+        fullResult.mockResolvedValueOnce(null);
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.SUCCEED));
+        });
+        await elapse();
+        await elapse(600);
+        expect(mockCounter.isLoading).toBe(false);
+
+        await click(tabs()[2]);
+        await click(tabs()[1]);
+        await readyCounter();
+        await elapse();
+        await elapse(600);
+        expect(mockCounter.isLoading).toBe(false);
+
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.RUNNING));
+        });
+        fullResult.mockRejectedValueOnce(new Error('404 full result'));
+        fetchMeasurements.mockRejectedValueOnce(new Error('404 measurements'));
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.FAILED));
+        });
+        await elapse();
+        await elapse(600);
+        expect(mockCounter.isLoading).toBe(false);
+        expect(mockSnackError).toHaveBeenCalledTimes(2);
+    });
+
+    it('re-reads both readers on a same-context rerun and retains current 404 errors at FAILED', async () => {
+        await mountTab();
+        await elapse();
+        fullResult.mockClear();
+        fetchMeasurements.mockClear();
+
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.PRELOADING));
+        });
+        expect(rows()).toEqual([]);
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.FAILED));
+        });
+        expect(isLoading()).toBe(true);
+        await elapse();
+        expect(fullResult).toHaveBeenCalledTimes(1);
+        expect(fetchMeasurements).toHaveBeenCalledTimes(1);
+
+        fullResult.mockRejectedValueOnce(new Error('404 full result'));
+        fetchMeasurements.mockRejectedValueOnce(new Error('404 measurements'));
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.RUNNING));
+        });
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.FAILED));
+        });
+        await elapse();
+        expect(mockSnackError).toHaveBeenCalledTimes(2);
+        expect(isLoading()).toBe(false);
+    });
+
+    it('coalesces completion status with a nearby result notification', async () => {
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.RUNNING));
+        });
+        await mountTab();
+        await notifyResult();
+        await elapse(500);
+
+        await act(async () => {
+            appStore.dispatch(setComputingStatus(ComputingType.STATE_ESTIMATION, RunningStatus.SUCCEED));
+        });
+        await notifyResult();
+        await elapse();
+
+        expect(fullResult).toHaveBeenCalledTimes(1);
+        expect(fetchMeasurements).toHaveBeenCalledTimes(1);
     });
 });
