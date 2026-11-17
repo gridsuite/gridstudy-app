@@ -183,7 +183,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         rootNetworkUuid: currentRootNetworkUuid,
         fetcher: fetchResult,
         invalidations: loadflowResultInvalidations,
-        enabled: tabIndex !== 2 || canReadSummary,
+        enabled: canReadSummary,
     });
 
     const SubjectIdRenderer = useCallback(

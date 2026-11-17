@@ -160,7 +160,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         columnsFilters: measurementsColumnsFilters,
         unfilteredRowCount: result.measurementInformationResults?.length,
         disabled: false,
-        isDataPending: isComputing || isLoadingResult || (tabIndex === 1 && isLoadingMeasurements),
+        isDataPending: isComputing || isLoadingResult || isLoadingMeasurements,
     });
 
     const resetMeasurementsFilters = useCallback(() => {

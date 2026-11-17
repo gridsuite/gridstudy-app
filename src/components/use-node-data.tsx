@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import type { UUID } from 'node:crypto';
 import {
     identity,
@@ -125,18 +125,16 @@ export function useNodeData<T, R = T>({
     // another tab with a different result shape) cannot overwrite the current
     // result and crash consumers.
     const requestIdRef = useRef<number>(0);
-    const enabledRef = useRef(enabled);
-    const previousEnabledRef = useRef(enabled);
     const { snackError } = useSnackMessage();
 
     const update = useCallback(() => {
-        if (!enabledRef.current || !studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
+        if (!enabled || !studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
             return;
         }
         nodeUuidRef.current = nodeUuid;
         rootNetworkUuidRef.current = rootNetworkUuid;
         const requestId = ++requestIdRef.current;
-        const isLatestRequest = () => enabledRef.current && requestId === requestIdRef.current;
+        const isLatestRequest = () => requestId === requestIdRef.current;
         setIsLoading(true);
         fetcher(studyUuid, nodeUuid, rootNetworkUuid)
             .then((res) => {
@@ -155,39 +153,22 @@ export function useNodeData<T, R = T>({
                     setIsLoading(false);
                 }
             });
-    }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter, snackError]);
+    }, [enabled, nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter, snackError]);
 
     // Debounce the update to avoid excessive calls
     const debouncedUpdate = useDebounce(update, 1000);
-    const debouncedUpdateRef = useRef(debouncedUpdate);
-
-    useLayoutEffect(() => {
-        const wasEnabled = previousEnabledRef.current;
-        enabledRef.current = enabled;
-        if (wasEnabled !== enabled) {
-            previousEnabledRef.current = enabled;
-            if (!enabled) {
-                // Clear the callback that was scheduled before this commit, even
-                // when its debounced function changed in the same render.
-                debouncedUpdateRef.current.clear();
-                requestIdRef.current += 1;
-                setResult(undefined);
-                setIsLoading(false);
-            } else if (studyUuid && nodeUuid && rootNetworkUuid && fetcher) {
-                // A terminal period always needs a fresh read, even if its fetcher and
-                // context are identical to those used before the computation reran.
-                nodeUuidRef.current = nodeUuid;
-                rootNetworkUuidRef.current = rootNetworkUuid;
-                lastUpdateRef.current = { eventData: null, fetcher };
-                debouncedUpdate();
-            }
-        }
-        debouncedUpdateRef.current = debouncedUpdate;
-    }, [debouncedUpdate, enabled, fetcher, nodeUuid, rootNetworkUuid, studyUuid]);
 
     const evaluateUpdate = useCallback(
         (event?: MessageEvent) => {
-            if (!enabledRef.current || !studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
+            if (!enabled) {
+                // Ignore any in-flight response and drop the stale result
+                requestIdRef.current += 1;
+                setResult(undefined);
+                setIsLoading(false);
+                lastUpdateRef.current = undefined;
+                return;
+            }
+            if (!studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
                 return;
             }
             const eventData = parseEventData<StudyUpdatedEventData>(event ?? null);
@@ -206,7 +187,7 @@ export function useNodeData<T, R = T>({
                 debouncedUpdate();
             }
         },
-        [debouncedUpdate, fetcher, invalidations, nodeUuid, rootNetworkUuid, studyUuid]
+        [enabled, debouncedUpdate, fetcher, invalidations, nodeUuid, rootNetworkUuid, studyUuid]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
