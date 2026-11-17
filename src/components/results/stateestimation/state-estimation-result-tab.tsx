@@ -96,7 +96,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
-    const canReadResult =
+    const canReadStateEstimationResult =
         stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED;
     const isComputing =
         stateEstimationStatus === RunningStatus.PRELOADING || stateEstimationStatus === RunningStatus.RUNNING;
@@ -108,7 +108,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         rootNetworkUuid: currentRootNetworkUuid,
         fetcher: fetchStateEstimationResult,
         invalidations: stateEstimationResultInvalidations,
-        enabled: canReadResult,
+        enabled: canReadStateEstimationResult,
     });
 
     const { filters: measurementsColumnsFilters } = useComputationColumnFilters(
@@ -136,7 +136,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     };
 
     const result = useMemo(() => {
-        if (!canReadResult || !stateEstimationResult) {
+        if (!canReadStateEstimationResult || !stateEstimationResult) {
             return {};
         }
         return {
@@ -149,7 +149,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                 intl
             ),
         };
-    }, [canReadResult, stateEstimationResult, intl]);
+    }, [canReadStateEstimationResult, stateEstimationResult, intl]);
 
     const measurementsGridRef = useRef<AgGridReact>(null);
     const [isLoadingMeasurements, setIsLoadingMeasurements] = useState(true);
