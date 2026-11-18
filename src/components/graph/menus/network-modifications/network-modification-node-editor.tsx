@@ -566,7 +566,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(StaticVarCompensatorModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.STATIC_VAR_COMPENSATOR),
