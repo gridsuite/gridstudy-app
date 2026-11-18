@@ -7,7 +7,15 @@
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import type { UUID } from 'node:crypto';
-import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, GsLangUser } from '@gridsuite/commons-ui';
+import {
+    backendFetch,
+    backendFetchFile,
+    backendFetchJson,
+    backendFetchText,
+    GsLangUser,
+    mapSecurityAnalysisParameters,
+    SAParametersEnriched,
+} from '@gridsuite/commons-ui';
 import { SecurityAnalysisQueryParams } from '../../components/results/securityanalysis/security-analysis.type';
 
 export function startSecurityAnalysis(
@@ -124,7 +132,7 @@ function getSecurityAnalysisQueryParams(queryParams: SecurityAnalysisQueryParams
     return params;
 }
 
-export function updateSecurityAnalysisParameters(studyUuid: UUID, newParams: any) {
+export function updateSecurityAnalysisParameters(studyUuid: UUID, newParams: SAParametersEnriched) {
     console.info('set security analysis parameters');
     const uri = getStudyUrl(studyUuid) + '/security-analysis/parameters';
     console.debug(uri);
@@ -134,7 +142,7 @@ export function updateSecurityAnalysisParameters(studyUuid: UUID, newParams: any
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: newParams ? JSON.stringify(newParams) : null,
+        body: newParams ? JSON.stringify(mapSecurityAnalysisParameters(newParams)) : null,
     });
 }
 

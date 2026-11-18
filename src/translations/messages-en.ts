@@ -432,7 +432,6 @@ const messages_en = {
         'You are about to start a computation although a change to the computation parameters is in progress.',
 
     ViewOnSpreadsheet: 'View in spreadsheet',
-    ModifyFromMenu: 'Modify',
     ModifyCharacteristics: 'Modify characteristics',
     Rename: 'Rename',
 
@@ -783,6 +782,7 @@ const messages_en = {
     undergroundShapeFactors: 'Shape factor',
     undergroundAreas: 'Area',
     'menu.create': 'Create',
+    'menu.modify': 'Modify',
     'menu.createMultiple': 'Create multiple equipment',
     'menu.createByTable': 'Create by table',
     'menu.deleteByFilter': 'Delete by filter',
