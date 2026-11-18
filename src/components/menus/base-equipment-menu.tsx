@@ -251,7 +251,7 @@ const BaseEquipmentMenu = ({
                     equipmentType={equipmentType}
                     equipmentSubtype={equipmentSubtype}
                     itemText={intl.formatMessage({
-                        id: 'ModifyFromMenu',
+                        id: 'menu.modify',
                     })}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                 ></ItemViewInForm>
@@ -300,7 +300,7 @@ const BaseEquipmentMenu = ({
                             />
                         ))}
                     </CustomNestedMenuItem>
-                    <CustomNestedMenuItem label={intl.formatMessage({ id: 'ModifyFromMenu' })}>
+                    <CustomNestedMenuItem label={intl.formatMessage({ id: 'menu.modify' })}>
                         {/* menus for the substation */}
                         <ModifyEquipmentItem
                             key={equipment.id}
@@ -374,7 +374,7 @@ const BaseEquipmentMenu = ({
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
                     </CustomNestedMenuItem>
-                    <CustomNestedMenuItem label={intl.formatMessage({ id: 'ModifyFromMenu' })}>
+                    <CustomNestedMenuItem label={intl.formatMessage({ id: 'menu.modify' })}>
                         {/* menus for the substation */}
                         <ModifyEquipmentItem
                             key={equipment.substationId}

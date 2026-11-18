@@ -17,6 +17,7 @@ import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import PartialLoadingMenuItem from './PartialLoadingMenuItem';
 import { updateSpreadsheetParameters } from '../../../../services/study/spreadsheet';
 import { spreadsheetStyles } from '../../spreadsheet.style';
+import { useSpreadsheetOptionalLoadingParameters } from '../../hooks/use-spreadsheet-optional-loading-parameters';
 
 const styles = {
     headers: () => ({
@@ -32,34 +33,24 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>(undefined);
 
-    const remoteBranchOlg = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BRANCH].operationalLimitsGroups
-    );
-    const remoteLineOlg = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].operationalLimitsGroups
-    );
-    const remoteTwtOlg = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]
-                .operationalLimitsGroups
-    );
-    const remoteGeneratorRegTerm = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
-    );
-    const remoteBatteryRegTerm = useSelector(
-        (state: AppState) =>
-            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BATTERY].regulatingTerminal
-    );
-    const remoteBusNetworkComponents = useSelector(
-        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BUS].networkComponents
-    );
+    const {
+        remoteBranchOlg,
+        remoteLineOlg,
+        remoteLineBus: lineBus,
+        remoteTwtOlg,
+        remoteGeneratorRegTerm,
+        remoteGeneratorBus: generatorBus,
+        remoteBatteryRegTerm,
+        remoteBusNetworkComponents,
+    } = useSpreadsheetOptionalLoadingParameters();
+    const remoteLineBus = lineBus ?? false;
+    const remoteGeneratorBus = generatorBus ?? false;
     const [localBranchOlg, setLocalBranchOlg] = useState<boolean>(remoteBranchOlg);
     const [localLineOlg, setLocalLineOlg] = useState<boolean>(remoteLineOlg);
+    const [localLineBus, setLocalLineBus] = useState<boolean>(remoteLineBus);
     const [localTwtOlg, setLocalTwtOlg] = useState<boolean>(remoteTwtOlg);
     const [localGeneratorRegTerm, setLocalGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
+    const [localGeneratorBus, setLocalGeneratorBus] = useState<boolean>(remoteGeneratorBus);
     const [localBatteryRegTerm, setLocalBatteryRegTerm] = useState<boolean>(remoteBatteryRegTerm);
     const [localBusNetworkComponents, setLocalBusNetworkComponents] = useState<boolean>(remoteBusNetworkComponents);
 
@@ -68,8 +59,10 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             setAnchorEl(event.currentTarget);
             setLocalBranchOlg(remoteBranchOlg);
             setLocalLineOlg(remoteLineOlg);
+            setLocalLineBus(remoteLineBus);
             setLocalTwtOlg(remoteTwtOlg);
             setLocalGeneratorRegTerm(remoteGeneratorRegTerm);
+            setLocalGeneratorBus(remoteGeneratorBus);
             setLocalBatteryRegTerm(remoteBatteryRegTerm);
             setLocalBusNetworkComponents(remoteBusNetworkComponents);
         },
@@ -78,7 +71,9 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             remoteBranchOlg,
             remoteBusNetworkComponents,
             remoteGeneratorRegTerm,
+            remoteGeneratorBus,
             remoteLineOlg,
+            remoteLineBus,
             remoteTwtOlg,
         ]
     );
@@ -88,20 +83,23 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         if (
             localBranchOlg !== remoteBranchOlg ||
             localLineOlg !== remoteLineOlg ||
+            localLineBus !== remoteLineBus ||
             localTwtOlg !== remoteTwtOlg ||
             localGeneratorRegTerm !== remoteGeneratorRegTerm ||
+            localGeneratorBus !== remoteGeneratorBus ||
             localBatteryRegTerm !== remoteBatteryRegTerm ||
             localBusNetworkComponents !== remoteBusNetworkComponents
         ) {
             if (studyUuid) {
                 updateSpreadsheetParameters(studyUuid, {
                     [SpreadsheetEquipmentType.BRANCH]: { operationalLimitsGroups: localBranchOlg },
-                    [SpreadsheetEquipmentType.LINE]: { operationalLimitsGroups: localLineOlg },
+                    [SpreadsheetEquipmentType.LINE]: { operationalLimitsGroups: localLineOlg, bus: localLineBus },
                     [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: {
                         operationalLimitsGroups: localTwtOlg,
                     },
                     [SpreadsheetEquipmentType.GENERATOR]: {
                         regulatingTerminal: localGeneratorRegTerm,
+                        bus: localGeneratorBus,
                     },
                     [SpreadsheetEquipmentType.BUS]: {
                         networkComponents: localBusNetworkComponents,
@@ -117,10 +115,14 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         remoteBranchOlg,
         localLineOlg,
         remoteLineOlg,
+        localLineBus,
+        remoteLineBus,
         localTwtOlg,
         remoteTwtOlg,
         localGeneratorRegTerm,
         remoteGeneratorRegTerm,
+        localGeneratorBus,
+        remoteGeneratorBus,
         localBatteryRegTerm,
         remoteBatteryRegTerm,
         localBusNetworkComponents,
@@ -134,8 +136,10 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
         () =>
             remoteBranchOlg ||
             remoteLineOlg ||
+            remoteLineBus ||
             remoteTwtOlg ||
             remoteGeneratorRegTerm ||
+            remoteGeneratorBus ||
             remoteBatteryRegTerm ||
             remoteBusNetworkComponents,
         [
@@ -143,7 +147,9 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
             remoteBranchOlg,
             remoteBusNetworkComponents,
             remoteGeneratorRegTerm,
+            remoteGeneratorBus,
             remoteLineOlg,
+            remoteLineBus,
             remoteTwtOlg,
         ]
     );
@@ -194,6 +200,11 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
                     onChange={setLocalLineOlg}
                 />
+                <PartialLoadingMenuItem
+                    value={localLineBus}
+                    labelId="spreadsheet/tabs/lazy_loading/labels/bus"
+                    onChange={setLocalLineBus}
+                />
 
                 <ListSubheader sx={styles.headers}>
                     <FormattedMessage id="TWO_WINDINGS_TRANSFORMER" />
@@ -211,6 +222,11 @@ export default function PartialLoadingMenuButton({ disabled }: Readonly<PartialL
                     value={localGeneratorRegTerm}
                     labelId="spreadsheet/tabs/lazy_loading/labels/regulatingTerminal"
                     onChange={setLocalGeneratorRegTerm}
+                />
+                <PartialLoadingMenuItem
+                    value={localGeneratorBus}
+                    labelId="spreadsheet/tabs/lazy_loading/labels/bus"
+                    onChange={setLocalGeneratorBus}
                 />
 
                 <ListSubheader sx={styles.headers}>

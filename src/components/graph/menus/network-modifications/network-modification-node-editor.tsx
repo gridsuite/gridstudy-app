@@ -23,10 +23,13 @@ import {
     NetworkModificationsTable,
     NotificationsUrlKeys,
     removeNullFields,
+    setModificationMetadata,
     setModificationNameAndDescription,
     snackWithFallback,
     TabularModificationType,
+    unshareNetworkModification,
     updateElement,
+    updateModificationStatusByRootNetwork,
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
@@ -316,7 +319,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(SubstationModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.SUBSTATION),
@@ -380,7 +383,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.LINE_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(LineModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.LINE),
@@ -439,7 +442,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(TwoWindingsTransformerModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.TWO_WINDINGS_TRANSFORMER),
@@ -456,7 +459,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.VSC_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(VscModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.HVDC_LINE),
@@ -473,7 +476,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.LCC_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(LccModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.HVDC_LINE),
@@ -495,7 +498,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(GeneratorModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.GENERATOR),
@@ -512,7 +515,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(BatteryModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.BATTERY),
@@ -529,7 +532,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(LoadModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.LOAD),
@@ -546,7 +549,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
-                            label: 'ModifyFromMenu',
+                            label: 'menu.modify',
                             action: () => withDefaultParams(ShuntCompensatorModificationDialog),
                         },
                         equipmentDeletionSubItems(EquipmentType.SHUNT_COMPENSATOR),
@@ -1131,6 +1134,42 @@ const NetworkModificationNodeEditor = () => {
     const defaultSaveModificationDescription =
         selectedNetworkModifications.length === 1 ? (selectedNetworkModifications[0]?.description ?? null) : null;
 
+    const canEditNode = Boolean(studyUuid && currentNode?.id);
+
+    const onMoveModifications = useCallback(
+        (moves: ModificationMoveInfos[]) => moveModifications(studyUuid, currentNode?.id, moves),
+        [studyUuid, currentNode?.id]
+    );
+
+    const onUpdateModificationStatusByRootNetwork = useCallback(
+        (rootNetworkUuid: UUID, modificationUuid: UUID, applicable: boolean) =>
+            updateModificationStatusByRootNetwork(
+                studyUuid!,
+                currentNode?.id!,
+                rootNetworkUuid,
+                modificationUuid,
+                applicable
+            ),
+        [studyUuid, currentNode?.id]
+    );
+
+    const onUpdateModificationMetadata = useCallback(
+        (modificationUuid: UUID, metadata: Partial<ComposedModificationMetadata>) =>
+            setModificationMetadata(studyUuid, currentNode?.id, modificationUuid, metadata),
+        [studyUuid, currentNode?.id]
+    );
+
+    const onUpdateModificationNameAndDescription = useCallback(
+        (modificationUuid: UUID, metadata: Partial<NetworkModificationMetadata | ComposedModificationMetadata>) =>
+            setModificationNameAndDescription(studyUuid, currentNode?.id, modificationUuid, metadata),
+        [studyUuid, currentNode?.id]
+    );
+
+    const onUnshareModification = useCallback(
+        (modificationUuid: UUID) => unshareNetworkModification(studyUuid, currentNode?.id ?? null, modificationUuid),
+        [studyUuid, currentNode?.id]
+    );
+
     const renderNetworkModificationsTable = () => {
         if (isRootNode) {
             return (
@@ -1158,11 +1197,17 @@ const NetworkModificationNodeEditor = () => {
                 highlightedModificationUuid={highlightedModificationUuid}
                 modificationUuidsToReset={modificationUuidsToReset}
                 modificationToEditLabel={modificationToEditLabel}
-                studyUuid={studyUuid}
-                currentNodeId={currentNode?.id}
                 currentRootNetworkUuid={currentRootNetworkUuid ?? undefined}
                 rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
                 isDisabled={isEditBlocked || mapDataLoading}
+                onMoveModifications={canEditNode ? onMoveModifications : undefined}
+                onUpdateModificationStatusByRootNetwork={
+                    canEditNode ? onUpdateModificationStatusByRootNetwork : undefined
+                }
+                onUpdateModificationMetadata={onUpdateModificationMetadata}
+                onUpdateModificationNameAndDescription={onUpdateModificationNameAndDescription}
+                onUnshareModification={onUnshareModification}
+                rowStateResetKey={currentNode?.id}
             />
         );
     };

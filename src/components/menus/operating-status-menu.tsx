@@ -382,7 +382,7 @@ const withOperatingStatusMenu =
                                 primary={
                                     <Typography noWrap>
                                         {intl.formatMessage({
-                                            id: 'ModifyFromMenu',
+                                            id: 'menu.modify',
                                         })}
                                     </Typography>
                                 }
