@@ -53,6 +53,7 @@ export interface MeasurementInformationResultDto {
     estimatedValue: number;
     differenceValue: number;
     outOfBound: boolean;
+    locationId: string;
 }
 
 export interface MeasurementInformationResult {
@@ -63,6 +64,7 @@ export interface MeasurementInformationResult {
     estimatedValue: number;
     differenceValue: number;
     outOfBound: boolean;
+    locationId: string;
 }
 
 export interface StateEstimationResult {

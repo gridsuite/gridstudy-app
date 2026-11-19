@@ -42,6 +42,7 @@ const measurement = (equipmentId: string): MeasurementInformationResult => ({
     estimatedValue: 2,
     differenceValue: 1,
     outOfBound: false,
+    locationId: 'there',
 });
 
 const embeddedResult: any = {

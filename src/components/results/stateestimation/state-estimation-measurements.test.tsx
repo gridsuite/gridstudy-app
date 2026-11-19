@@ -103,7 +103,7 @@ const FR = [country('FR')];
 const BE = [country('BE')];
 const NONE: GlobalFilter[] = [];
 
-const dto = (equipmentId: string, outOfBound = false): MeasurementInformationResultDto => ({
+const dto = (equipmentId: string, outOfBound = false, locationId = 'there'): MeasurementInformationResultDto => ({
     equipmentId,
     measurementType: 'TENSION',
     validityType: 'CRITIQUE',
@@ -111,6 +111,7 @@ const dto = (equipmentId: string, outOfBound = false): MeasurementInformationRes
     estimatedValue: 2,
     differenceValue: 1,
     outOfBound,
+    locationId,
 });
 
 function deferred<T>() {
