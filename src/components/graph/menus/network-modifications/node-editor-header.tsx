@@ -107,12 +107,14 @@ export const NodeEditorHeader = () => {
                     </Tooltip>
                 </Box>
 
-                <NetworkModificationNodeDialog
-                    open={openEditDialog}
-                    onClose={() => setOpenEditDialog(false)}
-                    titleId="editNode"
-                    node={currentTreeNode}
-                />
+                {openEditDialog && (
+                    <NetworkModificationNodeDialog
+                        open={openEditDialog}
+                        onClose={() => setOpenEditDialog(false)}
+                        titleId="editNode"
+                        node={currentTreeNode}
+                    />
+                )}
             </Box>
 
             {description && (

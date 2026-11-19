@@ -7,10 +7,12 @@
 
 import { useMemo, useState, type FC } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Menu, TextField, MenuItem, ListItemText, InputAdornment, MenuList } from '@mui/material';
+import { Popover, TextField, MenuItem, ListItemText, InputAdornment, MenuList, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { GpsFixed as GpsFixedIcon } from '@mui/icons-material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 import { List, type RowComponentProps } from 'react-window';
+import { escapeRegExp } from '../../../../utils/utils';
 
 const styles = {
     textField: {
@@ -29,11 +31,13 @@ const VirtualizedMenuItem = ({
     style,
     data,
     searchTerm,
-    onSelect,
+    onOpen,
+    onLocate,
 }: RowComponentProps<{
     data: string[];
     searchTerm: string;
-    onSelect: (id: string) => void;
+    onOpen: (id: string) => void;
+    onLocate: (id: string) => void;
 }>) => {
     const vlId = data[index];
 
@@ -41,7 +45,7 @@ const VirtualizedMenuItem = ({
         if (!highlight) {
             return text;
         }
-        const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+        const parts = text.split(new RegExp(`(${escapeRegExp(highlight)})`, 'gi'));
         return (
             <span>
                 {parts.map((part, partIndex) =>
@@ -56,8 +60,17 @@ const VirtualizedMenuItem = ({
     };
 
     return (
-        <MenuItem key={vlId} onClick={() => onSelect(vlId)} style={style}>
+        <MenuItem key={vlId} onClick={() => onOpen(vlId)} style={style}>
             <ListItemText primary={highlightText(vlId, searchTerm)} />
+            <IconButton
+                size="small"
+                onClick={(event) => {
+                    event.stopPropagation();
+                    onLocate(vlId);
+                }}
+            >
+                <GpsFixedIcon fontSize="small" />
+            </IconButton>
         </MenuItem>
     );
 };
@@ -67,7 +80,8 @@ interface VoltageLevelSearchMenuProps {
     anchorEl: HTMLElement | null;
     onClose: () => void;
     voltageLevels: string[];
-    onSelect: (voltageLevelId: string) => void;
+    onOpen: (voltageLevelId: string) => void;
+    onLocate: (voltageLevelId: string) => void;
 }
 
 const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
@@ -75,7 +89,8 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     anchorEl,
     onClose,
     voltageLevels,
-    onSelect,
+    onOpen,
+    onLocate,
 }) => {
     const intl = useIntl();
     const [searchTerm, setSearchTerm] = useState('');
@@ -108,8 +123,13 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
         onClose();
     };
 
-    const handleSelect = (voltageLevelId: string) => {
-        onSelect(voltageLevelId);
+    const handleOpen = (voltageLevelId: string) => {
+        onOpen(voltageLevelId);
+        setSearchTerm('');
+    };
+
+    const handleLocate = (voltageLevelId: string) => {
+        onLocate(voltageLevelId);
         setSearchTerm('');
     };
 
@@ -120,7 +140,12 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
     const listHeight = Math.min(filteredVoltageLevels.length, MAX_VISIBLE_ITEMS) * ITEM_HEIGHT;
 
     return (
-        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <Popover
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        >
             <TextField
                 autoFocus
                 size="small"
@@ -138,24 +163,29 @@ const VoltageLevelSearchMenu: FC<VoltageLevelSearchMenuProps> = ({
                     },
                 }}
             />
-            {filteredVoltageLevels.length === 0 ? (
-                <MenuList>
+            <MenuList>
+                {filteredVoltageLevels.length === 0 ? (
                     <MenuItem disabled>
                         <ListItemText>
                             <FormattedMessage id="noResultsFound" />
                         </ListItemText>
                     </MenuItem>
-                </MenuList>
-            ) : (
-                <List
-                    style={{ height: listHeight }}
-                    rowCount={filteredVoltageLevels.length}
-                    rowHeight={ITEM_HEIGHT}
-                    rowProps={{ data: filteredVoltageLevels, searchTerm, onSelect: handleSelect }}
-                    rowComponent={VirtualizedMenuItem}
-                />
-            )}
-        </Menu>
+                ) : (
+                    <List
+                        style={{ height: listHeight }}
+                        rowCount={filteredVoltageLevels.length}
+                        rowHeight={ITEM_HEIGHT}
+                        rowProps={{
+                            data: filteredVoltageLevels,
+                            searchTerm,
+                            onOpen: handleOpen,
+                            onLocate: handleLocate,
+                        }}
+                        rowComponent={VirtualizedMenuItem}
+                    />
+                )}
+            </MenuList>
+        </Popover>
     );
 };
 

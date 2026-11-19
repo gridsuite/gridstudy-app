@@ -196,6 +196,7 @@ const messages_fr = {
     startVoltageInitError: "Une erreur est survenue lors de l'initialisation du plan de tension",
     FilterEvaluationError: "Une erreur est survenue lors de l'évaluation du filtre",
     voltageInitError: "Une erreur est survenue lors de l'initialisation du plan de tension",
+    voltageInitCancelError: "L'initialisation du plan de tension n'a pas pu être annulée",
     VoltageinitRootNetworkName: 'Réseau racine : {rootNetworkName}',
     VoltageinitNodeName: 'Noeud : {nodeName}',
     VoltageinitDate: 'Date du calcul : {computationDate}',
@@ -438,7 +439,6 @@ const messages_fr = {
         "Vous êtes sur le point de lancer un calcul alors qu'une modification des paramètres de calcul est en cours.",
 
     ViewOnSpreadsheet: 'Visualiser dans le tableur',
-    ModifyFromMenu: 'Modifier',
     ModifyCharacteristics: 'Modifier les caractéristiques',
     Rename: 'Renommer',
 
@@ -799,6 +799,7 @@ const messages_fr = {
     undergroundShapeFactors: 'Facteur de forme',
     undergroundAreas: "Température de l'environnement",
     'menu.create': 'Créer',
+    'menu.modify': 'Modifier',
     'menu.createMultiple': 'Créer plusieurs ouvrages',
     'menu.modifyMultiple': 'Modifier plusieurs ouvrages',
     'menu.createByTable': 'Créer par tableau',
