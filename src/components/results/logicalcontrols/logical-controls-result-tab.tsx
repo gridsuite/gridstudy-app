@@ -100,6 +100,9 @@ const LOGICAL_CONTROLS_TABS = [
     },
 ] as const;
 
+// filter open larger panel under that may go outside screen adding scollbar
+// this padding ensure that there is enough space
+const GLOBAL_FILTER_RIGHT_SPACE = 34;
 export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps> = ({
     studyUuid,
     nodeUuid,
@@ -176,20 +179,20 @@ export const LogicalControlsResultTab: FunctionComponent<LogicalControlsTabProps
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
                 <Tabs value={tabIndex} onChange={handleTabChange} sx={{ flexGrow: 0 }} variant={'scrollable'}>
                     {LOGICAL_CONTROLS_TABS.map(({ label }) => (
                         <Tab key={label} label={<FormattedMessage id={label} />} />
                     ))}
                 </Tabs>
-                <Box sx={{ flexGrow: 1 }} />
-                <GlobalFilterSelector
-                    filterCategories={GLOBAL_FILTER_CATEGORIES}
-                    filterableEquipmentTypes={GLOBAL_FILTER_EQUIPMENT_TYPES}
-                    genericFiltersStrictMode={true}
-                    tableType={TableType.LogicalControls}
-                />
-                <Box sx={{ p: 3 }} />
+                <Box sx={{ flexGrow: 1, pr: GLOBAL_FILTER_RIGHT_SPACE }}>
+                    <GlobalFilterSelector
+                        filterCategories={GLOBAL_FILTER_CATEGORIES}
+                        filterableEquipmentTypes={GLOBAL_FILTER_EQUIPMENT_TYPES}
+                        genericFiltersStrictMode={true}
+                        tableType={TableType.LogicalControls}
+                    />
+                </Box>
             </Box>
 
             <LogicalControlsResultTable
