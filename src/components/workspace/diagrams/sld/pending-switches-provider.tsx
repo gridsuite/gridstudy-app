@@ -81,7 +81,7 @@ export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: Pendin
             }
             setPendingSwitches((prev) => {
                 const next = new Map(prev);
-                switches.forEach((pendingSwitch) => next.set(pendingSwitch.id, { ...pendingSwitch, validated: true }));
+                switches.forEach((pendingSwitch) => next.set(pendingSwitch.id, { ...pendingSwitch, applied: true }));
                 return next;
             });
         }
@@ -90,12 +90,12 @@ export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: Pendin
 
     useLayoutEffect(() => {
         const drawnNodeById = new Map(drawnNodes.flat().map((node) => [node.equipmentId, node]));
-        const isKept = ({ id, open, validated }: PendingSwitch) => {
+        const isKept = ({ id, open, applied }: PendingSwitch) => {
             const drawnNode = drawnNodeById.get(id);
             if (drawnNode) {
                 return drawnNode.open !== open;
             }
-            return !validated;
+            return !applied;
         };
         setPendingSwitches((prev) => {
             const next = new Map([...prev].filter(([, pendingSwitch]) => isKept(pendingSwitch)));
@@ -103,7 +103,7 @@ export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: Pendin
         });
     }, [pendingSwitches, drawnNodes]);
 
-    const isUpdatingSwitches = isValidating || [...pendingSwitches.values()].some(({ validated }) => validated);
+    const isUpdatingSwitches = isValidating || [...pendingSwitches.values()].some(({ applied }) => applied);
 
     return (
         <PendingSwitchesContext.Provider

@@ -15,7 +15,7 @@ export interface PendingSwitch {
     fictitious: boolean;
     open: boolean;
     /** Its modification is created: it is only kept to stay drawn until the refresh of the diagrams */
-    validated?: boolean;
+    applied?: boolean;
 }
 
 export type PendingSwitches = ReadonlyMap<string, PendingSwitch>;
