@@ -16,6 +16,7 @@ import type { UUID } from 'node:crypto';
 import { NadPanelContent } from './diagrams/nad/nad-panel-content';
 import { VoltageLevelPanelContent } from './diagrams/sld/voltage-level-panel-content';
 import { SubstationPanelContent } from './diagrams/sld/substation-panel-content';
+import { PendingSwitchesProvider } from '../diagrams/sld/pending-switches-provider';
 import { MapPanelContent } from './map-panel-content';
 import { TreePanelContent } from './tree-panel-content';
 import NodeEditor from 'components/graph/menus/network-modifications/node-editor';
@@ -59,21 +60,25 @@ export const PANEL_CONTENT_REGISTRY: Record<PanelType, PanelRenderer> = {
     [PanelType.PARAMETERS]: () => <ParametersTabs />,
 
     [PanelType.SLD_VOLTAGE_LEVEL]: ({ panelId, studyUuid, currentNode, currentRootNetworkUuid }) => (
-        <VoltageLevelPanelContent
-            panelId={panelId}
-            studyUuid={studyUuid}
-            currentNodeId={currentNode.id}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-        />
+        <PendingSwitchesProvider panelId={panelId} studyUuid={studyUuid}>
+            <VoltageLevelPanelContent
+                panelId={panelId}
+                studyUuid={studyUuid}
+                currentNodeId={currentNode.id}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+            />
+        </PendingSwitchesProvider>
     ),
 
     [PanelType.SLD_SUBSTATION]: ({ panelId, studyUuid, currentNode, currentRootNetworkUuid }) => (
-        <SubstationPanelContent
-            panelId={panelId}
-            studyUuid={studyUuid}
-            currentNodeId={currentNode.id}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-        />
+        <PendingSwitchesProvider panelId={panelId} studyUuid={studyUuid}>
+            <SubstationPanelContent
+                panelId={panelId}
+                studyUuid={studyUuid}
+                currentNodeId={currentNode.id}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+            />
+        </PendingSwitchesProvider>
     ),
 
     [PanelType.NAD]: ({ panelId, studyUuid, currentNode, currentRootNetworkUuid }) => (
