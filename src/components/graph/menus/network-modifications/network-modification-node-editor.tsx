@@ -8,6 +8,7 @@
 import {
     ArrowsInputIcon,
     ComposedModificationMetadata,
+    createRootNetworksColumns,
     EquipmentType,
     ErrorMessage,
     fetchNetworkModification,
@@ -23,13 +24,13 @@ import {
     NetworkModificationsTable,
     NotificationsUrlKeys,
     removeNullFields,
-    setModificationMetadata,
+    setModificationActivation,
     setModificationNameAndDescription,
     snackWithFallback,
     TabularModificationType,
     unshareNetworkModification,
     updateElement,
-    updateModificationStatusByRootNetwork,
+    updateModificationApplicabilityByRootNetwork,
     useNotificationsListener,
     usePrevious,
     useSnackMessage,
@@ -141,7 +142,7 @@ import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modificati
 import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 import { useCopiedNetworkModifications } from 'hooks/copy-paste/use-copied-network-modifications';
 import { FetchStatus } from '../../../../services/utils.type';
-import { createBaseColumns, createRootNetworksColumns } from './network-modification-table/createColumns';
+import { createBaseColumns } from './network-modification-table/createColumns';
 import { ColumnDef } from '@tanstack/react-table';
 import { copyModifications } from '../../../../services/study';
 
@@ -1141,9 +1142,9 @@ const NetworkModificationNodeEditor = () => {
         [studyUuid, currentNode?.id]
     );
 
-    const onUpdateModificationStatusByRootNetwork = useCallback(
+    const onUpdateModificationApplicabilityByRootNetwork = useCallback(
         (rootNetworkUuid: UUID, modificationUuid: UUID, applicable: boolean) =>
-            updateModificationStatusByRootNetwork(
+            updateModificationApplicabilityByRootNetwork(
                 studyUuid!,
                 currentNode?.id!,
                 rootNetworkUuid,
@@ -1153,9 +1154,9 @@ const NetworkModificationNodeEditor = () => {
         [studyUuid, currentNode?.id]
     );
 
-    const onUpdateModificationMetadata = useCallback(
-        (modificationUuid: UUID, metadata: Partial<ComposedModificationMetadata>) =>
-            setModificationMetadata(studyUuid, currentNode?.id, modificationUuid, metadata),
+    const onUpdateModificationActivation = useCallback(
+        (modificationUuid: UUID, active: boolean) =>
+            setModificationActivation(studyUuid, currentNode?.id, modificationUuid, active),
         [studyUuid, currentNode?.id]
     );
 
@@ -1201,10 +1202,10 @@ const NetworkModificationNodeEditor = () => {
                 rootNetworks={isMonoRootStudy ? undefined : rootNetworks}
                 isDisabled={isEditBlocked || mapDataLoading}
                 onMoveModifications={canEditNode ? onMoveModifications : undefined}
-                onUpdateModificationStatusByRootNetwork={
-                    canEditNode ? onUpdateModificationStatusByRootNetwork : undefined
+                onUpdateModificationApplicabilityByRootNetwork={
+                    canEditNode ? onUpdateModificationApplicabilityByRootNetwork : undefined
                 }
-                onUpdateModificationMetadata={onUpdateModificationMetadata}
+                onUpdateModificationActivation={canEditNode ? onUpdateModificationActivation : undefined}
                 onUpdateModificationNameAndDescription={onUpdateModificationNameAndDescription}
                 onUnshareModification={onUnshareModification}
                 rowStateResetKey={currentNode?.id}

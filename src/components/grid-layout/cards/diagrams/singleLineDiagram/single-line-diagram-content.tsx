@@ -66,6 +66,8 @@ import { GenericPopoverContent } from 'components/tooltips/generic-popover-conte
 import useDebugSubscription from '../../../../../hooks/computation-debug/use-debug-subscription';
 import { DialogContentText } from '@mui/material';
 import { SelectOptionsDialog } from '../../../../../utils/dialogs';
+import { SldNavigationSidebar } from '../../../../workspace/diagrams/sld/sld-navigation-sidebar';
+import { drawPendingSwitches, usePendingSwitches } from '../../../../workspace/diagrams/sld/use-pending-switches';
 
 const oneBusLoaderStyle = (theme: Theme) => ({
     display: 'flex',
@@ -89,6 +91,8 @@ interface SingleLineDiagramContentProps {
     readonly onNextVoltageLevelDiagram?: (voltageLevelId: string) => void;
     readonly onNewVoltageLevelDiagram?: (voltageLevelId: string) => void;
     readonly onSvgLoad?: (width: number, height: number) => void;
+    readonly navigationHistory?: string[];
+    readonly onNavigateFromHistory?: (voltageLevelId: string) => void;
 }
 
 type BusMenuState = {
@@ -122,6 +126,8 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         svg,
         svgMetadata,
         onSvgLoad,
+        navigationHistory,
+        onNavigateFromHistory,
     } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -146,6 +152,9 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const shortCircuitStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]);
+    const autoRefresh = useSelector(
+        (state: AppState) => state.networkVisualizationsParameters?.singleLineDiagramParameters.autoRefresh
+    );
 
     const equipmentId =
         diagramParams.type === DiagramType.VOLTAGE_LEVEL ? diagramParams.voltageLevelId : diagramParams.substationId;
@@ -157,6 +166,9 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
             state.oneBusShortCircuitAnalysisContext?.nodeId === state.currentTreeNode?.id &&
             state.oneBusShortCircuitAnalysisContext?.rootNetworkUuid === state.currentRootNetworkUuid
     );
+    const { pendingSwitches, isUpdatingSwitches, togglePendingSwitch } = usePendingSwitches(svgMetadata);
+    const hasPendingSwitches = pendingSwitches.size > 0;
+
     /**
      * DIAGRAM INTERACTIVITY
      */
@@ -213,6 +225,8 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         [modificationInProgress, studyUuid, currentNode?.id, snackError, toggleBreakerDomClasses, diagramParams]
     );
 
+    const onBreakerClick = togglePendingSwitch && !autoRefresh ? togglePendingSwitch : handleBreakerClick;
+
     const [busMenu, setBusMenu] = useState<BusMenuState>(defaultBusMenuState);
 
     const showBusMenu = useCallback(
@@ -239,13 +253,14 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
 
     const handleNextVoltageLevelClick: OnNextVoltageCallbackType = useCallback(
         (vlId, event) => {
-            if (event.ctrlKey) {
+            // With switch changes to validate, no new panel can be opened
+            if (event.ctrlKey && !hasPendingSwitches) {
                 onNewVoltageLevelDiagram?.(vlId);
             } else {
                 onNextVoltageLevelDiagram?.(vlId);
             }
         },
-        [onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
+        [hasPendingSwitches, onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
     );
 
     // --- for running in debug mode --- //
@@ -385,7 +400,11 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
     useLayoutEffect(() => {
         if (svg && svgRef.current) {
             const isReadyForInteraction =
-                !computationStarting && !isEditBlocked && !modificationInProgress && !loadingState;
+                !computationStarting &&
+                !isEditBlocked &&
+                !modificationInProgress &&
+                !isUpdatingSwitches &&
+                !loadingState;
 
             const diagramViewer = new SingleLineDiagramViewer(
                 svgRef.current, //container
@@ -402,16 +421,16 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
                 diagramParams.type === DiagramType.VOLTAGE_LEVEL ? MAX_HEIGHT_VOLTAGE_LEVEL : MAX_HEIGHT_SUBSTATION,
 
                 // callback on the next voltage arrows
-                isReadyForInteraction ? handleNextVoltageLevelClick : null,
+                isReadyForInteraction && onNextVoltageLevelDiagram ? handleNextVoltageLevelClick : null,
 
                 // callback on the breakers
-                isReadyForInteraction && !isNodeReadOnly(currentNode) ? handleBreakerClick : null,
+                isReadyForInteraction && !isNodeReadOnly(currentNode) ? onBreakerClick : null,
 
                 // callback on the feeders
-                isReadyForInteraction ? showEquipmentMenu : null,
+                isReadyForInteraction && !hasPendingSwitches ? showEquipmentMenu : null,
 
                 // callback on the buses
-                isReadyForInteraction ? showBusMenu : null,
+                isReadyForInteraction && !hasPendingSwitches ? showBusMenu : null,
 
                 // arrows color
                 theme.palette.background.paper,
@@ -424,6 +443,8 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
             if (locallySwitchedBreaker) {
                 toggleBreakerDomClasses(locallySwitchedBreaker);
             }
+
+            drawPendingSwitches(svgRef.current, svgMetadata, pendingSwitches);
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
             // the user's zoom and scroll state for the current render.
@@ -456,12 +477,16 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         diagramParams.type,
         theme,
         modificationInProgress,
+        isUpdatingSwitches,
         loadingState,
+        pendingSwitches,
+        hasPendingSwitches,
         locallySwitchedBreaker,
-        handleBreakerClick,
+        onBreakerClick,
         onSvgLoad,
         handleTogglePopover,
         computationStarting,
+        onNextVoltageLevelDiagram,
         handleNextVoltageLevelClick,
         toggleBreakerDomClasses,
     ]);
@@ -511,7 +536,9 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
                     height: 2,
                 }}
             >
-                {(loadingState || modificationInProgress || isOneBusScRunning) && <LinearProgress />}
+                {(loadingState || modificationInProgress || isUpdatingSwitches || isOneBusScRunning) && (
+                    <LinearProgress />
+                )}
                 {isOneBusScRunning && (
                     <Chip
                         label={<FormattedMessage id="ShortcircuitInProgress" />}
@@ -520,18 +547,26 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
                     />
                 )}
             </Box>
-            <Box
-                ref={svgRef}
-                sx={mergeSx(
-                    styles.divDiagram,
-                    styles.divSingleLineDiagram,
-                    loadFlowStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramLoadflowInvalid,
-                    shortCircuitStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramShortCircuitInvalid,
-                    // TODO - lock and strip are hidden on single line diagram temporarly
-                    !isDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
-                )}
-                style={{ height: '100%' }}
-            />
+            <Box sx={{ display: 'flex', height: '100%' }}>
+                <Box
+                    ref={svgRef}
+                    sx={mergeSx(
+                        styles.divDiagram,
+                        styles.divSingleLineDiagram,
+                        loadFlowStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramLoadflowInvalid,
+                        shortCircuitStatus === RunningStatus.SUCCEED ? undefined : styles.divDiagramShortCircuitInvalid,
+                        // TODO - lock and strip are hidden on single line diagram temporarly
+                        !isDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
+                    )}
+                    style={{ flex: 1, height: '100%' }}
+                />
+                <SldNavigationSidebar
+                    navigationHistory={navigationHistory}
+                    currentVoltageLevelId={equipmentId}
+                    onNavigate={onNavigateFromHistory}
+                    pendingSwitches={pendingSwitches}
+                />
+            </Box>
             {visible && shouldDisplayTooltip && displayTooltip()}
             {renderEquipmentMenu()}
             {displayBusMenu()}

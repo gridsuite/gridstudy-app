@@ -58,6 +58,7 @@ const workspacesSlice = createSlice({
                     activeWorkspace.panels[index] = {
                         ...updatedPanel,
                         zIndex: updatedPanel.zIndex ?? activeWorkspace.panels[index].zIndex,
+                        focusMode: updatedPanel.focusMode ?? activeWorkspace.panels[index].focusMode,
                     };
                 } else {
                     // if zIndex is not defined (new panel coming from backend sync)

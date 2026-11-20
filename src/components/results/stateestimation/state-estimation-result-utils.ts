@@ -34,6 +34,7 @@ import {
     STATEESTIMATION_MEASUREMENTS,
     STATEESTIMATION_RESULT_SORT_STORE,
 } from '../../../utils/store-sort-filter-fields';
+import { MeasurementIdRenderer } from './measurement-id-renderer';
 
 interface TableParams {
     sortParams: SortParams;
@@ -91,6 +92,7 @@ export const stateEstimationMeasurementColumnsDefinition = (intl: IntlShape): Co
             colId: 'equipmentId',
             field: 'equipmentId',
             context: createColumnContext(sortParams, filterParams, textFilterParams),
+            cellRenderer: MeasurementIdRenderer,
         }),
         createEnumColumn(
             'measurementType',
@@ -215,6 +217,7 @@ export function mapMeasurementResults(
             estimatedValue: measurementInformationResult.estimatedValue,
             differenceValue: measurementInformationResult.differenceValue,
             outOfBound: measurementInformationResult.outOfBound,
+            locationId: measurementInformationResult.locationId,
         };
     });
 }

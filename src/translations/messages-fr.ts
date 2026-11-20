@@ -1284,6 +1284,7 @@ const messages_fr = {
     workspaceUpdateError: "Erreur lors de la mise à jour de l'espace de travail",
     reset: 'Réinitialiser',
     history: 'Historique',
+    topology: 'Topologie',
     nadVoltageFilter: 'Tension',
     nadInfoFilter: 'Informations',
     nadInfoActivePowerValue: 'Valeurs P',
