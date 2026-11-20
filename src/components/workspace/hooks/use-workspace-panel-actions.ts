@@ -350,6 +350,16 @@ export const useWorkspacePanelActions = () => {
         [savePanels]
     );
 
+    const setPanelFocusMode = useCallback(
+        ({ panelId, focusMode }: { panelId: UUID; focusMode: boolean }) => {
+            const panel = selectPanel(store.getState(), panelId);
+            if (!panel || !!panel.focusMode === focusMode) return;
+            // Transient UI state - don't sync to backend
+            savePanels([{ ...panel, focusMode }], false);
+        },
+        [savePanels]
+    );
+
     const addToNadNavigationHistory = useCallback(
         ({ panelId, voltageLevelId }: { panelId: UUID; voltageLevelId: string }) => {
             const panel = selectPanel(store.getState(), panelId);
@@ -479,6 +489,7 @@ export const useWorkspacePanelActions = () => {
         dissociateSldFromNad,
         updateNADFields,
         setPanelEditMode,
+        setPanelFocusMode,
         addToNadNavigationHistory,
         createNadAndAssociateSld,
         openToolPanel,

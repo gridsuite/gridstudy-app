@@ -8,7 +8,6 @@
 import { Box, Typography, useTheme, Theme, IconButton } from '@mui/material';
 import { memo, useCallback, useState, type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
-import { mergeSx } from '@gridsuite/commons-ui';
 
 export interface SidebarSection {
     /** Stable identifier of the section. */
@@ -19,13 +18,13 @@ export interface SidebarSection {
     titleId: string;
     /** When true the section cannot be expanded (header/icon greyed out). */
     disabled?: boolean;
+    defaultExpanded?: boolean;
     /** Content rendered below the header when the section is expanded. */
     content: ReactNode;
 }
 
 interface NavigationSidebarProps {
     sections: SidebarSection[];
-    isAbsolutePositioned?: boolean;
 }
 
 const COLLAPSED_WIDTH = 40;
@@ -38,36 +37,17 @@ const getBackgroundColor = (theme: Theme, isCollapsed: boolean) => {
     return theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33';
 };
 
-const getBorderRight = (theme: Theme, isCollapsed: boolean, isAbsolutePositioned: boolean) => {
-    if (isAbsolutePositioned && isCollapsed) {
-        return 'none';
-    }
-    return `1px solid ${theme.palette.divider}`;
-};
-
 const styles = {
-    sidebar: (theme: Theme, isCollapsed: boolean, isAbsolutePositioned: boolean) => ({
+    sidebar: (theme: Theme, isCollapsed: boolean) => ({
         width: isCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
-        borderRight: getBorderRight(theme, isCollapsed, isAbsolutePositioned),
-        borderLeft: isAbsolutePositioned ? 'none' : `1px solid ${theme.palette.divider}`,
+        borderRight: `1px solid ${theme.palette.divider}`,
+        borderLeft: `1px solid ${theme.palette.divider}`,
         backgroundColor: getBackgroundColor(theme, isCollapsed),
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
         overflowX: 'hidden',
-        ...(isCollapsed &&
-            isAbsolutePositioned && {
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                bottom: 0,
-                zIndex: 100,
-                pointerEvents: 'none',
-            }),
     }),
-    headerContainer: {
-        pointerEvents: 'auto',
-    },
     iconButton: {
         p: 0.5,
     },
@@ -103,18 +83,15 @@ const styles = {
     },
 } as const;
 
-export const NavigationSidebar = memo(function NavigationSidebar({
-    sections,
-    isAbsolutePositioned = false,
-}: NavigationSidebarProps) {
+export const NavigationSidebar = memo(function NavigationSidebar({ sections }: NavigationSidebarProps) {
     const theme = useTheme();
     const intl = useIntl();
 
-    // Sections the user has opened. A disabled section is always shown collapsed regardless of this set.
-    const [expandedIds, setExpandedIds] = useState<ReadonlySet<string>>(new Set());
+    // Sections toggled by the user from their default state, a disabled section being always collapsed
+    const [toggledIds, setToggledIds] = useState<ReadonlySet<string>>(new Set());
 
     const toggleExpand = useCallback((id: string) => {
-        setExpandedIds((prev) => {
+        setToggledIds((prev) => {
             const next = new Set(prev);
             if (!next.delete(id)) {
                 next.add(id);
@@ -123,15 +100,20 @@ export const NavigationSidebar = memo(function NavigationSidebar({
         });
     }, []);
 
-    const isExpanded = (section: SidebarSection) => !section.disabled && expandedIds.has(section.id);
+    const isExpanded = (section: SidebarSection) =>
+        !section.disabled && toggledIds.has(section.id) !== !!section.defaultExpanded;
     const anyExpanded = sections.some(isExpanded);
 
+    if (sections.length === 0) {
+        return null;
+    }
+
     return (
-        <Box sx={styles.sidebar(theme, !anyExpanded, isAbsolutePositioned)}>
+        <Box sx={styles.sidebar(theme, !anyExpanded)}>
             {!anyExpanded
                 ? // Collapsed rail: one icon button per section.
                   sections.map((section) => (
-                      <Box key={section.id} sx={mergeSx(styles.headerContainer, styles.headerCollapsed)}>
+                      <Box key={section.id} sx={styles.headerCollapsed}>
                           <IconButton
                               onClick={section.disabled ? undefined : () => toggleExpand(section.id)}
                               disabled={section.disabled}
@@ -145,16 +127,14 @@ export const NavigationSidebar = memo(function NavigationSidebar({
                 : // Expanded: each section shows its header, and its content when open.
                   sections.map((section) => (
                       <Box key={section.id} sx={styles.section(isExpanded(section))}>
-                          <Box sx={styles.headerContainer}>
-                              <Box
-                                  onClick={section.disabled ? undefined : () => toggleExpand(section.id)}
-                                  sx={styles.headerExpanded(theme, section.disabled)}
-                              >
-                                  <Box sx={styles.icon(theme, section.disabled)}>{section.icon}</Box>
-                                  <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
-                                      {intl.formatMessage({ id: section.titleId })}
-                                  </Typography>
-                              </Box>
+                          <Box
+                              onClick={section.disabled ? undefined : () => toggleExpand(section.id)}
+                              sx={styles.headerExpanded(theme, section.disabled)}
+                          >
+                              <Box sx={styles.icon(theme, section.disabled)}>{section.icon}</Box>
+                              <Typography variant="caption" sx={{ ml: 1, fontWeight: 'medium' }}>
+                                  {intl.formatMessage({ id: section.titleId })}
+                              </Typography>
                           </Box>
                           {isExpanded(section) && <Box sx={styles.sectionContent}>{section.content}</Box>}
                       </Box>
