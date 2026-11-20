@@ -1271,6 +1271,7 @@ const messages_en = {
     windows: 'windows',
     reset: 'Reset',
     history: 'History',
+    topology: 'Topology',
     nadVoltageFilter: 'Voltage',
     nadInfoFilter: 'Information',
     nadInfoActivePowerValue: 'P values',

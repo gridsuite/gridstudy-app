@@ -58,6 +58,16 @@ export const styles = {
             stroke: 'none',
             fill: theme.palette.text.primary,
         },
+        '& .pending-switch path': {
+            stroke: theme.palette.warning.main,
+        },
+        '& .sld-disconnector.pending-switch path': {
+            stroke: theme.palette.primary.contrastText,
+        },
+        '& .pending-switch-background': {
+            fill: theme.palette.warning.main,
+            stroke: 'none',
+        },
         '& .arrow': {
             fill: theme.palette.text.primary,
         },

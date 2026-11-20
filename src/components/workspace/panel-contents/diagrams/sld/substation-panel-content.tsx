@@ -16,6 +16,7 @@ import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
 import { selectSldDiagramFields } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
+import { usePendingSwitches } from '../../../diagrams/sld/use-pending-switches';
 
 interface SubstationPanelContentProps {
     panelId: UUID;
@@ -41,6 +42,9 @@ export const SubstationPanelContent = ({
     });
 
     const { handleShowInSpreadsheet, handleOpenVoltageLevelDiagram } = useDiagramNavigation();
+    const { pendingSwitches } = usePendingSwitches();
+    // With switch changes to validate, the voltage level panel would open behind the focus mode backdrop
+    const handleVoltageLevelClick = pendingSwitches.size > 0 ? undefined : handleOpenVoltageLevelDiagram;
 
     if (!sldFields) {
         return null;
@@ -60,8 +64,8 @@ export const SubstationPanelContent = ({
                     svgMetadata={diagram.svg?.metadata as SLDMetadata}
                     loadingState={loading}
                     visible
-                    onNewVoltageLevelDiagram={handleOpenVoltageLevelDiagram}
-                    onNextVoltageLevelDiagram={handleOpenVoltageLevelDiagram}
+                    onNewVoltageLevelDiagram={handleVoltageLevelClick}
+                    onNextVoltageLevelDiagram={handleVoltageLevelClick}
                 />
             </DiagramWrapper>
         </Box>

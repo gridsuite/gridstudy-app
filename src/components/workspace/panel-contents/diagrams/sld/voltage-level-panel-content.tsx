@@ -17,7 +17,6 @@ import { DiagramWrapper } from '../../../diagrams/diagram-wrapper';
 import { useDiagramNavigation } from '../../../diagrams/common/use-diagram-navigation';
 import { selectSldDiagramFields } from '../../../../../redux/slices/workspace-selectors';
 import type { RootState } from '../../../../../redux/store';
-import { SldNavigationSidebar } from '../../../diagrams/sld/sld-navigation-sidebar';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 
 interface VoltageLevelPanelContentProps {
@@ -83,33 +82,26 @@ export const VoltageLevelPanelContent = ({
     }
 
     return (
-        <Box sx={{ display: 'flex', height: '100%', width: '100%', position: 'relative' }}>
-            {!globalError && (
-                <SldNavigationSidebar
-                    navigationHistory={sldFields.navigationHistory || []}
-                    currentVoltageLevelId={sldFields.equipmentId}
-                    onNavigate={handleNavigateFromHistory}
+        <Box sx={{ height: '100%', width: '100%' }}>
+            <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
+                <SingleLineDiagramContent
+                    diagramParams={{
+                        type: DiagramType.VOLTAGE_LEVEL,
+                        voltageLevelId: sldFields.equipmentId,
+                    }}
+                    showInSpreadsheet={handleShowInSpreadsheet}
+                    studyUuid={studyUuid}
+                    svg={diagram.svg?.svg ?? undefined}
+                    svgMetadata={diagram.svg?.metadata as SLDMetadata}
+                    loadingState={loading}
+                    visible
+                    onNewVoltageLevelDiagram={handleNewVoltageLevelClick}
+                    onNextVoltageLevelDiagram={handleNavigateDiagram}
+                    onSvgLoad={onSvgLoad}
+                    navigationHistory={sldFields.navigationHistory}
+                    onNavigateFromHistory={handleNavigateFromHistory}
                 />
-            )}
-            <Box sx={{ flex: 1, overflow: 'hidden' }}>
-                <DiagramWrapper loading={loading} hasSvg={!!diagram.svg} globalError={globalError}>
-                    <SingleLineDiagramContent
-                        diagramParams={{
-                            type: DiagramType.VOLTAGE_LEVEL,
-                            voltageLevelId: sldFields.equipmentId,
-                        }}
-                        showInSpreadsheet={handleShowInSpreadsheet}
-                        studyUuid={studyUuid}
-                        svg={diagram.svg?.svg ?? undefined}
-                        svgMetadata={diagram.svg?.metadata as SLDMetadata}
-                        loadingState={loading}
-                        visible
-                        onNewVoltageLevelDiagram={handleNewVoltageLevelClick}
-                        onNextVoltageLevelDiagram={handleNavigateDiagram}
-                        onSvgLoad={onSvgLoad}
-                    />
-                </DiagramWrapper>
-            </Box>
+            </DiagramWrapper>
         </Box>
     );
 };
