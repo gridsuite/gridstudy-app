@@ -14,6 +14,7 @@ import {
     VoltageInitStudyParameters,
     ResultsQueryParams,
 } from '@gridsuite/commons-ui';
+import { isComputationFinished, getVoltageInitRunningStatus } from '../../components/utils/running-status';
 
 export function startVoltageInit(
     studyUuid: UUID,
@@ -58,12 +59,18 @@ export function fetchVoltageInitStatus(studyUuid: UUID, currentNodeUuid: UUID, c
     return backendFetchText(url);
 }
 
-export function fetchVoltageInitResult(
+export async function fetchVoltageInitResult(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     queryParams: ResultsQueryParams
 ) {
+    const status = getVoltageInitRunningStatus(
+        await fetchVoltageInitStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid)
+    );
+    if (!isComputationFinished(status)) {
+        return null;
+    }
     console.info(
         `Fetching voltage init result on '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
     );

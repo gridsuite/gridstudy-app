@@ -6,6 +6,10 @@
  */
 import { ComputingType, RunningStatus } from '@gridsuite/commons-ui';
 
+export function isComputationFinished(status: RunningStatus): boolean {
+    return status === RunningStatus.SUCCEED || status === RunningStatus.FAILED;
+}
+
 export function getLoadFlowRunningStatus(loadFlowStatus: string | null): RunningStatus {
     switch (loadFlowStatus) {
         case 'CONVERGED':
