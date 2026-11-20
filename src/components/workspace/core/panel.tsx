@@ -6,10 +6,15 @@
  */
 
 import { memo, useCallback } from 'react';
-import { Box, Theme } from '@mui/material';
+import { Box, Theme, useTheme } from '@mui/material';
 import { Rnd, type RndDragCallback, type RndResizeCallback } from 'react-rnd';
 import { useSelector } from 'react-redux';
-import { selectPanel, selectPanelEditMode } from '../../../redux/slices/workspace-selectors';
+import {
+    selectIsFocusModeActive,
+    selectPanel,
+    selectPanelEditMode,
+    selectPanelFocusMode,
+} from '../../../redux/slices/workspace-selectors';
 import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 import type { RootState } from '../../../redux/store';
 import { PANEL_CONTENT_REGISTRY } from '../panel-contents/panel-content-registry';
@@ -61,13 +66,25 @@ interface PanelProps {
     onSnapPreview: (panelId: UUID, preview: SnapRect | null) => void;
     isFocused: boolean;
 }
+
+// Only the panel in focus mode rises above the backdrop, the other ones stay below it whatever their z-index
+const getZIndex = (theme: Theme, zIndex: number, isFocusMode: boolean, isFocusModeActive: boolean) => {
+    if (isFocusMode) {
+        return theme.zIndex.modal - 1;
+    }
+    return isFocusModeActive ? Math.min(zIndex, theme.zIndex.modal - 3) : zIndex;
+};
+
 export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview, isFocused }: PanelProps) => {
+    const theme = useTheme();
     const { updatePanelGeometry, focusPanel } = useWorkspacePanelActions();
     const panel = useSelector((state: RootState) => selectPanel(state, panelId));
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isEditing = useSelector((state: RootState) => selectPanelEditMode(state, panelId));
+    const isFocusMode = useSelector((state: RootState) => selectPanelFocusMode(state, panelId));
+    const isFocusModeActive = useSelector(selectIsFocusModeActive);
 
     const handleDrag = useCallback(
         (e: MouseEvent) => {
@@ -146,7 +163,7 @@ export const Panel = memo(({ panelId, containerRect, snapPreview, onSnapPreview,
             resizeHandleStyles={styles.resizeHandles}
             style={{
                 visibility: panel.minimized ? 'hidden' : 'visible',
-                zIndex: panel.zIndex ?? 0,
+                zIndex: getZIndex(theme, panel.zIndex ?? 0, isFocusMode, isFocusModeActive),
             }}
         >
             <Box
