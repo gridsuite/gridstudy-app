@@ -11,6 +11,11 @@ import type { UUID } from 'node:crypto';
 import { StateEstimationParameters } from '../../components/dialogs/parameters/state-estimation/state-estimation-parameters-utils';
 import { LogicalControlsResultDto } from '../../components/results/logicalcontrols/logical-controls-result.type';
 import type { MeasurementInformationResultDto } from '../../components/results/stateestimation/state-estimation-result.type';
+import {
+    isComputationFinished,
+    getLogicalControlsRunningStatus,
+    getStateEstimationRunningStatus,
+} from '../../components/utils/running-status';
 
 export function startStateEstimation(
     studyUuid: UUID,
@@ -57,7 +62,14 @@ export function fetchStateEstimationStatus(studyUuid: UUID, currentNodeUuid: UUI
     return backendFetchText(url);
 }
 
-export function fetchStateEstimationResult(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export async function fetchStateEstimationResult(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    const status = getStateEstimationRunningStatus(
+        await fetchStateEstimationStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid)
+    );
+    if (!isComputationFinished(status)) {
+        return null;
+    }
+
     console.info(
         `Fetching state estimation result on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
     );
@@ -71,12 +83,18 @@ export function fetchStateEstimationResult(studyUuid: UUID, currentNodeUuid: UUI
     return backendFetchJson(url);
 }
 
-export function fetchStateEstimationMeasurements(
+export async function fetchStateEstimationMeasurements(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     globalFilters?: GlobalFilters
 ): Promise<MeasurementInformationResultDto[] | null> {
+    const status = getStateEstimationRunningStatus(
+        await fetchStateEstimationStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid)
+    );
+    if (!isComputationFinished(status)) {
+        return null;
+    }
     console.info(
         `Fetching state estimation measurements on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
     );
@@ -167,12 +185,18 @@ export function fetchLogicalControlsStatus(studyUuid: UUID, currentNodeUuid: UUI
     console.debug(url);
     return backendFetchText(url);
 }
-export function fetchLogicalControlsResult(
+export async function fetchLogicalControlsResult(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     globalFilters?: GlobalFilters
 ): Promise<LogicalControlsResultDto | null> {
+    const status = getLogicalControlsRunningStatus(
+        await fetchLogicalControlsStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid)
+    );
+    if (!isComputationFinished(status)) {
+        return null;
+    }
     console.info(
         `Fetching logical controls result on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
     );

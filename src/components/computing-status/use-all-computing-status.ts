@@ -127,6 +127,7 @@ const pccMinStatusCompletions = [NotificationType.PCC_MIN_RESULT, NotificationTy
 // result invalidations
 export const loadflowResultInvalidations = [
     NotificationType.LOADFLOW_RESULT,
+    NotificationType.LOADFLOW_FAILED,
     NotificationType.NODE_BUILD_STATUS_UPDATED,
 ];
 export const securityAnalysisResultInvalidations = [
@@ -147,14 +148,17 @@ export const dynamicMarginCalculationResultInvalidations = [
 ];
 export const voltageInitResultInvalidations = [
     NotificationType.VOLTAGE_INIT_RESULT,
+    NotificationType.VOLTAGE_INIT_FAILED,
     NotificationType.NODE_BUILD_STATUS_UPDATED,
 ];
 export const stateEstimationResultInvalidations = [
     NotificationType.STATE_ESTIMATION_RESULT,
+    NotificationType.STATE_ESTIMATION_FAILED,
     NotificationType.NODE_BUILD_STATUS_UPDATED,
 ];
 export const logicalControlsResultInvalidations = [
     NotificationType.LOGICAL_CONTROLS_RESULT,
+    NotificationType.LOGICAL_CONTROLS_FAILED,
     NotificationType.NODE_BUILD_STATUS_UPDATED,
 ];
 export const pccMinResultInvalidations = [NotificationType.PCC_MIN_RESULT, NotificationType.NODE_BUILD_STATUS_UPDATED];
