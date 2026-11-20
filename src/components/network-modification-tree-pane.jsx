@@ -31,7 +31,13 @@ import {
     stashSubtree,
     stashTreeNode,
 } from '../services/study/tree-subtree';
-import { buildNode, getUniqueNodeName, unbuildNode, unshareAllReferencesInStudy } from '../services/study/index';
+import {
+    buildNode,
+    getUniqueNodeName,
+    unbuildNode,
+    unshareAllReferencesInNode,
+    unshareAllReferencesInStudy,
+} from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import NetworkModificationNodeDialog from './graph/menus/network-modifications/network-modification-node-dialog';
 import { CopyType } from './network-modification.type';
@@ -168,6 +174,15 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
             snackWithFallback(snackError, error, { headerId: 'UnshareError' });
         });
     }, [studyUuid, snackError]);
+
+    const handleUnshareAllReferencesInNode = useCallback(
+        (node) => {
+            unshareAllReferencesInNode(studyUuid, node.id).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'UnshareError' });
+            });
+        },
+        [studyUuid, snackError]
+    );
 
     const handleCreateSecuritySequence = useCallback(
         (element) => {
@@ -378,6 +393,7 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
                     handleUnbuildNode={handleUnbuildNode}
                     handleNodeCreation={handleCreateNode}
                     handleUnshareAllReferencesInStudy={handleUnshareAllReferencesInStudy}
+                    handleUnshareAllReferencesInNode={handleUnshareAllReferencesInNode}
                     handleSecuritySequenceCreation={handleCreateSecuritySequence}
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}

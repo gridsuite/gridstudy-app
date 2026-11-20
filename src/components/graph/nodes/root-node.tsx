@@ -9,11 +9,12 @@ import IconButton from '@mui/material/IconButton';
 import { NodeProps, Position } from '@xyflow/react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
-import { RootNode as RootNodeType } from 'components/graph/tree-node.type';
+import { ModificationNode, NodeType, RootNode as RootNodeType } from 'components/graph/tree-node.type';
 import { Box } from '@mui/material';
 import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { DeviceHub } from '@mui/icons-material';
 import NodeHandle from './node-handle';
+import { SharedIndicator } from './shared-indicator';
 import NodeOverlaySpinner from './node-overlay-spinner';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import { UnbuildAllNodesButton } from '../menus/root-network/unbuild-all-nodes-button';
@@ -94,6 +95,16 @@ const RootNode = (props: NodeProps<RootNodeType>) => {
         (rootNetwork) => rootNetwork.rootNetworkUuid === currentRootNetworkUuid
     );
 
+    // the root shows the shared indicator as soon as one node of the tree contains shared modifications
+    const treeContainsSharedModifications = useSelector(
+        (state: AppState) =>
+            state.networkModificationTreeModel?.treeNodes.some(
+                (node) =>
+                    node.type === NodeType.NETWORK_MODIFICATION &&
+                    (node as ModificationNode).data?.hasReferencedModifications === true
+            ) ?? false
+    );
+
     const activity = useNodeActivity(props.id);
 
     const isSelectedNode = () => {
@@ -103,6 +114,7 @@ const RootNode = (props: NodeProps<RootNodeType>) => {
     return (
         <>
             <NodeHandle type={'source'} position={Position.Bottom} />
+            {treeContainsSharedModifications && <SharedIndicator tooltipId="studyContainsSharedModifications" />}
             <Box sx={isSelectedNode() ? styles.rootSelected : styles.root}>
                 <Box sx={styles.mainBox}>
                     <Box sx={styles.iconContainer}>
