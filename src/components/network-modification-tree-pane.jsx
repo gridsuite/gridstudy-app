@@ -175,7 +175,7 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
         });
     }, [studyUuid, snackError]);
 
-    const handleUnshareNodeReferences = useCallback(
+    const handleUnshareAllReferencesInNode = useCallback(
         (node) => {
             unshareAllReferencesInNode(studyUuid, node.id).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'UnshareError' });
@@ -393,7 +393,7 @@ export const NetworkModificationTreePane = ({ panelId, studyUuid, currentRootNet
                     handleUnbuildNode={handleUnbuildNode}
                     handleNodeCreation={handleCreateNode}
                     handleUnshareAllReferencesInStudy={handleUnshareAllReferencesInStudy}
-                    handleUnshareNodeReferences={handleUnshareNodeReferences}
+                    handleUnshareAllReferencesInNode={handleUnshareAllReferencesInNode}
                     handleSecuritySequenceCreation={handleCreateSecuritySequence}
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}

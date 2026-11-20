@@ -62,7 +62,7 @@ interface CreateNodeMenuProps {
     handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
     handleClose: () => void;
     handleUnshareAllReferencesInStudy: () => void;
-    handleUnshareNodeReferences: (node: CurrentTreeNode) => void;
+    handleUnshareAllReferencesInNode: (node: CurrentTreeNode) => void;
     handleBuildNode: (element: CurrentTreeNode) => void;
     handleUnbuildNode: (element: CurrentTreeNode) => void;
     handleExportCaseOnNode: (node: CurrentTreeNode) => void;
@@ -130,7 +130,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     handleNodeRemoval,
     handleExportCaseOnNode,
     handleUnshareAllReferencesInStudy,
-    handleUnshareNodeReferences,
+    handleUnshareAllReferencesInNode,
     handleExportNodeInfos,
     activeNode,
     nodeSelectionForCopy,
@@ -230,7 +230,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         setNodeAction(NodeActions.UNSHARE_STUDY);
     }
 
-    function unshareNodeReferences() {
+    function unshareAllReferencesInNode() {
         setNodeAction(NodeActions.UNSHARE_NODE);
     }
 
@@ -568,7 +568,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         UNSHARE_NODE: {
             onRoot: false,
-            action: () => unshareNodeReferences(),
+            action: () => unshareAllReferencesInNode(),
             id: 'unshareReferencesInNode',
             disabled: isActiveNodeEditBlocked,
             hidden: !activeNodeHasReferencedModifications,
@@ -648,7 +648,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         } else if (nodeAction === NodeActions.UNSHARE_STUDY) {
             handleUnshareAllReferencesInStudy();
         } else if (nodeAction === NodeActions.UNSHARE_NODE) {
-            handleUnshareNodeReferences(activeNode);
+            handleUnshareAllReferencesInNode(activeNode);
         } else {
             handleRemovalSubtree(activeNode);
         }
@@ -658,7 +658,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         handleNodeRemoval,
         handleRemovalSubtree,
         handleUnshareAllReferencesInStudy,
-        handleUnshareNodeReferences,
+        handleUnshareAllReferencesInNode,
         activeNode,
         nodeAction,
     ]);
