@@ -30,6 +30,8 @@ export function VoltageInitResultTab({
     const voltageInitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
+    const canReadVoltageInitResult =
+        voltageInitStatus === RunningStatus.SUCCEED || voltageInitStatus === RunningStatus.FAILED;
     const globalFiltersFromState = useComputationGlobalFilters(TableType.VoltageInit);
 
     const fetchVoltageInitResultWithGlobalFilters = useMemo(
@@ -49,12 +51,10 @@ export function VoltageInitResultTab({
         rootNetworkUuid: currentRootNetworkUuid,
         fetcher: fetchVoltageInitResultWithGlobalFilters,
         invalidations: voltageInitResultInvalidations,
+        enabled: canReadVoltageInitResult,
     });
 
-    const voltageInitResultToShow =
-        (voltageInitStatus === RunningStatus.SUCCEED || voltageInitStatus === RunningStatus.FAILED) && voltageInitResult
-            ? voltageInitResult
-            : null;
+    const voltageInitResultToShow = canReadVoltageInitResult && voltageInitResult ? voltageInitResult : null;
 
     return (
         <VoltageInitResult

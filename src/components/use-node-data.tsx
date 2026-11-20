@@ -101,6 +101,7 @@ export type UseNodeDataParams<T, R = T> = {
     invalidations: string[];
     defaultValue?: R;
     resultConverter?: (fetchedResult: T | null) => R | null;
+    enabled?: boolean;
 };
 
 export function useNodeData<T, R = T>({
@@ -111,8 +112,9 @@ export function useNodeData<T, R = T>({
     invalidations,
     defaultValue,
     resultConverter = identity,
+    enabled = true,
 }: UseNodeDataParams<T, R>) {
-    const [result, setResult] = useState<R | undefined>(defaultValue);
+    const [result, setResult] = useState<R | undefined>(enabled ? defaultValue : undefined);
     const [isLoading, setIsLoading] = useState(false);
     const nodeUuidRef = useRef<UUID>(undefined);
     const rootNetworkUuidRef = useRef<UUID>(undefined);
@@ -126,12 +128,15 @@ export function useNodeData<T, R = T>({
     const { snackError } = useSnackMessage();
 
     const update = useCallback(() => {
+        if (!enabled || !studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
+            return;
+        }
         nodeUuidRef.current = nodeUuid;
         rootNetworkUuidRef.current = rootNetworkUuid;
         const requestId = ++requestIdRef.current;
         const isLatestRequest = () => requestId === requestIdRef.current;
         setIsLoading(true);
-        fetcher?.(studyUuid, nodeUuid, rootNetworkUuid)
+        fetcher(studyUuid, nodeUuid, rootNetworkUuid)
             .then((res) => {
                 if (isLatestRequest()) {
                     setResult(resultConverter(res) ?? undefined);
@@ -148,13 +153,21 @@ export function useNodeData<T, R = T>({
                     setIsLoading(false);
                 }
             });
-    }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter, snackError]);
+    }, [enabled, nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter, snackError]);
 
     // Debounce the update to avoid excessive calls
     const debouncedUpdate = useDebounce(update, 1000);
 
     const evaluateUpdate = useCallback(
         (event?: MessageEvent) => {
+            if (!enabled) {
+                // Ignore any in-flight response and drop the stale result
+                requestIdRef.current += 1;
+                setResult(undefined);
+                setIsLoading(false);
+                lastUpdateRef.current = undefined;
+                return;
+            }
             if (!studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
                 return;
             }
@@ -174,7 +187,7 @@ export function useNodeData<T, R = T>({
                 debouncedUpdate();
             }
         },
-        [debouncedUpdate, fetcher, invalidations, nodeUuid, rootNetworkUuid, studyUuid]
+        [enabled, debouncedUpdate, fetcher, invalidations, nodeUuid, rootNetworkUuid, studyUuid]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {

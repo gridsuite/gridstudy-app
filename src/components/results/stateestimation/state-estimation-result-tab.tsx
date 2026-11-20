@@ -96,6 +96,10 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
+    const canReadStateEstimationResult =
+        stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED;
+    const isComputing =
+        stateEstimationStatus === RunningStatus.PRELOADING || stateEstimationStatus === RunningStatus.RUNNING;
     const { snackError } = useSnackMessage();
 
     const { result: stateEstimationResult, isLoading: isLoadingResult } = useNodeData({
@@ -104,6 +108,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         rootNetworkUuid: currentRootNetworkUuid,
         fetcher: fetchStateEstimationResult,
         invalidations: stateEstimationResultInvalidations,
+        enabled: canReadStateEstimationResult,
     });
 
     const { filters: measurementsColumnsFilters } = useComputationColumnFilters(
@@ -131,9 +136,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     };
 
     const result = useMemo(() => {
-        const isProcessing =
-            stateEstimationStatus !== RunningStatus.SUCCEED && stateEstimationStatus !== RunningStatus.FAILED;
-        if (isProcessing || !stateEstimationResult) {
+        if (!canReadStateEstimationResult || !stateEstimationResult) {
             return {};
         }
         return {
@@ -146,7 +149,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                 intl
             ),
         };
-    }, [stateEstimationStatus, stateEstimationResult, intl]);
+    }, [canReadStateEstimationResult, stateEstimationResult, intl]);
 
     const measurementsGridRef = useRef<AgGridReact>(null);
     const [isLoadingMeasurements, setIsLoadingMeasurements] = useState(true);
@@ -157,7 +160,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         columnsFilters: measurementsColumnsFilters,
         unfilteredRowCount: result.measurementInformationResults?.length,
         disabled: false,
-        isDataPending: isLoadingMeasurements || isLoadingResult,
+        isDataPending: isComputing || isLoadingResult || isLoadingMeasurements,
     });
 
     const resetMeasurementsFilters = useCallback(() => {

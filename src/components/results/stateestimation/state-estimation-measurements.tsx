@@ -43,6 +43,8 @@ export const StateEstimationMeasurements: FunctionComponent<StateEstimationMeasu
     const stateEstimationStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
+    const canReadStateEstimationResult =
+        stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED;
     const {
         result: currentRows,
         isLoadingResult,
@@ -54,14 +56,12 @@ export const StateEstimationMeasurements: FunctionComponent<StateEstimationMeasu
         globalFilters,
         fetcher: fetchStateEstimationMeasurements,
         invalidations: stateEstimationResultInvalidations,
+        enabled: canReadStateEstimationResult,
     });
 
-    const isComputed =
-        stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED;
-
     const measurementRows = useMemo(
-        () => (currentRows && isComputed ? mapMeasurementResults(currentRows) : []),
-        [currentRows, isComputed]
+        () => (currentRows && canReadStateEstimationResult ? mapMeasurementResults(currentRows) : []),
+        [currentRows, canReadStateEstimationResult]
     );
     useEffect(() => {
         onLoadingChange?.(isLoadingResult);

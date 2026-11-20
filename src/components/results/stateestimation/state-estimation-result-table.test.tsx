@@ -51,11 +51,12 @@ const embeddedResult: any = {
 };
 
 let root: Root;
+let container: HTMLElement;
 
-async function show(props: Record<string, unknown>) {
+async function show(props: Record<string, unknown>, status = RunningStatus.SUCCEED) {
     const store = configureStore({
         reducer: () => ({
-            computingStatus: { [ComputingType.STATE_ESTIMATION]: RunningStatus.SUCCEED },
+            computingStatus: { [ComputingType.STATE_ESTIMATION]: status },
             computedLanguage: 'en',
         }),
     });
@@ -86,7 +87,26 @@ beforeEach(() => {
     (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
     jest.mocked(useInitialColumnSort).mockClear();
     mockGrid.props = undefined;
-    root = createRoot(document.createElement('div'));
+    container = document.createElement('div');
+    root = createRoot(container);
+});
+
+describe('delayed computation loader', () => {
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => jest.useRealTimers());
+
+    it.each([RunningStatus.PRELOADING, RunningStatus.RUNNING])('opens for active status %s', async (status) => {
+        await show({ isLoadingResult: false }, status);
+        expect(container.querySelector('.MuiLinearProgress-root')).toBeNull();
+        await act(async () => jest.advanceTimersByTime(500));
+        expect(container.querySelector('.MuiLinearProgress-root')).not.toBeNull();
+    });
+
+    it('stays closed in IDLE when there is no readable payload request', async () => {
+        await show({ isLoadingResult: false }, RunningStatus.IDLE);
+        await act(async () => jest.advanceTimersByTime(1000));
+        expect(container.querySelector('.MuiLinearProgress-root')).toBeNull();
+    });
 });
 
 afterEach(async () => {
