@@ -16,7 +16,7 @@ const LOADFLOW_DEPENDENT_FIELD_GROUPS: {
     equipmentTypes?: SpreadsheetEquipmentType[];
     securityNodeOnly?: boolean;
 }[] = [
-    { fields: ['p', 'p1', 'p2', 'p3', 'q', 'q1', 'q2', 'q3'] },
+    { fields: ['p', 'p1', 'p2', 'p3', 'q', 'q1', 'q2', 'q3', 'generation', 'load'] },
     { fields: ['v', 'angle'], equipmentTypes: [SpreadsheetEquipmentType.BUS] },
     {
         fields: ['ratioTapChanger.tapPosition', 'phaseTapChanger.tapPosition'],
