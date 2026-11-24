@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { backendFetchJson, type GlobalFilters } from '@gridsuite/commons-ui';
+import { backendFetchJson, backendFetchText, type GlobalFilters } from '@gridsuite/commons-ui';
 import {
     fetchLogicalControlsResult,
     fetchStateEstimationMeasurements,
@@ -16,12 +16,14 @@ import {
 jest.mock('@gridsuite/commons-ui', () => ({
     ...jest.requireActual('@gridsuite/commons-ui'),
     backendFetchJson: jest.fn(),
+    backendFetchText: jest.fn(),
 }));
 
 const STUDY = '11111111-1111-1111-1111-111111111111' as UUID;
 const NODE = '22222222-2222-2222-2222-222222222222' as UUID;
 const ROOT = '33333333-3333-3333-3333-333333333333' as UUID;
 const fetchJson = jest.mocked(backendFetchJson);
+const fetchText = jest.mocked(backendFetchText);
 
 function lastUrl() {
     return new URL(String(fetchJson.mock.calls.at(-1)?.[0]), 'http://localhost');
@@ -32,6 +34,8 @@ beforeEach(() => {
     jest.spyOn(console, 'debug').mockImplementation(() => {});
     fetchJson.mockReset();
     fetchJson.mockResolvedValue([]);
+    fetchText.mockReset();
+    fetchText.mockResolvedValue('COMPLETED');
 });
 
 describe('fetchStateEstimationMeasurements', () => {
@@ -90,6 +94,25 @@ describe('fetchStateEstimationMeasurements', () => {
 
         await expect(fetchStateEstimationMeasurements(STUDY, NODE, ROOT)).rejects.toThrow('boom');
     });
+
+    it.each(['RUNNING', 'NOT_DONE', 'PRELOADING', null])(
+        'returns null without fetching the measurements when the status is %s',
+        async (status) => {
+            fetchText.mockResolvedValue(status as string);
+
+            await expect(fetchStateEstimationMeasurements(STUDY, NODE, ROOT)).resolves.toBeNull();
+            expect(fetchText.mock.calls[0][0]).toMatch(/\/state-estimation\/status$/);
+            expect(fetchJson).not.toHaveBeenCalled();
+        }
+    );
+
+    it('fetches the measurements when the computation failed', async () => {
+        fetchText.mockResolvedValue('DIVERGED');
+
+        await fetchStateEstimationMeasurements(STUDY, NODE, ROOT);
+
+        expect(fetchJson).toHaveBeenCalledTimes(1);
+    });
 });
 
 describe('fetchStateEstimationResult', () => {
@@ -98,6 +121,13 @@ describe('fetchStateEstimationResult', () => {
 
         expect(lastUrl().pathname).toMatch(/\/state-estimation\/result$/);
         expect(lastUrl().search).toBe('');
+    });
+
+    it('returns null without fetching the result when the computation is not finished', async () => {
+        fetchText.mockResolvedValue('RUNNING');
+
+        await expect(fetchStateEstimationResult(STUDY, NODE, ROOT)).resolves.toBeNull();
+        expect(fetchJson).not.toHaveBeenCalled();
     });
 });
 
@@ -155,5 +185,24 @@ describe('fetchLogicalControlsResult', () => {
         await expect(fetchLogicalControlsResult(STUDY, NODE, ROOT, { countryCode: ['FR'] })).rejects.toThrow(
             'invalid filter'
         );
+    });
+
+    it.each(['RUNNING', 'NOT_DONE', 'PRELOADING', null])(
+        'returns null without fetching the result when the status is %s',
+        async (status) => {
+            fetchText.mockResolvedValue(status as string);
+
+            await expect(fetchLogicalControlsResult(STUDY, NODE, ROOT)).resolves.toBeNull();
+            expect(fetchText.mock.calls[0][0]).toMatch(/\/logical-controls\/status$/);
+            expect(fetchJson).not.toHaveBeenCalled();
+        }
+    );
+
+    it('fetches the result when the computation failed', async () => {
+        fetchText.mockResolvedValue('FAILED');
+
+        await fetchLogicalControlsResult(STUDY, NODE, ROOT);
+
+        expect(fetchJson).toHaveBeenCalledTimes(1);
     });
 });
