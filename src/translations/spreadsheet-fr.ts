@@ -180,7 +180,7 @@ const spreadsheetFr = {
     'spreadsheet/formula/type/unknown': 'Type de donnée inconnu',
     'spreadsheet/formula/function-reference/disabled':
         'Les références de fonctions sont désactivées, elles doivent être appelées avec des paramètres',
-    'spreadsheet/column/invalid-without-loadflow': "Un calcul de répartition est nécessaire",
+    'spreadsheet/column/invalid-without-loadflow': 'Un calcul de répartition est nécessaire',
 
     // Save dialog
     'spreadsheet/save-dialog/spreadsheet': 'Tableur',
