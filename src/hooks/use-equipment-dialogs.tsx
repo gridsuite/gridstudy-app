@@ -21,6 +21,7 @@ import { CurrentTreeNode } from '../components/graph/tree-node.type';
 import type { UUID } from 'node:crypto';
 
 import BatteryModificationDialog from '../components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
+import StaticVarCompensatorModificationDialog from '../components/dialogs/network-modifications/static-var-compensator/modification/static-var-compensator-modification-dialog';
 import GeneratorModificationDialog from '../components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from '../components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import TwoWindingsTransformerModificationDialog from '../components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
@@ -187,6 +188,9 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                 break;
             case EquipmentType.SHUNT_COMPENSATOR:
                 CurrentModificationDialog = ShuntCompensatorModificationDialog;
+                break;
+            case EquipmentType.STATIC_VAR_COMPENSATOR:
+                CurrentModificationDialog = StaticVarCompensatorModificationDialog;
                 break;
             default:
                 return null;

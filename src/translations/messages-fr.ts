@@ -483,6 +483,7 @@ const messages_fr = {
     unbuildNode: 'Déréaliser',
     exportCaseOnNode: 'Exporter',
     unshareReferencesInStudy: "Départager l'étude",
+    unshareReferencesInNode: 'Départager le nœud',
     ConstructionNode: 'Créer un nœud de construction',
     SecurityNode: 'Créer un nœud de sécurité',
     NetworkModificationTreeLoadError:
@@ -873,6 +874,7 @@ const messages_fr = {
 
     deleteNodeConfirmation: '"{nodeName}" va être supprimé.',
     unshareStudyConfirmation: "Le départage de l'étude est irréversible, voulez vous continuer ?",
+    unshareNodeConfirmation: 'Le départage du nœud "{nodeName}" est irréversible, voulez vous continuer ?',
     deleteSubTreeConfirmation:
         '"{nodeName}" {nodesNumber, plural, =0 {va être supprimé.} =1 {et son sous-arbre contenant un nœud vont être supprimés} other {et son sous-arbre contenant # nœuds vont être supprimés.}}',
 
@@ -1228,6 +1230,8 @@ const messages_fr = {
     nodeType: 'Type',
     nodeStatus: 'Statut',
     nodeContainsSharedModifications: 'Contient des modifications partagées',
+    sharedNodeIndicator: 'Partagé',
+    studyContainsSharedModifications: "L'étude contient des modifications partagées",
     'nodeActivity.UPDATING': 'Mise à jour',
     'nodeActivity.DELETING': 'Suppression',
     'nodeActivity.BUILDING': 'Réalisation',
@@ -1284,6 +1288,7 @@ const messages_fr = {
     workspaceUpdateError: "Erreur lors de la mise à jour de l'espace de travail",
     reset: 'Réinitialiser',
     history: 'Historique',
+    topology: 'Topologie',
     nadVoltageFilter: 'Tension',
     nadInfoFilter: 'Informations',
     nadInfoActivePowerValue: 'Valeurs P',

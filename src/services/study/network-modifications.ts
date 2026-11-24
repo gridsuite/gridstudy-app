@@ -39,6 +39,7 @@ import {
     TwoWindingsTransformerCreationDto,
     TwoWindingsTransformerModificationDto,
     StaticVarCompensatorCreationDto,
+    StaticVarCompensatorModificationDto,
     CouplingDeviceCreationDto,
     CreateVoltageLevelTopologyDto,
     VoltageLevelSectionCreationDto,
@@ -58,6 +59,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import type { UUID } from 'node:crypto';
 import { DivideLineInfo, VoltageLevelCreationInfo } from '../network-modification-types';
+import type { SwitchInfos } from './network-map.type';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -336,6 +338,29 @@ export function modifyBattery(
         console.info('Updating battery modification');
     } else {
         console.info('Creating battery modification');
+    }
+    return backendFetchText(modificationUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dto),
+    });
+}
+
+export function modifyStaticVarCompensator(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    dto: StaticVarCompensatorModificationDto
+) {
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating static var compensator modification');
+    } else {
+        console.info('Creating static var compensator modification');
     }
     return backendFetchText(modificationUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
@@ -1173,6 +1198,30 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
             equipmentAttributeValue: open,
         }),
     });
+}
+
+export function updateVoltageLevelSwitchStates(
+    studyUuid: UUID,
+    nodeUuid: UUID | undefined,
+    voltageLevelId: string,
+    switches: SwitchInfos[]
+) {
+    return modifyVoltageLevelTopology(
+        {
+            type: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
+            equipmentId: voltageLevelId,
+            equipmentAttributeModificationList: switches.map(({ id, open }) => ({
+                type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
+                equipmentType: EquipmentType.SWITCH,
+                equipmentId: id,
+                equipmentAttributeName: 'open',
+                equipmentAttributeValue: open,
+            })),
+        },
+        null,
+        studyUuid,
+        nodeUuid
+    );
 }
 
 export function createLcc(

@@ -34,7 +34,7 @@ import { useParameterState } from '../../dialogs/parameters/use-parameters-state
 import { useSelector } from 'react-redux';
 import { PanelType } from '../types/workspace.types';
 import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
-import { selectOpenPanels } from '../../../redux/slices/workspace-selectors';
+import { selectIsFocusModeActive, selectOpenPanels } from '../../../redux/slices/workspace-selectors';
 import { WorkspaceSwitcher } from './workspace-switcher';
 
 const styles = {
@@ -73,6 +73,7 @@ export const WorkspaceToolbar = () => {
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const allPanels = useSelector(selectOpenPanels);
+    const isFocusModeActive = useSelector(selectIsFocusModeActive);
 
     const panelStates = useMemo(() => {
         const openTypes = new Set(allPanels.filter((p) => !p.minimized).map((p) => p.type));
@@ -271,6 +272,8 @@ export const WorkspaceToolbar = () => {
                     isDialogSearchOpen={isDialogSearchOpen}
                     setIsDialogSearchOpen={setIsDialogSearchOpen}
                     disablCenterSubstation={!isMapOpen}
+                    // The equipment panel would open behind the focus mode backdrop
+                    disableKeyboardShortcut={isFocusModeActive}
                 />
             }
         </Box>

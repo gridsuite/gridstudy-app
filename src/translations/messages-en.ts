@@ -475,6 +475,7 @@ const messages_en = {
     unbuildNode: 'Unbuild',
     exportCaseOnNode: 'Export',
     unshareReferencesInStudy: 'Unshare the study',
+    unshareReferencesInNode: 'Unshare the node',
     ConstructionNode: 'Create a construction node',
     SecurityNode: 'Create a security node',
     NetworkModificationTreeLoadError: 'An error occurred while loading network modification tree',
@@ -854,6 +855,7 @@ const messages_en = {
 
     deleteNodeConfirmation: '"{nodeName}" will be deleted.',
     unshareStudyConfirmation: 'Unsharing the study is irreversible, do you want to continue?',
+    unshareNodeConfirmation: 'Unsharing the node "{nodeName}" is irreversible, do you want to continue?',
     deleteSubTreeConfirmation:
         '"{nodeName}" {nodesNumber, plural, =0 {will be deleted.} =1 {and its subtree with one node will be deleted.} other {and its subtree with # nodes will be deleted.}}',
 
@@ -1213,6 +1215,8 @@ const messages_en = {
     nodeType: 'Type',
     nodeStatus: 'Status',
     nodeContainsSharedModifications: 'Contains shared modifications',
+    sharedNodeIndicator: 'Shared',
+    studyContainsSharedModifications: 'The study contains shared modifications',
     'nodeActivity.UPDATING': 'Updating',
     'nodeActivity.DELETING': 'Deleting',
     'nodeActivity.BUILDING': 'Building',
@@ -1271,6 +1275,7 @@ const messages_en = {
     windows: 'windows',
     reset: 'Reset',
     history: 'History',
+    topology: 'Topology',
     nadVoltageFilter: 'Voltage',
     nadInfoFilter: 'Information',
     nadInfoActivePowerValue: 'P values',

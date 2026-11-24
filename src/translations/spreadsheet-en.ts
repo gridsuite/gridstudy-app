@@ -173,7 +173,7 @@ const spreadsheetEn = {
     'spreadsheet/formula/type/unknown': 'Unknown column type',
     'spreadsheet/formula/function-reference/disabled':
         'Function references are disabled. Functions must be called with parameters',
-    'spreadsheet/column/invalid-without-loadflow': 'Invalid value without load flow results',
+    'spreadsheet/column/invalid-without-loadflow': 'A loadflow is required',
 
     //save dialog
     'spreadsheet/save-dialog/include': 'Include',

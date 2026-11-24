@@ -7,6 +7,7 @@
 
 import { FetchStatus } from '@gridsuite/commons-ui';
 import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
+import StaticVarCompensatorModificationDialog from 'components/dialogs/network-modifications/static-var-compensator/modification/static-var-compensator-modification-dialog';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
@@ -32,6 +33,7 @@ const EQUIPMENT_DIALOG_MAPPING: Readonly<Record<EditableEquipmentType, FunctionC
     [SpreadsheetEquipmentType.LOAD]: LoadModificationDialog,
     [SpreadsheetEquipmentType.BATTERY]: BatteryModificationDialog,
     [SpreadsheetEquipmentType.SHUNT_COMPENSATOR]: ShuntCompensatorModificationDialog,
+    [SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR]: StaticVarCompensatorModificationDialog,
 };
 
 function isEditableEquipmentType(type: SpreadsheetEquipmentType): type is EditableEquipmentType {

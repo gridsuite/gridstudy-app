@@ -19,7 +19,7 @@ import {
     snackWithFallback,
     STATIC_VAR_COMPENSATOR_TAB_FIELDS,
     staticVarCompensatorCreationEmptyFormData,
-    StaticVarCompensatorCreationForm,
+    StaticVarCompensatorForm,
     StaticVarCompensatorCreationFormData,
     staticVarCompensatorCreationFormSchema,
     staticVarCompensatorCreationFormToDto,
@@ -218,7 +218,7 @@ export default function StaticVarCompensatorCreationDialog({
                 }}
                 {...dialogProps}
             >
-                <StaticVarCompensatorCreationForm
+                <StaticVarCompensatorForm
                     fetchVoltageLevelEquipments={fetchVoltageLevelEquipmentsCallback}
                     voltageLevelOptions={voltageLevelOptions}
                     fetchBusesOrBusbarSections={fetchBusesOrBusbarSections}
