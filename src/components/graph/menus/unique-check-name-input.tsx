@@ -30,6 +30,7 @@ export interface UniqueCheckNameInputProps {
     errorMessageKey: string;
     catchMessageKey: string;
     max_length?: number;
+    validate?: (value: string) => string | undefined;
 }
 
 /**
@@ -48,6 +49,7 @@ export function UniqueCheckNameInput({
     errorMessageKey,
     catchMessageKey,
     max_length,
+    validate,
 }: Readonly<UniqueCheckNameInputProps>) {
     const {
         field: { onChange, onBlur, value, ref },
@@ -115,21 +117,22 @@ export function UniqueCheckNameInput({
             clearErrors(name);
             return;
         }
-        if (trimmedValue) {
+        const errorKey = trimmedValue ? validate?.(trimmedValue) : YUP_REQUIRED;
+        if (errorKey) {
+            clearErrors('root.isValidating');
+            setError(name, {
+                type: 'validate',
+                message: errorKey,
+            });
+        } else {
             clearErrors(name);
             setError('root.isValidating', {
                 type: `validate ${name}`,
                 message: 'cantSubmitWhileValidating',
             });
             debouncedHandleCheckName(trimmedValue);
-        } else {
-            clearErrors('root.isValidating');
-            setError(name, {
-                type: 'validate',
-                message: YUP_REQUIRED,
-            });
         }
-    }, [debouncedHandleCheckName, setError, clearErrors, name, value, isDirty, defaultFieldValue]);
+    }, [debouncedHandleCheckName, setError, clearErrors, name, value, isDirty, defaultFieldValue, validate]);
 
     // Handle on user's change
     const handleManualChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

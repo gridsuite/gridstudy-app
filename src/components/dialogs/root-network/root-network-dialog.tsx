@@ -25,7 +25,12 @@ import * as yup from 'yup';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { ModificationDialog } from '../commons/modificationDialog';
-import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
+import {
+    AllowedRootNetworkTags,
+    checkRootNetworkNameExistence,
+    checkRootNetworkTagExistence,
+    fetchAllowedRootNetworkTags,
+} from 'services/root-network';
 import {
     getSharedModificationsWriteAccess,
     SharedModificationsWriteAccess,
@@ -94,20 +99,6 @@ const emptyFormData: FormData = {
 
 const MAX_TAG_LENGTH = 4;
 
-const getTagWarningId = (
-    sharedModificationsWriteAccess: SharedModificationsWriteAccess,
-    isRenamingTag: boolean,
-    isAddingTag: boolean
-): string | undefined => {
-    if (sharedModificationsWriteAccess === SharedModificationsWriteAccess.NONE_WRITABLE) {
-        return isRenamingTag || isAddingTag ? 'sharedModificationsNotWritableTag' : undefined;
-    }
-    if (isRenamingTag && sharedModificationsWriteAccess !== SharedModificationsWriteAccess.NO_SHARED_MODIFICATION) {
-        return 'sharedModificationsApplicabilitiesOverwritten';
-    }
-    return undefined;
-};
-
 const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     open,
     onSave,
@@ -139,22 +130,46 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
 
     const [sharedModificationsWriteAccess, setSharedModificationsWriteAccess] =
         useState<SharedModificationsWriteAccess>(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
+    // tags not allowed by the shared modifications the user cannot write on (the server checks them again on save)
+    const [allowedTags, setAllowedTags] = useState<AllowedRootNetworkTags>();
     useEffect(() => {
-        if (open && studyUuid) {
-            getSharedModificationsWriteAccess(studyUuid)
-                .then(setSharedModificationsWriteAccess)
-                .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'sharedModificationsWriteAccessFetchingError' });
-                    setSharedModificationsWriteAccess(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
-                });
+        setSharedModificationsWriteAccess(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
+        setAllowedTags(undefined);
+        if (!open || !studyUuid) {
+            return;
         }
+        let outdated = false; // ignore responses arriving after the dialog closed or the study changed
+        getSharedModificationsWriteAccess(studyUuid)
+            .then((writeAccess) => !outdated && setSharedModificationsWriteAccess(writeAccess))
+            .catch((error) =>
+                snackWithFallback(snackError, error, { headerId: 'sharedModificationsWriteAccessFetchingError' })
+            );
+        fetchAllowedRootNetworkTags(studyUuid)
+            .then((tags) => !outdated && setAllowedTags(tags))
+            .catch((error) =>
+                snackWithFallback(snackError, error, { headerId: 'allowedRootNetworkTagsFetchingError' })
+            );
+        return () => {
+            outdated = true;
+        };
     }, [open, studyUuid, snackError]);
+
+    // only changed tags are validated, so an edited root network keeps its current tag
+    const validateTag = useCallback(
+        (value: string) =>
+            allowedTags?.restricted && !allowedTags.tags.includes(value)
+                ? 'rootNetworkTagNotAllowedByShared'
+                : undefined,
+        [allowedTags]
+    );
 
     const tag = useWatch({ control, name: TAG })?.trim();
     const isRenamingTag = isModification && !!tag && tag !== editableRootNetwork?.tag;
-    const isAddingTag = !isModification && !!tag;
-
-    const tagWarningId = getTagWarningId(sharedModificationsWriteAccess, isRenamingTag, isAddingTag);
+    // renaming overwrites the applicabilities of the writable shared modifications
+    const showOverwrittenWarning =
+        isRenamingTag &&
+        (sharedModificationsWriteAccess === SharedModificationsWriteAccess.ALL_WRITABLE ||
+            sharedModificationsWriteAccess === SharedModificationsWriteAccess.SOME_WRITABLE);
 
     // Reset the form values when editableRootNetwork is available (for modification mode)
     useEffect(() => {
@@ -262,6 +277,17 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                         onSelectCase={onSelectCase}
                         originalCaseUuid={editableRootNetwork?.originalCaseUuid}
                     />
+                    {allowedTags?.restricted && (
+                        <Alert severity="info">
+                            <FormattedMessage
+                                id="rootNetworkTagsAllowedByShared"
+                                values={{
+                                    allowedTags: allowedTags.tags.join(', '),
+                                    allowedTagsCount: allowedTags.tags.length,
+                                }}
+                            />
+                        </Alert>
+                    )}
                     <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
                         <UniqueCheckNameInput
                             name={TAG}
@@ -273,13 +299,11 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             catchMessageKey="rootNetworknameValidityCheckError"
                             max_length={MAX_TAG_LENGTH}
                             formProps={{ sx: { width: 160, flexShrink: 0 } }}
+                            validate={validateTag}
                         />
-                        {tagWarningId && (
+                        {showOverwrittenWarning && (
                             <Alert severity="warning">
-                                <FormattedMessage
-                                    id={tagWarningId}
-                                    values={{ tagAction: isModification ? 'renaming' : 'adding' }}
-                                />
+                                <FormattedMessage id="sharedModificationsApplicabilitiesOverwritten" />
                             </Alert>
                         )}
                     </Stack>
