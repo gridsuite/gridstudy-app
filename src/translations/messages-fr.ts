@@ -1289,6 +1289,7 @@ const messages_fr = {
     reset: 'Réinitialiser',
     history: 'Historique',
     topology: 'Topologie',
+    discardChanges: 'Annuler les modifications',
     nadVoltageFilter: 'Tension',
     nadInfoFilter: 'Informations',
     nadInfoActivePowerValue: 'Valeurs P',

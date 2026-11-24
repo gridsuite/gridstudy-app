@@ -59,6 +59,12 @@ export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: Pendin
         });
     }, []);
 
+    const discardVoltageLevelSwitches = useCallback((voltageLevelId: string) => {
+        setPendingSwitches(
+            (prev) => new Map([...prev].filter(([, pendingSwitch]) => pendingSwitch.voltageLevelId !== voltageLevelId))
+        );
+    }, []);
+
     const addDrawnNodes = useCallback((nodes: DiagramNodes) => setDrawnNodes((prev) => [...prev, nodes]), []);
 
     const removeDrawnNodes = useCallback(
@@ -107,7 +113,14 @@ export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: Pendin
 
     return (
         <PendingSwitchesContext.Provider
-            value={{ pendingSwitches, isUpdatingSwitches, togglePendingSwitch, addDrawnNodes, removeDrawnNodes }}
+            value={{
+                pendingSwitches,
+                isUpdatingSwitches,
+                togglePendingSwitch,
+                discardVoltageLevelSwitches,
+                addDrawnNodes,
+                removeDrawnNodes,
+            }}
         >
             <Box sx={styles.container}>
                 <Box sx={styles.content}>{children}</Box>

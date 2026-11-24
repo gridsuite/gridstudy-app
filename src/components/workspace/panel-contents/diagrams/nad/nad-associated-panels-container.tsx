@@ -17,7 +17,7 @@ import {
 } from '../../../../../redux/slices/workspace-selectors';
 import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-actions';
 import { AssociatedSldPanel } from './associated-sld-panel';
-import { AssociatedSldsChips } from './associated-slds-chips';
+import { AssociatedSldsTabs } from './associated-slds-tabs';
 import { useSldLayout } from './hooks/use-sld-layout';
 
 interface NadAssociatedPanelsContainerProps {
@@ -60,7 +60,7 @@ export const NadAssociatedPanelsContainer = memo(function NadAssociatedPanelsCon
                 <AssociatedSldPanel key={sldPanelId} sldPanelId={sldPanelId} isFocused={focusedSldId === sldPanelId} />
             ))}
 
-            <AssociatedSldsChips
+            <AssociatedSldsTabs
                 nadPanelId={nadPanelId}
                 onToggleVisibility={handleToggleSldVisibility}
                 onReorganize={handleReorganize}
