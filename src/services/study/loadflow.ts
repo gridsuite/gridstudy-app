@@ -8,6 +8,7 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText, ResultsQueryParams } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
+import { isComputationFinished, getLoadFlowRunningStatus } from '../../components/utils/running-status';
 
 export function setLoadFlowParameters(studyUuid: UUID, newParams: any) {
     console.info('set load flow parameters');
@@ -122,12 +123,18 @@ export function fetchLoadFlowComputationInfos(studyUuid: UUID, currentNodeUuid: 
     return backendFetchJson(url);
 }
 
-export function fetchLoadFlowResult(
+export async function fetchLoadFlowResult(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     queryParams: ResultsQueryParams
 ) {
+    const status = getLoadFlowRunningStatus(
+        await fetchLoadFlowStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid)
+    );
+    if (!isComputationFinished(status)) {
+        return null;
+    }
     console.info(
         `Fetching loadflow result on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
@@ -159,12 +166,18 @@ export function fetchLoadFlowModifications(studyUuid: UUID, currentNodeUuid: UUI
     return backendFetchJson(url);
 }
 
-export function fetchLimitViolations(
+export async function fetchLimitViolations(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     queryParams: ResultsQueryParams
 ) {
+    const status = getLoadFlowRunningStatus(
+        await fetchLoadFlowStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid)
+    );
+    if (!isComputationFinished(status)) {
+        return null;
+    }
     console.info(`Fetching limit violations ...`);
     const { sort, filters, globalFilters } = queryParams || {};
     const params = new URLSearchParams({});
