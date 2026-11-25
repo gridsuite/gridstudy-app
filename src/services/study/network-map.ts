@@ -210,6 +210,8 @@ export async function createMapFilter(
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:
         case EquipmentType.LINE:
+        case EquipmentType.HVDC_LINE:
+        case EquipmentType.TIE_LINE:
             equipmentFilters = createEquipmentIdentifierList(equipmentType, selectedEquipmentsIds);
             break;
 
@@ -260,6 +262,8 @@ export async function createMapContingencyList(
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:
         case EquipmentType.LINE:
+        case EquipmentType.HVDC_LINE:
+        case EquipmentType.TIE_LINE:
             equipmentContingencyList = createIdentifierContingencyList(
                 elementName,
                 selectedEquipments,
