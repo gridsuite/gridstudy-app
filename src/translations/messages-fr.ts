@@ -875,6 +875,7 @@ const messages_fr = {
     deleteNodeConfirmation: '"{nodeName}" va être supprimé.',
     unshareStudyConfirmation: "Le départage de l'étude est irréversible, voulez vous continuer ?",
     unshareNodeConfirmation: 'Le départage du nœud "{nodeName}" est irréversible, voulez vous continuer ?',
+    deleteSharedModificationsWarning: 'La suppression des modifications partagées est définitive.',
     deleteSubTreeConfirmation:
         '"{nodeName}" {nodesNumber, plural, =0 {va être supprimé.} =1 {et son sous-arbre contenant un nœud vont être supprimés} other {et son sous-arbre contenant # nœuds vont être supprimés.}}',
 

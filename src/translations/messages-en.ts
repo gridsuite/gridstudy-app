@@ -856,6 +856,7 @@ const messages_en = {
     deleteNodeConfirmation: '"{nodeName}" will be deleted.',
     unshareStudyConfirmation: 'Unsharing the study is irreversible, do you want to continue?',
     unshareNodeConfirmation: 'Unsharing the node "{nodeName}" is irreversible, do you want to continue?',
+    deleteSharedModificationsWarning: 'Deleting shared modifications is permanent.',
     deleteSubTreeConfirmation:
         '"{nodeName}" {nodesNumber, plural, =0 {will be deleted.} =1 {and its subtree with one node will be deleted.} other {and its subtree with # nodes will be deleted.}}',
 
