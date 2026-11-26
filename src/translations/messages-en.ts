@@ -1277,6 +1277,7 @@ const messages_en = {
     history: 'History',
     topology: 'Topology',
     discardChanges: 'Discard changes',
+    fullTopology: 'Full topology',
     nadVoltageFilter: 'Voltage',
     nadInfoFilter: 'Information',
     nadInfoActivePowerValue: 'P values',
