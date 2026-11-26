@@ -1049,7 +1049,7 @@ const messages_fr = {
     sharedModificationsApplicabilitiesOverwritten:
         "L'étude contient des modifications partagées, qui peuvent avoir des applicabilités déjà définies pour cette balise de réseau : celles-ci seront écrasées par les applicabilités existantes sur le réseau.",
     rootNetworkTagsAllowedByShared:
-        "L'étude contient des modifications partagées sur lesquelles vous n'avez pas les droits, les balises utilisables sont donc limitées à {allowedTagsCount, plural, =0 {aucune} other {{allowedTags}}}",
+        "L'étude contient des modifications partagées sur lesquelles vous n'avez pas les droits, {allowedTagsCount, plural, =0 {aucune nouvelle balise n'est autorisée} other {les balises utilisables sont donc limitées à {allowedTags}}}",
     rootNetworkTagNotAllowedByShared: 'Balise non autorisée',
     rootNetworkTagsNamingRestrictionsFetchingError:
         'Une erreur est survenue lors de la récupération des balises de réseau autorisées',

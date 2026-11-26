@@ -1033,7 +1033,7 @@ const messages_en = {
     sharedModificationsApplicabilitiesOverwritten:
         'This study contains shared modifications, which might have already defined applicability for this network tag: they will be overwritten with the current applicability for this network.',
     rootNetworkTagsAllowedByShared:
-        'The study contains shared modifications you are not allowed to modify, the usable tags are therefore limited to {allowedTagsCount, plural, =0 {none} other {{allowedTags}}}',
+        'The study contains shared modifications you are not allowed to modify{allowedTagsCount, plural, =0 {. No new tag is allowed} other {, the usable tags are therefore limited to {allowedTags}}}',
     rootNetworkTagNotAllowedByShared: 'Tag not allowed',
     rootNetworkTagsNamingRestrictionsFetchingError: 'An error occurred while fetching the allowed network tags',
     sharedModificationsWriteAccessFetchingError:
