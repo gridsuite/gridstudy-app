@@ -1035,7 +1035,7 @@ const messages_en = {
     rootNetworkTagsAllowedByShared:
         'The study contains shared modifications you are not allowed to modify, the usable tags are therefore limited to {allowedTagsCount, plural, =0 {none} other {{allowedTags}}}',
     rootNetworkTagNotAllowedByShared: 'Tag not allowed',
-    allowedRootNetworkTagsFetchingError: 'An error occurred while fetching the allowed network tags',
+    rootNetworkTagsNamingRestrictionsFetchingError: 'An error occurred while fetching the allowed network tags',
     sharedModificationsWriteAccessFetchingError:
         'An error occurred while fetching the rights on the shared modifications',
     rootNetworksCount: '{count, plural, =1 {# network} other {# networks}}',

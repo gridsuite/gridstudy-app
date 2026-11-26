@@ -1051,7 +1051,7 @@ const messages_fr = {
     rootNetworkTagsAllowedByShared:
         "L'étude contient des modifications partagées sur lesquelles vous n'avez pas les droits, les balises utilisables sont donc limitées à {allowedTagsCount, plural, =0 {aucune} other {{allowedTags}}}",
     rootNetworkTagNotAllowedByShared: 'Balise non autorisée',
-    allowedRootNetworkTagsFetchingError:
+    rootNetworkTagsNamingRestrictionsFetchingError:
         'Une erreur est survenue lors de la récupération des balises de réseau autorisées',
     sharedModificationsWriteAccessFetchingError:
         'Une erreur est survenue lors de la récupération des droits sur les modifications partagées',

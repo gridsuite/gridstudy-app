@@ -26,10 +26,9 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.type';
 import { ModificationDialog } from '../commons/modificationDialog';
 import {
-    AllowedRootNetworkTags,
     checkRootNetworkNameExistence,
     checkRootNetworkTagExistence,
-    fetchAllowedRootNetworkTags,
+    fetchRootNetworkTagsNamingRestrictions,
 } from 'services/root-network';
 import {
     getSharedModificationsWriteAccess,
@@ -130,8 +129,8 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
 
     const [sharedModificationsWriteAccess, setSharedModificationsWriteAccess] =
         useState<SharedModificationsWriteAccess>(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
-    // tags not allowed by the shared modifications the user cannot write on (the server checks them again on save)
-    const [allowedTags, setAllowedTags] = useState<AllowedRootNetworkTags>();
+    // when defined, the only tags allowed by the shared modifications the user cannot write on (the server checks them again on save)
+    const [allowedTags, setAllowedTags] = useState<string[]>();
     useEffect(() => {
         setSharedModificationsWriteAccess(SharedModificationsWriteAccess.NO_SHARED_MODIFICATION);
         setAllowedTags(undefined);
@@ -140,26 +139,40 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
         }
         let outdated = false; // ignore responses arriving after the dialog closed or the study changed
         getSharedModificationsWriteAccess(studyUuid)
-            .then((writeAccess) => !outdated && setSharedModificationsWriteAccess(writeAccess))
+            .then((writeAccess) => {
+                if (outdated) {
+                    return;
+                }
+                setSharedModificationsWriteAccess(writeAccess);
+                // tags are restricted only when some shared modifications are not writable by the user
+                if (
+                    writeAccess === SharedModificationsWriteAccess.SOME_WRITABLE ||
+                    writeAccess === SharedModificationsWriteAccess.NONE_WRITABLE
+                ) {
+                    fetchRootNetworkTagsNamingRestrictions(studyUuid)
+                        .then(
+                            ({ restricted, allowedTags }) =>
+                                !outdated && setAllowedTags(restricted ? (allowedTags ?? []) : undefined)
+                        )
+                        .catch((error) =>
+                            snackWithFallback(snackError, error, {
+                                headerId: 'rootNetworkTagsNamingRestrictionsFetchingError',
+                            })
+                        );
+                }
+            })
             .catch((error) =>
                 snackWithFallback(snackError, error, { headerId: 'sharedModificationsWriteAccessFetchingError' })
-            );
-        fetchAllowedRootNetworkTags(studyUuid)
-            .then((tags) => !outdated && setAllowedTags(tags))
-            .catch((error) =>
-                snackWithFallback(snackError, error, { headerId: 'allowedRootNetworkTagsFetchingError' })
             );
         return () => {
             outdated = true;
         };
     }, [open, studyUuid, snackError]);
 
-    // only changed tags are validated, so an edited root network keeps its current tag
+    // only changed tags are validated, so an edited root network may always keep its current tag
     const validateTag = useCallback(
         (value: string) =>
-            allowedTags?.restricted && !allowedTags.tags.includes(value)
-                ? 'rootNetworkTagNotAllowedByShared'
-                : undefined,
+            allowedTags && !allowedTags.includes(value) ? 'rootNetworkTagNotAllowedByShared' : undefined,
         [allowedTags]
     );
 
@@ -277,13 +290,13 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                         onSelectCase={onSelectCase}
                         originalCaseUuid={editableRootNetwork?.originalCaseUuid}
                     />
-                    {allowedTags?.restricted && (
+                    {allowedTags && (
                         <Alert severity="info">
                             <FormattedMessage
                                 id="rootNetworkTagsAllowedByShared"
                                 values={{
-                                    allowedTags: allowedTags.tags.join(', '),
-                                    allowedTagsCount: allowedTags.tags.length,
+                                    allowedTags: allowedTags.join(', '),
+                                    allowedTagsCount: allowedTags.length,
                                 }}
                             />
                         </Alert>
