@@ -1196,6 +1196,7 @@ const NetworkModificationNodeEditor = () => {
                 pendingState={isNodeUpdating}
                 columns={columns}
                 highlightedModificationUuid={highlightedModificationUuid}
+                onHighlightConsumed={() => dispatch(setHighlightModification(null))}
                 modificationUuidsToReset={modificationUuidsToReset}
                 modificationToEditLabel={modificationToEditLabel}
                 currentRootNetworkUuid={currentRootNetworkUuid ?? undefined}
