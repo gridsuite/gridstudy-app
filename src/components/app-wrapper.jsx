@@ -28,6 +28,8 @@ import {
     componentsFr,
     csvEn,
     csvFr,
+    customAggridFilterEn,
+    customAggridFilterFr,
     directoryItemsInputEn,
     directoryItemsInputFr,
     dndTableEn,
@@ -106,8 +108,6 @@ import backend_locale_en from '../translations/external/backend-locale-en';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
 import dynamic_mapping_models_en from '../translations/external/dynamic-mapping-models-en';
 import dynamic_mapping_models_fr from '../translations/external/dynamic-mapping-models-fr';
-import filter_locale_en from '../translations/dynamic/filter-locale-en';
-import filter_locale_fr from '../translations/dynamic/filter-locale-fr';
 import menu_locale_en from '../translations/dynamic/menu-locale-en';
 import menu_locale_fr from '../translations/dynamic/menu-locale-fr';
 import table_locale_en from '../translations/dynamic/table-locale-en';
@@ -431,13 +431,13 @@ const messages = {
         ...commonButtonEn,
         ...componentsEn,
         ...csvEn,
+        ...customAggridFilterEn,
         ...descriptionEn,
         ...dndTableEn,
         ...equipmentsEn,
         ...grid_en,
         ...backend_locale_en,
         ...dynamic_mapping_models_en,
-        ...filter_locale_en,
         ...menu_locale_en,
         ...table_locale_en,
         ...errors_locale_en,
@@ -478,13 +478,13 @@ const messages = {
         ...commonButtonFr,
         ...componentsFr,
         ...csvFr,
+        ...customAggridFilterFr,
         ...dndTableFr,
         ...equipmentsFr,
         ...descriptionFr,
         ...grid_fr,
         ...backend_locale_fr,
         ...dynamic_mapping_models_fr,
-        ...filter_locale_fr,
         ...menu_locale_fr,
         ...table_locale_fr,
         ...errors_locale_fr,
