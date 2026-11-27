@@ -90,6 +90,19 @@ export function checkRootNetworkTagExistence(studyUuid: UUID, tag: string): Prom
     });
 }
 
+export interface RestrictionsOnTags {
+    /** whether the study holds shared modifications the user cannot write on, restricting the tags */
+    restricted: boolean;
+    /** only when restricted: the only tags a new or renamed root network may be given */
+    allowedTags?: string[];
+}
+
+export function fetchRootNetworkTagsNamingRestrictions(studyUuid: UUID): Promise<RestrictionsOnTags> {
+    const namingRestrictionsUrl = getStudyUrl(studyUuid) + '/root-networks/tags-naming-restrictions';
+    console.debug(namingRestrictionsUrl);
+    return backendFetchJson(namingRestrictionsUrl);
+}
+
 export function getModifications(studyUuid: UUID, rootNetworkUuid: UUID, userInput: string) {
     const fetchUrl =
         getStudyUrl(studyUuid) +
