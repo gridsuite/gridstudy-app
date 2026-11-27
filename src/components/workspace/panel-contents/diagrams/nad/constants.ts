@@ -13,13 +13,8 @@ export const NAD_SLD_CONSTANTS = {
     MIN_RND_WIDTH: 138,
     MIN_RND_HEIGHT: 138,
     EXPANDED_SIDEBAR_WIDTH: 160,
-    CHIP_BAR_HEIGHT: 48,
+    TAB_BAR_HEIGHT: 48,
     TOP_CONTROLS_HEIGHT: 40, // Height of NAD diagram controls at the top
-
-    // Chip bar dimensions (in pixels) for calculating visible chip limit
-    CHIP_WIDTH: 90, // Approximate width of a single chip
-    COUNTER_CHIP_WIDTH: 40, // Width of the "+N" overflow counter chip
-    BUTTON_WIDTH: 15, // Width of action buttons (hide/show, remove, reorganip bar dimensions (in pixels) for calculating visible chip limitze)
 
     // Layout positioning (relative values)
     PANEL_DEFAULT_WIDTH: 0.35,

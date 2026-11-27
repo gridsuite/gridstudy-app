@@ -100,6 +100,7 @@ export const VoltageLevelPanelContent = ({
                     onSvgLoad={onSvgLoad}
                     navigationHistory={sldFields.navigationHistory}
                     onNavigateFromHistory={handleNavigateFromHistory}
+                    isAssociatedToNad={!!sldFields.parentNadPanelId}
                 />
             </DiagramWrapper>
         </Box>

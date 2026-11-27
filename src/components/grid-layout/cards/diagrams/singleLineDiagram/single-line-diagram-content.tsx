@@ -93,6 +93,7 @@ interface SingleLineDiagramContentProps {
     readonly onSvgLoad?: (width: number, height: number) => void;
     readonly navigationHistory?: string[];
     readonly onNavigateFromHistory?: (voltageLevelId: string) => void;
+    readonly isAssociatedToNad?: boolean;
 }
 
 type BusMenuState = {
@@ -128,6 +129,7 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
         onSvgLoad,
         navigationHistory,
         onNavigateFromHistory,
+        isAssociatedToNad,
     } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -564,7 +566,8 @@ const SingleLineDiagramContent = memo(function SingleLineDiagramContent(props: S
                     navigationHistory={navigationHistory}
                     currentVoltageLevelId={equipmentId}
                     onNavigate={onNavigateFromHistory}
-                    pendingSwitches={pendingSwitches}
+                    // The pending switches of the SLDs associated to a NAD are listed in the NAD sidebar
+                    showTopology={hasPendingSwitches && !isAssociatedToNad}
                 />
             </Box>
             {visible && shouldDisplayTooltip && displayTooltip()}
