@@ -20,7 +20,7 @@ import { useWorkspacePanelActions } from '../hooks/use-workspace-panel-actions';
 const styles = {
     dock: (theme: Theme) => ({
         flexShrink: 0,
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: theme.palette.toolbarBackground,
         borderTop: `1px solid ${theme.palette.divider}`,
     }),
     closeButton: {

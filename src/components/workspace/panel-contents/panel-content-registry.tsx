@@ -82,12 +82,15 @@ export const PANEL_CONTENT_REGISTRY: Record<PanelType, PanelRenderer> = {
     ),
 
     [PanelType.NAD]: ({ panelId, studyUuid, currentNode, currentRootNetworkUuid }) => (
-        <NadPanelContent
-            panelId={panelId}
-            studyUuid={studyUuid}
-            currentNodeId={currentNode.id}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-        />
+        // Shared by the SLDs associated to the NAD
+        <PendingSwitchesProvider panelId={panelId} studyUuid={studyUuid}>
+            <NadPanelContent
+                panelId={panelId}
+                studyUuid={studyUuid}
+                currentNodeId={currentNode.id}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+            />
+        </PendingSwitchesProvider>
     ),
 
     [PanelType.MAP]: ({ panelId, studyUuid, currentRootNetworkUuid, currentNode }) => (

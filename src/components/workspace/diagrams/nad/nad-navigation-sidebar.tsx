@@ -8,7 +8,7 @@
 import { memo, useCallback, useMemo } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import { History as HistoryIcon, Info as InfoIcon } from '@mui/icons-material';
-import { VoltageUnitIcon } from '@gridsuite/commons-ui';
+import { TopologyIcon, VoltageUnitIcon } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/reducer.type';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import {
@@ -23,6 +23,8 @@ import { useWorkspacePanelActions } from '../../hooks/use-workspace-panel-action
 import NominalVoltageFilter, { type NominalVoltageFilterStyles } from '../../../network/nominal-voltage-filter';
 import NadInfoFilter from './nad-info-filter';
 import type { NadSelectedInfoKey, NadSelectedInfos } from './use-nad-info-filter';
+import { TopologySectionContent } from '../sld/topology-section-content';
+import { usePendingSwitches } from '../sld/use-pending-switches';
 
 // Flatten NominalVoltageFilter so it blends into the sidebar instead of floating like the map overlay.
 const voltageFilterStyles: NominalVoltageFilterStyles = {
@@ -60,6 +62,8 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
         shallowEqual
     );
 
+    const { pendingSwitches } = usePendingSwitches();
+
     const { associateVoltageLevelWithNad } = useWorkspacePanelActions();
 
     const handleNavigationSidebarClick = useCallback(
@@ -74,8 +78,8 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
     const hasHistory = reversedHistory.length > 0;
     const hasNominalVoltages = allNominalVoltages.length > 0;
 
-    const sections = useMemo<SidebarSection[]>(
-        () => [
+    const sections = useMemo(() => {
+        const result: SidebarSection[] = [
             {
                 id: 'history',
                 icon: <HistoryIcon fontSize="small" />,
@@ -114,21 +118,31 @@ export const NadNavigationSidebar = memo(function NadNavigationSidebar({
                     <NadInfoFilter selectedInfos={selectedInfos} onToggle={onSelectedInfoToggle} disabled={!isBuilt} />
                 ),
             },
-        ],
-        [
-            hasHistory,
-            reversedHistory,
-            isBuilt,
-            associatedVoltageLevelIds,
-            handleNavigationSidebarClick,
-            hasNominalVoltages,
-            allNominalVoltages,
-            selectedNominalVoltages,
-            onNominalVoltagesChange,
-            selectedInfos,
-            onSelectedInfoToggle,
-        ]
-    );
+        ];
+        if (pendingSwitches.size > 0) {
+            result.push({
+                id: 'topology',
+                icon: <TopologyIcon fontSize="small" />,
+                titleId: 'topology',
+                defaultExpanded: true,
+                content: <TopologySectionContent onVoltageLevelClick={handleNavigationSidebarClick} />,
+            });
+        }
+        return result;
+    }, [
+        hasHistory,
+        reversedHistory,
+        isBuilt,
+        associatedVoltageLevelIds,
+        handleNavigationSidebarClick,
+        hasNominalVoltages,
+        allNominalVoltages,
+        selectedNominalVoltages,
+        onNominalVoltagesChange,
+        selectedInfos,
+        onSelectedInfoToggle,
+        pendingSwitches,
+    ]);
 
     return <NavigationSidebar sections={sections} />;
 });

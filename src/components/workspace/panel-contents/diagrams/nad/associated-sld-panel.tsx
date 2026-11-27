@@ -19,6 +19,7 @@ import { useWorkspacePanelActions } from '../../../hooks/use-workspace-panel-act
 import { VoltageLevelPanelContent } from '../sld/voltage-level-panel-content';
 import { NAD_SLD_CONSTANTS } from './constants';
 import { calculatePanelDimensions, positionToRelative, sizeToRelative } from '../../../core/utils/coordinate-utils';
+import { usePendingSwitches } from '../../../diagrams/sld/use-pending-switches';
 
 const DEFAULT_POSITION = { x: 0.01, y: 0.5 };
 const DEFAULT_SIZE = { width: 0.35, height: 0.5 };
@@ -70,6 +71,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({ sldPanelId,
     const { updatePanelGeometry, dissociateSldFromNad, minimizePanel, deletePanel, focusPanel } =
         useWorkspacePanelActions();
     const theme = useTheme();
+    const { pendingSwitches } = usePendingSwitches();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeId = useSelector((state: AppState) => state.currentTreeNode?.id);
@@ -217,7 +219,7 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({ sldPanelId,
             ref={containerRef}
             sx={{
                 position: 'absolute',
-                bottom: NAD_SLD_CONSTANTS.CHIP_BAR_HEIGHT,
+                bottom: NAD_SLD_CONSTANTS.TAB_BAR_HEIGHT,
                 left: 0,
                 right: 0,
                 top: NAD_SLD_CONSTANTS.TOP_CONTROLS_HEIGHT,
@@ -270,6 +272,8 @@ export const AssociatedSldPanel = memo(function AssociatedSldPanel({ sldPanelId,
                                 size="small"
                                 sx={styles.iconButton}
                                 onClick={handleDissociate}
+                                // Dissociating would move the SLD out of the NAD panel in focus mode
+                                disabled={pendingSwitches.size > 0}
                                 onMouseDownCapture={(e) => e.stopPropagation()}
                                 onPointerDownCapture={(e) => e.stopPropagation()}
                             >
