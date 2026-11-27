@@ -9,6 +9,7 @@ import {
     ArrowsInputIcon,
     ComposedModificationMetadata,
     createRootNetworksColumns,
+    ElementType,
     EquipmentType,
     ErrorMessage,
     fetchNetworkModification,
@@ -762,12 +763,12 @@ const NetworkModificationNodeEditor = () => {
     const handleNameChange = useCallback(
         (modification: ComposedModificationMetadata, newName: string) => {
             if (isReferenceModification(modification)) {
-                return updateElement(modification.referencedId, {
+                return updateElement(modification.referencedId, ElementType.MODIFICATION, {
                     elementUuid: modification.referencedId,
                     elementName: newName,
                 });
             } else if (modification.parentSharedUuid) {
-                return updateElement(modification.parentSharedUuid, {
+                return updateElement(modification.parentSharedUuid, ElementType.MODIFICATION, {
                     elementUuid: modification.uuid,
                     elementName: newName,
                 });
