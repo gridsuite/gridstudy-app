@@ -470,7 +470,7 @@ export const componentColumnsDefinition = (
             context: {
                 numeric: true,
                 fractionDigits: 2,
-                ...createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, textFilterParams),
+                ...createColumnContext(undefined, filterParams, CustomAggridComparatorFilter, numericFilterParams),
             },
         }),
         makeAgGridCustomHeaderColumn({
