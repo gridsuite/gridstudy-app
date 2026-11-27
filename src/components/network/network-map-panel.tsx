@@ -84,6 +84,15 @@ import { GenericEquipmentInfos } from 'components/tooltips/equipment-popover-typ
 import { GenericPopoverContent } from 'components/tooltips/generic-popover-content';
 import { useBaseVoltages } from '../../hooks/use-base-voltages';
 import { mergeByIdKeepOrder } from 'components/utils/utils';
+/* For bundlers (Vite, webpack, esbuild, rspack, Rollup), import.meta.url
+ * doesn't reliably resolve to the worker file inside the bundler's module graph,
+ * so each consumer still needs a one-time setWorkerUrl() call.
+ * see: https://maplibre.org/maplibre-gl-js/docs/guides/v5-to-v6-migration-guide/#setworkerurl-is-bundler-only
+ */
+import { setWorkerUrl } from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+setWorkerUrl(workerUrl);
 
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
