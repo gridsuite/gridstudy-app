@@ -24,7 +24,7 @@ import {
     NodeType,
 } from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
-import { Divider } from '@mui/material';
+import { Alert, Divider } from '@mui/material';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useIsBuildBlocked, useIsEditBlocked } from 'components/node-activity/hooks/use-node-activity';
 import { isStatusBuilt } from '../util/model-functions';
@@ -637,6 +637,31 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             nodesNumber: getNodesFromSubTree(treeModel, activeNode.id),
         }
     );
+
+    function deletionContainsSharedModifications(): boolean {
+        if (nodeAction !== NodeActions.REMOVE_NODE && nodeAction !== NodeActions.REMOVE_SUBTREE) {
+            return false;
+        }
+        // activeNode is captured when the menu opens, so read the up-to-date node from the tree model
+        const currentNode = treeModel?.treeNodes.find((node) => node.id === activeNode.id) ?? activeNode;
+        const nodes: CurrentTreeNode[] = [currentNode];
+        if (nodeAction === NodeActions.REMOVE_SUBTREE && treeModel) {
+            getNodeChildren(treeModel, [activeNode.id], nodes);
+        }
+
+        return nodes.some(
+            (node) =>
+                node.type === NodeType.NETWORK_MODIFICATION &&
+                (node as ModificationNode).data?.hasReferencedModifications === true
+        );
+    }
+
+    const renderWarning = deletionContainsSharedModifications() && (
+        <Alert severity="warning" sx={{ mt: 2 }}>
+            {intl.formatMessage({ id: 'deleteSharedModificationsWarning' })}
+        </Alert>
+    );
+
     const handleOnClose = useCallback(() => {
         setNodeAction(NodeActions.NO_ACTION);
         handleClose();
@@ -679,7 +704,12 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             </Menu>
             {nodeAction !== NodeActions.NO_ACTION && (
                 <CustomDialog
-                    content={content}
+                    content={
+                        <>
+                            {content}
+                            {renderWarning}
+                        </>
+                    }
                     onValidate={handleOnValidate}
                     validateButtonLabel={VALIDATE_BUTTON_LABEL[nodeAction] ?? 'button.delete'}
                     onClose={handleOnClose}
