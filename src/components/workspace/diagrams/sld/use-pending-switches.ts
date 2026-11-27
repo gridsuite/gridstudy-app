@@ -62,6 +62,7 @@ interface PendingSwitchesContextValue {
     /** From the validation until the diagrams draw the new switch states */
     isUpdatingSwitches: boolean;
     togglePendingSwitch: (pendingSwitch: PendingSwitch) => void;
+    discardVoltageLevelSwitches: (voltageLevelId: string) => void;
     addDrawnNodes: (nodes: DiagramNodes) => void;
     removeDrawnNodes: (nodes: DiagramNodes) => void;
 }
@@ -105,5 +106,6 @@ export const usePendingSwitches = (svgMetadata?: SLDMetadata) => {
         pendingSwitches: context?.pendingSwitches ?? noPendingSwitches,
         isUpdatingSwitches: !!context?.isUpdatingSwitches,
         togglePendingSwitch: context ? toggleDiagramSwitch : undefined,
+        discardVoltageLevelSwitches: context?.discardVoltageLevelSwitches,
     };
 };

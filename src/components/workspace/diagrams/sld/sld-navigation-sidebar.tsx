@@ -14,18 +14,17 @@ import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { NavigationSidebar, type SidebarSection } from '../common/navigation-sidebar';
 import { HistorySectionContent } from '../common/history-section-content';
 import { TopologySectionContent } from './topology-section-content';
-import type { PendingSwitches } from './use-pending-switches';
 
 interface SldNavigationSidebarProps {
     /** No history section when undefined: a substation diagram has no navigation. */
     navigationHistory?: string[];
     currentVoltageLevelId?: string;
     onNavigate?: (voltageLevelId: string) => void;
-    pendingSwitches: PendingSwitches;
+    showTopology: boolean;
 }
 
 export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
-    ({ navigationHistory, currentVoltageLevelId, onNavigate, pendingSwitches }) => {
+    ({ navigationHistory, currentVoltageLevelId, onNavigate, showTopology }) => {
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
         const disabled = !isNodeBuilt(currentNode);
 
@@ -47,17 +46,17 @@ export const SldNavigationSidebar = memo<SldNavigationSidebarProps>(
                     ),
                 });
             }
-            if (pendingSwitches.size > 0) {
+            if (showTopology) {
                 result.push({
                     id: 'topology',
                     icon: <TopologyIcon fontSize="small" />,
                     titleId: 'topology',
                     defaultExpanded: true,
-                    content: <TopologySectionContent pendingSwitches={pendingSwitches} />,
+                    content: <TopologySectionContent onVoltageLevelClick={onNavigate} />,
                 });
             }
             return result;
-        }, [navigationHistory, disabled, currentVoltageLevelId, onNavigate, pendingSwitches]);
+        }, [navigationHistory, disabled, currentVoltageLevelId, onNavigate, showTopology]);
 
         return <NavigationSidebar sections={sections} />;
     }

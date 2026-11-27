@@ -7,11 +7,13 @@
 
 import { type PropsWithChildren, useCallback, useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Box } from '@mui/material';
+import { Box, Checkbox, FormControlLabel } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { type MuiStyles, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import type { AppState } from '../../../../redux/reducer.type';
 import { updateVoltageLevelSwitchStates } from '../../../../services/study/network-modifications';
+import { fetchSwitchesOfVoltageLevel } from '../../../../services/study/network';
 import { useIsEditBlocked } from '../../../node-activity/hooks/use-node-activity';
 import { PanelFocusMode } from '../../core/panel-focus-mode';
 import {
@@ -34,15 +36,18 @@ type PendingSwitchesProviderProps = PropsWithChildren<{
 
 /**
  * Keeps the switches changed on the diagrams of a panel until their validation, the panel being in focus mode.
- * Validating them creates one voltage level topology modification per voltage level.
+ * Validating them creates one voltage level topology modification per voltage level,
+ * containing only the changed switches, or all the switches of the voltage level with the full topology option.
  */
 export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: PendingSwitchesProviderProps) => {
     const { snackError } = useSnackMessage();
     const currentNodeId = useSelector((state: AppState) => state.currentTreeNode?.id);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const isEditBlocked = useIsEditBlocked(currentNodeId);
     const [pendingSwitches, setPendingSwitches] = useState(noPendingSwitches);
     const [isValidating, setIsValidating] = useState(false);
+    const [withFullTopology, setWithFullTopology] = useState(false);
     // The nodes drawn by each diagram of the panel
     const [drawnNodes, setDrawnNodes] = useState<DiagramNodes[]>([]);
 
@@ -59,6 +64,12 @@ export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: Pendin
         });
     }, []);
 
+    const discardVoltageLevelSwitches = useCallback((voltageLevelId: string) => {
+        setPendingSwitches(
+            (prev) => new Map([...prev].filter(([, pendingSwitch]) => pendingSwitch.voltageLevelId !== voltageLevelId))
+        );
+    }, []);
+
     const addDrawnNodes = useCallback((nodes: DiagramNodes) => setDrawnNodes((prev) => [...prev, nodes]), []);
 
     const removeDrawnNodes = useCallback(
@@ -66,12 +77,29 @@ export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: Pendin
         []
     );
 
+    // With the full topology, the untouched switches of the voltage level are sent with their current state
+    const getSwitchStates = async (voltageLevelId: string, switches: PendingSwitch[]) => {
+        if (!withFullTopology || !currentNodeId || !currentRootNetworkUuid) {
+            return switches;
+        }
+        const voltageLevelSwitches = await fetchSwitchesOfVoltageLevel(
+            studyUuid,
+            currentNodeId,
+            currentRootNetworkUuid,
+            voltageLevelId
+        );
+        return voltageLevelSwitches.map(
+            (voltageLevelSwitch) => pendingSwitches.get(voltageLevelSwitch.id) ?? voltageLevelSwitch
+        );
+    };
+
     const validatePendingSwitches = async () => {
         setIsValidating(true);
         // Sent one at a time because the server rejects concurrent edits of a node
         for (const [voltageLevelId, switches] of groupByVoltageLevel(pendingSwitches)) {
             try {
-                await updateVoltageLevelSwitchStates(studyUuid, currentNodeId, voltageLevelId, switches);
+                const switchStates = await getSwitchStates(voltageLevelId, switches);
+                await updateVoltageLevelSwitchStates(studyUuid, currentNodeId, voltageLevelId, switchStates);
             } catch (error) {
                 snackWithFallback(snackError, error, {
                     headerId: 'updateSwitchStateError',
@@ -107,7 +135,14 @@ export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: Pendin
 
     return (
         <PendingSwitchesContext.Provider
-            value={{ pendingSwitches, isUpdatingSwitches, togglePendingSwitch, addDrawnNodes, removeDrawnNodes }}
+            value={{
+                pendingSwitches,
+                isUpdatingSwitches,
+                togglePendingSwitch,
+                discardVoltageLevelSwitches,
+                addDrawnNodes,
+                removeDrawnNodes,
+            }}
         >
             <Box sx={styles.container}>
                 <Box sx={styles.content}>{children}</Box>
@@ -118,7 +153,19 @@ export const PendingSwitchesProvider = ({ panelId, studyUuid, children }: Pendin
                         canValidate={!isUpdatingSwitches && !computationStarting && !isEditBlocked}
                         onValidate={validatePendingSwitches}
                         onDiscard={() => setPendingSwitches(noPendingSwitches)}
-                    />
+                    >
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    size="small"
+                                    checked={withFullTopology}
+                                    disabled={isValidating}
+                                    onChange={(event) => setWithFullTopology(event.target.checked)}
+                                />
+                            }
+                            label={<FormattedMessage id="fullTopology" />}
+                        />
+                    </PanelFocusMode>
                 )}
             </Box>
         </PendingSwitchesContext.Provider>
